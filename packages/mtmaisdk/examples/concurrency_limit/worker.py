@@ -1,0 +1,42 @@
+import time
+
+from dotenv import load_dotenv
+
+from mtmaisdk import Hatchet
+from mtmaisdk.context import Context
+from mtmaisdk.contracts.workflows_pb2 import ConcurrencyLimitStrategy
+from mtmaisdk.workflow import ConcurrencyExpression
+
+load_dotenv()
+
+hatchet = Hatchet(debug=True)
+
+
+@hatchet.workflow(
+    on_events=["concurrency-test"],
+    concurrency=ConcurrencyExpression(
+        expression="input.group",
+        max_runs=5,
+        limit_strategy=ConcurrencyLimitStrategy.CANCEL_IN_PROGRESS,
+    ),
+)
+class ConcurrencyDemoWorkflow:
+
+    @hatchet.step()
+    def step1(self, context: Context):
+        input = context.workflow_input()
+        time.sleep(3)
+        print("executed step1")
+        return {"run": input["run"]}
+
+
+def main():
+    workflow = ConcurrencyDemoWorkflow()
+    worker = hatchet.worker("concurrency-demo-worker", max_runs=10)
+    worker.register_workflow(workflow)
+
+    worker.start()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,105 @@
+[project]
+name = "mtmairoot"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "mtmai",
+    "mtmaisdk",
+    "nanoid>=2.0.0",
+    "nest-asyncio>=1.6.0",
+    "pgvector>=0.3.6",
+    "playwright>=1.49.1",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.7.1",
+    "structlog>=24.4.0",
+    "urllib3>=2.3.0",
+]
+# 私有项目,禁止发布
+classifiers = ["Private :: Do Not Upload"]
+
+[tool.uv.sources]
+mtmai = { workspace = true }
+mtmaisdk = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*"]
+exclude = [
+    "packages/libs",
+    "packages/mtmtrain",
+    "packages/mtcrawl",
+    "packages/mtmaiapi",
+    "packages/mtxuilib",
+    "packages/mtxlib",
+    "packages/mtmaifrontui",
+    "packages/mtmaiui-backup",
+    "packages/mtxuilib-backup",
+    "packages/mtmaiui",
+    "packages/mtxedgev2",
+    "packages/gomtm-cli",
+    "packages/testmtm",
+]
+
+# [build-system]
+# requires = ["hatchling"]
+# build-backend = "hatchling.build"
+
+[tool.setuptools]
+packages = ["mtmairoot"]  # 明确指定包路径
+package-dir = {"" = "."}  # 设置包的根目录
+
+
+[build-system]
+requires = ["hatchling>=1.0.0", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["mtmairoot"]
+exclude = [
+    "tests/**",
+    "examples/**",
+]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "mtmairoot/_version.py"
+
+# [tool.hatch.build.targets.wheel]
+# packages = ["src"]
+
+# [tool.hatch.build.targets.sdist]
+# include = [
+#     "src",
+#     "pyproject.toml",
+#     "README.md",
+#     "LICENSE",
+# ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[dependency-groups]
+dev = [
+    "burr[start]==0.22.1",
+    "sphinx==6.0",
+    "furo==2024.5.6",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "poethepoet>=0.31.1",
+    "pytest==8.0.0",
+    "pytest-mock==3.14.0",
+    "pylint>=3.2.5",
+]
+# 明确使用跟目录下的venv,否则在子项目安装依赖时会在子项目目录下创建venv
+# venv-path = "../../.venv"
+
+# [tool.poe.tasks]
+# pylint-local = "pylint scraperaphai/**/*.py"
+# pylint-ci = "pylint --disable=C0114,C0115,C0116 --exit-zero scrapegraphai/**/*.py"
+
+
+# [tool.uv.sources]
+
