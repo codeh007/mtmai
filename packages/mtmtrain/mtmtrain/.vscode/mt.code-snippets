@@ -1,0 +1,59 @@
+{
+  // 代码片段生成器网址： https://snippet-generator.app/?description=test1&tabtrigger=ip&snippet=export+const+&mode=vscode
+  "page": {
+    // "scope":"typescript",
+    "prefix": "mtpage",
+    "description": "插入页面",
+    "body": [
+      "'use client'",
+      "export default function Page(props:{params}) {", "    return (<>", "        $1", "    </>)", "}"],
+  },
+  "routeapi": {
+    // "scope":"typescript",
+    "prefix": "mtapi",
+    "description": "插入 nextjs api route",
+    "body": [
+      "const handler = async (req: Request) => {",
+      "const params = await getHttpJsonParams<any>(req)",
+      "return new Response(\"hello api\")",
+      "};",
+      "export const POST = handler;",
+      "export const GET = handler;",
+    ],
+  },
+  "next-layout": {
+    // "scope":"typescript",
+    "prefix": "mtlayout",
+    "description": "插入nextjs layout",
+    "body": [
+      "import React, { PropsWithChildren,ReactNode } from 'react';",
+      "export default function Layout(props:PropsWithChildren) {",
+      "    const {children} = props",
+      "    return (<>",
+      "    {children}",
+      "$1",
+      "    </>)",
+      "}",
+    ],
+  },
+  "my-components": {
+    "prefix": "mtcomponent",
+    "description": "插入nextjs componetns",
+    "body": [
+      "import React,{ReactNode } from 'react';",
+      "export function Component({children}:{",
+      "children?:ReactNode",
+      "}) {",
+      "    return (<>",
+      "{children}",
+      "$1",
+      "    </>)",
+      "}",
+    ],
+  },
+  "components": {
+    "prefix": "mtedge",
+    "description": "插入nextjs componetns",
+    "body": ["export const runtime = 'edge';", "export const dynamic = 'force-dynamic';"],
+  },
+}

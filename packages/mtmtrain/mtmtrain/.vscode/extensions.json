@@ -1,0 +1,46 @@
+{
+  "recommendations": [
+    "johnpapa.vscode-peacock",
+    "christian-kohler.npm-intellisense",
+    "davidanson.vscode-markdownlint",
+    "docsmsft.docs-linting",
+    // "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    // "esbenp.prettier-vscode",
+    "tlent.jest-snapshot-language-support",
+    "ms-azuretools.vscode-docker",
+    "philsinatra.nested-comments",
+    "aaron-bond.better-comments",
+    "naumovs.color-highlight",
+    "christian-kohler.path-intellisense",
+    // "formulahendry.code-runner",
+    // "rohinivsenthil.postcode",
+    "mikestead.dotenv",
+    //一个个人感觉不错的主题
+    "robinboers.frontend-delight",
+    "pkief.material-icon-theme",
+
+    //typescript
+    "bradlc.vscode-tailwindcss",
+    "biomejs.biome",
+    "yoavbls.pretty-ts-errors",
+    //python 相关
+    "ms-python.python",
+    "equinusocio.vsc-material-theme",
+    "VisualStudioExptTeam.vscodeintellicode",
+    // "ms-python.pylint",
+    // "ms-python.flake8",
+    "charliermarsh.ruff",//取代 pylint
+    "ms-vscode.makefile-tools",
+
+    // graphRag 项目中用到的python 插件
+    "ronnidc.nunjucks",
+    "arcanis.vscode-zipfs",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "ms-python.vscode-pylance",
+    "bierner.markdown-mermaid",
+    "compulim.compulim-vscode-closetag",
+  ],
+  "unwantedRecommendations": ["hookyqr.beautify", "dbaeumer.jshint"]
+}

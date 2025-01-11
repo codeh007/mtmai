@@ -1,0 +1,368 @@
+{
+  // open json editor for settings
+  "workbench.settings.editor": "ui",
+
+  // Theme
+  // "workbench.colorTheme": "Default Light Modern",
+  "workbench.iconTheme": "vscode-icons",
+  // Change font
+  // "editor.fontFamily": "Geist Mono",
+  // "editor.fontFamily": "monospace",
+  "editor.fontFamily": "Meslo LG s for PowerLine",
+  "scm.inputFontFamily": "Geist Mono",
+  "terminal.integrated.fontFamily": "monospace",
+  "chat.editor.fontFamily": "Geist Mono",
+  "debug.console.fontFamily": "Geist Mono",
+  "editor.codeLensFontFamily": "Geist Mono",
+  "notebook.output.fontFamily": "Geist Mono",
+  "markdown.preview.fontFamily": "Geist Mono",
+  "editor.inlayHints.fontFamily": "Geist Mono",
+
+  // Font size
+  "editor.fontSize": 14,
+  "terminal.integrated.fontSize": 14,
+  "editor.fontWeight": "300",
+
+  // ui
+  "window.commandCenter": false,
+  "editor.scrollbar.vertical": "auto",
+  "editor.scrollbar.horizontal": "auto",
+
+  // APC
+  "apc.activityBar": {
+    "position": "bottom",
+    "hideSettings": false,
+    "size": 28
+  },
+  "apc.electron": {
+    "titleBarStyle": "hiddenInset",
+    "trafficLightPosition": {
+      "x": 12,
+      "y": 10
+    }
+  },
+  "apc.font.family": "Geist Mono",
+  "apc.monospace.font.family": "Geist Mono",
+
+  // Aura theme customisation
+  "workbench.colorCustomizations": {
+    "[Aura Dark]": {
+      "editor.background": "#110f17",
+      "terminal.background": "#110f17",
+      "activityBar.background": "#110f17",
+      "statusBar.background": "#110f17",
+      "editorGroupHeader.tabsBackground": "#110f17",
+      "tab.inactiveBackground": "#110f17"
+    },
+    "activityBar.activeBackground": "#fbed80",
+    "activityBar.background": "#fbed80",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#06b9a5",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#fbed80",
+    "statusBar.background": "#f9e64f",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#f7df1e",
+    "statusBarItem.remoteBackground": "#f9e64f",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#f9e64f",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#f9e64f99",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+
+  "[typescriptreact]": {
+    // "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[html]": {
+    // "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
+  "editor.codeActionsOnSave": {
+    // "source.fixAll": "explicit",
+    // "source.fixAll.eslint": "explicit",
+    // "source.organizeImports": "explicit",
+    "source.addMissingImports": "explicit",
+    // 用 biome 替换 vscode 默认的 代码修正功能
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.formatOnSave": true,
+
+  "prettier.enable": false,
+  "editor.defaultFormatter": "biomejs.biome",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/.next": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.next.dev": true,
+    "**/dist": true
+  },
+  "eslint.rules.customizations": [
+    {
+      "rule": "*",
+      "severity": "warn"
+    }
+  ],
+
+  "peacock.remoteColor": "#f9e64f",
+  "editor.tabCompletion": "on",
+  "diffEditor.codeLens": true,
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "always",
+      "source.addMissingImports": "explicit"
+    }
+  },
+  "terminal.integrated.env.linux": {
+    "MY_ENV_VAR": "my_value"
+  },
+  // "go.gopath": "/usr/local/go",
+  "go.buildTags": "cgo",
+
+  "peacock.color": "#6e8098",
+  "go.testEnvVars": {
+    "DISPLAY": ":10",
+    "MTM_PROJECT_ROOT_DIR": "${workspaceFolder}"
+  },
+  "go.testExplorer.enable": true,
+  "go.terminal.activateEnvironment": true,
+  // "go.testEnvFile": "${workspaceFolder}/env/integration.env",
+  "go.testOnSave": true,
+
+  "ginkgotestexplorer.testEnvVars": {
+    "MTM_DATA_DIR": "${workspaceFolder}/data",
+    "MTM_NODE_RENDEZVOUS": "mtmtest-rendezvous-889900",
+    "MTM_LOG_LEVEL": "debug",
+    "MTM_NODE_ENABLED_DHT": "false"
+  },
+  "ginkgotestexplorer.cacheTTL": 1,
+  "protoc": {
+    // "options": []
+    "compile_all_path": true
+  },
+  // Toggle excluded files
+  "files.exclude": {
+    "**/.ruff_cache": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.next": false,
+    "**/.next.dev": false,
+    "**/dist": false,
+    "**/.turbo": true,
+    "**/.wrangler": true,
+    "**/.editorconfig": true,
+    "**/.env.example": true,
+    "**/.eslintrc.cjs": false,
+    "**/.husky": true,
+    "**/.lintstagedrc.mjs": true,
+    "**/.markdownlint.json": true,
+    "**/.markdownlintignore": true,
+    "**/.prettierignore": true,
+    "**/.todo.md": true,
+    "**/bun.lockb": false,
+    "**/cspell.json": true,
+    "**/drizzle": false,
+    "**/drizzle.config.ts": false,
+    "**/migrate.ts": false,
+    "**/next-env.d.ts": true,
+    "**/node_modules": false,
+    "**/package-lock.json": true,
+    "**/pnpm-lock.yaml": true,
+    "**/postcss.config.cjs": false,
+    "**/prettier.config.js": true,
+    "**/README.md": false
+  },
+
+  "[proto3]": {
+    "editor.defaultFormatter": "zxh404.vscode-proto3"
+  },
+  "files.autoSaveDelay": 30000,
+  //在受限环境中，容易到达 watcher 数量限制， 故须明确排除不需要 watch 的文件
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    ".vol/**": true,
+    ".vercel/**": true,
+    ".yarn/**": true,
+    "bin/**": true,
+    "dist/**": true,
+    ".github/**": true,
+    ".tmp/**": true,
+    ".vscode/**": true,
+    "db_dump/**": true,
+    "doc/**": true,
+    "packages/other-npm-packages/**": true,
+    "mtm/**": false,
+    "packages/**": true
+  },
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff", //"charliermarsh.ruff", ""ms-python.black-formatter""
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit", // # If you have something like Ruff or isort installed.
+      "editor.formatOnType": "explicit"
+    },
+    "editor.formatOnType": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.languageServer": "Jedi",
+  // "python.analysis.extraPaths": ["../"],
+  // "python.formatting.provider": "autopep8",
+  // "MutableAI.upsell": false,
+  // "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.experiments.enabled": true,
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.indexing": true,
+  "python.analysis.include": [
+    ".",
+    "${workspaceFolder}/mtmai",
+    "${workspaceFolder}"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/mtmai"
+  ],
+  "python.analysis.extraPaths": ["${workspaceFolder}"],
+  "python.envFile": "${workspaceFolder}/.env", // 如果你有环境变量文件
+  "python.testing.cwd": "${workspaceFolder}",
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  "python.env": {
+    "PYTHONPATH": "${workspaceFolder}/"
+  },
+  "env": {
+    "PYTHONPATH": "${workspaceFolder}"
+  },
+  "testExplorer.useNativeTesting": true,
+  // "python.testing.pytestArgs": [
+  //   "mtmai"
+  // ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["."],
+  // "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "*test.py"],
+  "python.venvPath": "./.venv",
+  // "python.linting.flake8Enabled": true,
+
+  // "tailwindCSS.experimental.classRegex": ["class:\\s*?[\"'`]([^\"'`]*).*?,"],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+  },
+  //项目中 使用的自定义 className，例如 <div someClassName="flex bg-blue-1000" /> 能识别并高亮
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "classActivate",
+    "listClasses"
+  ],
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+
+  "jest.jestCommandLine": "jest",
+  "jest.runMode": "deferred",
+  "jest.rootPath": "apps/mtxui",
+  "jest.enable": false,
+  // "jest.runMode": "watch",
+  // "jest.rootPath": "apps/mtmgocoll"
+  "terminal.integrated.scrollback": 10000,
+
+  // Misc
+  "workbench.startupEditor": "none",
+  "explorer.compactFolders": false,
+  "editor.tabSize": 2,
+  "editor.linkedEditing": true,
+  "breadcrumbs.filePath": "off",
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "window.zoomLevel": 0,
+  "cSpell.languageSettings": [],
+  "rust-analyzer.debug.engineSettings": {},
+
+  // The path to the `bun` executable.
+  // "bun.runtime": "/path/to/bun",
+
+  "bun.debugTerminal": {
+    // If support for Bun should be added to the default "JavaScript Debug Terminal".
+    "enabled": true,
+
+    // If the debugger should stop on the first line of the program.
+    "stopOnEntry": false
+  },
+  "vscode-graphql.useSchemaFileDefinition": true,
+  "vscode-graphql.cacheSchemaFileForLookup": true,
+  "vscode-graphql.debug": true,
+  "graphql-config.load.legacy": true,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "*test.py"],
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.ts, ${capture}.hooks.ts, ${capture}.hooks.tsx, ${capture}.contexts.ts, ${capture}.stories.tsx, ${capture}.story.tsx, ${capture}.spec.tsx, ${capture}.base.ts, ${capture}.base.tsx, ${capture}.types.ts, ${capture}.styles.ts, ${capture}.styles.tsx, ${capture}.utils.ts, ${capture}.utils.tsx, ${capture}.constants.ts, ${capture}.module.scss, ${capture}.module.css, ${capture}.md",
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+    "*.jsx": "${capture}.js",
+    "*.tsx": "${capture}.ts, ${capture}.hooks.ts, ${capture}.hooks.tsx, ${capture}.contexts.ts, ${capture}.stories.tsx, ${capture}.story.tsx, ${capture}.spec.tsx, ${capture}.base.ts, ${capture}.base.tsx, ${capture}.types.ts, ${capture}.styles.ts, ${capture}.styles.tsx, ${capture}.utils.ts, ${capture}.utils.tsx, ${capture}.constants.ts, ${capture}.module.scss, ${capture}.module.css, ${capture}.md, ${capture}.css",
+    "tsconfig.json": "tsconfig.*.json",
+    "package.json": "package-lock.json, turbo.json, tsconfig.json, rome.json, biome.json, .npmignore, dictionary.txt, cspell.config.yaml",
+    "README.md": "*.md, LICENSE, CODEOWNERS",
+    ".eslintrc": ".eslintignore",
+    ".prettierrc": ".prettierignore",
+    ".gitattributes": ".gitignore, .gitmodules",
+    ".yarnrc.yml": "yarn.lock, .pnp.*",
+    "jest.config.js": "jest.setup.mjs",
+    "pyproject.toml": "poetry.lock, poetry.toml, requirements.txt",
+    "cspell.config.yaml": "dictionary.txt",
+    "vercel.json": ".vercelignore",
+    "Dockerfile": ".dockerignore"
+  },
+  "makefile.configureOnOpen": false
+
+  // "github.copilot.advanced": {
+  //   "debug.overrideProxyUrl": "http://localhost:11437"
+  // },
+  // "http.proxy": "http://localhost:11435",
+  // "http.proxyStrictSSL": false
+}

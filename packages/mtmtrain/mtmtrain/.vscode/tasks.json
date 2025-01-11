@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "t1",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t1",
+    },
+    {
+      "label": "t2",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t2",
+    },
+    {
+      "label": "t3",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t3",
+    },
+    {
+      "label": "t4",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t4",
+    },
+    {
+      "label": "t5",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t5",
+    },
+    {
+      "label": "t6",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t6",
+    },
+    {
+      "label": "t7",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t7",
+    },
+    {
+      "label": "t8",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t8",
+    },
+    {
+      "label": "t9",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t9",
+    },
+    {
+      "label": "t10",
+      "type": "shell",
+      "command": "sudo bash .vscode/bin/t10",
+    }
+  ]
+}

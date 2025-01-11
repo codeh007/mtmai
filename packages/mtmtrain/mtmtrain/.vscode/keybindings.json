@@ -1,0 +1,48 @@
+[
+    {
+        "key": "ctrl+alt+1",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t1"
+    },
+    {
+        "key": "ctrl+alt+2",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t2"
+    },
+    {
+        "key": "ctrl+alt+3",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t3"
+    },
+    {
+        "key": "ctrl+alt+4",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t4"
+    },
+    {
+        "key": "ctrl+alt+5", // 你自定义的快捷键
+        "command": "workbench.action.tasks.runTask",
+        "args": "publish", // 你任务的名字
+        // "when": "editorTextFocus" // 当你按快捷键的时候
+    },
+    {
+        "key": "ctrl+alt+7",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t7"
+    },
+    {
+        "key": "ctrl+alt+8",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t8"
+    },
+    {
+        "key": "ctrl+alt+9",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t9"
+    },
+    {
+        "key": "ctrl+alt+0",
+        "command": "workbench.action.tasks.runTask",
+        "args": "t10"
+    },
+]
