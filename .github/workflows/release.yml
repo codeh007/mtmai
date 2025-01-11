@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - ".changeset/**"
+      - "packages/**"
+      - "apps/**"
+      - "package.json"
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      input:
+        description: "功能选项 (1: 仅构建, 2: 构建并部署, 3: 构建docker镜像并发布)"
+        required: true
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+        default: "1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.5.15"
+          enable-cache: true
+          # cache-local-path: "/path/to/cache"
+          cache-dependency-glob: "uv.lock"
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install the project
+        run: uv sync --all-extras --dev

@@ -1,0 +1,411 @@
+import asyncio
+import os
+import uuid
+from contextvars import ContextVar
+from functools import lru_cache
+from mailbox import BabylMessage
+from typing import Type
+
+import httpx
+import orjson
+import structlog
+from attr import make_class
+from crewai import LLM
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.tools import StructuredTool
+from langchain_core.utils.function_calling import convert_to_openai_function
+from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from lazify import LazyProxy
+from mtmaisdk import Context as HatchetContext
+from psycopg_pool import AsyncConnectionPool
+from pydantic import BaseModel
+
+from mtmai.agents import utils
+from mtmai.agents.graphutils import ensure_valid_llm_response_v2
+from mtmai.core.config import settings
+from mtmai.models.graph_config import GraphConfig
+from mtmai.mtlibs import yaml
+
+LOG = structlog.get_logger()
+
+context_var: ContextVar["AgentContext"] = ContextVar("mtmai")
+
+
+class LoggingTransport(httpx.AsyncHTTPTransport):
+    async def handle_async_request(self, request):
+        response = await super().handle_async_request(request)
+        # 提示： 不要读取 body，因为一般 是stream，读取了会破环状态
+        LOG.info(
+            f"OPENAI Response: {response.status_code}\n {request.url}\nreq:\n{str(request.content)}\n"
+        )
+        return response
+
+
+@lru_cache(maxsize=1)
+def get_graph_config() -> GraphConfig:
+    if not os.path.exists(settings.graph_config_path):
+        raise Exception(f"未找到graph_config配置文件: {settings.graph_config_path}")
+    config_dict = yaml.load_yaml_file(settings.graph_config_path) or {}
+
+    sub = config_dict.get("mtmai_config")
+    return GraphConfig.model_validate(sub)
+
+
+class AgentContext:
+    def __init__(
+        self,
+        *,
+        thread_id: str = None,
+        user_id: str = None,
+        # db_engine: Engine
+    ):
+        self.httpx_session: httpx.Client = None
+        # self.db: Engine = db_engine
+        # self.session: Session = Session(db_engine)
+        # embedding = get_default_embeddings()
+
+        # self.vectorstore = MtmDocStore(session=Session(db_engine), embedding=embedding)
+        # self.kvstore = MtmKvStore(db_engine)
+
+        self.graph_config = get_graph_config()
+        self._mq = None
+        # self.memMq = MemoryMQ()
+        self._thread_id = thread_id
+        self._user_id = user_id
+
+    @property
+    def mq(self):
+        return self._mq
+
+    @property
+    def thread_id(self):
+        if not self._thread_id:
+            self._thread_id = str(uuid.uuid4())
+        return self._thread_id
+
+    @property
+    def user_id(self):
+        return self._user_id
+
+    def set_hatch_context(self, ctx: HatchetContext):
+        self.hatchet_ctx = ctx
+
+    def log(self, lineformat, **kw_args):
+        if self.hatchet_ctx:
+            self.hatchet_ctx.log(
+                lineformat,
+                kw_args,
+            )
+
+        else:
+            LOG.info(lineformat, kw_args)
+
+    def retrive_graph_config(self):
+        return self.graph_config
+
+    def load_doc(self):
+        return self.vectorstore
+
+    async def get_crawai_llm(self, name: str = "chat"):
+        return LLM(
+            model="openai/llama3.1-70b",
+            # temperature=llm_item.temperature or None,
+            base_url="https://llama3-1-70b.lepton.run/api/v1/",
+            api_key="iByWYsIUIBe6qRYBswhLVPRyiVKkYb8r",
+            num_retries=5,
+            # logger_fn=my_custom_logging_fn,
+        )
+
+    async def get_llm_openai(self, llm_config_name: str):
+        llm_item = await self.get_llm_config(llm_config_name)
+
+        base_url = llm_item.base_url
+        model = llm_item.model
+
+        all_llm_providers_prefix = ["together_ai/", "groq/"]
+        for prefix in all_llm_providers_prefix:
+            if model.startswith(prefix):
+                model = model[len(prefix) :]
+                break
+        return ChatOpenAI(
+            base_url=base_url,
+            api_key=llm_item.api_key,
+            model=model,
+            temperature=llm_item.temperature or None,
+            max_tokens=llm_item.max_tokens or None,
+            # 使用自定义 httpx 客户端 方便日志查看
+            http_client=httpx.Client(transport=LoggingTransport()),
+            http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
+        )
+
+    async def ainvoke_model(
+        self,
+        tpl: PromptTemplate,
+        inputs: dict | BaseModel | None,
+        *,
+        tools: list[StructuredTool | dict] = None,
+        structured_output: BaseModel = None,
+        llm_config_name: str = "chat",
+        max_retries: int = 5,
+        sleep_time: int = 3,
+    ):
+        llm_item = await self.get_llm_config(llm_config_name)
+        llm_inst = await self.get_llm_openai(llm_config_name)
+
+        if tools is not None and len(tools) > 0:
+            formatted_tools = [
+                convert_to_openai_function(tool, strict=True) for tool in tools
+            ]
+            all_tool_names = [t["name"] for t in formatted_tools]
+            all_tool_names_str = ", ".join(all_tool_names)
+            if tools and llm_item.llm_type == "llama3.1":
+                # for openai_fun in openai_functions:
+                #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
+                # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
+                toolPrompt = f"""
+    all tools: {all_tool_names_str}
+    [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
+    1. Use the exact OpenAI ChatGPT function calling format.
+    2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
+    3. Only call one function at a time.
+    4. Do not include any additional text with the function call.
+    5. If no function call is needed, respond normally without mentioning functions.
+    6. Only use functions from the provided list of tools.
+    7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
+    8. Ensure all required parameters for the function are included.
+    9. Double-check that the function name and all parameter names exactly match those provided in the function description.
+
+    If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
+    """
+                if "additional_instructions" in tpl.partial_variables:
+                    tpl = tpl.partial(additional_instructions=toolPrompt)
+                else:
+                    tpl.messages.append(
+                        ChatPromptTemplate.from_messages([("system", toolPrompt)])
+                    )
+
+        if isinstance(inputs, BaseModel):
+            inputs = inputs.model_dump()
+        messages = await tpl.ainvoke(inputs)
+        llm_chain = llm_inst
+        if structured_output:
+            llm_chain = llm_chain.with_structured_output(
+                structured_output, include_raw=True
+            )
+        if tools:
+            llm_chain = llm_chain.bind_tools(tools)
+        llm_chain = llm_chain.with_retry(stop_after_attempt=5)
+
+        message_to_post = messages.to_messages()
+
+        for attempt in range(max_retries):
+            try:
+                invoke_result = await ensure_valid_llm_response_v2(
+                    llm_chain, message_to_post
+                )
+                if isinstance(invoke_result, dict) and "raw" in invoke_result:
+                    ai_msg = invoke_result["raw"]
+                else:
+                    ai_msg = invoke_result
+                if tools:
+                    ai_msg = utils.fix_tool_calls(ai_msg)
+
+                # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
+                tcs = ai_msg.tool_calls
+                if tcs:
+                    for tc in tcs:
+                        if tc["name"] not in all_tool_names:
+                            raise ValueError(
+                                f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
+                            )
+                return ai_msg
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    LOG.warning(
+                        f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
+                    )
+                    await asyncio.sleep(sleep_time)
+                else:
+                    LOG.error(f"All {max_retries} attempts failed.")
+                    raise e
+
+    async def ainvoke_model_with_structured_output(
+        self,
+        tpl: PromptTemplate,
+        inputs: dict | BaseModel | None,
+        *,
+        tools: list[StructuredTool | dict] = None,
+        structured_output: BaseModel,
+        llm_config_name: str = "chat",
+        max_retries: int = 5,
+        sleep_time: int = 3,
+    ):
+        llm_item = await self.get_llm_config(llm_config_name)
+        llm_inst = await self.get_llm_openai(llm_config_name)
+
+        if tools is not None and len(tools) > 0:
+            formatted_tools = [
+                convert_to_openai_function(tool, strict=True) for tool in tools
+            ]
+            all_tool_names = [t["name"] for t in formatted_tools]
+            all_tool_names_str = ", ".join(all_tool_names)
+            if tools and llm_item.llm_type == "llama3.1":
+                # for openai_fun in openai_functions:
+                #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
+                # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
+                toolPrompt = f"""
+    all tools: {all_tool_names_str}
+    [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
+    1. Use the exact OpenAI ChatGPT function calling format.
+    2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
+    3. Only call one function at a time.
+    4. Do not include any additional text with the function call.
+    5. If no function call is needed, respond normally without mentioning functions.
+    6. Only use functions from the provided list of tools.
+    7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
+    8. Ensure all required parameters for the function are included.
+    9. Double-check that the function name and all parameter names exactly match those provided in the function description.
+
+    If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
+    """
+                if "additional_instructions" in tpl.input_variables:
+                    tpl = tpl.partial(additional_instructions=toolPrompt)
+                else:
+                    tpl.messages.append(
+                        ChatPromptTemplate.from_messages([("system", toolPrompt)])
+                    )
+
+        if isinstance(inputs, BaseModel):
+            inputs = inputs.model_dump()
+        messages = await tpl.ainvoke(inputs)
+        llm_chain = llm_inst
+        if structured_output:
+            llm_chain = llm_chain.with_structured_output(
+                structured_output, include_raw=True
+            )
+        if tools:
+            llm_chain = llm_chain.bind_tools(tools)
+        llm_chain = llm_chain.with_retry(stop_after_attempt=5)
+
+        message_to_post = messages.to_messages()
+
+        for attempt in range(max_retries):
+            try:
+                invoke_result = await ensure_valid_llm_response_v2(
+                    llm_chain, message_to_post
+                )
+                if isinstance(invoke_result, dict) and "raw" in invoke_result:
+                    ai_msg = invoke_result["raw"]
+                else:
+                    ai_msg = invoke_result
+                if tools:
+                    ai_msg = utils.fix_tool_calls(ai_msg)
+
+                # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
+                # tcs = ai_msg.tool_calls
+                # if tcs:
+                #     for tc in tcs:
+                #         if tc.name not in all_tool_names:
+                #             raise ValueError(
+                #                 f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
+                # )
+                return invoke_result
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    LOG.warning(
+                        f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
+                    )
+                    await asyncio.sleep(sleep_time)
+                else:
+                    LOG.error(f"All {max_retries} attempts failed.")
+                    raise e
+
+    async def stream_messages(
+        self, tpl: ChatPromptTemplate, messages: list[BabylMessage]
+    ):
+        messages2 = await tpl.ainvoke({"messages": messages})
+        # config = {"configurable": {"thread_id": "abc123"}}
+        LOG.info(f"stream_messages: {messages2}")
+        llm_inst = await self.get_llm_openai("chat")
+        async for chunk in llm_inst.astream(
+            messages2,
+            # config,
+        ):
+            if chunk.content:
+                yield chunk.content
+
+    def load_json_response(
+        self, ai_json_resonse_text: str, model_class: Type[BaseModel]
+    ) -> Type[BaseModel]:
+        repaired_json = self.repair_json(ai_json_resonse_text)
+        try:
+            loaded_data = orjson.loads(repaired_json)
+            return make_class(**loaded_data)
+        except Exception as e:
+            LOG.error(f"Error parsing JSON: {str(e)}")
+            raise ValueError(
+                f"Failed to parse JSON and create {model_class.__name__} instance"
+            ) from e
+
+    async def get_db_pool(self):
+        connection_kwargs = {
+            "autocommit": True,
+            "prepare_threshold": 0,
+        }
+        pool = AsyncConnectionPool(
+            conninfo=settings.MTMAI_DATABASE_URL,
+            max_size=20,
+            kwargs=connection_kwargs,
+        )
+        await pool.open()
+        return pool
+
+    async def get_graph_checkpointer(self):
+        return AsyncPostgresSaver(await stepctx.get_db_pool())
+
+    async def get_graph_by_name(self, name: str):
+        if name == "storm":
+            from mtmai.agents.storm import StormGraph
+
+            return StormGraph()
+
+        return None
+
+    async def emit(self, evt_name: str, data: dict):
+        """发送事件"""
+        # await clctx.emitter.emit(evt_name, jsonable_encoder(data))
+        await self.memMq.send(data)
+
+    async def get_next_event(self):
+        """获取下一个事件"""
+        if self._mq is not None and await self._mq.has_events():
+            event = await self._mq.get_next_event()
+            return event
+        return None
+
+
+def init_mtmai_http_context(thread_id: str = None, user_id: str = None):
+    agent_ctx = AgentContext(
+        user_id=user_id,
+        thread_id=thread_id,
+        # db_engine=get_engine(),
+    )
+    context_var.set(agent_ctx)
+
+
+def init_step_context(hatchetCtx: HatchetContext) -> AgentContext:
+    agent_ctx = AgentContext()
+    agent_ctx.hatchet_ctx = hatchetCtx
+    context_var.set(agent_ctx)
+    return agent_ctx
+
+
+def get_step_context() -> AgentContext:
+    try:
+        return context_var.get()
+    except LookupError:
+        raise RuntimeError("get_step_context  error")
+
+
+stepctx: AgentContext = LazyProxy(get_step_context, enable_cache=False)
