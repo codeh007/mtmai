@@ -62,8 +62,8 @@ exclude = [
 [tool.hatch.version]
 source = "vcs"
 
-[tool.hatch.build.hooks.vcs]
-version-file = "mtmairoot/_version.py"
+#[tool.hatch.build.hooks.vcs]
+#version-file = "mtmairoot/_version.py"
 
 # [tool.hatch.build.targets.wheel]
 # packages = ["src"]
