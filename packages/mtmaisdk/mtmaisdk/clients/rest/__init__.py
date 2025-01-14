@@ -245,6 +245,7 @@ from mtmaisdk.clients.rest.models.tool_call_result import ToolCallResult
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
 from mtmaisdk.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmaisdk.clients.rest.models.update_post_request import UpdatePostRequest
+from mtmaisdk.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmaisdk.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest
 from mtmaisdk.clients.rest.models.update_tenant_invite_request import UpdateTenantInviteRequest
 from mtmaisdk.clients.rest.models.update_tenant_request import UpdateTenantRequest

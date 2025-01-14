@@ -26,6 +26,7 @@ from mtmaisdk.clients.rest.models.create_tenant_alert_email_group_request import
 from mtmaisdk.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
 from mtmaisdk.clients.rest.models.create_tenant_request import CreateTenantRequest
 from mtmaisdk.clients.rest.models.reject_invite_request import RejectInviteRequest
+from mtmaisdk.clients.rest.models.site import Site
 from mtmaisdk.clients.rest.models.tenant import Tenant
 from mtmaisdk.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmaisdk.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
@@ -36,6 +37,7 @@ from mtmaisdk.clients.rest.models.tenant_member import TenantMember
 from mtmaisdk.clients.rest.models.tenant_member_list import TenantMemberList
 from mtmaisdk.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmaisdk.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
+from mtmaisdk.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmaisdk.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest
 from mtmaisdk.clients.rest.models.update_tenant_request import UpdateTenantRequest
 
@@ -1743,7 +1745,8 @@ class TenantApi:
     async def site_update(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1756,15 +1759,17 @@ class TenantApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Tenant:
+    ) -> Site:
         """Update tenant
 
         Update an existing site
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param update_tenant_request: The tenant properties to update (required)
-        :type update_tenant_request: UpdateTenantRequest
+        :param site: The site id (required)
+        :type site: str
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1789,7 +1794,8 @@ class TenantApi:
 
         _param = self._site_update_serialize(
             tenant=tenant,
-            update_tenant_request=update_tenant_request,
+            site=site,
+            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1797,7 +1803,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Tenant",
+            '200': "Site",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1816,7 +1822,8 @@ class TenantApi:
     async def site_update_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1829,15 +1836,17 @@ class TenantApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Tenant]:
+    ) -> ApiResponse[Site]:
         """Update tenant
 
         Update an existing site
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param update_tenant_request: The tenant properties to update (required)
-        :type update_tenant_request: UpdateTenantRequest
+        :param site: The site id (required)
+        :type site: str
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1862,7 +1871,8 @@ class TenantApi:
 
         _param = self._site_update_serialize(
             tenant=tenant,
-            update_tenant_request=update_tenant_request,
+            site=site,
+            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1870,7 +1880,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Tenant",
+            '200': "Site",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1889,7 +1899,8 @@ class TenantApi:
     async def site_update_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1909,8 +1920,10 @@ class TenantApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param update_tenant_request: The tenant properties to update (required)
-        :type update_tenant_request: UpdateTenantRequest
+        :param site: The site id (required)
+        :type site: str
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1935,7 +1948,8 @@ class TenantApi:
 
         _param = self._site_update_serialize(
             tenant=tenant,
-            update_tenant_request=update_tenant_request,
+            site=site,
+            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1943,7 +1957,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Tenant",
+            '200': "Site",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1957,7 +1971,8 @@ class TenantApi:
     def _site_update_serialize(
         self,
         tenant,
-        update_tenant_request,
+        site,
+        update_site_request,
         _request_auth,
         _content_type,
         _headers,
@@ -1981,12 +1996,14 @@ class TenantApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if site is not None:
+            _path_params['site'] = site
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if update_tenant_request is not None:
-            _body_params = update_tenant_request
+        if update_site_request is not None:
+            _body_params = update_site_request
 
 
         # set the HTTP header `Accept`
@@ -2020,7 +2037,7 @@ class TenantApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/tenants/{tenant}/sites',
+            resource_path='/api/v1/tenants/{tenant}/sites/{site}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
