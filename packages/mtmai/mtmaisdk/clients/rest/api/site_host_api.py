@@ -17,10 +17,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field
+from typing import Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.create_site_host_request import CreateSiteHostRequest
 from mtmaisdk.clients.rest.models.site_host import SiteHost
 from mtmaisdk.clients.rest.models.site_host_list import SiteHostList
+from mtmaisdk.clients.rest.models.site_host_list_request import SiteHostListRequest
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -628,6 +630,7 @@ class SiteHostApi:
     async def site_host_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_host_list_request: Optional[SiteHostListRequest] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -643,10 +646,12 @@ class SiteHostApi:
     ) -> SiteHostList:
         """site_host_list
 
-        Get the sites for the tenant
+        Get the site-hosts for the tenant
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_host_list_request:
+        :type site_host_list_request: SiteHostListRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -671,6 +676,7 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
+            site_host_list_request=site_host_list_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -698,6 +704,7 @@ class SiteHostApi:
     async def site_host_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_host_list_request: Optional[SiteHostListRequest] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -713,10 +720,12 @@ class SiteHostApi:
     ) -> ApiResponse[SiteHostList]:
         """site_host_list
 
-        Get the sites for the tenant
+        Get the site-hosts for the tenant
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_host_list_request:
+        :type site_host_list_request: SiteHostListRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -741,6 +750,7 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
+            site_host_list_request=site_host_list_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -768,6 +778,7 @@ class SiteHostApi:
     async def site_host_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_host_list_request: Optional[SiteHostListRequest] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -783,10 +794,12 @@ class SiteHostApi:
     ) -> RESTResponseType:
         """site_host_list
 
-        Get the sites for the tenant
+        Get the site-hosts for the tenant
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_host_list_request:
+        :type site_host_list_request: SiteHostListRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -811,6 +824,7 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
+            site_host_list_request=site_host_list_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -833,6 +847,7 @@ class SiteHostApi:
     def _site_host_list_serialize(
         self,
         tenant,
+        site_host_list_request,
         _request_auth,
         _content_type,
         _headers,
@@ -860,6 +875,8 @@ class SiteHostApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
+        if site_host_list_request is not None:
+            _body_params = site_host_list_request
 
 
         # set the HTTP header `Accept`
@@ -870,6 +887,19 @@ class SiteHostApi:
                 ]
             )
 
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
 
         # authentication setting
         _auth_settings: List[str] = [

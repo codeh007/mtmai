@@ -165,6 +165,7 @@ from mtmaisdk.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmaisdk.clients.rest.models.site import Site
 from mtmaisdk.clients.rest.models.site_host import SiteHost
 from mtmaisdk.clients.rest.models.site_host_list import SiteHostList
+from mtmaisdk.clients.rest.models.site_host_list_request import SiteHostListRequest
 from mtmaisdk.clients.rest.models.site_list import SiteList
 from mtmaisdk.clients.rest.models.slack_webhook import SlackWebhook
 from mtmaisdk.clients.rest.models.step import Step
