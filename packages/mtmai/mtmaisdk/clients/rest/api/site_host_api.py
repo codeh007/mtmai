@@ -16,13 +16,12 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictInt, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.create_site_host_request import CreateSiteHostRequest
 from mtmaisdk.clients.rest.models.site_host import SiteHost
 from mtmaisdk.clients.rest.models.site_host_list import SiteHostList
-from mtmaisdk.clients.rest.models.site_host_list_request import SiteHostListRequest
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -630,7 +629,9 @@ class SiteHostApi:
     async def site_host_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        site_host_list_request: Optional[SiteHostListRequest] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
+        host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
+        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -650,8 +651,12 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param site_host_list_request:
-        :type site_host_list_request: SiteHostListRequest
+        :param offset: The number to skip
+        :type offset: int
+        :param host: The host name
+        :type host: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -676,7 +681,9 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
-            site_host_list_request=site_host_list_request,
+            offset=offset,
+            host=host,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -704,7 +711,9 @@ class SiteHostApi:
     async def site_host_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        site_host_list_request: Optional[SiteHostListRequest] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
+        host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
+        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -724,8 +733,12 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param site_host_list_request:
-        :type site_host_list_request: SiteHostListRequest
+        :param offset: The number to skip
+        :type offset: int
+        :param host: The host name
+        :type host: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -750,7 +763,9 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
-            site_host_list_request=site_host_list_request,
+            offset=offset,
+            host=host,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -778,7 +793,9 @@ class SiteHostApi:
     async def site_host_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        site_host_list_request: Optional[SiteHostListRequest] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
+        host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
+        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -798,8 +815,12 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param site_host_list_request:
-        :type site_host_list_request: SiteHostListRequest
+        :param offset: The number to skip
+        :type offset: int
+        :param host: The host name
+        :type host: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -824,7 +845,9 @@ class SiteHostApi:
 
         _param = self._site_host_list_serialize(
             tenant=tenant,
-            site_host_list_request=site_host_list_request,
+            offset=offset,
+            host=host,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -847,7 +870,9 @@ class SiteHostApi:
     def _site_host_list_serialize(
         self,
         tenant,
-        site_host_list_request,
+        offset,
+        host,
+        site_id,
         _request_auth,
         _content_type,
         _headers,
@@ -872,11 +897,21 @@ class SiteHostApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if offset is not None:
+            
+            _query_params.append(('offset', offset))
+            
+        if host is not None:
+            
+            _query_params.append(('host', host))
+            
+        if site_id is not None:
+            
+            _query_params.append(('siteId', site_id))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if site_host_list_request is not None:
-            _body_params = site_host_list_request
 
 
         # set the HTTP header `Accept`
@@ -887,19 +922,6 @@ class SiteHostApi:
                 ]
             )
 
-        # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params['Content-Type'] = _content_type
-        else:
-            _default_content_type = (
-                self.api_client.select_header_content_type(
-                    [
-                        'application/json'
-                    ]
-                )
-            )
-            if _default_content_type is not None:
-                _header_params['Content-Type'] = _default_content_type
 
         # authentication setting
         _auth_settings: List[str] = [
