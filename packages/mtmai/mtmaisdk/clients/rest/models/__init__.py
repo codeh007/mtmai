@@ -131,7 +131,6 @@ from mtmaisdk.clients.rest.models.operation_enum import OperationEnum
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
 from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
-from mtmaisdk.clients.rest.models.post_list_request import PostListRequest
 from mtmaisdk.clients.rest.models.postiz_channel import PostizChannel
 from mtmaisdk.clients.rest.models.postiz_state import PostizState
 from mtmaisdk.clients.rest.models.prompt import Prompt

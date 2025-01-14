@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field
+from typing import Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.post_list import PostList
 
@@ -42,6 +43,7 @@ class PostsApi:
     async def post_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -61,6 +63,8 @@ class PostsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -85,6 +89,7 @@ class PostsApi:
 
         _param = self._post_list_serialize(
             tenant=tenant,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -112,6 +117,7 @@ class PostsApi:
     async def post_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -131,6 +137,8 @@ class PostsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -155,6 +163,7 @@ class PostsApi:
 
         _param = self._post_list_serialize(
             tenant=tenant,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -182,6 +191,7 @@ class PostsApi:
     async def post_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -201,6 +211,8 @@ class PostsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -225,6 +237,7 @@ class PostsApi:
 
         _param = self._post_list_serialize(
             tenant=tenant,
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -247,6 +260,7 @@ class PostsApi:
     def _post_list_serialize(
         self,
         tenant,
+        site_id,
         _request_auth,
         _content_type,
         _headers,
@@ -271,6 +285,10 @@ class PostsApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if site_id is not None:
+            
+            _query_params.append(('siteId', site_id))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -313,6 +331,7 @@ class PostsApi:
     @validate_call
     async def post_list_public(
         self,
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -330,6 +349,8 @@ class PostsApi:
 
         Get the posts for the site
 
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -353,6 +374,7 @@ class PostsApi:
         """ # noqa: E501
 
         _param = self._post_list_public_serialize(
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -379,6 +401,7 @@ class PostsApi:
     @validate_call
     async def post_list_public_with_http_info(
         self,
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -396,6 +419,8 @@ class PostsApi:
 
         Get the posts for the site
 
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -419,6 +444,7 @@ class PostsApi:
         """ # noqa: E501
 
         _param = self._post_list_public_serialize(
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -445,6 +471,7 @@ class PostsApi:
     @validate_call
     async def post_list_public_without_preload_content(
         self,
+        site_id: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -462,6 +489,8 @@ class PostsApi:
 
         Get the posts for the site
 
+        :param site_id: The site id
+        :type site_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -485,6 +514,7 @@ class PostsApi:
         """ # noqa: E501
 
         _param = self._post_list_public_serialize(
+            site_id=site_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -506,6 +536,7 @@ class PostsApi:
 
     def _post_list_public_serialize(
         self,
+        site_id,
         _request_auth,
         _content_type,
         _headers,
@@ -528,6 +559,10 @@ class PostsApi:
 
         # process the path parameters
         # process the query parameters
+        if site_id is not None:
+            
+            _query_params.append(('siteId', site_id))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
