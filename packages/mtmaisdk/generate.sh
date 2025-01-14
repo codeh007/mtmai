@@ -1,11 +1,9 @@
 #!/bin/bash
-#
-# Builds python auto-generated protobuf files
 
-set -eux
+set -e
 
 ROOT_DIR=$(pwd)
-PROJECT_DIR=$(realpath ../..)
+PROJECT_DIR=$(realpath ../../../gomtm)
 GEN_DIR=$(realpath ./mtmaisdk)
 
 ROOT_DIR=$(pwd)
@@ -15,28 +13,13 @@ echo "生成 mtm python sdk PROJECT_DIR:${PROJECT_DIR}, GEN_DIR:${GEN_DIR}"
 # deps
 version=7.3.0
 
-openapi-generator-cli version || npm install @openapitools/openapi-generator-cli -g
-
-# if [ "$(openapi-generator-cli version)" != "$version" ]; then
-#   version-manager set "$version"
-# fi
-
-# generate deps from hatchet repo
-# cd hatchet/ && sh ./hack/oas/generate-server.sh && cd $ROOT_DIR
-
-# generate python rest client
+command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
 
 dst_dir=./mtmaisdk/clients/rest
 
 mkdir -p $dst_dir
 
 tmp_dir=./tmp
-
-# echo "pwd: $(pwd)"
-# echo "bin: $(ls -la ./bin)"
-
-
-
 # generate into tmp folder
 openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ./tmp --skip-validate-spec \
     --library asyncio \
@@ -69,9 +52,6 @@ cp $tmp_dir/mtmaisdk/clients/rest/api/__init__.py $dst_dir/api/__init__.py
 # remove tmp folder
 rm -rf $tmp_dir
 
-
-
-echo "GEN_DIR:${GEN_DIR}"
 python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts dispatcher.proto
 python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/events --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts events.proto
 python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/workflows --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts workflows.proto
@@ -85,11 +65,3 @@ else
     # Linux and others
     find ${GEN_DIR}/contracts -type f -name '*_grpc.py' -print0 | xargs -0 sed -i 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
 fi
-
-# ensure that pre-commit is applied without errors
-# pre-commit run --all-files || pre-commit run --all-files
-
-# apply patch to openapi-generator generated code
-
-# echo "pwd: $(pwd), ROOT_DIR:${ROOT_DIR}"
-# patch -p1 --no-backup-if-mismatch <${ROOT_DIR}/openapi_patch.patch
