@@ -31,6 +31,7 @@ from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi
 from mtmaisdk.clients.rest.api.prompt_api import PromptApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
+from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
 from mtmaisdk.clients.rest.api.subscribe_api import SubscribeApi
 from mtmaisdk.clients.rest.api.tool_api import ToolApi
 from mtmaisdk.clients.rest.api.tools_api import ToolsApi

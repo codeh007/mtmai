@@ -47,6 +47,7 @@ from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi
 from mtmaisdk.clients.rest.api.prompt_api import PromptApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
+from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
 from mtmaisdk.clients.rest.api.subscribe_api import SubscribeApi
 from mtmaisdk.clients.rest.api.tool_api import ToolApi
 from mtmaisdk.clients.rest.api.tools_api import ToolsApi
@@ -131,6 +132,7 @@ from mtmaisdk.clients.rest.models.create_event_request import CreateEventRequest
 from mtmaisdk.clients.rest.models.create_post_request import CreatePostRequest
 from mtmaisdk.clients.rest.models.create_pull_request_from_step_run import CreatePullRequestFromStepRun
 from mtmaisdk.clients.rest.models.create_sns_integration_request import CreateSNSIntegrationRequest
+from mtmaisdk.clients.rest.models.create_site_host_request import CreateSiteHostRequest
 from mtmaisdk.clients.rest.models.create_site_request import CreateSiteRequest
 from mtmaisdk.clients.rest.models.create_tenant_alert_email_group_request import CreateTenantAlertEmailGroupRequest
 from mtmaisdk.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
@@ -212,6 +214,8 @@ from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmaisdk.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmaisdk.clients.rest.models.site import Site
+from mtmaisdk.clients.rest.models.site_host import SiteHost
+from mtmaisdk.clients.rest.models.site_host_list import SiteHostList
 from mtmaisdk.clients.rest.models.site_list import SiteList
 from mtmaisdk.clients.rest.models.slack_webhook import SlackWebhook
 from mtmaisdk.clients.rest.models.step import Step
