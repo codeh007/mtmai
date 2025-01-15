@@ -19,7 +19,7 @@ classifiers = ["Private :: Do Not Upload"]
 
 [tool.uv.sources]
 mtmai = { workspace = true }
-mtmaisdk = { workspace = true }
+# mtmaisdk = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
