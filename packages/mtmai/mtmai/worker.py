@@ -1,7 +1,5 @@
 import asyncio
 import os
-import sys
-from time import sleep
 
 import structlog
 from mtmaisdk import ClientConfig, Hatchet, loader
@@ -11,7 +9,12 @@ from mtmaisdk.clients.rest.configuration import Configuration
 
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev
-from packages.mtmai.mtmaisdk.clients.rest.api import mtmai_api
+
+# import sys
+# from time import sleep
+
+
+# from packages.mtmai.mtmaisdk.clients.rest.api import mtmai_api
 
 LOG = structlog.get_logger()
 
@@ -165,4 +168,5 @@ class WorkerApp:
         await worker.async_start()
 
         while True:
+            await asyncio.sleep(1)
             await asyncio.sleep(1)

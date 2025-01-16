@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
       "cwd": "${workspaceFolder}",
-      "args": ["worker"],
+      "args": ["worker", "--url", "http://localhost:8383"],
       "jinja": true,
       "justMyCode": false,
       "envFile": "${workspaceFolder}/.env",
