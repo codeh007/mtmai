@@ -29,15 +29,7 @@ def main():
         from mtmai.worker import WorkerApp
 
         worker_app = WorkerApp(url)
-        asyncio.run(worker_app.deploy_mtmai_workers(url))
-
-    # @cli.command()
-    # @click.option("--url", required=False)
-    # def worker2(url):
-    #     from mtmai.worker import WorkerApp
-
-    #     worker_app = WorkerApp(url)
-    #     asyncio.run(worker_app.deploy_mtmai_workers(url))
+        asyncio.run(worker_app.deploy_mtmai_workers())
 
     cli()
 

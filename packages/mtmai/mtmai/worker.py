@@ -11,76 +11,79 @@ from mtmaisdk.clients.rest.configuration import Configuration
 
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev
+from packages.mtmai.mtmaisdk.clients.rest.api import mtmai_api
 
 LOG = structlog.get_logger()
 
 
-def new_hatchat(backend_url: str | None) -> Hatchet:
-    maxRetry = 10
-    interval = 5
-    if backend_url:
-        settings.GOMTM_URL = backend_url
+# def new_hatchat(backend_url: str | None) -> Hatchet:
+#     maxRetry = 10
+#     interval = 5
+#     if backend_url:
+#         settings.GOMTM_URL = backend_url
 
-    for i in range(maxRetry):
-        try:
-            LOG.info("worker 连接服务器", backend_url=backend_url)
+#     for i in range(maxRetry):
+#         try:
+#             LOG.info("worker 连接服务器", backend_url=backend_url)
             
             
             
-            # 不验证 tls 因后端目前 证数 是自签名的。
-            os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
-            # if not settings.HATCHET_CLIENT_TOKEN:
-            #     raise ValueError("HATCHET_CLIENT_TOKEN is not set")
-            os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN or ""
+#             # 不验证 tls 因后端目前 证数 是自签名的。
+#             os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
+#             # if not settings.HATCHET_CLIENT_TOKEN:
+#             #     raise ValueError("HATCHET_CLIENT_TOKEN is not set")
+#             os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN or ""
 
-            config_loader = loader.ConfigLoader(".")
-            cc = config_loader.load_client_config(
-                ClientConfig(
-                    # 提示 client token 本身已经包含了服务器地址（host_port）信息
-                    server_url=settings.GOMTM_URL,
-                    host_port="0.0.0.0:7070",
-                    tls_config=loader.ClientTLSConfig(
-                        tls_strategy="none",
-                        cert_file="None",
-                        key_file="None",
-                        ca_file="None",
-                        server_name="localhost",
-                    ),
-                )
-            )
+#             config_loader = loader.ConfigLoader(".")
+#             cc = config_loader.load_client_config(
+#                 ClientConfig(
+#                     # 提示 client token 本身已经包含了服务器地址（host_port）信息
+#                     server_url=settings.GOMTM_URL,
+#                     host_port="0.0.0.0:7070",
+#                     tls_config=loader.ClientTLSConfig(
+#                         tls_strategy="none",
+#                         cert_file="None",
+#                         key_file="None",
+#                         ca_file="None",
+#                         server_name="localhost",
+#                     ),
+#                 )
+#             )
 
-            # 原本的加载器 绑定了 jwt 中的信息，这里需要重新设置
-            wfapp = Hatchet.from_config(cc, debug=True)
+#             # 原本的加载器 绑定了 jwt 中的信息，这里需要重新设置
+#             wfapp = Hatchet.from_config(cc, debug=True)
 
-            return wfapp
-        except Exception as e:
-            LOG.error(f"failed to create hatchet: {e}")
-            if i == maxRetry - 1:
-                sys.exit(1)
-            sleep(interval)
-    raise ValueError("failed to create hatchet")
+#             return wfapp
+#         except Exception as e:
+#             LOG.error(f"failed to create hatchet: {e}")
+#             if i == maxRetry - 1:
+#                 sys.exit(1)
+#             sleep(interval)
+#     raise ValueError("failed to create hatchet")
 
 
-wfapp: Hatchet = new_hatchat(settings.GOMTM_URL)
+# wfapp: Hatchet = new_hatchat(settings.GOMTM_URL)
 
 
 class WorkerApp:
     def __init__(self, backend_url: str | None):
         self.backend_url = backend_url
+        if not self.backend_url:
+            raise ValueError("backend_url is not set")
         # self.wfapp = new_hatchat(backend_url)
 
     async def setup(self):
         
         LOG.info("开始加载配置")
             
-        # apiClient= ApiClient(
-        #     configuration=Configuration(
-        #         host=self.backend_url,
-        #     )
-        # )
-        # mtmaiapi = MtmaiApi(apiClient)
-        # resonse = await mtmaiapi.mtmai_worker_config()
-        # LOG.info("加载配置", resonse=resonse)
+        api_client= ApiClient(
+            configuration=Configuration(
+                host=self.backend_url,
+            )
+        )
+        mtmaiapi = MtmaiApi(api_client)
+        resonse = await mtmaiapi.mtmai_worker_config()
+        LOG.info("加载配置", resonse=resonse)
         rest= RestApi(settings.GOMTM_URL, settings.HATCHET_CLIENT_TOKEN, settings.HATCHET_CLIENT_TENANT_ID)
         response = await self.wfapp.rest.aio.mtmai_api.mtmai_worker_config()
         LOG.info("加载配置", response=response)
