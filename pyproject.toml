@@ -3,8 +3,8 @@ name = "mtmairoot"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "browser-use>=0.1.22",
     "mtmai",
-    "mtmaisdk",
     "nanoid>=2.0.0",
     "nest-asyncio>=1.6.0",
     "pgvector>=0.3.6",
@@ -14,12 +14,10 @@ dependencies = [
     "structlog>=24.4.0",
     "urllib3>=2.3.0",
 ]
-# 私有项目,禁止发布
 classifiers = ["Private :: Do Not Upload"]
 
 [tool.uv.sources]
 mtmai = { workspace = true }
-# mtmaisdk = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -34,18 +32,11 @@ exclude = [
     "packages/mtmaiui-backup",
     "packages/mtxuilib-backup",
     "packages/mtmaiui",
-    "packages/mtxedgev2",
-    "packages/gomtm-cli",
-    "packages/testmtm",
 ]
 
-# [build-system]
-# requires = ["hatchling"]
-# build-backend = "hatchling.build"
-
 [tool.setuptools]
-packages = ["mtmairoot"]  # 明确指定包路径
-package-dir = {"" = "."}  # 设置包的根目录
+packages = ["mtmairoot"]
+package-dir = {"" = "."}
 
 
 [build-system]
@@ -93,13 +84,3 @@ dev-dependencies = [
     "pytest-mock==3.14.0",
     "pylint>=3.2.5",
 ]
-# 明确使用跟目录下的venv,否则在子项目安装依赖时会在子项目目录下创建venv
-# venv-path = "../../.venv"
-
-# [tool.poe.tasks]
-# pylint-local = "pylint scraperaphai/**/*.py"
-# pylint-ci = "pylint --disable=C0114,C0115,C0116 --exit-zero scrapegraphai/**/*.py"
-
-
-# [tool.uv.sources]
-

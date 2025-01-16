@@ -49,9 +49,7 @@ dependencies = [
     # "docling>=2.14.0",
     "orjson>=3.10.1",
     "sqlmodel>=0.0.22",
-    "mtmaisdk",
     "nanoid>=2.0.0",
-
     "opentelemetry-api>=1.28.0",
     "opentelemetry-sdk>=1.28.0",
     "opentelemetry-instrumentation>=0.49b0",
@@ -72,6 +70,7 @@ dependencies = [
     "cel-python>=0.1.5",
     "python-dateutil>=2.9.0.post0",
     "loguru>=0.7.3",
+    "browser-use>=0.1.22",
 ]
 
 license = "MIT"
@@ -132,7 +131,6 @@ build-backend = "hatchling.build"
 packages = ["mtmai"]
 exclude = [
     "tests/**",
-    "examples/**",
 ]
 
 [tool.hatch.version]
@@ -151,6 +149,7 @@ include = [
     "README.md",
     "LICENSE",
 ]
+packages = ["mtmai"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -169,12 +168,6 @@ dev-dependencies = [
     "pytest-mock==3.14.0",
     "pylint>=3.2.5",
 ]
-# 明确使用跟目录下的venv,否则在子项目安装依赖时会在子项目目录下创建venv
-# venv-path = "../../.venv"
-
-# [tool.poe.tasks]
-# pylint-local = "pylint scraperaphai/**/*.py"
-# pylint-ci = "pylint --disable=C0114,C0115,C0116 --exit-zero scrapegraphai/**/*.py"
 
 
 [tool.uv.sources]

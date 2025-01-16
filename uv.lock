@@ -16,7 +16,6 @@ resolution-markers = [
 members = [
     "mtmai",
     "mtmairoot",
-    "mtmaisdk",
 ]
 
 [[package]]
@@ -354,6 +353,32 @@ wheels = [
 ]
 
 [[package]]
+name = "browser-use"
+version = "0.1.22"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "httpx" },
+    { name = "langchain" },
+    { name = "langchain-anthropic" },
+    { name = "langchain-aws" },
+    { name = "langchain-fireworks" },
+    { name = "langchain-google-genai" },
+    { name = "langchain-openai" },
+    { name = "maincontentextractor" },
+    { name = "playwright" },
+    { name = "posthog" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ef/e6/971b6b925058757a859711085b32750454f9ddc93ed2c836afe844e5407f/browser_use-0.1.22.tar.gz", hash = "sha256:e0f5880dca3255dacf1e2b23dbfadbcda20a0490e55eaf6485ee485695d67713", size = 262327 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/0c/1b6a7d2f12dd2d1198bfc951df265147efb59e0dcfc90f49c08d572012f7/browser_use-0.1.22-py3-none-any.whl", hash = "sha256:e3ee0ce2fed808aabff7ce333e0860294f50a86105f71347f1e40e8efc92889f", size = 64859 },
+]
+
+[[package]]
 name = "browserbase"
 version = "1.0.5"
 source = { registry = "https://pypi.org/simple" }
@@ -656,6 +681,20 @@ wheels = [
 ]
 
 [[package]]
+name = "courlan"
+version = "1.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "babel" },
+    { name = "tld" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6f/54/6d6ceeff4bed42e7a10d6064d35ee43a810e7b3e8beb4abeae8cff4713ae/courlan-1.3.2.tar.gz", hash = "sha256:0b66f4db3a9c39a6e22dd247c72cfaa57d68ea660e94bb2c84ec7db8712af190", size = 206382 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/ca/6a667ccbe649856dcd3458bab80b016681b274399d6211187c6ab969fc50/courlan-1.3.2-py3-none-any.whl", hash = "sha256:d0dab52cf5b5b1000ee2839fbc2837e93b2514d3cb5bb61ae158a55b7a04c6be", size = 33848 },
+]
+
+[[package]]
 name = "crewai"
 version = "0.95.0"
 source = { registry = "https://pypi.org/simple" }
@@ -737,6 +776,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/64/a4/f71d9cf3a5ac257c993b5ca3f93df5f7fb395c725e7f1e6479d2514173c3/dataclasses_json-0.6.7.tar.gz", hash = "sha256:b6b3e528266ea45b9535223bc53ca645f5208833c29229e847b3f26a1cc55fc0", size = 32227 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c3/be/d0d44e092656fe7a06b55e6103cbce807cdbdee17884a5367c68c9860853/dataclasses_json-0.6.7-py3-none-any.whl", hash = "sha256:0dbf33f26c8d5305befd61b39d2b3414e8a407bedc2834dea9b8d642666fb40a", size = 28686 },
+]
+
+[[package]]
+name = "dateparser"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+    { name = "pytz" },
+    { name = "regex" },
+    { name = "tzlocal" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1a/b2/f6b29ab17d7959eb1a0a5c64f5011dc85051ad4e25e401cbddcc515db00f/dateparser-1.2.0.tar.gz", hash = "sha256:7975b43a4222283e0ae15be7b4999d08c9a70e2d378ac87385b1ccf2cffbbb30", size = 307260 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/29/db12aa4dda81580be1999824a689bd52aa40061fc12c9ccdc3feab5ea718/dateparser-1.2.0-py2.py3-none-any.whl", hash = "sha256:0b21ad96534e562920a0083e97fd45fa959882d4162acc358705144520a35830", size = 294995 },
 ]
 
 [[package]]
@@ -1480,6 +1534,22 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/1a/43/e1d53588561e533212117750ee79ad0ba02a41f52a08c1df3396bd466c05/html2text-2024.2.26.tar.gz", hash = "sha256:05f8e367d15aaabc96415376776cdd11afd5127a77fce6e36afc60c563ca2c32", size = 56527 }
 
 [[package]]
+name = "htmldate"
+version = "1.9.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "charset-normalizer" },
+    { name = "dateparser" },
+    { name = "lxml" },
+    { name = "python-dateutil" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a5/26/aaae4cab984f0b7dd0f5f1b823fa2ed2fd4a2bb50acd5bd2f0d217562678/htmldate-1.9.3.tar.gz", hash = "sha256:ac0caf4628c3ded4042011e2d60dc68dfb314c77b106587dd307a80d77e708e9", size = 44913 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/05/49/8872130016209c20436ce0c1067de1cf630755d0443d068a5bc17fa95015/htmldate-1.9.3-py3-none-any.whl", hash = "sha256:3fadc422cf3c10a5cdb5e1b914daf37ec7270400a80a1b37e2673ff84faaaff8", size = 31565 },
+]
+
+[[package]]
 name = "httpcore"
 version = "1.0.7"
 source = { registry = "https://pypi.org/simple" }
@@ -1884,6 +1954,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/59/73/fa26bbb747a9ea4fca6b01453aa22990d52ab62dd61384f1ac0dc9d4e7ba/jupyterlab_widgets-3.0.13.tar.gz", hash = "sha256:a2966d385328c1942b683a8cd96b89b8dd82c8b8f81dda902bb2bc06d46f5bed", size = 203556 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl", hash = "sha256:e3cda2c233ce144192f1e29914ad522b2f4c40e77214b0cc97377ca3d323db54", size = 214392 },
+]
+
+[[package]]
+name = "justext"
+version = "3.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml", extra = ["html-clean"] },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b1/59/93ce612fce25c274efc88ec4d65963ce80fce96b9048e9fc1e430d893a9e/justext-3.0.1.tar.gz", hash = "sha256:b6ed2fb6c5d21618e2e34b2295c4edfc0bcece3bd549ed5c8ef5a8d20f0b3451", size = 828398 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/30/2cd44d6cc7541d5a68848250bf2f12c588631f6ff4461421fee34f9b619e/jusText-3.0.1-py2.py3-none-any.whl", hash = "sha256:e0fb882dd7285415709f4b7466aed23d6b98b7b89404c36e8a2e730facfed02b", size = 837839 },
 ]
 
 [[package]]
@@ -2378,6 +2460,37 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/db/214290d58ad68c587bd5d6af3d34e56830438733d0d0856c0275fde43652/lxml-5.3.0-cp313-cp313-win_amd64.whl", hash = "sha256:406246b96d552e0503e17a1006fd27edac678b3fcc9f1be71a2f94b4ff61528d", size = 3814417 },
 ]
 
+[package.optional-dependencies]
+html-clean = [
+    { name = "lxml-html-clean" },
+]
+
+[[package]]
+name = "lxml-html-clean"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/81/f2/fe319e3c5cb505a361b95d1e0d0d793fe28d4dcc2fc39d3cae9324dc4233/lxml_html_clean-0.4.1.tar.gz", hash = "sha256:40c838bbcf1fc72ba4ce811fbb3135913017b27820d7c16e8bc412ae1d8bc00b", size = 21378 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/ba/2af7a60b45bf21375e111c1e2d5d721108d06c80e3d9a3cc1d767afe1731/lxml_html_clean-0.4.1-py3-none-any.whl", hash = "sha256:b704f2757e61d793b1c08bf5ad69e4c0b68d6696f4c3c1429982caf90050bcaf", size = 14114 },
+]
+
+[[package]]
+name = "maincontentextractor"
+version = "0.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "html2text" },
+    { name = "trafilatura" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/de/634b620e845f48bf27cbe66816e60f0fdb12414f77c8916af60aec508b0d/MainContentExtractor-0.0.4.tar.gz", hash = "sha256:697acc05909fb2f786d9cf7d4ff5bfbf14e4c3359c3a6eadc7ed4403fc2e66e5", size = 5046 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/62/32c33101b179d373d753d7c892b19f2ec22978b6c3c36d17a4a61d2169b6/MainContentExtractor-0.0.4-py3-none-any.whl", hash = "sha256:77684179436e28eb2e19be26657cb2bbd7c1f9213a2c3ee163a8f9dfbca64107", size = 5716 },
+]
+
 [[package]]
 name = "markdown-it-py"
 version = "3.0.0"
@@ -2616,14 +2729,21 @@ name = "mtmai"
 version = "0.6.1"
 source = { editable = "packages/mtmai" }
 dependencies = [
+    { name = "aiohttp" },
+    { name = "aiohttp-retry" },
+    { name = "aiostream" },
     { name = "async-timeout" },
     { name = "beautifulsoup4" },
+    { name = "browser-use" },
+    { name = "cel-python" },
     { name = "click" },
     { name = "crewai" },
     { name = "fastapi" },
     { name = "fastembed" },
     { name = "free-proxy" },
     { name = "googlesearch-python" },
+    { name = "grpcio" },
+    { name = "grpcio-tools" },
     { name = "html2text" },
     { name = "langchain" },
     { name = "langchain-aws" },
@@ -2636,13 +2756,24 @@ dependencies = [
     { name = "langgraph-checkpoint-postgres" },
     { name = "lazify" },
     { name = "litellm" },
+    { name = "loguru" },
     { name = "minify-html" },
-    { name = "mtmaisdk" },
     { name = "nanoid" },
+    { name = "nest-asyncio" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-distro" },
+    { name = "opentelemetry-exporter-otlp" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-sdk" },
     { name = "orjson" },
     { name = "pandas" },
     { name = "playwright" },
+    { name = "prometheus-client" },
+    { name = "protobuf" },
+    { name = "python-dateutil" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "qdrant-client" },
     { name = "scrapegraph-py" },
     { name = "scrapegraphai" },
@@ -2650,6 +2781,7 @@ dependencies = [
     { name = "simpleeval" },
     { name = "sqlmodel" },
     { name = "structlog" },
+    { name = "tenacity" },
     { name = "tiktoken" },
     { name = "tqdm" },
     { name = "transformers" },
@@ -2699,10 +2831,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", specifier = ">=3.10.5" },
+    { name = "aiohttp-retry", specifier = ">=2.8.3" },
+    { name = "aiostream", specifier = ">=0.5.2" },
     { name = "async-timeout", specifier = ">=4.0.3" },
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
+    { name = "browser-use", specifier = ">=0.1.22" },
     { name = "browserbase", marker = "extra == 'more-browser-options'", specifier = ">=0.3.0" },
     { name = "burr", extras = ["start"], marker = "extra == 'burr'", specifier = "==0.22.1" },
+    { name = "cel-python", specifier = ">=0.1.5" },
     { name = "click", specifier = ">=8.1.7,<9" },
     { name = "crewai", specifier = ">=0.86.0" },
     { name = "fastapi", specifier = ">=0.115.6" },
@@ -2711,6 +2848,8 @@ requires-dist = [
     { name = "furo", marker = "extra == 'docs'", specifier = "==2024.5.6" },
     { name = "googlesearch-python", specifier = ">=1.2.5" },
     { name = "graphviz", marker = "extra == 'more-semantic-options'", specifier = ">=0.20.3" },
+    { name = "grpcio", specifier = ">=1.68.1" },
+    { name = "grpcio-tools", specifier = ">=1.68.1" },
     { name = "html2text", specifier = ">=2024.2.26" },
     { name = "ipywidgets", marker = "extra == 'screenshot-scraper'", specifier = ">=8.1.0" },
     { name = "langchain", specifier = ">=0.3.0" },
@@ -2731,16 +2870,27 @@ requires-dist = [
     { name = "langgraph-checkpoint-postgres", specifier = ">=2.0.9" },
     { name = "lazify", specifier = ">=0.4.0" },
     { name = "litellm", specifier = ">=1.56.5" },
+    { name = "loguru", specifier = ">=0.7.3" },
     { name = "matplotlib", marker = "extra == 'screenshot-scraper'", specifier = ">=3.7.2" },
     { name = "minify-html", specifier = ">=0.15.0" },
-    { name = "mtmaisdk", editable = "packages/mtmaisdk" },
     { name = "nanoid", specifier = ">=2.0.0" },
+    { name = "nest-asyncio", specifier = ">=1.6.0" },
+    { name = "opentelemetry-api", specifier = ">=1.28.0" },
+    { name = "opentelemetry-distro", specifier = ">=0.49b0" },
+    { name = "opentelemetry-exporter-otlp", specifier = ">=1.28.0" },
+    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.28.0" },
+    { name = "opentelemetry-instrumentation", specifier = ">=0.49b0" },
+    { name = "opentelemetry-sdk", specifier = ">=1.28.0" },
     { name = "orjson", specifier = ">=3.10.1" },
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "pillow", marker = "extra == 'screenshot-scraper'", specifier = ">=10.4.0" },
     { name = "playwright", specifier = ">=1.43.0" },
+    { name = "prometheus-client", specifier = ">=0.21.1" },
+    { name = "protobuf", specifier = ">=5.29.1" },
+    { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "qdrant-client", specifier = ">=1.11.3" },
     { name = "scrapegraph-py", specifier = ">=1.7.0" },
     { name = "scrapegraphai", specifier = ">=1.33.3" },
@@ -2750,6 +2900,7 @@ requires-dist = [
     { name = "sqlmodel", specifier = ">=0.0.22" },
     { name = "structlog", specifier = ">=24.4.0" },
     { name = "surya-ocr", marker = "extra == 'screenshot-scraper'", specifier = ">=0.5.0" },
+    { name = "tenacity", specifier = ">=8.4.1" },
     { name = "tiktoken", specifier = ">=0.7" },
     { name = "tqdm", specifier = ">=4.66.4" },
     { name = "transformers", specifier = ">=4.44.2" },
@@ -2772,8 +2923,8 @@ name = "mtmairoot"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "browser-use" },
     { name = "mtmai" },
-    { name = "mtmaisdk" },
     { name = "nanoid" },
     { name = "nest-asyncio" },
     { name = "pgvector" },
@@ -2797,8 +2948,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "browser-use", specifier = ">=0.1.22" },
     { name = "mtmai", editable = "packages/mtmai" },
-    { name = "mtmaisdk", editable = "packages/mtmaisdk" },
     { name = "nanoid", specifier = ">=2.0.0" },
     { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pgvector", specifier = ">=0.3.6" },
@@ -2807,81 +2958,6 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.7.1" },
     { name = "structlog", specifier = ">=24.4.0" },
     { name = "urllib3", specifier = ">=2.3.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "burr", extras = ["start"], specifier = "==0.22.1" },
-    { name = "furo", specifier = "==2024.5.6" },
-    { name = "poethepoet", specifier = ">=0.31.1" },
-    { name = "pylint", specifier = ">=3.2.5" },
-    { name = "pytest", specifier = "==8.0.0" },
-    { name = "pytest-mock", specifier = "==3.14.0" },
-    { name = "sphinx", specifier = "==6.0" },
-]
-
-[[package]]
-name = "mtmaisdk"
-version = "0.5.57"
-source = { editable = "packages/mtmaisdk" }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "aiohttp-retry" },
-    { name = "aiostream" },
-    { name = "cel-python" },
-    { name = "grpcio" },
-    { name = "grpcio-tools" },
-    { name = "langchain" },
-    { name = "loguru" },
-    { name = "nest-asyncio" },
-    { name = "opentelemetry-api" },
-    { name = "opentelemetry-distro" },
-    { name = "opentelemetry-exporter-otlp" },
-    { name = "opentelemetry-exporter-otlp-proto-http" },
-    { name = "opentelemetry-instrumentation" },
-    { name = "opentelemetry-sdk" },
-    { name = "prometheus-client" },
-    { name = "protobuf" },
-    { name = "python-dateutil" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-    { name = "tenacity" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "burr", extra = ["start"] },
-    { name = "furo" },
-    { name = "poethepoet" },
-    { name = "pylint" },
-    { name = "pytest" },
-    { name = "pytest-mock" },
-    { name = "sphinx" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.10.5" },
-    { name = "aiohttp-retry", specifier = ">=2.8.3" },
-    { name = "aiostream", specifier = ">=0.5.2" },
-    { name = "cel-python", specifier = ">=0.1.5" },
-    { name = "grpcio", specifier = ">=1.68.1" },
-    { name = "grpcio-tools", specifier = ">=1.68.1" },
-    { name = "langchain", specifier = ">=0.3.0" },
-    { name = "loguru", specifier = ">=0.7.3" },
-    { name = "nest-asyncio", specifier = ">=1.6.0" },
-    { name = "opentelemetry-api", specifier = ">=1.28.0" },
-    { name = "opentelemetry-distro", specifier = ">=0.49b0" },
-    { name = "opentelemetry-exporter-otlp", specifier = ">=1.28.0" },
-    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.28.0" },
-    { name = "opentelemetry-instrumentation", specifier = ">=0.49b0" },
-    { name = "opentelemetry-sdk", specifier = ">=1.28.0" },
-    { name = "prometheus-client", specifier = ">=0.21.1" },
-    { name = "protobuf", specifier = ">=5.29.1" },
-    { name = "python-dateutil", specifier = ">=2.9.0.post0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "pyyaml", specifier = ">=6.0.1" },
-    { name = "tenacity", specifier = ">=8.4.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -4972,6 +5048,15 @@ wheels = [
 ]
 
 [[package]]
+name = "tld"
+version = "0.13"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/2b/678082222bc1d2823ea8384c6806085b85226ff73885c703fe0c7143ef64/tld-0.13.tar.gz", hash = "sha256:93dde5e1c04bdf1844976eae440706379d21f4ab235b73c05d7483e074fb5629", size = 446824 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ea/75/779ddeaf4d847ba0021ad99d1b615a853f2a5762bd5d118273c7f7673c38/tld-0.13-py2.py3-none-any.whl", hash = "sha256:f75b2be080f767ed17c2338a339eaa4fab5792586319ca819119da252f9f3749", size = 263789 },
+]
+
+[[package]]
 name = "tokenizers"
 version = "0.21.0"
 source = { registry = "https://pypi.org/simple" }
@@ -5117,6 +5202,24 @@ wheels = [
 ]
 
 [[package]]
+name = "trafilatura"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "charset-normalizer" },
+    { name = "courlan" },
+    { name = "htmldate" },
+    { name = "justext" },
+    { name = "lxml" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/06/25/e3ebeefdebfdfae8c4a4396f5a6ea51fc6fa0831d63ce338e5090a8003dc/trafilatura-2.0.0.tar.gz", hash = "sha256:ceb7094a6ecc97e72fea73c7dba36714c5c5b577b6470e4520dca893706d6247", size = 253404 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/b6/097367f180b6383a3581ca1b86fcae284e52075fa941d1232df35293363c/trafilatura-2.0.0-py3-none-any.whl", hash = "sha256:77eb5d1e993747f6f20938e1de2d840020719735690c840b9a1024803a4cd51d", size = 132557 },
+]
+
+[[package]]
 name = "traitlets"
 version = "5.14.3"
 source = { registry = "https://pypi.org/simple" }
@@ -5201,6 +5304,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e1/34/943888654477a574a86a98e9896bae89c7aa15078ec29f490fef2f1e5384/tzdata-2024.2.tar.gz", hash = "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc", size = 193282 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/ab/7e5f53c3b9d14972843a647d8d7a853969a58aecc7559cb3267302c94774/tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd", size = 346586 },
+]
+
+[[package]]
+name = "tzlocal"
+version = "5.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/04/d3/c19d65ae67636fe63953b20c2e4a8ced4497ea232c43ff8d01db16de8dc0/tzlocal-5.2.tar.gz", hash = "sha256:8d399205578f1a9342816409cc1e46a93ebd5755e39ea2d85334bea911bf0e6e", size = 30201 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/3f/c4c51c55ff8487f2e6d0e618dba917e3c3ee2caae6cf0fbb59c9b1876f2e/tzlocal-5.2-py3-none-any.whl", hash = "sha256:49816ef2fe65ea8ac19d19aa7a1ae0551c834303d5014c6d5a62e4cbda8047b8", size = 17859 },
 ]
 
 [[package]]

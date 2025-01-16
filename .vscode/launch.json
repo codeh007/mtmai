@@ -1,0 +1,24 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "mtmai_worker",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+			"cwd": "${workspaceFolder}",
+			"args": ["worker"],
+			"jinja": true,
+			"justMyCode": false,
+			"envFile": "${workspaceFolder}/.env",
+			"env": {
+				"PORT": "8066",
+				"DISPLAY": ":1",
+				"MTM_DEV": "development",
+				"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
+				// "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+				// "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
+			}
+		}
+	]
+}
