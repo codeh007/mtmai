@@ -4,9 +4,13 @@ import sys
 from time import sleep
 
 import structlog
+from mtmaisdk import ClientConfig, Hatchet, loader
+from mtmaisdk.clients.rest import ApiClient
+from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
+from mtmaisdk.clients.rest.configuration import Configuration
+
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev
-from mtmaisdk import ClientConfig, Hatchet, loader
 
 LOG = structlog.get_logger()
 
@@ -20,22 +24,14 @@ def new_hatchat(backend_url: str | None) -> Hatchet:
     for i in range(maxRetry):
         try:
             LOG.info("worker 连接服务器", backend_url=backend_url)
+            
+            
+            
             # 不验证 tls 因后端目前 证数 是自签名的。
             os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
-            if not settings.HATCHET_CLIENT_TOKEN:
-                raise ValueError("HATCHET_CLIENT_TOKEN is not set")
-            os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN
-
-            settings.MTMAI_DATABASE_URL
-
-            # cc= ClientConfig()
-            tls_config = loader.ClientTLSConfig(
-                tls_strategy="none",
-                cert_file="None",
-                key_file="None",
-                ca_file="None",
-                server_name="localhost",
-            )
+            # if not settings.HATCHET_CLIENT_TOKEN:
+            #     raise ValueError("HATCHET_CLIENT_TOKEN is not set")
+            os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN or ""
 
             config_loader = loader.ConfigLoader(".")
             cc = config_loader.load_client_config(
@@ -43,7 +39,13 @@ def new_hatchat(backend_url: str | None) -> Hatchet:
                     # 提示 client token 本身已经包含了服务器地址（host_port）信息
                     server_url=settings.GOMTM_URL,
                     host_port="0.0.0.0:7070",
-                    tls_config=tls_config,
+                    tls_config=loader.ClientTLSConfig(
+                        tls_strategy="none",
+                        cert_file="None",
+                        key_file="None",
+                        ca_file="None",
+                        server_name="localhost",
+                    ),
                 )
             )
 
@@ -65,9 +67,52 @@ wfapp: Hatchet = new_hatchat(settings.GOMTM_URL)
 class WorkerApp:
     def __init__(self, backend_url: str | None):
         self.backend_url = backend_url
-        self.wfapp = new_hatchat(backend_url)
+        # self.wfapp = new_hatchat(backend_url)
 
     async def setup(self):
+        
+        LOG.info("开始加载配置")
+            
+        # apiClient= ApiClient(
+        #     configuration=Configuration(
+        #         host=self.backend_url,
+        #     )
+        # )
+        # mtmaiapi = MtmaiApi(apiClient)
+        # resonse = await mtmaiapi.mtmai_worker_config()
+        # LOG.info("加载配置", resonse=resonse)
+        rest= RestApi(settings.GOMTM_URL, settings.HATCHET_CLIENT_TOKEN, settings.HATCHET_CLIENT_TENANT_ID)
+        response = await self.wfapp.rest.aio.mtmai_api.mtmai_worker_config()
+        LOG.info("加载配置", response=response)
+        os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
+        # if not settings.HATCHET_CLIENT_TOKEN:
+        #     raise ValueError("HATCHET_CLIENT_TOKEN is not set")
+        os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN
+
+        settings.MTMAI_DATABASE_URL
+
+        # cc= ClientConfig()
+        tls_config = loader.ClientTLSConfig(
+            tls_strategy="none",
+            cert_file="None",
+            key_file="None",
+            ca_file="None",
+            server_name="localhost",
+        )
+
+        config_loader = loader.ConfigLoader(".")
+        cc = config_loader.load_client_config(
+            ClientConfig(
+                # 提示 client token 本身已经包含了服务器地址（host_port）信息
+                server_url=settings.GOMTM_URL,
+                host_port="0.0.0.0:7070",
+                tls_config=tls_config,
+            )
+        )
+
+        # 原本的加载器 绑定了 jwt 中的信息，这里需要重新设置
+        wfapp = Hatchet.from_config(cc, debug=True)
+        
         # from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
         # if not settings.MTMAI_DATABASE_URL:
         #     raise ValueError("MTMAI_DATABASE_URL is not set")
@@ -79,7 +124,7 @@ class WorkerApp:
         os.environ["DISPLAY"] = ":1"
         # os.environ["HATCHET_CLIENT_TOKEN"] = settings.HATCHET_CLIENT_TOKEN
 
-    async def deploy_mtmai_workers(self, backend_url: str):
+    async def deploy_mtmai_workers(self):
         await self.setup()
         # 获取配置文件
         # response = httpx.get("http://localhost:8383/api/v1/worker/config")

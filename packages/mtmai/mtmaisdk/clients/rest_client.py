@@ -6,6 +6,7 @@ from typing import Any
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
 from mtmaisdk.clients.rest.api.log_api import LogApi
+from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.step_run_api import StepRunApi
 from mtmaisdk.clients.rest.api.workflow_api import WorkflowApi
 from mtmaisdk.clients.rest.api.workflow_run_api import WorkflowRunApi
@@ -108,7 +109,13 @@ class AsyncRestApi:
             self._log_api = LogApi(self.api_client)
 
         return self._log_api
+    @property
+    def mtmai_api(self):
+        if self._mtmai_api is None:
+            self._mtmai_api = MtmaiApi(self.api_client)
 
+        return self._mtmai_api
+    
     async def close(self):
         # Ensure the aiohttp client session is closed
         if self._api_client is not None:

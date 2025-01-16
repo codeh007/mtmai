@@ -301,9 +301,8 @@ class MtmaiApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> MtmaiWorkerConfig200Response:
-        """get the config of worker
+        """mtmai_worker_config
 
-        get the config of worker
 
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -364,9 +363,8 @@ class MtmaiApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[MtmaiWorkerConfig200Response]:
-        """get the config of worker
+        """mtmai_worker_config
 
-        get the config of worker
 
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -427,9 +425,8 @@ class MtmaiApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """get the config of worker
+        """mtmai_worker_config
 
-        get the config of worker
 
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -517,7 +514,7 @@ class MtmaiApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/mtmai/workerConfig',
+            resource_path='/api/v1/mtmai/worker_config',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

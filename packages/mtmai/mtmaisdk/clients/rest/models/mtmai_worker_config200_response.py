@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,9 @@ class MtmaiWorkerConfig200Response(BaseModel):
     """
     worker 启动时所需的关键配置
     """ # noqa: E501
-    token: Optional[StrictStr] = Field(default=None, description="token")
-    __properties: ClassVar[List[str]] = ["token"]
+    token: StrictStr = Field(description="token")
+    grpc_host_port: StrictStr = Field(description="grpcHostPort", alias="grpcHostPort")
+    __properties: ClassVar[List[str]] = ["token", "grpcHostPort"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +81,8 @@ class MtmaiWorkerConfig200Response(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "token": obj.get("token")
+            "token": obj.get("token"),
+            "grpcHostPort": obj.get("grpcHostPort")
         })
         return _obj
 
