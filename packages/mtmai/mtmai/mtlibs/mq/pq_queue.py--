@@ -1,0 +1,229 @@
+import json
+from datetime import datetime
+
+from psycopg.types.json import Jsonb
+from psycopg_pool import AsyncConnectionPool
+
+from mtmai.core.logging import get_logger
+from mtmlib.queue.queue import Message
+
+logger = get_logger()
+# 当消息读取次数大于这个值, 就当作永久失败, 放入死信队列
+max_read_count = 10
+
+
+class AsyncPGMQueue:
+    """
+    code: https://github.com/tembo-io/pgmq/blob/293f6e93f3799ee17016b07f4834f7bd01f7387a/tembo-pgmq-python/tembo_pgmq_python/queue.py
+    """
+
+    def __init__(self, pool=None) -> None:
+        self.pool = pool
+        self.delay = 0
+        self.vt = 30
+        self.pool_size = 10
+
+    @classmethod
+    async def create(cls, DATABASE_URL: str, **kwargs):
+        connection_kwargs = {
+            "autocommit": True,
+            "prepare_threshold": 0,
+        }
+        pool = AsyncConnectionPool(DATABASE_URL, min_size=20, kwargs=connection_kwargs)
+
+        logger.info("pgmq connecting ...")
+        await pool.open()
+
+        async with pool.connection() as conn:
+            await conn.execute("create extension if not exists pgmq cascade;")
+
+        instance = cls(pool)
+        await instance.ensure_queue_exists("workflow_events")
+        return instance
+
+    async def ensure_queue_exists(self, queue_name: str):
+        async with self.pool.connection() as conn:
+            try:
+                await conn.execute(f"SELECT pgmq.create('{queue_name}');")
+            except Exception as e:
+                if "already exists" not in str(e):
+                    raise
+
+    async def create_partitioned_queue(
+        self,
+        queue: str,
+        partition_interval: int = 10000,
+        retention_interval: int = 100000,
+    ) -> None:
+        """Create a new queue
+
+        Note: Partitions are created pg_partman which must be configured in postgresql.conf
+            Set `pg_partman_bgw.interval` to set the interval for partition creation and deletion.
+            A value of 10 will create new/delete partitions every 10 seconds. This value should be tuned
+            according to the volume of messages being sent to the queue.
+
+        Args:
+            queue: The name of the queue.
+            partition_interval: The number of messages per partition. Defaults to 10,000.
+            retention_interval: The number of messages to retain. Messages exceeding this number will be dropped.
+                Defaults to 100,000.
+        """
+        async with self.pool.connection() as conn:
+            await conn.execute(
+                "select pgmq.create(%s, %s::text, %s::text);",
+                [queue, partition_interval, retention_interval],
+            )
+
+    async def create_queue(self, queue: str, unlogged: bool = False) -> None:
+        """Create a new queue
+        Args:
+            queue: The name of the queue.
+        """
+        async with self.pool.connection() as conn:
+            if unlogged:
+                await conn.execute("select pgmq.create_unlogged(%s);", [queue])
+            else:
+                await conn.execute("select pgmq.create(%s);", [queue])
+
+    async def send(self, queue: str, message: dict, delay: int = 0) -> int:
+        """Send a message to a queue"""
+        async with self.pool.connection() as conn:
+            result = await conn.execute(
+                "select * from pgmq.send(%s, %s,%s);",
+                [queue, Jsonb(message), delay],  # type: ignore
+            )
+            message = await result.fetchall()
+        return message[0][0]
+
+    async def send_batch(
+        self, queue: str, messages: list[dict], delay: int = 0
+    ) -> list[int]:
+        """Send a batch of messages to a queue"""
+        async with self.pool.connection() as conn:
+            result = await conn.execute(
+                "select * from pgmq.send_batch(%s, %s, %s);",
+                [queue, [Jsonb(message) for message in messages], delay],  # type: ignore
+            )
+            result = await result.fetchall()
+        return [message[0] for message in result]
+
+    async def read(self, queue: str, vt: int | None = None) -> Message | None:
+        """Read a message from a queue"""
+        async with self.pool.connection() as conn:
+            rows = await conn.execute(
+                "select * from pgmq.read(%s, %s, %s);", [queue, vt or self.vt, 1]
+            )
+            rows = await rows.fetchall()
+
+        messages = [
+            Message(msg_id=x[0], read_ct=x[1], enqueued_at=x[2], vt=x[3], message=x[4])
+            for x in rows
+        ]
+        return messages[0] if len(messages) == 1 else None
+
+    async def read_batch(
+        self, queue: str, vt: int | None = None, batch_size=1
+    ) -> list[Message] | None:
+        """Read a batch of messages from a queue"""
+        async with self.pool.connection() as conn:
+            rows = await conn.execute(
+                "select * from pgmq.read(%s, %s, %s);",
+                [queue, vt or self.vt, batch_size],
+            )
+            rows = await rows.fetchall()
+
+        return [
+            Message(msg_id=x[0], read_ct=x[1], enqueued_at=x[2], vt=x[3], message=x[4])
+            for x in rows
+        ]
+
+    async def pop(self, queue: str) -> Message:
+        """Read a message from a queue"""
+        async with self.pool.connection() as conn:
+            rows = await conn.execute("select * from pgmq.pop(%s);", [queue])
+            rows = await rows.fetchall()
+
+        messages = [
+            Message(msg_id=x[0], read_ct=x[1], enqueued_at=x[2], vt=x[3], message=x[4])
+            for x in rows
+        ]
+        return messages[0]
+
+    async def ack(self, queue: str, msg_id: int) -> bool:
+        """Delete a message from a queue"""
+        async with self.pool.connection() as conn:
+            row = await conn.execute("select pgmq.delete(%s, %s);", [queue, msg_id])
+            row = await row.fetchall()
+
+        return row[0][0]
+
+    async def archive(self, queue: str, msg_id: int) -> bool:
+        """Archive a message from a queue"""
+        async with self.pool.connection() as conn:
+            row = await conn.execute("select pgmq.archive(%s, %s);", [queue, msg_id])
+            row = await row.fetchall()
+
+        return row[0][0]
+
+    # --------------------------------------------------------------------------------------------
+    # 新代码: 工作流专用消息队列
+    #    解决 工作流事件 消息队列
+    #         使用单个消息队列, 通过消息内容区分不同工作流事件
+    #
+
+    # async def send_workflow_event(
+    #     self, taskId: str, event_type: str, event_data: dict, delay: int = 0
+    # ) -> int:
+    #     """Send a workflow event to the queue"""
+    #     logger.info(f"send_workflow_event: taskId={taskId}, event_type={event_type}")
+    #     message = {
+    #         "taskId": taskId,
+    #         "event_type": event_type,
+    #         "event_data": event_data,
+    #         "timestamp": datetime.now().isoformat(),
+    #     }
+    #     return await self.send("workflow_events", message, delay)
+
+    # async def send_workflow_event(self, workflow_run_id: str, event_type: str, event_data: dict, delay: int = 0) -> int:
+    #     message = {
+    #         "workflow_run_id": workflow_run_id,
+    #         "event_type": event_type,
+    #         "event_data": event_data,
+    #         "timestamp": datetime.utcnow().isoformat()
+    #     }
+    #     return await self.send("workflow_events", message, delay)
+
+    # async def read_workflow_events(
+    #     self, taskId: str = None, event_type: str = None, batch_size: int = 10
+    # ):
+    #     """Read workflow events from the queue as a stream, optionally filtered by taskId and event_type"""
+    #     logger.info(f"read_workflow_events: taskId={taskId}, event_type={event_type}")
+    #     async with self.pool.connection() as conn:
+    #         query = "SELECT * FROM pgmq.read('workflow_events', %s, %s) WHERE true"
+    #         params = [self.vt, batch_size]
+
+    #         if taskId:
+    #             query += " AND (message->>'taskId') = %s"
+    #             params.append(taskId)
+
+    #         if event_type:
+    #             query += " AND (message->>'event_type') = %s"
+    #             params.append(event_type)
+
+    #         async for row in conn.cursor(query, params):
+    #             yield Message(
+    #                 msg_id=row[0],
+    #                 read_ct=row[1],
+    #                 enqueued_at=row[2],
+    #                 vt=row[3],
+    #                 message=json.loads(row[4]),
+    #             )
+
+    # async def cleanup_old_messages(self, queue: str, retention_days: int = 7):
+    #     """Delete messages older than the specified retention period"""
+    #     cutoff_date = datetime.now() - timedelta(days=retention_days)
+    #     async with self.pool.connection() as conn:
+    #         await conn.execute(
+    #             "DELETE FROM pgmq.messages WHERE queue = %s AND enqueued_at < %s",
+    #             [queue, cutoff_date],
+    #         )

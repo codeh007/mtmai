@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from mtmaisdk.utils.env import is_in_huggingface, is_in_vercel
-from pydantic import (AnyUrl, BeforeValidator, HttpUrl, computed_field,
-                      model_validator)
+from pydantic import AnyUrl, BeforeValidator, HttpUrl, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -241,7 +240,7 @@ class Settings(BaseSettings):
     SELENIUM_VERSION: str = "4.24.0"
     SELENIUM_DISPLAY: str | None = None  # ":1"
     SELENIUM_PORT: int = 4444
-    SELENIUM_HUB_URL: str | None = None  # "http://localhost:4444/wd/hub"
+    SELENIUM_HUB_URL: str | None = None
 
     # mtmflow
     # MTMFLOW_URL_BASE: str = "http://localhost:8001"
@@ -259,8 +258,6 @@ class Settings(BaseSettings):
     WORKER_ENABLED: bool = True
 
     GOMTM_URL: str = "http://localhost:8383"
-    HATCHET_CLIENT_TOKEN: str | None = (
-        "eyJhbGciOiJFUzI1NiIsImtpZCI6Impfd1YwZyJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJleHAiOjQ4ODU2MjY0MzYsImdycGNfYnJvYWRjYXN0X2FkZHJlc3MiOiJsb2NhbGhvc3Q6NzA3NyIsImlhdCI6MTczMjAyNjQzNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIiwic2VydmVyX3VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IjcwN2QwODU1LTgwYWItNGUxZi1hMTU2LWYxYzQ1NDZjYmY1MiIsInRva2VuX2lkIjoiYjEzM2EzOTUtMTE0My00ZTVkLTk4ZDAtYzA2MWRkNWFmODFlIn0.g50P75L3042NEa-4tTSrPecqoHps7zbNYzzrDousxBA00q2opXEJTYyrmtSa29crhlVc3XwNl5at9guIFoYf7w"
-    )
+    HATCHET_CLIENT_TOKEN: str | None = None
 
 settings = Settings()  # type: ignore
