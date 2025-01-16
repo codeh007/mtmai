@@ -12,13 +12,14 @@ from mtmaisdk.clients.rest.models import BrowserParams
 from mtmaisdk.context.context import Context
 
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
+from mtmai.agents.httpx_transport import LoggingTransport
 from mtmai.worker import wfapp
 
-# 设置 httpx 的调试日志
-logging.getLogger("httpx").setLevel(logging.DEBUG)
+# # 设置 httpx 的调试日志
+# logging.getLogger("httpx").setLevel(logging.DEBUG)
 
-# 基础日志配置
-logging.basicConfig(level=logging.DEBUG)
+# # 基础日志配置
+# logging.basicConfig(level=logging.DEBUG)
 
 @wfapp.workflow(
     on_events=["browser:run"],
@@ -44,9 +45,10 @@ class FlowBrowser:
             api_key=llm_config.api_key, 
             base_url=llm_config.base_url,
             temperature=0,
-            max_tokens=4096,
-            # stream=True,
-            verbose=True
+            max_tokens=40960,
+            verbose=True,
+            http_client=httpx.Client(transport=LoggingTransport()),  # type: ignore
+            http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
         )
         
         # 简单测试llm 是否配置正确

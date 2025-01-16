@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import mtmai.core.bootstraps as bootstraps
 
+bootstraps.bootstrap_core()
 def main():
 
     @click.group()
@@ -35,4 +37,5 @@ def main():
 
 
 if __name__ == "__main__":
+    main()
     main()

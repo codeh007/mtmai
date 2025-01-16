@@ -23,34 +23,12 @@ from pydantic import BaseModel
 
 from mtmai.agents import utils
 from mtmai.agents.graphutils import ensure_valid_llm_response_v2
+from mtmai.agents.httpx_transport import LoggingTransport
 from mtmai.core.config import settings
-
-# from mtmai.models.graph_config import GraphConfig
-# from mtmai.mtlibs import yaml
 
 LOG = structlog.get_logger()
 
 context_var: ContextVar["AgentContext"] = ContextVar("mtmai")
-
-
-class LoggingTransport(httpx.AsyncHTTPTransport):
-    async def handle_async_request(self, request):
-        response = await super().handle_async_request(request)
-        # 提示： 不要读取 body，因为一般 是stream，读取了会破环状态
-        LOG.info(
-            f"OPENAI Response: {response.status_code}\n {request.url}\nreq:\n{str(request.content)}\n"
-        )
-        return response
-
-
-# @lru_cache(maxsize=1)
-# def get_graph_config() -> GraphConfig:
-#     if not os.path.exists(settings.graph_config_path):
-#         raise Exception(f"未找到graph_config配置文件: {settings.graph_config_path}")
-#     config_dict = yaml.load_yaml_file(settings.graph_config_path) or {}
-
-#     sub = config_dict.get("mtmai_config")
-#     return GraphConfig.model_validate(sub)
 
 
 class AgentContext:
@@ -412,4 +390,7 @@ def get_mtmai_context() -> AgentContext:
         raise RuntimeError("mtmai_context  error")
 
 
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
