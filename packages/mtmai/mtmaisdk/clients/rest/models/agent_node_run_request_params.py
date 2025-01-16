@@ -17,6 +17,7 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
+from mtmaisdk.clients.rest.models.browser_params import BrowserParams
 from mtmaisdk.clients.rest.models.crew_ai_params import CrewAIParams
 from mtmaisdk.clients.rest.models.research_request import ResearchRequest
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
@@ -24,7 +25,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTNODERUNREQUESTPARAMS_ONE_OF_SCHEMAS = ["CrewAIParams", "ResearchRequest", "ScrapeGraphParams"]
+AGENTNODERUNREQUESTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "CrewAIParams", "ResearchRequest", "ScrapeGraphParams"]
 
 class AgentNodeRunRequestParams(BaseModel):
     """
@@ -36,8 +37,10 @@ class AgentNodeRunRequestParams(BaseModel):
     oneof_schema_2_validator: Optional[CrewAIParams] = None
     # data type: ScrapeGraphParams
     oneof_schema_3_validator: Optional[ScrapeGraphParams] = None
-    actual_instance: Optional[Union[CrewAIParams, ResearchRequest, ScrapeGraphParams]] = None
-    one_of_schemas: Set[str] = { "CrewAIParams", "ResearchRequest", "ScrapeGraphParams" }
+    # data type: BrowserParams
+    oneof_schema_4_validator: Optional[BrowserParams] = None
+    actual_instance: Optional[Union[BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams]] = None
+    one_of_schemas: Set[str] = { "BrowserParams", "CrewAIParams", "ResearchRequest", "ScrapeGraphParams" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -75,12 +78,17 @@ class AgentNodeRunRequestParams(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ScrapeGraphParams`")
         else:
             match += 1
+        # validate data type: BrowserParams
+        if not isinstance(v, BrowserParams):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserParams`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRunRequestParams with oneOf schemas: CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRunRequestParams with oneOf schemas: BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentNodeRunRequestParams with oneOf schemas: CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentNodeRunRequestParams with oneOf schemas: BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -113,13 +121,19 @@ class AgentNodeRunRequestParams(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into BrowserParams
+        try:
+            instance.actual_instance = BrowserParams.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRunRequestParams with oneOf schemas: CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRunRequestParams with oneOf schemas: BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentNodeRunRequestParams with oneOf schemas: CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentNodeRunRequestParams with oneOf schemas: BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -133,7 +147,7 @@ class AgentNodeRunRequestParams(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], CrewAIParams, ResearchRequest, ScrapeGraphParams]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, CrewAIParams, ResearchRequest, ScrapeGraphParams]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
