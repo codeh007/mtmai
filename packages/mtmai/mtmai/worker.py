@@ -39,7 +39,7 @@ class WorkerApp:
                 workerConfig = await mtmaiapi.mtmai_worker_config()
                 os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
                 os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
-                os.environ["DISPLAY"] = ":1"           
+                os.environ["DISPLAY"] = ":1"
                 config_loader = loader.ConfigLoader(".")
                 cc = config_loader.load_client_config(
                     ClientConfig(

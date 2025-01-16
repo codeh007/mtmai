@@ -1,8 +1,8 @@
 import asyncio
 import json
-import os
+# import os
 from contextvars import ContextVar
-from functools import lru_cache
+# from functools import lru_cache
 from typing import Type
 
 import httpx
@@ -17,14 +17,16 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.postgres.aio import (AsyncPostgresSaver,
                                                BasePostgresSaver)
 from lazify import LazyProxy
-from mtmai.agents import utils
-from mtmai.agents.graphutils import ensure_valid_llm_response_v2
-from mtmai.core.config import settings
-from mtmai.models.graph_config import GraphConfig
-from mtmai.mtlibs import yaml
 from mtmaisdk import Context as HatchetContext
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel
+
+from mtmai.agents import utils
+from mtmai.agents.graphutils import ensure_valid_llm_response_v2
+from mtmai.core.config import settings
+
+# from mtmai.models.graph_config import GraphConfig
+# from mtmai.mtlibs import yaml
 
 LOG = structlog.get_logger()
 
@@ -41,14 +43,14 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
         return response
 
 
-@lru_cache(maxsize=1)
-def get_graph_config() -> GraphConfig:
-    if not os.path.exists(settings.graph_config_path):
-        raise Exception(f"未找到graph_config配置文件: {settings.graph_config_path}")
-    config_dict = yaml.load_yaml_file(settings.graph_config_path) or {}
+# @lru_cache(maxsize=1)
+# def get_graph_config() -> GraphConfig:
+#     if not os.path.exists(settings.graph_config_path):
+#         raise Exception(f"未找到graph_config配置文件: {settings.graph_config_path}")
+#     config_dict = yaml.load_yaml_file(settings.graph_config_path) or {}
 
-    sub = config_dict.get("mtmai_config")
-    return GraphConfig.model_validate(sub)
+#     sub = config_dict.get("mtmai_config")
+#     return GraphConfig.model_validate(sub)
 
 
 class AgentContext:
@@ -75,7 +77,7 @@ class AgentContext:
         # self.vectorstore = MtmDocStore(session=Session(db_engine), embedding=embedding)
         # self.kvstore = MtmKvStore(db_engine)
 
-        self.graph_config = get_graph_config()
+        # self.graph_config = get_graph_config()
         self._mq = None
         # self.memMq = MemoryMQ()
         self._thread_id = thread_id

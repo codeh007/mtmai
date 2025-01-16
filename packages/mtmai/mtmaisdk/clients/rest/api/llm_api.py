@@ -18,7 +18,6 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmaisdk.clients.rest.models.agent_node_run_request import AgentNodeRunRequest
 from mtmaisdk.clients.rest.models.llm_config import LlmConfig
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
@@ -44,7 +43,6 @@ class LlmApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         slug: Annotated[StrictStr, Field(description="The slug")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="获取LLM")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -66,8 +64,6 @@ class LlmApi:
         :type tenant: str
         :param slug: The slug (required)
         :type slug: str
-        :param agent_node_run_request: 获取LLM (required)
-        :type agent_node_run_request: AgentNodeRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -93,7 +89,6 @@ class LlmApi:
         _param = self._llm_get_serialize(
             tenant=tenant,
             slug=slug,
-            agent_node_run_request=agent_node_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -121,7 +116,6 @@ class LlmApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         slug: Annotated[StrictStr, Field(description="The slug")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="获取LLM")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -143,8 +137,6 @@ class LlmApi:
         :type tenant: str
         :param slug: The slug (required)
         :type slug: str
-        :param agent_node_run_request: 获取LLM (required)
-        :type agent_node_run_request: AgentNodeRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -170,7 +162,6 @@ class LlmApi:
         _param = self._llm_get_serialize(
             tenant=tenant,
             slug=slug,
-            agent_node_run_request=agent_node_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -198,7 +189,6 @@ class LlmApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         slug: Annotated[StrictStr, Field(description="The slug")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="获取LLM")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -220,8 +210,6 @@ class LlmApi:
         :type tenant: str
         :param slug: The slug (required)
         :type slug: str
-        :param agent_node_run_request: 获取LLM (required)
-        :type agent_node_run_request: AgentNodeRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -247,7 +235,6 @@ class LlmApi:
         _param = self._llm_get_serialize(
             tenant=tenant,
             slug=slug,
-            agent_node_run_request=agent_node_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -270,7 +257,6 @@ class LlmApi:
         self,
         tenant,
         slug,
-        agent_node_run_request,
         _request_auth,
         _content_type,
         _headers,
@@ -300,8 +286,6 @@ class LlmApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if agent_node_run_request is not None:
-            _body_params = agent_node_run_request
 
 
         # set the HTTP header `Accept`
@@ -312,19 +296,6 @@ class LlmApi:
                 ]
             )
 
-        # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params['Content-Type'] = _content_type
-        else:
-            _default_content_type = (
-                self.api_client.select_header_content_type(
-                    [
-                        'application/json'
-                    ]
-                )
-            )
-            if _default_content_type is not None:
-                _header_params['Content-Type'] = _default_content_type
 
         # authentication setting
         _auth_settings: List[str] = [
