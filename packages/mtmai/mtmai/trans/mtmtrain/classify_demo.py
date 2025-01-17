@@ -1,20 +1,22 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from datasets import load_dataset
-from fastapi import APIRouter
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from transformers import (
-    AutoModelForQuestionAnswering,
-    AutoTokenizer,
-    DefaultDataCollator,
-    Trainer,
-    TrainingArguments,
-    pipeline,
-)
 
-router = APIRouter()
+# from datasets import load_dataset
+from fastapi import APIRouter
+
+# from sklearn.metrics import accuracy_score
+# from sklearn.model_selection import train_test_split
+# from transformers import (
+#     AutoModelForQuestionAnswering,
+#     AutoTokenizer,
+#     DefaultDataCollator,
+#     Trainer,
+#     TrainingArguments,
+#     pipeline,
+# )
+
+# router = APIRouter()
 
 
 @router.get("/classify_demo2")

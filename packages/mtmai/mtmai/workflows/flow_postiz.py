@@ -5,12 +5,13 @@ from typing import cast
 
 import structlog
 from langchain_core.prompts import ChatPromptTemplate
-from mtmai.agents.ctx import init_mtmai_context, mtmai_context
-from mtmai.worker import wfapp
 from mtmaisdk.clients.rest.models import PostizState
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel, Field
+
+from mtmai.agents.ctx import init_mtmai_context, mtmai_context
 from mtmai.agents.postiz_graph import postiz_graph
+from mtmai.worker import wfapp
 
 LOG = structlog.get_logger()
 
@@ -26,12 +27,12 @@ class Topic(BaseModel):
     on_events=["postiz:run"],
     # input_validator=PostizState,
 )
-class Flow:
+class FlowPostiz:
     @wfapp.step(timeout="10m", retries=1)
     async def step_entry(self, hatctx: Context):
         init_mtmai_context(hatctx)
 
-        input = cast(PostizState, hatctx.workflow_input())  ## This is a `ParentInput`
+        input: PostizState = cast(PostizState, hatctx.workflow_input())
         print(hatctx)
         # thread_id = input.node_id
         thread_id = str(uuid.uuid4())

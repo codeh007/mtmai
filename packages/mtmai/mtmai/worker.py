@@ -30,7 +30,7 @@ class WorkerApp:
             )
         )
         
-        maxRetry = 10
+        maxRetry = 50
         interval = 5
         for i in range(maxRetry):
             try:
@@ -78,9 +78,9 @@ class WorkerApp:
 
         # worker.register_workflow(PyJokeFlow())
 
-        # from mtmai.workflows.flow_postiz import PostizFlow
+        from mtmai.workflows.flow_postiz import PostizFlow
 
-        # worker.register_workflow(PostizFlow())
+        worker.register_workflow(PostizFlow())
 
         # from mtmai.workflows.flow_scrape import ScrapFlow
 

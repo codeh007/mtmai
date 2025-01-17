@@ -3118,6 +3118,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "browser-use" },
+    { name = "langchain-core" },
     { name = "mtmai" },
     { name = "nanoid" },
     { name = "nest-asyncio" },
@@ -3143,6 +3144,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "browser-use", specifier = ">=0.1.22" },
+    { name = "langchain-core", specifier = ">=0.3.29" },
     { name = "mtmai", editable = "packages/mtmai" },
     { name = "nanoid", specifier = ">=2.0.0" },
     { name = "nest-asyncio", specifier = ">=1.6.0" },
