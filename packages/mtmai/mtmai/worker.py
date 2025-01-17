@@ -13,23 +13,23 @@ from mtmai.core.config import settings
 
 wfapp: Hatchet = None
 
+
 class WorkerApp:
     def __init__(self, backend_url: str | None):
         self.backend_url = backend_url
         if not self.backend_url:
             raise ValueError("backend_url is not set")
         self.log = structlog.get_logger()
-        
-        
+
     async def setup(self):
         global wfapp
-        
-        self.api_client= ApiClient(
+
+        self.api_client = ApiClient(
             configuration=Configuration(
                 host=self.backend_url,
             )
         )
-        
+
         maxRetry = 50
         interval = 5
         for i in range(maxRetry):
@@ -62,8 +62,6 @@ class WorkerApp:
                     sys.exit(1)
                 sleep(interval)
         raise ValueError("failed to connect gomtm server")
-        
-
 
     async def deploy_mtmai_workers(self):
         await self.setup()
@@ -78,9 +76,9 @@ class WorkerApp:
 
         # worker.register_workflow(PyJokeFlow())
 
-        from mtmai.workflows.flow_postiz import PostizFlow
+        from mtmai.workflows.flow_postiz import FlowPostiz
 
-        worker.register_workflow(PostizFlow())
+        worker.register_workflow(FlowPostiz())
 
         # from mtmai.workflows.flow_scrape import ScrapFlow
 
@@ -90,10 +88,12 @@ class WorkerApp:
         from mtmai.workflows.flow_crewai import FlowCrewAIAgent
 
         worker.register_workflow(FlowCrewAIAgent())
-        
+
         from mtmai.workflows.flow_browser import FlowBrowser
+
         worker.register_workflow(FlowBrowser())
         from mtmai.workflows.flow_news_gen import FlowNewsGen
+
         worker.register_workflow(FlowNewsGen())
         await worker.async_start()
 
