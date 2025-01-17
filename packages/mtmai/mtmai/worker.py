@@ -93,6 +93,8 @@ class WorkerApp:
         
         from mtmai.workflows.flow_browser import FlowBrowser
         worker.register_workflow(FlowBrowser())
+        from mtmai.workflows.flow_news_gen import FlowNewsGen
+        worker.register_workflow(FlowNewsGen())
         await worker.async_start()
 
         while True:

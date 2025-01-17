@@ -10,6 +10,7 @@ from mtmai.worker import wfapp
 from mtmaisdk.clients.rest.models import PostizState
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel, Field
+from mtmai.agents.postiz_graph import postiz_graph
 
 LOG = structlog.get_logger()
 
@@ -25,7 +26,7 @@ class Topic(BaseModel):
     on_events=["postiz:run"],
     # input_validator=PostizState,
 )
-class PostizFlow:
+class Flow:
     @wfapp.step(timeout="10m", retries=1)
     async def step_entry(self, hatctx: Context):
         init_mtmai_context(hatctx)

@@ -1,22 +1,23 @@
 import logging
 
 from langgraph.graph import END, StateGraph
-
 from mtmai.agents.conditions import condition_error_edge
-from mtmai.agents.graphs.abstract_graph import AbstractGraph
+
+# from mtmai.agents.graphs.abstract_graph import AbstractGraph
 from mtmai.agents.nodes.conduct_interviews_node import ConductInterviewNode
 from mtmai.agents.nodes.index_references_node import IndexReferencesNode
 from mtmai.agents.nodes.initialize_research_node import InitializeResearchNode
 from mtmai.agents.nodes.refine_outline_node import RefineOutlineNode
 from mtmai.agents.nodes.write_article_node import WriteArticleNode
 from mtmai.agents.nodes.write_sections_node import WriteSectionsNode
-from mtmai.llm.llm import get_llm_chatbot_default
+
+# from mtmai.llm.llm import get_llm_chatbot_default
 from mtmai.models.graph_config import ResearchState
 
 logger = logging.getLogger()
 
 
-class StormGraph(AbstractGraph):
+class StormGraph():
     def create_graph(self) -> StateGraph:
         # wf = StateGraph(MainState)
         # wf.add_node("human_input", HumanInputNode())
@@ -62,13 +63,13 @@ class StormGraph(AbstractGraph):
     def create_sub_graph_storm(self):
         """创建 storm 子图"""
         wf = StateGraph(ResearchState)
-        llm = get_llm_chatbot_default()
-        wf.add_node("init_research", InitializeResearchNode(runnable=llm))
-        wf.add_node("conduct_interviews", ConductInterviewNode(runnable=llm))
-        wf.add_node("refine_outline", RefineOutlineNode(runnable=llm))
-        wf.add_node("index_references", IndexReferencesNode(runnable=llm))
-        wf.add_node("write_sections", WriteSectionsNode(runnable=llm))
-        wf.add_node("write_article", WriteArticleNode(runnable=llm))
+        # llm = get_llm_chatbot_default()
+        wf.add_node("init_research", InitializeResearchNode())
+        wf.add_node("conduct_interviews", ConductInterviewNode())
+        wf.add_node("refine_outline", RefineOutlineNode())
+        wf.add_node("index_references", IndexReferencesNode())
+        wf.add_node("write_sections", WriteSectionsNode())
+        wf.add_node("write_article", WriteArticleNode())
         # 添加边
         wf.add_conditional_edges(
             "init_research",

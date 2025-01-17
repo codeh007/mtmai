@@ -3,12 +3,13 @@ import asyncio
 import litellm
 from crewai import Agent, Crew, Process, Task
 from fastapi.encoders import jsonable_encoder
-from mtmai.worker import wfapp
-from mtmai.workflows.crews import call_crew
-from mtmai.workflows.step_base import get_wf_log_callbacks
+# from mtmai.workflows.step_base import get_wf_log_callbacks
 from mtmaisdk.clients.rest.models import CrewAIParams
 from mtmaisdk.clients.rest.models.call_agent import CallAgent
 from mtmaisdk.context.context import Context
+
+from mtmai.worker import wfapp
+from mtmai.workflows.crews import call_crew
 
 
 @wfapp.workflow(
@@ -19,8 +20,8 @@ class FlowCrewAIAgent:
     @wfapp.step(timeout="10m", retries=1)
     async def run(self, hatctx: Context):
         input = CallAgent.model_validate(hatctx.workflow_input())
-        callback = get_wf_log_callbacks(hatctx)
-        llm = get_llm(input.llm, callback)
+        # callback = get_wf_log_callbacks(hatctx)
+        # llm = get_llm(input.llm, callback)
         agents = []
         agent_dict = {}
         for agent in input.agents:
@@ -87,5 +88,7 @@ class FlowCrewAIAgent:
             return result
         except litellm.RateLimitError as e:
             await asyncio.sleep(20)
+            self.ctx.log("速率限制，休眠")
+            raise e
             self.ctx.log("速率限制，休眠")
             raise e

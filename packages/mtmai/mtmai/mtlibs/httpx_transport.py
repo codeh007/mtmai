@@ -5,7 +5,53 @@ import httpx
 
 logger=logging.getLogger("llm_httpx_transport")
 
-class LoggingTransport(httpx.AsyncHTTPTransport):
+class LoggingTransport(httpx.HTTPTransport):
+    async def handle_request(self, request):
+        """Handle a request by sending it using the underlying transport."""
+        try:
+            content = request.content.decode('utf-8')
+            content_json = json.loads(content)
+            
+            # Fix messages with None content
+            messages_field = content_json.get("messages", None)
+            if messages_field:
+                for message in messages_field:
+                    content = message.get("content", None) 
+                    if content is None:
+                        message["content"] = ""
+                        
+            # Fix tools format
+            tool_calls_field = content_json.get("tools", None)
+            if tool_calls_field:
+                for tool_call in tool_calls_field:
+                    fn = tool_call.get("function", None)
+                    if fn:
+                        parameters = fn.get("parameters", None)
+                        if parameters:
+                            parameters["type"] = "object"
+                            properties = parameters.get("properties", None)
+                            if properties:
+                                action = properties.get("action", None)
+                                if action:
+                                    items = action.get("items", None)
+                                    if items:
+                                        properties = items.get("properties", None)
+                                        if properties:
+                                            new_properties = {}
+                                            for k, v in list(properties.items()):
+                                                if k == "search_google":
+                                                    if "type" in v:
+                                                        del v["type"]
+                                                    new_properties[k] = v
+                                            items["properties"] = new_properties
+
+            # Update request content
+            request.content = json.dumps(content_json).encode('utf-8')
+            
+        except Exception as e:
+            logger.error(f"Error processing request: {e}")
+            
+        return await super().handle_request(request)
     # 提示： 不要读取 response body，读取了会破环状态    
     async def handle_async_request(self, request):
         """自定义传输层

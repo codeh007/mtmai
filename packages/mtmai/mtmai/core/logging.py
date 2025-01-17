@@ -121,7 +121,7 @@ def setup_sqlalchemy_logging():
 
 def setup_httpx_logging():
     httpx_logger = logging.getLogger("httpx")
-    httpx_logger.setLevel(logging.DEBUG)
+    httpx_logger.setLevel(logging.INFO)
     print(f"httpx logger level set to: {httpx_logger.level}")
 
     if is_in_dev():
