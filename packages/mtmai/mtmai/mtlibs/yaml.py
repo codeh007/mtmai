@@ -1,4 +1,6 @@
 import yaml
+
+
 def load_yaml_file(filename, label='config file', loader=yaml.Loader):
     """Load a yaml config file.
     """
@@ -35,5 +37,6 @@ def load_yaml_file(filename, label='config file', loader=yaml.Loader):
 def save_dict_to_yaml(dict_value: dict, save_path: str):
     """dict保存为yaml"""
     with open(save_path, 'w') as file:
-        # logger.info(f"保存clash yaml 配置文件")
+        file.write(yaml.dump(dict_value, allow_unicode=True))
+    with open(save_path, 'w') as file:
         file.write(yaml.dump(dict_value, allow_unicode=True))

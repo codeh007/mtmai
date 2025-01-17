@@ -23,8 +23,8 @@ from pydantic import BaseModel
 
 from mtmai.agents import utils
 from mtmai.agents.graphutils import ensure_valid_llm_response_v2
-from mtmai.agents.httpx_transport import LoggingTransport
 from mtmai.core.config import settings
+from mtmai.mtlibs.httpx_transport import LoggingTransport
 
 LOG = structlog.get_logger()
 
@@ -392,5 +392,7 @@ def get_mtmai_context() -> AgentContext:
 
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
