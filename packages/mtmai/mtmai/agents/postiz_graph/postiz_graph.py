@@ -42,10 +42,11 @@ class PostizGraph:
             }
         }
 
-        from langgraph.checkpoint.memory import MemorySaver, MemoryStore
+        from langgraph.checkpoint.memory import MemorySaver
+        from langgraph.store.memory import InMemoryStore
 
         mem_checkpointer = MemorySaver()
-        mem_store = MemoryStore()
+        mem_store = InMemoryStore()
         graph = builded_graph.compile(
             checkpointer=mem_checkpointer,
             store=mem_store,

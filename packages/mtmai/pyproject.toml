@@ -42,7 +42,7 @@ dependencies = [
     "crewai>=0.86.0",
     "structlog>=24.4.0",
     "langgraph>=0.2.63",
-    "langgraph-checkpoint-postgres>=2.0.9",
+    "langgraph-checkpoint-postgres>=2.0.13",
     "lazify>=0.4.0",
     # docling 这个库,依赖项很庞大.其中有torch接近1G体积
     # "docling>=2.14.0",
@@ -80,6 +80,7 @@ dependencies = [
     "duckduckgo-search>=7.2.1",
     "newspaper4k>=0.9.3.1",
     "lxml-html-clean>=0.4.1",
+    "matplotlib>=3.10.0",
 ]
 
 license = "MIT"
