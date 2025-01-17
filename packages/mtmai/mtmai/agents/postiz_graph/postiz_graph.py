@@ -1,15 +1,14 @@
 import uuid
-from datetime import datetime
-from textwrap import dedent
 
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, START, StateGraph
-from mtmaisdk.clients.rest.models import AssisantState
-
-from mtmai.agents.ctx import mtmai_context
 from mtmai.agents.joke_graph.nodes.joke_writer_node import JokeWriterNode
+from mtmai.agents.nodes.initialize_research_node import InitializeResearchNode
+from mtmaisdk.clients.rest.models.postiz_state import PostizState
 
-from ....mtmaisdk.clients.rest.models.postiz_state import PostizState
+from .static import PostizGraphState
+
+# from langgraph.checkpoint.memory import MemorySaver
 
 
 class PostizGraph:
@@ -22,7 +21,8 @@ class PostizGraph:
         return "社交媒体贴文生成器"
 
     async def build_graph(self):
-        builder = StateGraph(AssisantState)
+        builder = StateGraph(PostizGraphState)
+        builder.add_node("init_research", InitializeResearchNode())
 
         builder.add_node("joke_writer", JokeWriterNode())
         builder.add_edge(START, "joke_writer")
@@ -31,29 +31,59 @@ class PostizGraph:
         return builder
 
     @staticmethod
-    async def run(input: PostizState):
-        graph = await PostizGraph().build_graph()
-        thread_id = str(uuid.uuid4())
+    async def run(input: PostizState, thread_id: str | None = None):
+        builded_graph = await PostizGraph().build_graph()
+
         if not thread_id:
             thread_id = str(uuid.uuid4())
-        direct_gen_outline_prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    dedent(
-                        """Today is {time}, You are an assistant that gets a social media post or requests for a social media post.
-                            You research should be on the most possible recent data.
-                            You concat the text of the request together with an internet research based on the text.
-                            {text}"""
-                    ),
-                ),
-                # ("user", "{topic}")
-            ]
-        ).partial(time=datetime.now())
+        thread: RunnableConfig = {
+            "configurable": {
+                "thread_id": thread_id,
+            }
+        }
 
-        ai_response = await mtmai_context.ainvoke_model(
-            tpl=direct_gen_outline_prompt,
-            inputs={"text": "todo user input text"},
+        from langgraph.checkpoint.memory import MemorySaver, MemoryStore
+
+        mem_checkpointer = MemorySaver()
+        mem_store = MemoryStore()
+        graph = builded_graph.compile(
+            checkpointer=mem_checkpointer,
+            store=mem_store,
+            # interrupt_after=["human"],
+            interrupt_before=[
+                # HUMEN_INPUT_NODE,
+            ],
+            debug=True,
         )
+
+        image_data = graph.get_graph(xray=1).draw_mermaid_png()
+        save_to = "./.vol/postiz-graph.png"
+        with open(save_to, "wb") as f:
+            f.write(image_data)
+
+        inputs = {
+            # "messages": messages,
+            # "userId": user_id,
+            # "params": params,
+        }
+        async for event in graph.astream_events(
+            inputs,
+            version="v2",
+            config=thread,
+            subgraphs=True,
+        ):
+            kind = event["event"]
+            node_name = event["name"]
+            data = event["data"]
+
+            # yield aisdk.data(event)
+            # if not is_internal_node(node_name):
+            #     if not is_skip_kind(kind):
+            #         logger.info("[event] %s@%s", kind, node_name)
+
+            # if kind == "on_chat_model_stream":
+            #     content = event["data"]["chunk"].content
+            #     if content:
+            #         yield aisdk.text(content)
 
         return {"fresearch": "xxxxxxxxxxfresearchxxxxxxxxxxxx"}

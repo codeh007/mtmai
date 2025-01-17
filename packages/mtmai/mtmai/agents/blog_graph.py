@@ -91,32 +91,6 @@ class TaskGraph:
 
         return wf
 
-    # async def compile_graph(self) -> CompiledGraph:
-    #     graph = (await self.build_graph()).compile(
-    #         checkpointer=await mtmai_context.get_graph_checkpointer(),
-    #         # interrupt_after=["human"],
-    #         interrupt_before=[
-    #             HUMEN_INPUT_NODE,
-    #         ],
-    #         debug=True,
-    #     )
-
-    #     if is_in_dev():
-    #         image_data = graph.get_graph(xray=1).draw_mermaid_png()
-    #         save_to = "./.vol/taskrunner_graph.png"
-    #         with open(save_to, "wb") as f:
-    #             f.write(image_data)
-    #     return graph
-
-    # async def getExampleState(self):
-    #     state = {
-    #         "messages": [],
-    #         "task_config": {
-    #             "siteUrl": "https://www.baidu.com",
-    #         },
-    #     }
-    #     return state
-
     async def on_chat_resume(self):
         init_mtmai_http_context()
         # thread_id = context.session.thread_id

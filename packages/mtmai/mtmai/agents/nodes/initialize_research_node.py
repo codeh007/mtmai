@@ -4,16 +4,13 @@ from textwrap import dedent
 import orjson
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import Runnable, RunnableConfig
+from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, Field
 
-# import mtmai.chainlit as cl
 from mtmai.agents.ctx import mtmai_context
 from mtmai.agents.tools.wikipedia import MtmTopicDocRetriever
 from mtmai.core.logging import get_logger
 from mtmai.models.graph_config import Outline, Perspectives, ResearchState
-
-logger = get_logger()
 
 
 class RelatedSubjects(BaseModel):
@@ -25,14 +22,14 @@ class RelatedSubjects(BaseModel):
 class InitializeResearchNode:
     state: ResearchState = None
 
-    def __init__(self, runnable: Runnable):
-        self.runnable = runnable
+    def __init__(self):
+        self.logger = get_logger()
 
     def node_name(self):
         return "initialize_research"
 
     async def __call__(self, state: ResearchState, config: RunnableConfig):
-        logger.info("进入 initialize_research node")
+        self.logger.info("进入 initialize_research node")
         topic = state["topic"]
         self.state = state
 
@@ -44,17 +41,16 @@ class InitializeResearchNode:
 
             return {
                 **state,
-                "outline": outline,  # 初始大纲，后续流程会对这个大纲进行改进
+                "outline": outline,  # 初始大纲
                 "editors": subjects.editors,
             }
         except Exception as e:
             import traceback
 
             error_message = f"Error in initialize_research: {str(e)}\n\nStacktrace:\n{traceback.format_exc()}"
-            logger.error(error_message)
+            self.logger.error(error_message)
             return {**state, "error": error_message}
 
-    @cl.step
     async def init_outline(self, topic: str):
         """初始化大纲"""
         # ctx = get_mtmai_ctx()
