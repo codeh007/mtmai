@@ -16,7 +16,7 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
             content = request.content.decode('utf-8')
             content_json = json.loads(content)
             
-            #1: 修正 tool_calls 字段
+            #1: 消息中 content None 的情况,应该用 空字符串替代
             messages_field=content_json.get("messages", None)
             if messages_field:
                 for message in messages_field:
@@ -40,25 +40,31 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
                                     if items:
                                         properties = items.get("properties", None)
                                         if properties:
-                                            for k, v in properties.items():
-                                                # 修正缺少的 type 字段
-                                                _type=v.get("type", None)
-                                                if not _type:
-                                                    v["type"] = "object"
-                                                _any_of=v.get("anyOf", None)
-                                                if _any_of:
-                                                    for _any_of_item in _any_of:
-                                                        _any_of_item["type"] = "object"
-                                                        any_of_properties=_any_of_item.get("properties", None)
-                                                        if any_of_properties:
-                                                            for any_of_property_k, any_of_property_v in any_of_properties.items():
-                                                                _any_of_property_type=any_of_property_v.get("type", None)
-                                                                if not _any_of_property_type:
-                                                                    any_of_property_v["type"] = "object"
-                                        action["items"] = items
+                                            # 创建要保留的新属性字典
+                                            new_properties = {}
+                                            for k, v in list(properties.items()):
+                                                # 只保留 search_google
+                                                if k == "search_google":
+                                                    # 修正缺少的 type 字段
+                                                    if "type" not in v:
+                                                        v["type"] = "object"
+                                                    new_properties[k] = v
+                                            # 用新的属性字典替换原来的
+                                            items["properties"] = new_properties
+                                        #             _any_of=v.get("anyOf", None)
+                                        #             if _any_of:
+                                        #                 for _any_of_item in _any_of:
+                                        #                     _any_of_item["type"] = "object"
+                                        #                     any_of_properties=_any_of_item.get("properties", None)
+                                        #                     if any_of_properties:
+                                        #                         for any_of_property_k, any_of_property_v in any_of_properties.items():
+                                        #                             _any_of_property_type=any_of_property_v.get("type", None)
+                                        #                             if not _any_of_property_type:
+                                        #                                 any_of_property_v["type"] = "object"
+                                        # action["items"] = items
                     
                 
-                content_json["tool_calls"]=tool_calls_field            
+                # content_json["tools"]=tool_calls_field            
             
             modified_content = json.dumps(content_json).encode('utf-8')
             new_headers = dict(request.headers)
@@ -87,11 +93,19 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
             formatted_content = content
             
         logger.info(
-            f"LLM http req: {request.url}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+            f"LLM http Response: {response.status_code},{request.url}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
             f"{formatted_content}\n"
-            f"Response {response.status_code}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
-            # f"{formatted_response_content}\n"
-            
         )
+        if response.status_code == 500:
+            content = response.content.decode('utf-8')
+            try:
+                content_json = json.loads(content)
+                formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
+                logger.error(f"LLM http req failed: {formatted_content}")
+            except json.JSONDecodeError:
+                logger.error(f"LLM http req failed: {content}")
+            # content_json = json.loads(content)
+            # formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
+            # raise Exception(f"LLM http req failed: {content_json.get('error', {}).get('message', 'Unknown error')}")
         
         return response
