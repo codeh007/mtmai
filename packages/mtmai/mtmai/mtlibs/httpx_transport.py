@@ -32,6 +32,7 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
                     if fn:
                         parameters=fn.get("parameters", None)
                         if parameters:
+                            parameters["type"] = "object"
                             properties = parameters.get("properties", None)
                             if properties:
                                 action = properties.get("action", None)
@@ -46,26 +47,22 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
                                                 # 只保留 search_google
                                                 if k == "search_google":
                                                     # 修正缺少的 type 字段
-                                                    if "type" not in v:
-                                                        v["type"] = "object"
+                                                    # if "type" not in v:
+                                                    #     v["type"] = "object"
+                                                    # new_properties[k] = v
+                                                    # 移除外层的 type: object
+                                                    if "type" in v:
+                                                        del v["type"]
+                                                    # 将 anyOf 中的 null 类型改为使用 nullable
+                                                    if "anyOf" in v:
+                                                        # 只保留第一个非 null 的定义
+                                                        non_null_schemas = [schema for schema in v["anyOf"] if schema.get("type") != "null"]
+                                                        if non_null_schemas:
+                                                            v = non_null_schemas[0]
+                                                            v["nullable"] = True
                                                     new_properties[k] = v
                                             # 用新的属性字典替换原来的
-                                            items["properties"] = new_properties
-                                        #             _any_of=v.get("anyOf", None)
-                                        #             if _any_of:
-                                        #                 for _any_of_item in _any_of:
-                                        #                     _any_of_item["type"] = "object"
-                                        #                     any_of_properties=_any_of_item.get("properties", None)
-                                        #                     if any_of_properties:
-                                        #                         for any_of_property_k, any_of_property_v in any_of_properties.items():
-                                        #                             _any_of_property_type=any_of_property_v.get("type", None)
-                                        #                             if not _any_of_property_type:
-                                        #                                 any_of_property_v["type"] = "object"
-                                        # action["items"] = items
-                    
-                
-                # content_json["tools"]=tool_calls_field            
-            
+                                            items["properties"] = new_properties            
             modified_content = json.dumps(content_json).encode('utf-8')
             new_headers = dict(request.headers)
             new_headers["content-length"] = str(len(modified_content))
@@ -82,30 +79,39 @@ class LoggingTransport(httpx.AsyncHTTPTransport):
         except Exception as e:
             logger.error(f"Error handling request: {e}")
             raise e
-        response = await super().handle_async_request(request)
         
-
+        
         try:
-            content = request.content.decode('utf-8')
-            content_json = json.loads(content)
-            formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            formatted_content = content
+            response = await super().handle_async_request(request)
             
-        logger.info(
-            f"LLM http Response: {response.status_code},{request.url}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
-            f"{formatted_content}\n"
-        )
-        if response.status_code == 500:
-            content = response.content.decode('utf-8')
+            
+
             try:
+                content = request.content.decode('utf-8')
                 content_json = json.loads(content)
                 formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
-                logger.error(f"LLM http req failed: {formatted_content}")
-            except json.JSONDecodeError:
-                logger.error(f"LLM http req failed: {content}")
-            # content_json = json.loads(content)
-            # formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
-            # raise Exception(f"LLM http req failed: {content_json.get('error', {}).get('message', 'Unknown error')}")
-        
-        return response
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                formatted_content = content
+            except Exception as e:
+                logger.error(f"LLM http req failed: {e}")
+                
+            logger.info(
+                f"LLM http Response: {response.status_code},{request.url}\n>>>>>>>>>>\n{formatted_content}\n"
+            )
+            if response.status_code == 500:
+                content = await response.aread()
+                content = content.decode('utf-8')
+                try:
+                    content_json = json.loads(content)
+                    formatted_content = json.dumps(content_json, indent=2, ensure_ascii=False)
+                    logger.error(f"LLM http req failed: {formatted_content}")
+                    # return new
+                except json.JSONDecodeError:
+                    logger.error(f"LLM http req failed: {content}")
+                except Exception as e:
+                    logger.error(f"LLM http req failed: {e}")
+            
+            return response
+        except Exception as e:
+            logger.error(f"LLM http req failed: {e}")
+            raise e
