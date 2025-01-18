@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel
 from sqlmodel import JSON, Column, Field, SQLModel
 
-from mtmai.db.id import generate_mttask_id
+# from mtmai.db.id import generate_mttask_id
 from mtmai.models.base_model import CommonResultRequest
 
 

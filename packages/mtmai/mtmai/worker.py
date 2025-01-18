@@ -69,22 +69,10 @@ class WorkerApp:
         worker = wfapp.worker("pyworker")
         if not worker:
             raise ValueError("worker not found")
-        from mtmai.workflows.flow_router import FlowRouter
 
-        worker.register_workflow(FlowRouter())
-        # from mtmai.workflows.flow_joke_graph import PyJokeFlow
+        from mtmai.workflows.flow_assistant import FlowAssistant
 
-        # worker.register_workflow(PyJokeFlow())
-
-        from mtmai.workflows.flow_postiz import FlowPostiz
-
-        worker.register_workflow(FlowPostiz())
-
-        # from mtmai.workflows.flow_scrape import ScrapFlow
-
-        # worker.register_workflow(ScrapFlow())
-
-        # from mtmai.workflows.graphflowhelper import build_graph_flow
+        worker.register_workflow(FlowAssistant())
         from mtmai.workflows.flow_crewai import FlowCrewAIAgent
 
         worker.register_workflow(FlowCrewAIAgent())
@@ -92,9 +80,6 @@ class WorkerApp:
         from mtmai.workflows.flow_browser import FlowBrowser
 
         worker.register_workflow(FlowBrowser())
-        from mtmai.workflows.flow_news_gen import FlowNewsGen
-
-        worker.register_workflow(FlowNewsGen())
         await worker.async_start()
 
         while True:

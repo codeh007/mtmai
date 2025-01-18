@@ -74,8 +74,7 @@ class InitializeResearchNode:
         ai_response = await mtmai_context.call_model_chat(
             direct_gen_outline_prompt, {"topic": topic}
         )
-
-        loaded_data = orjson.loads(ctx.repair_json(ai_response.content))
+        loaded_data = orjson.loads(mtmai_context.repair_json(ai_response.content))
         outline: Outline = Outline.model_validate(loaded_data)
         return outline
 

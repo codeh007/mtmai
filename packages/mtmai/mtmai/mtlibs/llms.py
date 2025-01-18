@@ -7,7 +7,7 @@ from json_repair import repair_json
 from langchain_core.messages import AIMessage, ToolCall
 from langgraph.checkpoint.memory import MemorySaver
 
-from mtmai.llm.llm import get_llm_chatbot_default
+# from mtmai.llm.llm import get_llm_chatbot_default
 
 memory = MemorySaver()
 
@@ -34,8 +34,8 @@ async def call_model(
     #     # tools,
     #     checkpointer=memory,
     # )
-    llm = get_llm_chatbot_default()
-    response = await llm.ainvoke(prompt)
+    # llm = get_llm_chatbot_default()
+    # response = await llm.ainvoke(prompt)
     # print(response)
     response.content
     return response.content
