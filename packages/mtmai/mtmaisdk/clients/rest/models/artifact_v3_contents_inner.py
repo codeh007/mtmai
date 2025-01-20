@@ -17,24 +17,24 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of import ArtifactV3ContentsInnerOneOf
-from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of1 import ArtifactV3ContentsInnerOneOf1
+from mtmaisdk.clients.rest.models.artifact_code_v3 import ArtifactCodeV3
+from mtmaisdk.clients.rest.models.artifact_markdown_v3 import ArtifactMarkdownV3
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-ARTIFACTV3CONTENTSINNER_ONE_OF_SCHEMAS = ["ArtifactV3ContentsInnerOneOf", "ArtifactV3ContentsInnerOneOf1"]
+ARTIFACTV3CONTENTSINNER_ONE_OF_SCHEMAS = ["ArtifactCodeV3", "ArtifactMarkdownV3"]
 
 class ArtifactV3ContentsInner(BaseModel):
     """
     ArtifactV3ContentsInner
     """
-    # data type: ArtifactV3ContentsInnerOneOf
-    oneof_schema_1_validator: Optional[ArtifactV3ContentsInnerOneOf] = None
-    # data type: ArtifactV3ContentsInnerOneOf1
-    oneof_schema_2_validator: Optional[ArtifactV3ContentsInnerOneOf1] = None
-    actual_instance: Optional[Union[ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1]] = None
-    one_of_schemas: Set[str] = { "ArtifactV3ContentsInnerOneOf", "ArtifactV3ContentsInnerOneOf1" }
+    # data type: ArtifactMarkdownV3
+    oneof_schema_1_validator: Optional[ArtifactMarkdownV3] = None
+    # data type: ArtifactCodeV3
+    oneof_schema_2_validator: Optional[ArtifactCodeV3] = None
+    actual_instance: Optional[Union[ArtifactCodeV3, ArtifactMarkdownV3]] = None
+    one_of_schemas: Set[str] = { "ArtifactCodeV3", "ArtifactMarkdownV3" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -57,22 +57,22 @@ class ArtifactV3ContentsInner(BaseModel):
         instance = ArtifactV3ContentsInner.model_construct()
         error_messages = []
         match = 0
-        # validate data type: ArtifactV3ContentsInnerOneOf
-        if not isinstance(v, ArtifactV3ContentsInnerOneOf):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ArtifactV3ContentsInnerOneOf`")
+        # validate data type: ArtifactMarkdownV3
+        if not isinstance(v, ArtifactMarkdownV3):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ArtifactMarkdownV3`")
         else:
             match += 1
-        # validate data type: ArtifactV3ContentsInnerOneOf1
-        if not isinstance(v, ArtifactV3ContentsInnerOneOf1):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ArtifactV3ContentsInnerOneOf1`")
+        # validate data type: ArtifactCodeV3
+        if not isinstance(v, ArtifactCodeV3):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ArtifactCodeV3`")
         else:
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in ArtifactV3ContentsInner with oneOf schemas: ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in ArtifactV3ContentsInner with oneOf schemas: ArtifactCodeV3, ArtifactMarkdownV3. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in ArtifactV3ContentsInner with oneOf schemas: ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in ArtifactV3ContentsInner with oneOf schemas: ArtifactCodeV3, ArtifactMarkdownV3. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -87,25 +87,25 @@ class ArtifactV3ContentsInner(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into ArtifactV3ContentsInnerOneOf
+        # deserialize data into ArtifactMarkdownV3
         try:
-            instance.actual_instance = ArtifactV3ContentsInnerOneOf.from_json(json_str)
+            instance.actual_instance = ArtifactMarkdownV3.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into ArtifactV3ContentsInnerOneOf1
+        # deserialize data into ArtifactCodeV3
         try:
-            instance.actual_instance = ArtifactV3ContentsInnerOneOf1.from_json(json_str)
+            instance.actual_instance = ArtifactCodeV3.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into ArtifactV3ContentsInner with oneOf schemas: ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into ArtifactV3ContentsInner with oneOf schemas: ArtifactCodeV3, ArtifactMarkdownV3. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into ArtifactV3ContentsInner with oneOf schemas: ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into ArtifactV3ContentsInner with oneOf schemas: ArtifactCodeV3, ArtifactMarkdownV3. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -119,7 +119,7 @@ class ArtifactV3ContentsInner(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ArtifactV3ContentsInnerOneOf, ArtifactV3ContentsInnerOneOf1]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], ArtifactCodeV3, ArtifactMarkdownV3]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

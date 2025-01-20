@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,9 +26,9 @@ class TextHighlight(BaseModel):
     """
     TextHighlight
     """ # noqa: E501
-    full_markdown: Optional[StrictStr] = Field(default=None, alias="fullMarkdown")
-    markdown_block: Optional[StrictStr] = Field(default=None, alias="markdownBlock")
-    selected_text: Optional[StrictStr] = Field(default=None, alias="selectedText")
+    full_markdown: StrictStr = Field(alias="fullMarkdown")
+    markdown_block: StrictStr = Field(alias="markdownBlock")
+    selected_text: StrictStr = Field(alias="selectedText")
     __properties: ClassVar[List[str]] = ["fullMarkdown", "markdownBlock", "selectedText"]
 
     model_config = ConfigDict(

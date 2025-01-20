@@ -41,11 +41,11 @@ from mtmaisdk.clients.rest.models.agent_step import AgentStep
 from mtmaisdk.clients.rest.models.agent_task_step import AgentTaskStep
 from mtmaisdk.clients.rest.models.agent_task_tool import AgentTaskTool
 from mtmaisdk.clients.rest.models.artifact import Artifact
+from mtmaisdk.clients.rest.models.artifact_code_v3 import ArtifactCodeV3
 from mtmaisdk.clients.rest.models.artifact_list import ArtifactList
+from mtmaisdk.clients.rest.models.artifact_markdown_v3 import ArtifactMarkdownV3
 from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmaisdk.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
-from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of import ArtifactV3ContentsInnerOneOf
-from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of1 import ArtifactV3ContentsInnerOneOf1
 from mtmaisdk.clients.rest.models.assisant import Assisant
 from mtmaisdk.clients.rest.models.assisant_config import AssisantConfig
 from mtmaisdk.clients.rest.models.assisant_config_configurable import AssisantConfigConfigurable
@@ -99,6 +99,7 @@ from mtmaisdk.clients.rest.models.crew_ai_task import CrewAiTask
 from mtmaisdk.clients.rest.models.cron_workflows import CronWorkflows
 from mtmaisdk.clients.rest.models.cron_workflows_list import CronWorkflowsList
 from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
+from mtmaisdk.clients.rest.models.custom_quick_action import CustomQuickAction
 from mtmaisdk.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmaisdk.clients.rest.models.document import Document
 from mtmaisdk.clients.rest.models.document_list import DocumentList
@@ -140,6 +141,7 @@ from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
 from mtmaisdk.clients.rest.models.postiz_channel import PostizChannel
 from mtmaisdk.clients.rest.models.postiz_state import PostizState
+from mtmaisdk.clients.rest.models.programming_language_options import ProgrammingLanguageOptions
 from mtmaisdk.clients.rest.models.prompt import Prompt
 from mtmaisdk.clients.rest.models.prompt_list import PromptList
 from mtmaisdk.clients.rest.models.pull_request import PullRequest

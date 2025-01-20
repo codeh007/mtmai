@@ -66,16 +66,6 @@ class CanvasGraphParams(BaseModel):
             raise ValueError("must be one of enum values ('shortest', 'short', 'long', 'longest')")
         return value
 
-    @field_validator('port_language')
-    def port_language_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['typescript', 'javascript', 'cpp', 'java', 'php', 'python']):
-            raise ValueError("must be one of enum values ('typescript', 'javascript', 'cpp', 'java', 'php', 'python')")
-        return value
-
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,

@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,9 +26,12 @@ class ArtifactV3ContentsInnerOneOf1(BaseModel):
     """
     ArtifactV3ContentsInnerOneOf1
     """ # noqa: E501
-    index: Optional[Union[StrictFloat, StrictInt]] = None
-    type: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["index", "type"]
+    index: Union[StrictFloat, StrictInt]
+    type: StrictStr
+    title: StrictStr
+    language: StrictStr
+    code: StrictStr
+    __properties: ClassVar[List[str]] = ["index", "type", "title", "language", "code"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,7 +85,10 @@ class ArtifactV3ContentsInnerOneOf1(BaseModel):
 
         _obj = cls.model_validate({
             "index": obj.get("index"),
-            "type": obj.get("type")
+            "type": obj.get("type"),
+            "title": obj.get("title"),
+            "language": obj.get("language"),
+            "code": obj.get("code")
         })
         return _obj
 

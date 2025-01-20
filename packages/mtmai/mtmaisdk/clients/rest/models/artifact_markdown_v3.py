@@ -17,18 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class CodeHighlight(BaseModel):
+class ArtifactMarkdownV3(BaseModel):
     """
-    CodeHighlight
+    ArtifactMarkdownV3
     """ # noqa: E501
-    start_char_index: Union[StrictFloat, StrictInt] = Field(alias="startCharIndex")
-    end_char_index: Union[StrictFloat, StrictInt] = Field(alias="endCharIndex")
-    __properties: ClassVar[List[str]] = ["startCharIndex", "endCharIndex"]
+    index: Union[StrictFloat, StrictInt]
+    type: StrictStr
+    title: StrictStr
+    full_markdown: StrictStr = Field(alias="fullMarkdown")
+    __properties: ClassVar[List[str]] = ["index", "type", "title", "fullMarkdown"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +50,7 @@ class CodeHighlight(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CodeHighlight from a JSON string"""
+        """Create an instance of ArtifactMarkdownV3 from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,7 +75,7 @@ class CodeHighlight(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CodeHighlight from a dict"""
+        """Create an instance of ArtifactMarkdownV3 from a dict"""
         if obj is None:
             return None
 
@@ -81,8 +83,10 @@ class CodeHighlight(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "startCharIndex": obj.get("startCharIndex"),
-            "endCharIndex": obj.get("endCharIndex")
+            "index": obj.get("index"),
+            "type": obj.get("type"),
+            "title": obj.get("title"),
+            "fullMarkdown": obj.get("fullMarkdown")
         })
         return _obj
 

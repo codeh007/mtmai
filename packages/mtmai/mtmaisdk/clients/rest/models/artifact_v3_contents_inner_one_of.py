@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,10 +26,10 @@ class ArtifactV3ContentsInnerOneOf(BaseModel):
     """
     ArtifactV3ContentsInnerOneOf
     """ # noqa: E501
-    index: Optional[Union[StrictFloat, StrictInt]] = None
-    type: Optional[StrictStr] = None
-    title: Optional[StrictStr] = None
-    full_markdown: Optional[StrictStr] = Field(default=None, alias="fullMarkdown")
+    index: Union[StrictFloat, StrictInt]
+    type: StrictStr
+    title: StrictStr
+    full_markdown: StrictStr = Field(alias="fullMarkdown")
     __properties: ClassVar[List[str]] = ["index", "type", "title", "fullMarkdown"]
 
     model_config = ConfigDict(
