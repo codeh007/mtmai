@@ -95,6 +95,7 @@ from mtmaisdk.clients.rest.models.artifact_code_v3 import ArtifactCodeV3
 from mtmaisdk.clients.rest.models.artifact_length_options import ArtifactLengthOptions
 from mtmaisdk.clients.rest.models.artifact_list import ArtifactList
 from mtmaisdk.clients.rest.models.artifact_markdown_v3 import ArtifactMarkdownV3
+from mtmaisdk.clients.rest.models.artifact_tool_response import ArtifactToolResponse
 from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmaisdk.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
 from mtmaisdk.clients.rest.models.assisant import Assisant
