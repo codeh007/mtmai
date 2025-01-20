@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from mtmaisdk.clients.rest.models.canvas_graph_params_action import CanvasGraphParamsAction
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
@@ -45,26 +45,6 @@ class CanvasGraphParams(BaseModel):
     add_logs: Optional[StrictBool] = Field(default=None, alias="addLogs")
     port_language: Optional[StrictStr] = Field(default=None, alias="portLanguage")
     __properties: ClassVar[List[str]] = ["stepLimit", "messages", "action", "language", "customQuickActionId", "artifactId", "fixBugs", "highlightedCode", "highlightedText", "regenerateWithEmojis", "readingLevel", "artifactLength", "artifact", "addComments", "addLogs", "portLanguage"]
-
-    @field_validator('reading_level')
-    def reading_level_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['pirate', 'child', 'teenager', 'college', 'phd']):
-            raise ValueError("must be one of enum values ('pirate', 'child', 'teenager', 'college', 'phd')")
-        return value
-
-    @field_validator('artifact_length')
-    def artifact_length_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['shortest', 'short', 'long', 'longest']):
-            raise ValueError("must be one of enum values ('shortest', 'short', 'long', 'longest')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
