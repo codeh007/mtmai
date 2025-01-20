@@ -82,9 +82,8 @@ from mtmaisdk.clients.rest.models.agent_node_list import AgentNodeList
 from mtmaisdk.clients.rest.models.agent_node_output import AgentNodeOutput
 from mtmaisdk.clients.rest.models.agent_node_run import AgentNodeRun
 from mtmaisdk.clients.rest.models.agent_node_run200_response import AgentNodeRun200Response
-from mtmaisdk.clients.rest.models.agent_node_run_request import AgentNodeRunRequest
-from mtmaisdk.clients.rest.models.agent_node_run_request_action import AgentNodeRunRequestAction
-from mtmaisdk.clients.rest.models.agent_node_run_request_params import AgentNodeRunRequestParams
+from mtmaisdk.clients.rest.models.agent_node_run_input import AgentNodeRunInput
+from mtmaisdk.clients.rest.models.agent_node_run_input_params import AgentNodeRunInputParams
 from mtmaisdk.clients.rest.models.agent_node_update_request import AgentNodeUpdateRequest
 from mtmaisdk.clients.rest.models.agent_run_form import AgentRunForm
 from mtmaisdk.clients.rest.models.agent_state import AgentState
@@ -93,6 +92,10 @@ from mtmaisdk.clients.rest.models.agent_task_step import AgentTaskStep
 from mtmaisdk.clients.rest.models.agent_task_tool import AgentTaskTool
 from mtmaisdk.clients.rest.models.artifact import Artifact
 from mtmaisdk.clients.rest.models.artifact_list import ArtifactList
+from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
+from mtmaisdk.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
+from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of import ArtifactV3ContentsInnerOneOf
+from mtmaisdk.clients.rest.models.artifact_v3_contents_inner_one_of1 import ArtifactV3ContentsInnerOneOf1
 from mtmaisdk.clients.rest.models.assisant import Assisant
 from mtmaisdk.clients.rest.models.assisant_config import AssisantConfig
 from mtmaisdk.clients.rest.models.assisant_config_configurable import AssisantConfigConfigurable
@@ -114,6 +117,8 @@ from mtmaisdk.clients.rest.models.bulk_create_event_response import BulkCreateEv
 from mtmaisdk.clients.rest.models.call_agent import CallAgent
 from mtmaisdk.clients.rest.models.call_agent_result import CallAgentResult
 from mtmaisdk.clients.rest.models.cancel_event_request import CancelEventRequest
+from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
+from mtmaisdk.clients.rest.models.canvas_graph_params_action import CanvasGraphParamsAction
 from mtmaisdk.clients.rest.models.chat_completions_req import ChatCompletionsReq
 from mtmaisdk.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
@@ -122,6 +127,7 @@ from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
 from mtmaisdk.clients.rest.models.chat_model import ChatModel
 from mtmaisdk.clients.rest.models.chat_model_list import ChatModelList
 from mtmaisdk.clients.rest.models.chat_req import ChatReq
+from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.common_result import CommonResult
 from mtmaisdk.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmaisdk.clients.rest.models.create_api_token_response import CreateAPITokenResponse
@@ -243,6 +249,7 @@ from mtmaisdk.clients.rest.models.tenant_resource import TenantResource
 from mtmaisdk.clients.rest.models.tenant_resource_limit import TenantResourceLimit
 from mtmaisdk.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmaisdk.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
+from mtmaisdk.clients.rest.models.text_highlight import TextHighlight
 from mtmaisdk.clients.rest.models.token_chunk import TokenChunk
 from mtmaisdk.clients.rest.models.tool_call_result import ToolCallResult
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest

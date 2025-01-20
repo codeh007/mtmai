@@ -22,7 +22,7 @@ from mtmaisdk.clients.rest.models.agent_node import AgentNode
 from mtmaisdk.clients.rest.models.agent_node_create_request import AgentNodeCreateRequest
 from mtmaisdk.clients.rest.models.agent_node_list import AgentNodeList
 from mtmaisdk.clients.rest.models.agent_node_run import AgentNodeRun
-from mtmaisdk.clients.rest.models.agent_node_run_request import AgentNodeRunRequest
+from mtmaisdk.clients.rest.models.agent_node_run_input import AgentNodeRunInput
 from mtmaisdk.clients.rest.models.agent_node_update_request import AgentNodeUpdateRequest
 from mtmaisdk.clients.rest.models.agent_run_form import AgentRunForm
 
@@ -1170,7 +1170,7 @@ class AgentApi:
     async def agent_node_run(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="创建agentnode")],
+        agent_node_run_input: Annotated[AgentNodeRunInput, Field(description="创建agentnode")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1190,8 +1190,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param agent_node_run_request: 创建agentnode (required)
-        :type agent_node_run_request: AgentNodeRunRequest
+        :param agent_node_run_input: 创建agentnode (required)
+        :type agent_node_run_input: AgentNodeRunInput
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1216,7 +1216,7 @@ class AgentApi:
 
         _param = self._agent_node_run_serialize(
             tenant=tenant,
-            agent_node_run_request=agent_node_run_request,
+            agent_node_run_input=agent_node_run_input,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1243,7 +1243,7 @@ class AgentApi:
     async def agent_node_run_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="创建agentnode")],
+        agent_node_run_input: Annotated[AgentNodeRunInput, Field(description="创建agentnode")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1263,8 +1263,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param agent_node_run_request: 创建agentnode (required)
-        :type agent_node_run_request: AgentNodeRunRequest
+        :param agent_node_run_input: 创建agentnode (required)
+        :type agent_node_run_input: AgentNodeRunInput
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1289,7 +1289,7 @@ class AgentApi:
 
         _param = self._agent_node_run_serialize(
             tenant=tenant,
-            agent_node_run_request=agent_node_run_request,
+            agent_node_run_input=agent_node_run_input,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1316,7 +1316,7 @@ class AgentApi:
     async def agent_node_run_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        agent_node_run_request: Annotated[AgentNodeRunRequest, Field(description="创建agentnode")],
+        agent_node_run_input: Annotated[AgentNodeRunInput, Field(description="创建agentnode")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1336,8 +1336,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param agent_node_run_request: 创建agentnode (required)
-        :type agent_node_run_request: AgentNodeRunRequest
+        :param agent_node_run_input: 创建agentnode (required)
+        :type agent_node_run_input: AgentNodeRunInput
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1362,7 +1362,7 @@ class AgentApi:
 
         _param = self._agent_node_run_serialize(
             tenant=tenant,
-            agent_node_run_request=agent_node_run_request,
+            agent_node_run_input=agent_node_run_input,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1384,7 +1384,7 @@ class AgentApi:
     def _agent_node_run_serialize(
         self,
         tenant,
-        agent_node_run_request,
+        agent_node_run_input,
         _request_auth,
         _content_type,
         _headers,
@@ -1412,8 +1412,8 @@ class AgentApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if agent_node_run_request is not None:
-            _body_params = agent_node_run_request
+        if agent_node_run_input is not None:
+            _body_params = agent_node_run_input
 
 
         # set the HTTP header `Accept`
