@@ -1,16 +1,14 @@
 import logging
 
 from langgraph.graph import END, StateGraph
-from mtmai.agents.conditions import condition_error_edge
 
-# from mtmai.agents.graphs.abstract_graph import AbstractGraph
+from mtmai.agents.conditions import condition_error_edge
 from mtmai.agents.nodes.conduct_interviews_node import ConductInterviewNode
 from mtmai.agents.nodes.index_references_node import IndexReferencesNode
 from mtmai.agents.nodes.initialize_research_node import InitializeResearchNode
 from mtmai.agents.nodes.refine_outline_node import RefineOutlineNode
 from mtmai.agents.nodes.write_article_node import WriteArticleNode
 from mtmai.agents.nodes.write_sections_node import WriteSectionsNode
-
 # from mtmai.llm.llm import get_llm_chatbot_default
 from mtmai.models.graph_config import ResearchState
 
