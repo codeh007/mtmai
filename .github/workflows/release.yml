@@ -32,6 +32,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: setup bun
+        uses: ./.github/actions/setup_bun
+
       - name: setup uv
         uses: astral-sh/setup-uv@v5
         with:
@@ -47,3 +50,9 @@ jobs:
 
       - name: Install the project
         run: uv sync --all-extras --dev
+
+      - name: 安装gomtm
+        run: npm install -g gomtm
+
+      - name: 使用 gomtm 发布 pipy 包
+        run: gomtm dp publish
