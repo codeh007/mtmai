@@ -34,7 +34,9 @@ class InitializeResearchNode:
         self.state = state
 
         try:
-            outline_task = asyncio.create_task(self.init_outline(topic))
+            outline_task: asyncio.Task[Outline] = asyncio.create_task(
+                self.init_outline(topic)
+            )
             subjects_task = asyncio.create_task(self.survey_subjects(topic))
 
             outline, subjects = await asyncio.gather(outline_task, subjects_task)
