@@ -190,6 +190,9 @@ from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByF
 from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmaisdk.clients.rest.models.operataion_guide_response import OperataionGuideResponse
 from mtmaisdk.clients.rest.models.operation_enum import OperationEnum
+from mtmaisdk.clients.rest.models.outline import Outline
+from mtmaisdk.clients.rest.models.outline_sections_inner import OutlineSectionsInner
+from mtmaisdk.clients.rest.models.outline_sections_inner_subsections_inner import OutlineSectionsInnerSubsectionsInner
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
 from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
