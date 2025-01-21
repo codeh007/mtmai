@@ -22,14 +22,12 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MtmaiWorkerConfig200Response(BaseModel):
+class MtmaiWorkerConfig200ResponseSearxng(BaseModel):
     """
-    worker 启动时所需的关键配置
+    searxng url
     """ # noqa: E501
-    token: StrictStr = Field(description="token")
-    grpc_host_port: StrictStr = Field(description="grpcHostPort", alias="grpcHostPort")
-    searxng: Optional[StrictStr] = Field(default=None, description="searxng url")
-    __properties: ClassVar[List[str]] = ["token", "grpcHostPort", "searxng"]
+    url: Optional[StrictStr] = Field(default=None, description="searxng url")
+    __properties: ClassVar[List[str]] = ["url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +47,7 @@ class MtmaiWorkerConfig200Response(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MtmaiWorkerConfig200Response from a JSON string"""
+        """Create an instance of MtmaiWorkerConfig200ResponseSearxng from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +72,7 @@ class MtmaiWorkerConfig200Response(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MtmaiWorkerConfig200Response from a dict"""
+        """Create an instance of MtmaiWorkerConfig200ResponseSearxng from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +80,7 @@ class MtmaiWorkerConfig200Response(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "token": obj.get("token"),
-            "grpcHostPort": obj.get("grpcHostPort"),
-            "searxng": obj.get("searxng")
+            "url": obj.get("url")
         })
         return _obj
 

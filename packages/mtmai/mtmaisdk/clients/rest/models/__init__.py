@@ -168,7 +168,6 @@ from mtmaisdk.clients.rest.models.research_response import ResearchResponse
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response import RewriteArtifactMetaToolResponse
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of import RewriteArtifactMetaToolResponseOneOf
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of1 import RewriteArtifactMetaToolResponseOneOf1
-from mtmaisdk.clients.rest.models.root_config import RootConfig
 from mtmaisdk.clients.rest.models.run_new_task_response import RunNewTaskResponse
 from mtmaisdk.clients.rest.models.sns_integration import SNSIntegration
 from mtmaisdk.clients.rest.models.scheduled_run_status import ScheduledRunStatus
