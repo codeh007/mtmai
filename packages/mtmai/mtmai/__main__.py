@@ -8,8 +8,9 @@ load_dotenv()
 import mtmai.core.bootstraps as bootstraps
 
 bootstraps.bootstrap_core()
-def main():
 
+
+def main():
     @click.group()
     def cli():
         pass
@@ -19,7 +20,6 @@ def main():
     #     from mtmai.core.config import settings
     #     from mtmai.core.logging import get_logger
     #     from mtmai.server import serve
-
 
     #     logger = get_logger()
     #     logger.info("🚀 call serve : %s:%s", settings.HOSTNAME, settings.PORT)
@@ -33,9 +33,18 @@ def main():
         worker_app = WorkerApp(url)
         asyncio.run(worker_app.deploy_mtmai_workers())
 
+    @cli.command()
+    def gradio():
+        from mtmai.gradio_app import demo
+
+        demo.launch(
+            share=True,
+            server_name="0.0.0.0",
+            server_port=18089,
+        )
+
     cli()
 
 
 if __name__ == "__main__":
-    main()
     main()
