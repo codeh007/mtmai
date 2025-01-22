@@ -40,6 +40,7 @@ from mtmaisdk.clients.rest.api.blog_api import BlogApi
 from mtmaisdk.clients.rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
+from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.post_api import PostApi
@@ -173,6 +174,7 @@ from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.gen_article_state_all_of_oulines import GenArticleStateAllOfOulines
 from mtmaisdk.clients.rest.models.gen_topic_result import GenTopicResult
 from mtmaisdk.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
+from mtmaisdk.clients.rest.models.hf_account import HfAccount
 from mtmaisdk.clients.rest.models.job import Job
 from mtmaisdk.clients.rest.models.job_run import JobRun
 from mtmaisdk.clients.rest.models.job_run_status import JobRunStatus

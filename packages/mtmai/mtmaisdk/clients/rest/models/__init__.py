@@ -123,6 +123,7 @@ from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.gen_article_state_all_of_oulines import GenArticleStateAllOfOulines
 from mtmaisdk.clients.rest.models.gen_topic_result import GenTopicResult
 from mtmaisdk.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
+from mtmaisdk.clients.rest.models.hf_account import HfAccount
 from mtmaisdk.clients.rest.models.job import Job
 from mtmaisdk.clients.rest.models.job_run import JobRun
 from mtmaisdk.clients.rest.models.job_run_status import JobRunStatus
