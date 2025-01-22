@@ -9,17 +9,6 @@ on:
       - "package.json"
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      input:
-        description: "功能选项 (1: 仅构建, 2: 构建并部署, 3: 构建docker镜像并发布)"
-        required: true
-        type: choice
-        options:
-          - "1"
-          - "2"
-          - "3"
-        default: "1"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -51,13 +40,9 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: 安装gomtm with npm
+      - name: install gomtm
         run: |
           npm install -g gomtm-cli
-          gomtm --help
 
-      # - name: 安装gomtm
-      #   run: bun install -g gomtm
-
-      - name: 使用 gomtm 发布 pipy 包
-        run: gomtm dp publish
+      - name: 发布 pipy 包
+        run: gomtm publish
