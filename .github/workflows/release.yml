@@ -51,6 +51,11 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: 安装gomtm with npm
+        run: |
+          npm install -g gomtm
+          gomtm --help
+
       - name: 安装gomtm
         run: bun install -g gomtm
 
