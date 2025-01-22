@@ -17,6 +17,10 @@ runs:
       with:
         bun-version: latest
 
+    - name: setup bun path
+      run: |
+        echo "export PATH=\"/home/runner/.bun/bin:\$PATH\"" >> $GITHUB_ENV
+
     # - name: bun install
     #   run: |
     #     [[ -f package.json ]] && bun install --frozen-lockfile || bun install --development
