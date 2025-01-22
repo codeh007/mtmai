@@ -56,5 +56,6 @@ jobs:
 
       - name: 发布 pipy 包
         run: |
+          pwd
           ls -alh
-          (cd packages/mtmai && gomtm publish)
+          gomtm publish
