@@ -17,10 +17,10 @@ runs:
       with:
         bun-version: latest
 
-    - name: bun install
-      run: |
-        [[ -f package.json ]] && bun install --frozen-lockfile || bun install --development
-      shell: bash
+    # - name: bun install
+    #   run: |
+    #     [[ -f package.json ]] && bun install --frozen-lockfile || bun install --development
+    #   shell: bash
 
     - name: Setup Git User
       shell: bash
