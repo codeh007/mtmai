@@ -53,11 +53,11 @@ jobs:
 
       - name: 安装gomtm with npm
         run: |
-          npm install -g gomtm
+          npm install -g gomtm-cli
           gomtm --help
 
-      - name: 安装gomtm
-        run: bun install -g gomtm
+      # - name: 安装gomtm
+      #   run: bun install -g gomtm
 
       - name: 使用 gomtm 发布 pipy 包
         run: gomtm dp publish
