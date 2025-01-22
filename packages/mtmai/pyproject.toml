@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.17"
+version = "0.6.18"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
