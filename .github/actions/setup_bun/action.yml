@@ -20,6 +20,12 @@ runs:
     - name: setup bun path
       run: |
         echo "export PATH=\"/home/runner/.bun/bin:\$PATH\"" >> $GITHUB_ENV
+      shell: bash
+
+    - name: setup npm path
+      run: |
+        echo "export PATH=\"/home/runner/.npm/bin:\$PATH\"" >> $GITHUB_ENV
+      shell: bash
 
     # - name: bun install
     #   run: |
