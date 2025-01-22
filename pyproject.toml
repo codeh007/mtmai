@@ -35,8 +35,9 @@ exclude = [
 ]
 
 [tool.setuptools]
-packages = ["mtmairoot"]
+packages = ["mtmairoot", "packages/mtmai"]
 package-dir = { "" = "." }
+namespace-packages = ["packages"]
 
 
 [build-system]
@@ -44,11 +45,16 @@ requires = ["hatchling>=1.0.0", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-packages = ["mtmairoot"]
+allow-direct-references = true
+packages = ["mtmairoot", "packages/mtmai"]
 exclude = ["tests/**", "examples/**"]
 
 [tool.hatch.version]
 source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mtmairoot", "packages/mtmai"]
+
 
 #[tool.hatch.build.hooks.vcs]
 #version-file = "mtmairoot/_version.py"
