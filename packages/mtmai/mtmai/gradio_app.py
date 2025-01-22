@@ -1,10 +1,27 @@
+import os
+from pathlib import Path
+
 import gradio as gr
+from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 
+default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
+
+# 搜索并加载环境变量文件
+for env_file in default_env_files:
+    env_path = Path(env_file)
+    if env_path.exists():
+        load_dotenv(env_path)
+token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+if not token:
+    raise ValueError("HUGGINGFACEHUB_API_TOKEN 未设置")
 """
 For more information on `huggingface_hub` Inference API support, please check the docs: https://huggingface.co/docs/huggingface_hub/v0.22.2/en/guides/inference
 """
-client = InferenceClient("HuggingFaceH4/zephyr-7b-beta")
+client = InferenceClient(
+    "HuggingFaceH4/zephyr-7b-beta",
+    token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
+)
 
 
 def respond(
