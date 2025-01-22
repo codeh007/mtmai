@@ -18,7 +18,6 @@ runs:
         bun-version: latest
 
     - name: bun install
-      # run: bun install --development
       run: |
         [[ -f package.json ]] && bun install --frozen-lockfile || bun install --development
       shell: bash
