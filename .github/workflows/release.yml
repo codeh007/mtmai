@@ -55,4 +55,4 @@ jobs:
           npm install -g gomtm-cli
 
       - name: 发布 pipy 包
-        run: gomtm publish
+        run: (cd packages/mtmai && gomtm publish)
