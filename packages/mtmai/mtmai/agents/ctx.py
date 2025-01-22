@@ -23,7 +23,7 @@ from mtmaisdk import Context as HatchetContext
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel
 
-from mtmai.agents import utils
+# from mtmai.agents import utils
 from mtmai.agents.graphutils import ensure_valid_llm_response_v2
 from mtmai.core.config import settings
 from mtmai.mtlibs.httpx_transport import LoggingTransport
@@ -125,8 +125,8 @@ class AgentContext:
         tpl: ChatPromptTemplate,
         inputs: dict | BaseModel | None,
         *,
-        tools: list[StructuredTool | dict]|None = None,
-        structured_output: BaseModel|None = None,
+        tools: list[StructuredTool | dict] | None = None,
+        structured_output: BaseModel | None = None,
         llm_config_name: str = "chat",
         max_retries: int = 5,
         sleep_time: int = 3,
