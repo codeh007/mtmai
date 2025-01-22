@@ -52,7 +52,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: 安装gomtm
-        run: npm install -g gomtm
+        run: bun install -g gomtm
 
       - name: 使用 gomtm 发布 pipy 包
         run: gomtm dp publish
