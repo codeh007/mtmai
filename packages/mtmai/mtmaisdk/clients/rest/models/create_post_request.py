@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,7 +30,20 @@ class CreatePostRequest(BaseModel):
     site_id: Annotated[str, Field(min_length=36, strict=True, max_length=36)] = Field(alias="siteId")
     title: Annotated[str, Field(min_length=3, strict=True, max_length=200)]
     content: Annotated[str, Field(min_length=50, strict=True, max_length=10240)] = Field(description="The tenant associated with this tenant blog.")
-    __properties: ClassVar[List[str]] = ["siteId", "title", "content"]
+    slug: Annotated[str, Field(min_length=3, strict=True, max_length=200)] = Field(description="The slug of the post")
+    author_id: Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]] = Field(default=None, alias="authorId")
+    status: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["siteId", "title", "content", "slug", "authorId", "status"]
+
+    @field_validator('status')
+    def status_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['draft', 'published']):
+            raise ValueError("must be one of enum values ('draft', 'published')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,7 +98,10 @@ class CreatePostRequest(BaseModel):
         _obj = cls.model_validate({
             "siteId": obj.get("siteId"),
             "title": obj.get("title"),
-            "content": obj.get("content")
+            "content": obj.get("content"),
+            "slug": obj.get("slug"),
+            "authorId": obj.get("authorId"),
+            "status": obj.get("status")
         })
         return _obj
 
