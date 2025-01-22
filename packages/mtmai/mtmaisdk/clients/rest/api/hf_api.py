@@ -16,6 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
+from mtmaisdk.clients.rest.models.hf_account import HfAccount
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -50,8 +51,8 @@ class HfApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> None:
-        """获取 hf 账户信息
+    ) -> HfAccount:
+        """hf_account_get
 
 
         :param _request_timeout: timeout setting for this request. If one
@@ -84,7 +85,10 @@ class HfApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
+            '200': "HfAccount",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -112,8 +116,8 @@ class HfApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[None]:
-        """获取 hf 账户信息
+    ) -> ApiResponse[HfAccount]:
+        """hf_account_get
 
 
         :param _request_timeout: timeout setting for this request. If one
@@ -146,7 +150,10 @@ class HfApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
+            '200': "HfAccount",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -175,7 +182,7 @@ class HfApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """获取 hf 账户信息
+        """hf_account_get
 
 
         :param _request_timeout: timeout setting for this request. If one
@@ -208,7 +215,10 @@ class HfApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
+            '200': "HfAccount",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -246,6 +256,13 @@ class HfApi:
         # process the body parameter
 
 
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
 
 
         # authentication setting

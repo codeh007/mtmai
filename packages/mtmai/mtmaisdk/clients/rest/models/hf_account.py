@@ -18,7 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
+from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,9 +27,10 @@ class HfAccount(BaseModel):
     """
     HfAccount
     """ # noqa: E501
-    username: Optional[StrictStr] = Field(default=None, description="The username of the hf account.")
-    token: Optional[StrictStr] = Field(default=None, description="The token of the hf account.")
-    __properties: ClassVar[List[str]] = ["username", "token"]
+    metadata: APIResourceMeta
+    username: StrictStr = Field(description="The username of the hf account.")
+    token: StrictStr = Field(description="The token of the hf account.")
+    __properties: ClassVar[List[str]] = ["metadata", "username", "token"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,6 +71,9 @@ class HfAccount(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
@@ -81,6 +86,7 @@ class HfAccount(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "username": obj.get("username"),
             "token": obj.get("token")
         })
