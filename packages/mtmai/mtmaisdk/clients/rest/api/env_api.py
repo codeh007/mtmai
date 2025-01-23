@@ -16,8 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from typing import List
-from mtmaisdk.clients.rest.models.env import Env
+from mtmaisdk.clients.rest.models.env_list import EnvList
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -52,7 +51,7 @@ class EnvApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> List[Env]:
+    ) -> EnvList:
         """env_get
 
         环境变量
@@ -87,7 +86,7 @@ class EnvApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "List[Env]",
+            '200': "EnvList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -118,7 +117,7 @@ class EnvApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[List[Env]]:
+    ) -> ApiResponse[EnvList]:
         """env_get
 
         环境变量
@@ -153,7 +152,7 @@ class EnvApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "List[Env]",
+            '200': "EnvList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -219,7 +218,7 @@ class EnvApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "List[Env]",
+            '200': "EnvList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",

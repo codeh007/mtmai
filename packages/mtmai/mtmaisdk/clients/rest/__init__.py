@@ -159,6 +159,7 @@ from mtmaisdk.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmaisdk.clients.rest.models.document import Document
 from mtmaisdk.clients.rest.models.document_list import DocumentList
 from mtmaisdk.clients.rest.models.env import Env
+from mtmaisdk.clients.rest.models.env_list import EnvList
 from mtmaisdk.clients.rest.models.event import Event
 from mtmaisdk.clients.rest.models.event_data import EventData
 from mtmaisdk.clients.rest.models.event_key_list import EventKeyList
