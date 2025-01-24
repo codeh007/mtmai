@@ -52,25 +52,25 @@ def setup_logging():
         file_handler.setFormatter(logging.Formatter(log_format))
         root_logger.addHandler(file_handler)
 
-    if settings.LOKI_ENDPOINT:
-        print(
-            f"use loki logging handler: {settings.LOKI_USER},{settings.LOKI_ENDPOINT}"
-        )
-        if not settings.GRAFANA_TOKEN:
-            print("missing GRAFANA_TOKEN, skip setup loki")
-        else:
-            import logging_loki
+    # if settings.LOKI_ENDPOINT:
+    #     print(
+    #         f"use loki logging handler: {settings.LOKI_USER},{settings.LOKI_ENDPOINT}"
+    #     )
+    #     if not settings.GRAFANA_TOKEN:
+    #         print("missing GRAFANA_TOKEN, skip setup loki")
+    #     else:
+    #         import logging_loki
 
-            handler = logging_loki.LokiHandler(
-                url=settings.LOKI_ENDPOINT,
-                tags={
-                    "application": settings.app_name,
-                    "deploy": settings.otel_deploy_name,
-                },
-                auth=(settings.LOKI_USER, settings.GRAFANA_TOKEN),
-                version="1",
-            )
-            root_logger.addHandler(handler)
+    #         handler = logging_loki.LokiHandler(
+    #             url=settings.LOKI_ENDPOINT,
+    #             tags={
+    #                 "application": settings.app_name,
+    #                 "deploy": settings.otel_deploy_name,
+    #             },
+    #             auth=(settings.LOKI_USER, settings.GRAFANA_TOKEN),
+    #             version="1",
+    #         )
+    #         root_logger.addHandler(handler)
 
     setup_root_logger()
     setup_sqlalchemy_logging()

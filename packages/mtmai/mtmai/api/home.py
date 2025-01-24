@@ -1,12 +1,13 @@
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_oauth2_redirect_html
-from mtmlib.decorators.mtform.mtform import MtForm
+
+# from mtmlib.decorators.mtform.mtform import MtForm
 from opentelemetry import trace
 from pydantic import BaseModel
 
 from mtmai.agents.opencanvas.opencanvas_state import OpenCanvasState
-from mtmai.core.config import APP_ROOT, settings
+from mtmai.core.config import settings
 from mtmai.deps import get_current_active_superuser
 from mtmai.models.agent import ChatBotUiStateResponse
 from mtmai.models.chat import ChatProfile, ListViewProps, ThreadUIState
@@ -81,7 +82,7 @@ class TypesResponse(BaseModel):
     thread_ui_state: ThreadUIState | None = None
     chat_profile: ChatProfile | None = None
     list_view_props: ListViewProps | None = None
-    mt_form: MtForm | None = None
+    # mt_form: MtForm | None = None
     open_canvas_state: OpenCanvasState | None = None
 
 
@@ -117,4 +118,5 @@ async def types():
 
 #     return FileResponse(logo_path, media_type=media_type)
 
+#     # merge_gauge_data(filename)
 #     # merge_gauge_data(filename)

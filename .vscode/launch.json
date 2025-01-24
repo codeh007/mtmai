@@ -1,71 +1,66 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "mtmai",
-			"type": "debugpy",
-			"request": "launch",
-			// "program": "${workspaceFolder}/.venv/Scripts/uvicorn",
-			// "module": "uvicorn",
-			// "module": "mtmai.__main__",
-			// "program": "${workspaceFolder}/mtmai/mtmai/cli/serve.py",
-			"program": "${workspaceFolder}/pyprojects/mtmai/mtmai/__main__.py",
-			"cwd": "${workspaceFolder}",
-			"args": ["serve"],
-			"jinja": true,
-			"justMyCode": false,
-			"envFile": "${workspaceFolder}/../gomtm/env/dev.env",
-			"env": {
-				"PORT": "8066",
-				"DISPLAY": ":1",
-				"MTM_DEV": "development",
-				"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-				"PYTHONPATH---": "${workspaceFolder}/.venv/lib/python3.11/site-packages"
-			},
-			"windows": {
-				"env": {
-					"http_proxy": "http://127.0.0.1:10809",
-					"https_proxy": "http://127.0.0.1:10809"
-				}
-			}
-		},
-		{
-			"name": "mtmai_worker",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
-			"cwd": "${workspaceFolder}",
-			"args": ["worker", "--url", "http://localhost:8383"],
-			"jinja": true,
-			"justMyCode": false,
-			"envFile": "${workspaceFolder}/.env",
-			"env": {
-				"PORT": "8066",
-				"DISPLAY": ":1",
-				"MTM_DEV": "development",
-				"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-				"PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
-				// "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
-			}
-		},
-		{
-			"name": "gradio_app",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
-			"cwd": "${workspaceFolder}",
-			"args": ["gradio"],
-			"jinja": true,
-			"justMyCode": false,
-			"envFile": "${workspaceFolder}/.env",
-			"env": {
-				"PORT": "8066",
-				"DISPLAY": ":1",
-				"MTM_DEV": "development",
-				"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-				"PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
-				// "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
-			}
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "mtmai",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+      "cwd": "${workspaceFolder}",
+      "args": ["serve"],
+      "jinja": true,
+      "justMyCode": false,
+      "envFile": "${workspaceFolder}/../gomtm/env/dev.env",
+      "env": {
+        "PORT": "8066",
+        "DISPLAY": ":1",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
+        "PYTHONPATH---": "${workspaceFolder}/.venv/lib/python3.11/site-packages"
+      },
+      "windows": {
+        "env": {
+          "http_proxy": "http://127.0.0.1:10809",
+          "https_proxy": "http://127.0.0.1:10809"
+        }
+      }
+    },
+    {
+      "name": "mtmai_worker",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+      "cwd": "${workspaceFolder}",
+      "args": ["worker", "--url", "http://localhost:8383"],
+      "jinja": true,
+      "justMyCode": false,
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "PORT": "8066",
+        "DISPLAY": ":1",
+        "MTM_DEV": "development",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
+        "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+        // "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
+      }
+    },
+    {
+      "name": "gradio_app",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+      "cwd": "${workspaceFolder}",
+      "args": ["gradio"],
+      "jinja": true,
+      "justMyCode": false,
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "PORT": "8066",
+        "DISPLAY": ":1",
+        "MTM_DEV": "development",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
+        "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+        // "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
+      }
+    }
+  ]
 }

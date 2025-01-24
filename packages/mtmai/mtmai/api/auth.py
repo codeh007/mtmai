@@ -1,28 +1,32 @@
 from datetime import timedelta
-from typing import Annotated, Any
+from typing import Annotated
 from urllib.parse import urlencode
 
 import httpx
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from mtmlib.github import get_github_user_data
 
 from mtmai.core import coreutils, security
 from mtmai.core.config import settings
 from mtmai.core.security import get_password_hash
 from mtmai.crud import curd, curd_account
-from mtmai.deps import AsyncSessionDep, SessionDep, get_current_active_superuser
-from mtmai.forge.app import DATABASE
-from mtmai.forge.sdk.services.org_auth_token_service import create_org_api_token
+
+# from mtmai.deps import AsyncSessionDep, SessionDep, get_current_active_superuser
+# from mtmai.forge.app import DATABASE
+# from mtmai.forge.sdk.services.org_auth_token_service import create_org_api_token
 from mtmai.models.models import Message, NewPassword, Token
-from mtmai.utils import (
-    generate_password_reset_token,
-    generate_reset_password_email,
-    send_email,
-    verify_password_reset_token,
-)
+
+from ..deps import AsyncSessionDep, SessionDep
+
+# from mtmai.utils import (  # generate_password_reset_token,; send_email,
+#     # generate_reset_password_email,
+#     # verify_password_reset_token,
+# )
+
+# from .utils.github import get_github_user_data
+
 
 router = APIRouter()
 LOG = structlog.get_logger()
@@ -63,28 +67,28 @@ async def login_access_token(
     return response
 
 
-@router.post("/password-recovery/{email}")
-async def recover_password(email: str, session: AsyncSessionDep) -> Message:
-    """
-    Password Recovery
-    """
-    user = await curd.get_user_by_email(session=session, email=email)
+# @router.post("/password-recovery/{email}")
+# async def recover_password(email: str, session: AsyncSessionDep) -> Message:
+#     """
+#     Password Recovery
+#     """
+#     user = await curd.get_user_by_email(session=session, email=email)
 
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this email does not exist in the system.",
-        )
-    password_reset_token = generate_password_reset_token(email=email)
-    email_data = generate_reset_password_email(
-        email_to=user.email, email=email, token=password_reset_token
-    )
-    send_email(
-        email_to=user.email,
-        subject=email_data.subject,
-        html_content=email_data.html_content,
-    )
-    return Message(message="Password recovery email sent")
+#     if not user:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="The user with this email does not exist in the system.",
+#         )
+#     password_reset_token = generate_password_reset_token(email=email)
+#     email_data = generate_reset_password_email(
+#         email_to=user.email, email=email, token=password_reset_token
+#     )
+#     send_email(
+#         email_to=user.email,
+#         subject=email_data.subject,
+#         html_content=email_data.html_content,
+#     )
+#     return Message(message="Password recovery email sent")
 
 
 @router.post("/reset-password/")
@@ -110,30 +114,30 @@ async def reset_password(session: AsyncSessionDep, body: NewPassword) -> Message
     return Message(message="Password updated successfully")
 
 
-@router.post(
-    "/password-recovery-html-content/{email}",
-    dependencies=[Depends(get_current_active_superuser)],
-    response_class=HTMLResponse,
-)
-async def recover_password_html_content(email: str, session: SessionDep) -> Any:
-    """
-    HTML Content for Password Recovery
-    """
-    user = await curd.get_user_by_email(session=session, email=email)
+# @router.post(
+#     "/password-recovery-html-content/{email}",
+#     dependencies=[Depends(get_current_active_superuser)],
+#     response_class=HTMLResponse,
+# )
+# async def recover_password_html_content(email: str, session: SessionDep) -> Any:
+#     """
+#     HTML Content for Password Recovery
+#     """
+#     user = await curd.get_user_by_email(session=session, email=email)
 
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this username does not exist in the system.",
-        )
-    password_reset_token = generate_password_reset_token(email=email)
-    email_data = generate_reset_password_email(
-        email_to=user.email, email=email, token=password_reset_token
-    )
+#     if not user:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="The user with this username does not exist in the system.",
+#         )
+#     password_reset_token = generate_password_reset_token(email=email)
+#     email_data = generate_reset_password_email(
+#         email_to=user.email, email=email, token=password_reset_token
+#     )
 
-    return HTMLResponse(
-        content=email_data.html_content, headers={"subject:": email_data.subject}
-    )
+#     return HTMLResponse(
+#         content=email_data.html_content, headers={"subject:": email_data.subject}
+#     )
 
 
 @router.get("/auth/github/callback", include_in_schema=False)
@@ -219,4 +223,5 @@ async def github_oauth_authorize(req: Request):
 async def get_org_api_token():
     organization = await DATABASE.create_organization("org1")
     LOG.info(f"Created organization: {organization}")
+    return await create_org_api_token(organization.organization_id)
     return await create_org_api_token(organization.organization_id)

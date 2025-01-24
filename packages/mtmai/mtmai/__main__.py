@@ -25,13 +25,13 @@ def main():
         logger.info("🚀 call serve : %s:%s", settings.HOSTNAME, settings.PORT)
         asyncio.run(serve())
 
-    @cli.command()
-    @click.option("--url", required=False)
-    def worker(url):
-        from mtmai.worker import WorkerApp
+    # @cli.command()
+    # @click.option("--url", required=False)
+    # def worker(url):
+    #     from mtmai.worker import WorkerApp
 
-        worker_app = WorkerApp(url)
-        asyncio.run(worker_app.deploy_mtmai_workers())
+    #     worker_app = WorkerApp(url)
+    #     asyncio.run(worker_app.deploy_mtmai_workers())
 
     @cli.command()
     def gradio():

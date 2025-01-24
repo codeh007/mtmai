@@ -7,14 +7,12 @@ from fastapi import APIRouter, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from mtmaisdk.utils.env import is_in_docker, is_in_huggingface, is_in_windows
 
 # from mtmlib import mtutils
 from pydantic import ValidationError
 from starlette.templating import Jinja2Templates
 
-from mtmai import analytics
-
+# from mtmai import analytics
 # from mtmai.app_forge import setup_forge_app
 from mtmai.core.__version__ import version
 from mtmai.core.config import settings
@@ -24,6 +22,8 @@ from mtmai.exceptions import SkyvernHTTPException
 # from mtmai.forge.sdk.db.exceptions import NotFoundError
 # from mtmai.forge.sdk.settings_manager import SettingsManager
 from mtmai.middleware import AuthMiddleware
+
+from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 
 # from starlette_context.plugins.base import Plugin
 
@@ -82,60 +82,60 @@ def build_app():
 
     # api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
 
-    LOG.info("api agent")
-    from mtmai.api import agent
+    # LOG.info("api agent")
+    # from mtmai.api import agent
 
-    api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
+    # api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
 
     # LOG.info("api form")
     # from mtmai.api import form
 
     # api_router.include_router(form.router, prefix="/form", tags=["form"])
 
-    LOG.info("api site")
-    from mtmai.api import site
+    # LOG.info("api site")
+    # from mtmai.api import site
 
-    api_router.include_router(site.router, prefix="/site", tags=["site"])
+    # api_router.include_router(site.router, prefix="/site", tags=["site"])
 
-    LOG.info("api webpage")
-    from mtmai.api import webpage
+    # LOG.info("api webpage")
+    # from mtmai.api import webpage
 
-    api_router.include_router(webpage.router, prefix="/webpage", tags=["webpage"])
+    # api_router.include_router(webpage.router, prefix="/webpage", tags=["webpage"])
 
-    LOG.info("api tasks")
-    from mtmai.api import tasks
+    # LOG.info("api tasks")
+    # from mtmai.api import tasks
 
-    api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
+    # api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
 
     LOG.info("api openai")
     from mtmai.api import openai
 
     api_router.include_router(openai.router, tags=["openai"])
 
-    LOG.info("api listview")
-    from mtmai.api import listview
+    # LOG.info("api listview")
+    # from mtmai.api import listview
 
-    api_router.include_router(listview.router, prefix="/listview", tags=["listview"])
+    # api_router.include_router(listview.router, prefix="/listview", tags=["listview"])
 
-    LOG.info("api workbench")
-    from mtmai.api import workbench
+    # LOG.info("api workbench")
+    # from mtmai.api import workbench
 
-    api_router.include_router(workbench.router, prefix="/workbench", tags=["workbench"])
+    # api_router.include_router(workbench.router, prefix="/workbench", tags=["workbench"])
 
     LOG.info("api logs")
     from mtmai.api import logs
 
     api_router.include_router(logs.router, prefix="/logs", tags=["logs"])
 
-    LOG.info("api thread")
-    from mtmai.api import thread
+    # LOG.info("api thread")
+    # from mtmai.api import thread
 
-    api_router.include_router(thread.router, prefix="/thread", tags=["thread"])
+    # api_router.include_router(thread.router, prefix="/thread", tags=["thread"])
 
-    LOG.info("api artifact")
-    from mtmai.api import artifact
+    # LOG.info("api artifact")
+    # from mtmai.api import artifact
 
-    api_router.include_router(artifact.router, prefix="/artifact", tags=["artifact"])
+    # api_router.include_router(artifact.router, prefix="/artifact", tags=["artifact"])
 
     LOG.info("api config")
     from mtmai.api import config
@@ -194,19 +194,19 @@ def build_app():
     )
     templates = Jinja2Templates(directory="templates")
 
-    if is_in_dev():
-        from mtmai.api import admin
+    # if is_in_dev():
+    #     from mtmai.api import admin
 
-        api_router.include_router(
-            admin.router,
-            prefix="/admin",
-            tags=["admin"],
-        )
-        # from mtmai.api import demos
+    #     api_router.include_router(
+    #         admin.router,
+    #         prefix="/admin",
+    #         tags=["admin"],
+    #     )
+    #     # from mtmai.api import demos
 
-        # api_router.include_router(
-        #     demos.router, prefix="/demos/demos", tags=["demos_demos"]
-        # )
+    #     # api_router.include_router(
+    #     #     demos.router, prefix="/demos/demos", tags=["demos_demos"]
+    #     # )
 
     # app.openapi_schema = {
     #     "components": {
@@ -330,52 +330,53 @@ def build_app():
 
 
 async def serve():
+    # try:
+    # analytics.capture("skyvern-oss-run-server")
+    load_dotenv()
+
+    app = build_app()
+    # threading.Thread(target=start_deamon_serve).start()
+
+    config = uvicorn.Config(
+        app,
+        host=settings.SERVE_IP,
+        port=settings.PORT,
+        log_level="info",
+        # reload=not settings.is_production,
+        # !!! bug 当 使用了prefect 后，使用了这个指令： @flow，程序会被卡在： .venv/lib/python3.12/site-packages/uvicorn/config.py
+        # !!!365行：logging.config.dictConfig(self.log_config)
+        # !!! 原因未知，但是 log_config=None 后，问题消失
+        # log_config=None,
+        # reload=reload,
+    )
+
+    host = (
+        "127.0.0.1"
+        if settings.SERVE_IP == "0.0.0.0"
+        else settings.server_host.split("://")[-1]
+    )
+    server_url = f"{settings.server_host.split('://')[0]}://{host}:{settings.PORT}"
+
+    LOG.info(
+        "server config.", host="0.0.0.0", port=settings.PORT, server_url=server_url
+    )
+    server = uvicorn.Server(config)
+
     try:
-        analytics.capture("skyvern-oss-run-server")
-        load_dotenv()
-
-        app = build_app()
-        # threading.Thread(target=start_deamon_serve).start()
-
-        config = uvicorn.Config(
-            app,
-            host=settings.SERVE_IP,
-            port=settings.PORT,
-            log_level="info",
-            # reload=not settings.is_production,
-            # !!! bug 当 使用了prefect 后，使用了这个指令： @flow，程序会被卡在： .venv/lib/python3.12/site-packages/uvicorn/config.py
-            # !!!365行：logging.config.dictConfig(self.log_config)
-            # !!! 原因未知，但是 log_config=None 后，问题消失
-            # log_config=None,
-            # reload=reload,
-        )
-
-        host = (
-            "127.0.0.1"
-            if settings.SERVE_IP == "0.0.0.0"
-            else settings.server_host.split("://")[-1]
-        )
-        server_url = f"{settings.server_host.split('://')[0]}://{host}:{settings.PORT}"
-
         LOG.info(
-            "server config.", host="0.0.0.0", port=settings.PORT, server_url=server_url
+            "server starting",
+            host="0.0.0.0",
+            port=settings.PORT,
+            server_url=server_url,
         )
-        server = uvicorn.Server(config)
-
-        try:
-            LOG.info(
-                "server starting",
-                host="0.0.0.0",
-                port=settings.PORT,
-                server_url=server_url,
-            )
-            await server.serve()
-        except Exception as e:
-            LOG.error("Error in uvicorn server:", exc_info=e)
-            raise
-
+        await server.serve()
     except Exception as e:
-        LOG.error("server error: %s", e)
+        LOG.error("Error in uvicorn server:", exc_info=e)
+        raise
+
+
+# except Exception as e:
+#     LOG.error("server error: %s", e)
 
 
 def start_deamon_serve():
@@ -447,4 +448,5 @@ def start_deamon_serve():
 
     # threading.Thread(target=run_easy_spider_server).start()
 
+    LOG.info("start deamon finished")
     LOG.info("start deamon finished")

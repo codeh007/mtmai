@@ -1,10 +1,9 @@
-import logging
 from typing import Any
 
 import httpx
+import structlog
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlmodel import col, delete, func, select
-import structlog
 
 from mtmai.core.config import settings
 from mtmai.core.security import get_password_hash, verify_password
@@ -29,14 +28,14 @@ from mtmai.models.models import (
     UserUpdate,
     UserUpdateMe,
 )
-from mtmai.utils import generate_new_account_email, send_email
-from mtmlib.github import get_github_user_data
+
+# from mtmai.utils import generate_new_account_email, send_email
+# from mtmlib.github import get_github_user_data
 
 router = APIRouter()
 
 # logger = logging.getLogger()
 LOG = structlog.get_logger()
-
 
 
 @router.get(

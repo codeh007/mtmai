@@ -4,10 +4,12 @@ import logging
 import httpx
 from fastapi import APIRouter, Path
 from fastapi.responses import PlainTextResponse
-from github import Auth
 
 from mtmai.core.config import settings
-from mtmlib import github
+
+# from github import Auth
+
+# from mtmlib import github
 
 router = APIRouter()
 
@@ -67,4 +69,5 @@ logger = logging.getLogger()
 
 #     workermain = WorkerMain(queue=get_queue())
 #     workermain.register_consumer(queue_name=queue_tran, consumer_fn=tran_guwen_consumer)
+#     workermain.run()
 #     workermain.run()

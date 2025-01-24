@@ -3,8 +3,8 @@ import warnings
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-from mtmaisdk.utils.env import is_in_huggingface, is_in_vercel
-from pydantic import AnyUrl, BeforeValidator, HttpUrl, computed_field, model_validator
+# from mtmaisdk.utils.env import is_in_huggingface, is_in_vercel
+from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -192,15 +192,15 @@ class Settings(BaseSettings):
     IS_TRACE_HTTPX: bool = True
     OTEL_ENABLED: bool | None = False
 
-    @property
-    def otel_deploy_name(self) -> str:
-        if is_in_vercel():
-            return "vercel"
-        if mtutils.is_in_gitpod():
-            return "gitpod"
-        if is_in_huggingface():
-            return "hf"
-        return "unknown-deploy"
+    # @property
+    # def otel_deploy_name(self) -> str:
+    #     if is_in_vercel():
+    #         return "vercel"
+    #     if mtutils.is_in_gitpod():
+    #         return "gitpod"
+    #     if is_in_huggingface():
+    #         return "hf"
+    #     return "unknown-deploy"
 
     LOKI_ENDPOINT: str | None = "https://logs-prod-017.grafana.net/loki/api/v1/push"
     LOKI_USER: str | None = None
@@ -259,5 +259,6 @@ class Settings(BaseSettings):
 
     GOMTM_URL: str = "http://localhost:8383"
     HATCHET_CLIENT_TOKEN: str | None = None
+
 
 settings = Settings()  # type: ignore
