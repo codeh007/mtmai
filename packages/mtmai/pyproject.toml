@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.36"
+version = "0.6.37"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
@@ -116,7 +116,7 @@ requires-python = ">=3.10,<4.0"
 # [project.optional-dependencies]
 dev = [
     "tokencost>=0.1.16",
-    "hatch>=1.13.0",
+    # "hatch>=1.13.0",
     "build>=1.2.2",
     "pytest>=8.3.3",
     "pytest-asyncio>=0.24.0"

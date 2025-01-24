@@ -20,7 +20,7 @@ dst_dir=./mtmai/gomtmclients/rest
 mkdir -p $dst_dir
 
 # 因为 openapi-generator-cli 会生成完整python project, 有很不必要的文件
-tmp_dir=./tmp
+tmp_dir=/tmp
 # generate into tmp folder
 openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ${tmp_dir} --skip-validate-spec \
     --library asyncio \
