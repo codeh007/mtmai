@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.30"
+version = "0.6.31"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
@@ -85,7 +85,7 @@ dependencies = [
     "huggingface-hub>=0.27.1",
     "prefect>=3.1.13",
     # "autogenstudio>=0.1.5",
-    "autogen-agentchat>=0.4.2",
+    "autogen-agentchat>=0.4.3",
     "autogen-core>=0.4.3",
     "autogen-ext[openai]>=0.4.3",
     "autogenstudio>=0.1.5",
