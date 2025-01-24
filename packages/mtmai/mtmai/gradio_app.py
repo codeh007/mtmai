@@ -3,6 +3,7 @@ from pathlib import Path
 
 import gradio as gr
 from dotenv import load_dotenv
+from fastapi import FastAPI
 from huggingface_hub import InferenceClient
 
 default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
@@ -111,6 +112,17 @@ with gr.Blocks() as demo:
         outputs=gr.Number(label="Result"),
         api_name="calculate",  # 这将创建 /calculate 端点
     )
+
+
+def mount_gradio_app(app: FastAPI):
+    """
+    将 gradio 应用挂载到 fastapi 的根
+    """
+    import gradio as gr
+
+    from .gradio_app import demo
+
+    gr.mount_gradio_app(app, demo, path="/")
 
 
 if __name__ == "__main__":

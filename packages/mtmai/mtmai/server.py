@@ -3,7 +3,7 @@ import threading
 import structlog
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
@@ -40,8 +40,6 @@ LOG = structlog.stdlib.get_logger()
 
 
 def build_app():
-    from fastapi import FastAPI
-
     LOG.info("build api app.")
 
     LOG.info("api auth")
@@ -251,6 +249,10 @@ def build_app():
         )
         app.add_middleware(AuthMiddleware)
 
+    from .gradio_app import mount_gradio_app
+
+    mount_gradio_app(app)
+
     # setup_forge_app(app)
 
     # from starlette_context.middleware import RawContextMiddleware
@@ -265,7 +267,7 @@ def build_app():
     #     ),
     # )
 
-    from fastapi import FastAPI
+    # from fastapi import FastAPI
 
     # @app.exception_handler(NotFoundError)
     # async def handle_not_found_error(request: Request, exc: NotFoundError) -> Response:
@@ -441,4 +443,5 @@ def start_deamon_serve():
 
     # threading.Thread(target=run_easy_spider_server).start()
 
+    LOG.info("start deamon finished")
     LOG.info("start deamon finished")
