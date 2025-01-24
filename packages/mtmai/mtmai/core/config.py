@@ -3,14 +3,12 @@ import warnings
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-# from mtmaisdk.utils.env import is_in_huggingface, is_in_vercel
 from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
 from .__version__ import version
 
-# Get the directory the script is running from
 APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
 
 HEADER_SITE_HOST = "X-Site-Host"  # 通过http header 传递前端域名
@@ -36,7 +34,7 @@ class Settings(BaseSettings):
     )
     app_name: str = "Mtmai"
     work_dir: str = os.getcwd()
-    PORT: int | None = 8000
+    PORT: int | None = 7860
     HOSTNAME: str | None = "0.0.0.0"  # noqa: S104
     SERVE_IP: str | None = "0.0.0.0"  # noqa: S104
     Serve_ADDR: str | None = None  # 明确指定服务器域名
@@ -162,10 +160,10 @@ class Settings(BaseSettings):
 
     #     return self
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def is_in_gitpod(self) -> bool | None:
-        return os.getenv("GITPOD_WORKSPACE_URL")
+    # @computed_field  # type: ignore[prop-decorator]
+    # @property
+    # def is_in_gitpod(self) -> bool | None:
+    #     return os.getenv("GITPOD_WORKSPACE_URL")
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -180,7 +178,7 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str | None = None
     GITHUB_CLIENT_SECRET: str | None = None
 
-    DEFAULT_PASSWORD: str | None = "feihuo321"
+    # DEFAULT_PASSWORD: str | None = "feihuo321"
 
     # huggingface
     HUGGINGFACEHUB_API_TOKEN: str | None = None
@@ -216,10 +214,6 @@ class Settings(BaseSettings):
     DOCKERHUB_USER: str | None = None
 
     DOCKER_IMAGE_TAG: str | None = "docker.io/gitgit188/tmpboaiv3"
-
-    # npm
-
-    # NPM_TOKEN: str | None = None
 
     # langgraph
     langgraph_checkpointer: Literal["memory", "postgres"] = "postgres"
