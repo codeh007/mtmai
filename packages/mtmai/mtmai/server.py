@@ -9,7 +9,6 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
 # from mtmlib import mtutils
-from pydantic import ValidationError
 from starlette.templating import Jinja2Templates
 
 # from mtmai import analytics
@@ -17,7 +16,6 @@ from starlette.templating import Jinja2Templates
 from mtmai.core.__version__ import version
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
-from mtmai.exceptions import SkyvernHTTPException
 
 # from mtmai.forge.sdk.db.exceptions import NotFoundError
 # from mtmai.forge.sdk.settings_manager import SettingsManager
@@ -142,6 +140,11 @@ def build_app():
 
     api_router.include_router(config.router, prefix="/config", tags=["config"])
 
+    LOG.info("api ag")
+    from .api import ag
+
+    api_router.include_router(ag.router, prefix="/ag", tags=["ag"])
+
     # LOG.info("api chat2")
     # from mtmai.api import chat2
 
@@ -262,39 +265,34 @@ def build_app():
     #     ),
     # )
 
-    from fastapi import FastAPI, status
+    from fastapi import FastAPI
 
     # @app.exception_handler(NotFoundError)
     # async def handle_not_found_error(request: Request, exc: NotFoundError) -> Response:
     #     return Response(status_code=status.HTTP_404_NOT_FOUND)
-
-    @app.exception_handler(SkyvernHTTPException)
-    async def handle_skyvern_http_exception(
-        request: Request, exc: SkyvernHTTPException
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=exc.status_code, content={"detail": exc.message}
-        )
-
-    @app.exception_handler(ValidationError)
-    async def handle_pydantic_validation_error(
-        request: Request, exc: ValidationError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"detail": str(exc)},
-        )
-
-    @app.exception_handler(Exception)
-    async def unexpected_exception(request: Request, exc: Exception) -> JSONResponse:
-        LOG.exception("Unexpected error in agent server.", exc_info=exc)
-        return JSONResponse(
-            status_code=500, content={"error": f"Unexpected error: {exc}"}
-        )
-
+    # @app.exception_handler(SkyvernHTTPException)
+    # async def handle_skyvern_http_exception(
+    #     request: Request, exc: SkyvernHTTPException
+    # ) -> JSONResponse:
+    #     return JSONResponse(
+    #         status_code=exc.status_code, content={"detail": exc.message}
+    #     )
+    # @app.exception_handler(ValidationError)
+    # async def handle_pydantic_validation_error(
+    #     request: Request, exc: ValidationError
+    # ) -> JSONResponse:
+    #     return JSONResponse(
+    #         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    #         content={"detail": str(exc)},
+    #     )
+    # @app.exception_handler(Exception)
+    # async def unexpected_exception(request: Request, exc: Exception) -> JSONResponse:
+    #     LOG.exception("Unexpected error in agent server.", exc_info=exc)
+    #     return JSONResponse(
+    #         status_code=500, content={"error": f"Unexpected error: {exc}"}
+    #     )
     # from mtmai.forge.sdk.core import skyvern_context
     # from mtmai.forge.sdk.core.skyvern_context import SkyvernContext
-
     # @app.middleware("http")
     # async def request_middleware(
     #     request: Request, call_next: Callable[[Request], Awaitable[Response]]
@@ -305,13 +303,11 @@ def build_app():
     #     skyvern_context.set(SkyvernContext(request_id=request_id))
     # elif not curr_ctx.request_id:
     #     curr_ctx.request_id = str(uuid.uuid4())
-
     # try:
     #     return await call_next(request)
     # finally:
     #     # skyvern_context.reset()
     #     pass
-
     # if SettingsManager.get_settings().ADDITIONAL_MODULES:
     #     for module in SettingsManager.get_settings().ADDITIONAL_MODULES:
     #         LOG.info("Loading additional module to set up api app", module=module)
@@ -320,13 +316,10 @@ def build_app():
     #         "Additional modules loaded to set up api app",
     #         modules=SettingsManager.get_settings().ADDITIONAL_MODULES,
     #     )
-
     # from mtmai.forge import app as forge_app
-
     # if forge_app.setup_api_app:
     #     forge_app.setup_api_app(app)
-
-    # return app
+    return app
 
 
 async def serve():
@@ -448,5 +441,4 @@ def start_deamon_serve():
 
     # threading.Thread(target=run_easy_spider_server).start()
 
-    LOG.info("start deamon finished")
     LOG.info("start deamon finished")
