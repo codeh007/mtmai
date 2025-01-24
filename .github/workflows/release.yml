@@ -88,11 +88,11 @@ jobs:
           ---
           EOL
 
-      - name: Setup Git LFS
-        run: |
-            git lfs install
-            git lfs track "*.ipynb"  # 追踪大型 notebook 文件
-            git add .gitattributes
+      # - name: Setup Git LFS
+      #   run: |
+      #       git lfs install
+      #       git lfs track "*.ipynb"  # 追踪大型 notebook 文件
+      #       git add .gitattributes
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
