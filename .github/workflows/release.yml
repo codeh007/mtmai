@@ -112,5 +112,10 @@ jobs:
           # 确保所有 LFS 文件都已下载
           git lfs pull
 
-          # 推送，包括 LFS 文件
-          git push --force space main:main
+          # 创建新的分支，只包含当前状态
+          git checkout --orphan temp_branch
+          git add -A
+          git commit -m "Initial commit"
+
+          # 强制推送新分支
+          git push --force space temp_branch:main
