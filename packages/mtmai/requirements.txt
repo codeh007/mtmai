@@ -6,7 +6,7 @@ aiohappyeyeballs==2.4.4
     # via aiohttp
 aiohttp==3.11.11
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   aiohttp-retry
     #   auth0-python
     #   instructor
@@ -16,13 +16,13 @@ aiohttp==3.11.11
     #   litellm
     #   scrapegraph-py
 aiohttp-retry==2.9.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 aiosignal==1.3.2
     # via aiohttp
 aiosqlite==0.20.0
     # via prefect
 aiostream==0.6.4
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 alembic==1.14.1
     # via
     #   autogenstudio
@@ -55,7 +55,7 @@ asgiref==3.8.1
 asttokens==3.0.0
     # via stack-data
 async-timeout==5.0.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 asyncpg==0.30.0
     # via prefect
 attrs==24.3.0
@@ -66,16 +66,16 @@ attrs==24.3.0
 auth0-python==4.7.2
     # via crewai
 autogen-agentchat==0.4.3
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 autogen-core==0.4.3
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogen-agentchat
     #   autogen-ext
 autogen-ext==0.4.3
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 autogenstudio==0.1.5
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 babel==2.16.0
     # via
     #   cel-python
@@ -86,7 +86,7 @@ bcrypt==4.2.1
     # via chromadb
 beautifulsoup4==4.12.3
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   browser-use
     #   googlesearch-python
     #   maincontentextractor
@@ -101,7 +101,7 @@ botocore==1.36.5
     #   boto3
     #   s3transfer
 browser-use==0.1.23
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 build==1.2.2.post1
     # via chromadb
 cachetools==5.5.1
@@ -109,7 +109,7 @@ cachetools==5.5.1
     #   google-auth
     #   prefect
 cel-python==0.1.5
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 certifi==2024.12.14
     # via
     #   apprise
@@ -132,7 +132,7 @@ chromadb==0.6.3
     # via crewai
 click==8.1.8
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   apprise
     #   crewai
     #   duckduckgo-search
@@ -152,7 +152,7 @@ coolname==2.2.0
 courlan==1.3.2
     # via trafilatura
 crewai==0.95.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 croniter==6.0.0
     # via prefect
 cryptography==43.0.3
@@ -196,24 +196,24 @@ docstring-parser==0.16
     #   instructor
     #   phidata
 duckduckgo-search==7.2.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 durationpy==0.9
     # via kubernetes
 email-validator==2.2.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 et-xmlfile==2.0.0
     # via openpyxl
 eval-type-backport==0.2.2
     # via mistralai
 exa-py==1.8.4
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 exceptiongroup==1.2.2
     # via prefect
 executing==2.2.0
     # via stack-data
 fastapi==0.115.7
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogenstudio
     #   chromadb
     #   prefect
@@ -235,7 +235,7 @@ flaml==2.3.3
 flatbuffers==25.1.21
     # via onnxruntime
 free-proxy==1.1.3
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 frozenlist==1.5.0
     # via
     #   aiohttp
@@ -310,7 +310,7 @@ googleapis-common-protos==1.66.0
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
 googlesearch-python==1.3.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 graphviz==0.20.3
     # via prefect
 greenlet==3.1.1
@@ -385,7 +385,7 @@ httpx-ws==0.7.1
     # via fireworks-ai
 huggingface-hub==0.27.1
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   tokenizers
     #   transformers
 humanfriendly==10.0
@@ -465,17 +465,17 @@ kubernetes==32.0.0
     # via chromadb
 langchain==0.3.15
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   browser-use
     #   langchain-community
 langchain-anthropic==0.3.4
     # via browser-use
 langchain-aws==0.2.11
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   browser-use
 langchain-community==0.3.15
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 langchain-core==0.3.31
     # via
     #   langchain
@@ -495,23 +495,23 @@ langchain-fireworks==0.2.6
 langchain-google-genai==2.0.9
     # via browser-use
 langchain-mistralai==0.2.4
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 langchain-ollama==0.2.2
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 langchain-openai==0.2.14
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   browser-use
 langchain-text-splitters==0.3.5
     # via langchain
 langgraph==0.2.67
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 langgraph-checkpoint==2.0.10
     # via
     #   langgraph
     #   langgraph-checkpoint-postgres
 langgraph-checkpoint-postgres==2.0.13
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 langgraph-sdk==0.1.51
     # via langgraph
 langsmith==0.3.1
@@ -522,14 +522,14 @@ langsmith==0.3.1
 lark-parser==0.12.0
     # via cel-python
 lazify==0.4.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 litellm==1.59.6
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   crewai
 loguru==0.7.3
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogenstudio
 lxml==5.3.0
     # via
@@ -542,7 +542,7 @@ lxml==5.3.0
     #   trafilatura
 lxml-html-clean==0.4.1
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   lxml
 maincontentextractor==0.0.4
     # via browser-use
@@ -563,9 +563,9 @@ matplotlib-inline==0.1.7
 mdurl==0.1.2
     # via markdown-it-py
 mem0ai==0.1.48
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 minify-html==0.15.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 mistralai==1.4.0
     # via pyautogen
 mmh3==5.0.1
@@ -587,13 +587,13 @@ multiprocess==0.70.17
 mypy-extensions==1.0.0
     # via typing-inspect
 nanoid==2.0.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 nest-asyncio==1.6.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 networkx==3.4.2
     # via pyvis
 newspaper4k==0.9.3.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 nltk==3.9.1
     # via newspaper4k
 numpy==1.26.4
@@ -623,7 +623,7 @@ onnxruntime==1.20.1
     # via chromadb
 openai==1.60.0
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogen-ext
     #   crewai
     #   exa-py
@@ -686,7 +686,7 @@ opentelemetry-util-http==0.48b0
     #   opentelemetry-instrumentation-fastapi
 orjson==3.10.15
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   chromadb
     #   langgraph-checkpoint-postgres
     #   langgraph-sdk
@@ -708,12 +708,12 @@ packaging==24.2
     #   transformers
 pandas==2.2.3
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   newspaper4k
 parso==0.8.4
     # via jedi
 passlib==1.7.4
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 pathspec==0.12.1
     # via prefect
 pdfminer-six==20231228
@@ -725,9 +725,9 @@ pendulum==3.0.0
 pexpect==4.9.0
     # via ipython
 pgvector==0.3.6
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 phidata==2.7.9
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 pillow==11.1.0
     # via
     #   autogen-core
@@ -737,7 +737,7 @@ pillow==11.1.0
     #   pyautogen
 playwright==1.49.1
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   browser-use
     #   undetected-playwright
 portalocker==2.10.1
@@ -748,7 +748,7 @@ posthog==3.9.3
     #   chromadb
     #   mem0ai
 prefect==3.1.14
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 primp==0.10.1
     # via duckduckgo-search
 prometheus-client==0.21.1
@@ -787,7 +787,7 @@ psycopg==3.2.4
 psycopg-pool==3.2.4
     # via langgraph-checkpoint-postgres
 psycopg2-binary==2.9.10
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
@@ -866,7 +866,7 @@ pyproject-hooks==1.2.0
     # via build
 python-dateutil==2.9.0.post0
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   botocore
     #   cel-python
     #   croniter
@@ -883,7 +883,7 @@ python-dateutil==2.9.0.post0
     #   time-machine
 python-dotenv==1.0.1
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogenstudio
     #   browser-use
     #   crewai
@@ -908,7 +908,7 @@ pyvis==0.3.2
     # via crewai
 pyyaml==6.0.2
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   apprise
     #   cel-python
     #   chromadb
@@ -1000,9 +1000,9 @@ s3transfer==0.11.2
 safetensors==0.5.2
     # via transformers
 scrapegraph-py==1.10.2
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 semchunk==3.0.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 setuptools==75.8.0
     # via
     #   browser-use
@@ -1015,7 +1015,7 @@ shapely==2.0.6
 shellingham==1.5.4
     # via typer
 simpleeval==1.0.3
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 six==1.17.0
     # via
     #   kubernetes
@@ -1036,7 +1036,7 @@ soupsieve==2.6
     # via beautifulsoup4
 sqlalchemy==2.0.37
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   alembic
     #   langchain
     #   langchain-community
@@ -1045,19 +1045,19 @@ sqlalchemy==2.0.37
     #   sqlmodel
 sqlmodel==0.0.22
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogenstudio
 stack-data==0.6.3
     # via ipython
 starlette==0.45.3
     # via fastapi
 structlog==25.1.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 sympy==1.13.3
     # via onnxruntime
 tenacity==9.0.0
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   chromadb
     #   instructor
     #   langchain
@@ -1069,7 +1069,7 @@ text-unidecode==1.3
     # via python-slugify
 tiktoken==0.8.0
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   autogen-ext
     #   langchain-openai
     #   litellm
@@ -1096,7 +1096,7 @@ tomli-w==1.2.0
     # via crewai
 tqdm==4.67.1
     # via
-    #   mtmai (pyproject.toml)
+    #   mtxai (pyproject.toml)
     #   chromadb
     #   google-generativeai
     #   huggingface-hub
@@ -1112,7 +1112,7 @@ traitlets==5.14.3
     #   ipython
     #   matplotlib-inline
 transformers==4.48.1
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 typer==0.13.1
     # via
     #   autogenstudio
@@ -1162,7 +1162,7 @@ tzlocal==5.2
 ujson==5.10.0
     # via prefect
 undetected-playwright==0.3.0
-    # via mtmai (pyproject.toml)
+    # via mtxai (pyproject.toml)
 uritemplate==4.1.1
     # via google-api-python-client
 urllib3==2.3.0
