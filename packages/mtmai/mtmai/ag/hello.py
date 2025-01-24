@@ -1,12 +1,30 @@
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
+from ag import termination_handler
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core import EVENT_LOGGER_NAME
+from autogen_core import (
+    EVENT_LOGGER_NAME,
+    AgentId,
+    DefaultTopicId,
+    MessageContext,
+    RoutedAgent,
+    SingleThreadedAgentRuntime,
+    default_subscription,
+    message_handler,
+)
+from autogen_core.model_context import BufferedChatCompletionContext
+from autogen_core.models import (
+    AssistantMessage,
+    ChatCompletionClient,
+    SystemMessage,
+    UserMessage,
+)
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-from .trace import LLMUsageTracker
+from mtmai.ag.trace import LLMUsageTracker
 
 # 配置日志
 logging.basicConfig(
@@ -42,6 +60,11 @@ class LoggingAssistantAgent(AssistantAgent):
             raise
 
 
+@dataclass
+class Message:
+    content: str
+
+
 def getOaiModel():
     model_client = OpenAIChatCompletionClient(
         model="llama3.3-70b",
@@ -58,6 +81,42 @@ def getOaiModel():
         temperature=0.8,
     )
     return model_client
+
+
+@default_subscription
+class Assistant(RoutedAgent):
+    def __init__(self, name: str, model_client: ChatCompletionClient) -> None:
+        super().__init__("An assistant agent.")
+        self._model_client = model_client
+        self.name = name
+        self.count = 0
+        self._system_messages = [
+            SystemMessage(
+                content=f"Your name is {name} and you are a part of a duo of comedians."
+                "You laugh when you find the joke funny, else reply 'I need to go now'.",
+            )
+        ]
+        self._model_context = BufferedChatCompletionContext(buffer_size=5)
+
+    @message_handler
+    async def handle_message(self, message: Message, ctx: MessageContext) -> None:
+        self.count += 1
+        await self._model_context.add_message(
+            UserMessage(content=message.content, source="user")
+        )
+        result = await self._model_client.create(
+            self._system_messages + await self._model_context.get_messages()
+        )
+
+        print(f"\n{self.name}: {message.content}")
+
+        if "I need to go".lower() in message.content.lower() or self.count > 2:
+            return
+
+        await self._model_context.add_message(
+            AssistantMessage(content=result.content, source="assistant")
+        )  # type: ignore
+        await self.publish_message(Message(content=result.content), DefaultTopicId())  # type: ignore
 
 
 async def main() -> None:
@@ -94,17 +153,39 @@ async def main() -> None:
     """
 
     try:
-        # 使用 stream=True 来接收流式响应
-        async for chunk in await agent.run(task=blog_prompt):
-            if chunk:
-                print(chunk, end="", flush=True)
+        # 直接调用 agent
+        result = await agent.run(task=blog_prompt)
         logger.info("文章生成成功")
+        print(result)
+        # llm_usage 有额外的跟踪信息
+        print(llm_usage.prompt_tokens)
+        print(llm_usage.completion_tokens)
     except Exception:
         logger.error("生成文章时发生错误", exc_info=True)
         raise
 
+    # 通过 runtime 调用agent
+    runtime = SingleThreadedAgentRuntime(intervention_handlers=[termination_handler])
+    cathy = await Assistant.register(
+        runtime,
+        "cathy",
+        lambda: Assistant(name="Cathy", model_client=getOaiModel()),
+    )
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    joe = await Assistant.register(
+        runtime,
+        "joe",
+        lambda: Assistant(name="Joe", model_client=getOaiModel()),
+    )
+
+    runtime.start()
+    await runtime.send_message(
+        Message("Joe, tell me a joke."),
+        recipient=AgentId(joe, "default"),
+        sender=AgentId(cathy, "default"),
+    )
+    await runtime.stop_when_idle()
+
+
 if __name__ == "__main__":
     asyncio.run(main())

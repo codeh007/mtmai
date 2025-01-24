@@ -15,15 +15,15 @@ def main():
     def cli():
         pass
 
-    # @cli.command()
-    # def serve():
-    #     from mtmai.core.config import settings
-    #     from mtmai.core.logging import get_logger
-    #     from mtmai.server import serve
+    @cli.command()
+    def serve():
+        from mtmai.core.config import settings
+        from mtmai.core.logging import get_logger
+        from mtmai.server import serve
 
-    #     logger = get_logger()
-    #     logger.info("🚀 call serve : %s:%s", settings.HOSTNAME, settings.PORT)
-    #     asyncio.run(serve())
+        logger = get_logger()
+        logger.info("🚀 call serve : %s:%s", settings.HOSTNAME, settings.PORT)
+        asyncio.run(serve())
 
     @cli.command()
     @click.option("--url", required=False)
