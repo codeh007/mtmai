@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.40"
+version = "0.6.42"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "litellm>=1.56.5",
     "python-dotenv>=1.0.0",
@@ -42,14 +42,11 @@ dependencies = [
     # "fastembed>=0.3.6",
     "semchunk>=2.2.0",
     "transformers>=4.44.2",
-    "transformers>=4.44.2",
     "googlesearch-python>=1.2.5",
-    "async-timeout>=4.0.3",
-    "transformers>=4.44.2",
     "simpleeval>=1.0.0",
     "async_timeout>=4.0.3",
     "scrapegraph-py>=1.7.0",
-    "fastapi>=0.115.6",
+    "fastapi>=0.115.7",
     # "scrapegraphai>=1.33.3",
     "crewai>=0.95.0",
     "structlog>=24.4.0",
@@ -114,8 +111,14 @@ dependencies = [
 # [project.optional-dependencies]
 [dependency-groups]
 dev = [
-"aiofiles",
+    "aiofiles>=0.8.0",
     "grpcio>=1.68.1",
+    "aiofiles>=0.8.0",
+    "grpcio~=1.68.1",
+    "tokencost~=0.1.16",
+    "build~=1.2.2",
+    "pytest~=8.3.3",
+    "pytest-asyncio~=0.24.0"
 
 ]
 # dev = [
