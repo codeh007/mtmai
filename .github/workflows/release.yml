@@ -65,7 +65,6 @@ jobs:
           # 开发环境依赖（包含所有额外依赖和开发工具）
           uv pip compile pyproject.toml \
             -o requirements-dev.txt \
-            --all-extras \
             --extra dev \
             --extra test \
             --extra docs
