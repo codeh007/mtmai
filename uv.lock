@@ -8,7 +8,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "mtmai",
+    "mtxai",
 ]
 
 [manifest.dependency-groups]
@@ -3357,8 +3357,8 @@ wheels = [
 ]
 
 [[package]]
-name = "mtmai"
-version = "0.6.49"
+name = "mtxai"
+version = "0.0.6"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "aiohttp" },
