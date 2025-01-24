@@ -11,9 +11,16 @@ bootstraps.bootstrap_core()
 
 
 def main():
-    @click.group()
-    def cli():
-        pass
+    # @click.group()
+    # def cli():
+    #     pass
+
+    @click.group(invoke_without_command=True)
+    @click.pass_context
+    def cli(ctx):
+        if ctx.invoked_subcommand is None:
+            # 如果没有指定子命令，默认执行 serve 命令
+            ctx.invoke(serve)
 
     @cli.command()
     def serve():

@@ -52,7 +52,7 @@ def get_engine():
     )
 
 
-engine = get_engine()
+# engine = get_engine()
 
 
 # 全局连接池对象
