@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.43"
+version = "0.6.44"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
@@ -63,7 +63,6 @@ dependencies = [
     # "opentelemetry-distro>=0.49b0",
     # "opentelemetry-exporter-otlp>=1.28.0",
     # "opentelemetry-exporter-otlp-proto-http>=1.28.0",
-    "prometheus-client>=0.21.1",
     "python-dotenv>=1.0.0",
     # "protobuf>=5.29.1",
     "pyyaml>=6.0.1",
@@ -87,8 +86,6 @@ dependencies = [
     "duckduckgo-search>=7.2.1",
     "newspaper4k>=0.9.3.1",
     "lxml-html-clean>=0.4.1",
-    "matplotlib>=3.10.0",
-    "gradio>=5.12.0",
     "huggingface-hub>=0.27.1",
     "prefect>=3.1.13",
     # "autogenstudio>=0.1.5",
@@ -116,16 +113,11 @@ dev = [
     "tokencost~=0.1.16",
     "build~=1.2.2",
     "pytest~=8.3.3",
-    "pytest-asyncio~=0.24.0"
-
+    "pytest-asyncio~=0.24.0",
+    "matplotlib>=3.10.0",
+    "gradio>=5.12.0",
+    "prometheus-client>=0.21.1",
 ]
-# dev = [
-#     "tokencost>=0.1.16",
-#     # "hatch>=1.13.0",
-#     "build>=1.2.2",
-#     "pytest>=8.3.3",
-#     "pytest-asyncio>=0.24.0"
-# ]
 
 # Group 1: Other Language Models
 other-language-models = [
