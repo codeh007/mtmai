@@ -1,21 +1,45 @@
-[project]
-name = "mtmairoot"
-version = "0.1.0"
-requires-python = ">=3.12"
-dependencies = [
-    "browser-use>=0.1.22",
-    "langchain-core>=0.3.29",
-    "mtmai",
-    "nanoid>=2.0.0",
-    "nest-asyncio>=1.6.0",
-    "pgvector>=0.3.6",
-    "playwright>=1.49.1",
-    "pydantic>=2.9.2",
-    "pydantic-settings>=2.7.1",
-    "structlog>=24.4.0",
-    "urllib3>=2.3.0",
-]
+# [project]
+# name = "mtmairoot"
+# version = "0.1.0"
+# requires-python = ">=3.12"
+# dependencies = [
+#     "browser-use>=0.1.22",
+#     "langchain-core>=0.3.29",
+#     "mtmai",
+#     "nanoid>=2.0.0",
+#     "nest-asyncio>=1.6.0",
+#     "pgvector>=0.3.6",
+#     "playwright>=1.49.1",
+#     "pydantic>=2.9.2",
+#     "pydantic-settings>=2.7.1",
+#     "structlog>=24.4.0",
+#     "urllib3>=2.3.0",
+# ]
 
+[dependency-groups]
+dev = [
+    "burr[start]>=0.22.1",
+    "pyright==1.1.389",
+    "mypy==1.13.0",
+    "ruff==0.4.8",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-xdist",
+    "typer",
+    "rich",
+    "polars",
+    "pytest_mock",
+    "poethepoet",
+    "packaging",
+    "grpcio-tools~=1.62.0",
+    "mypy-protobuf",
+    "cookiecutter",
+    "poethepoet",
+    "tomli",
+    "tomli-w",
+    "chainlit",
+]
 [tool.uv.sources]
 mtmai = { workspace = true }
 
@@ -73,8 +97,8 @@ packages = ["mtmairoot", "packages/mtmai"]
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[dependency-groups]
-dev = ["burr[start]==0.22.1", "sphinx==6.0", "furo==2024.5.6"]
+# [dependency-groups]
+# dev = ["burr[start]==0.22.1", "sphinx==6.0", "furo==2024.5.6"]
 
 [tool.uv]
 dev-dependencies = [
