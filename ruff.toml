@@ -28,7 +28,7 @@ exclude = [
     "venv",
 ]
 # Same as Black.
-line-length = 88
+line-length = 120
 indent-width = 4
 
 # Assume Python 3.9
@@ -62,6 +62,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
+docstring-code-format = true
 
 # Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
