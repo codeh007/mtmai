@@ -61,4 +61,4 @@ jobs:
 
       - name: 使用传统的pip尝试安装
         run: |
-          pip install mtmai
+          pip install mtmai>=0.6.47
