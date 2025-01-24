@@ -93,6 +93,11 @@ jobs:
       #       git lfs install
       #       git lfs track "*.ipynb"  # 追踪大型 notebook 文件
       #       git add .gitattributes
+
+      # - name: 使用 gomtm 同步到 hf space
+      #   run: |
+      #     gomtm git sync-space
+
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
