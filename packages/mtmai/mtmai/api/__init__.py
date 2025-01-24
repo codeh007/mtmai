@@ -6,7 +6,6 @@ LOG = structlog.stdlib.get_logger()
 
 def mount_api_routes(app: FastAPI, prefix="/"):
     api_router = APIRouter()
-    app.include_router(api_router, prefix=prefix)
 
     from mtmai.api import auth
 
@@ -96,3 +95,5 @@ def mount_api_routes(app: FastAPI, prefix="/"):
     from mtmai.api import config
 
     api_router.include_router(config.router, prefix="/config", tags=["config"])
+
+    app.include_router(api_router, prefix=prefix)

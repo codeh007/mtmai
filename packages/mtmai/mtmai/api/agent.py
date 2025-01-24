@@ -1,4 +1,3 @@
-
 import structlog
 from fastapi import APIRouter
 
@@ -53,3 +52,10 @@ async def stream(messageId: str):
     #     event_stream_generator(workflowRunId), media_type="text/event-stream"
     # )
     pass
+
+
+@router.get("/hello/ag")
+async def hello_ag():
+    return {
+        "hello": "ag",
+    }
