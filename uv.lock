@@ -3293,7 +3293,7 @@ wheels = [
 
 [[package]]
 name = "mtmai"
-version = "0.6.26"
+version = "0.6.34"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "aiohttp" },
@@ -3406,7 +3406,7 @@ requires-dist = [
     { name = "aiohttp-retry", specifier = ">=2.8.3" },
     { name = "aiostream", specifier = ">=0.5.2" },
     { name = "async-timeout", specifier = ">=4.0.3" },
-    { name = "autogen-agentchat", specifier = ">=0.4.2" },
+    { name = "autogen-agentchat", specifier = ">=0.4.3" },
     { name = "autogen-core", specifier = ">=0.4.3" },
     { name = "autogen-ext", extras = ["openai"], specifier = ">=0.4.3" },
     { name = "autogenstudio", specifier = ">=0.1.5" },

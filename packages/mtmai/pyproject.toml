@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.6.34"
+version = "0.6.35"
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [
     { name = "Marco Vinciguerra", email = "mvincig11@gmail.com" },
@@ -9,7 +9,7 @@ dependencies = [
     "litellm>=1.56.5",
     "python-dotenv>=1.0.0",
     "langchain>=0.3.0",
-    "langchain-google-genai>=1.0.7",
+    # "langchain-google-genai>=1.0.7",
     "langchain-openai>=0.2.14",
     "langchain-mistralai>=0.1.12",
     "langchain_community>=0.2.9",
