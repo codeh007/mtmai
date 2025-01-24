@@ -60,4 +60,9 @@ jobs:
 
       - name: 使用传统的pip尝试安装
         run: |
+          # 临时代码,看看哪个包 依赖了 grpcio-tools
+          pip install pipdeptree
+          pipdeptree -p grpcio-tools
+
+
           pip install mtmai
