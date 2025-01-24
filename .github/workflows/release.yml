@@ -95,27 +95,27 @@ jobs:
       #       git lfs track "*.ipynb"  # 追踪大型 notebook 文件
       #       git add .gitattributes
 
-      # - name: 使用 gomtm 同步到 hf space
-      #   run: |
-      #     gomtm git sync-space
-
-      - name: Push to HF
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: 使用 gomtm 同步到 hf space
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git remote add space https://huggingface.co/spaces/zhangxiang2801/zhangxiang2801
-          echo -e "machine huggingface.co\nlogin zhangxiang2801\npassword $HF_TOKEN" > ~/.netrc
-          chmod 600 ~/.netrc
+          gomtm git sync-space
 
-          # 确保所有 LFS 文件都已下载
-          git lfs pull
+      # - name: Push to HF
+      #   env:
+      #     HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      #   run: |
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --global user.name "github-actions[bot]"
+      #     git remote add space https://huggingface.co/spaces/zhangxiang2801/zhangxiang2801
+      #     echo -e "machine huggingface.co\nlogin zhangxiang2801\npassword $HF_TOKEN" > ~/.netrc
+      #     chmod 600 ~/.netrc
 
-          # 创建新的分支，只包含当前状态
-          git checkout --orphan temp_branch
-          git add -A
-          git commit -m "Initial commit"
+      #     # 确保所有 LFS 文件都已下载
+      #     git lfs pull
 
-          # 强制推送新分支
-          git push --force space temp_branch:main
+      #     # 创建新的分支，只包含当前状态
+      #     git checkout --orphan temp_branch
+      #     git add -A
+      #     git commit -m "Initial commit"
+
+      #     # 强制推送新分支
+      #     git push --force space temp_branch:main
