@@ -72,50 +72,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create HF Space README
+      - name: setup bun
+        uses: ./.github/actions/setup_bun
+
+      - name: install gomtm
         run: |
-          cat > README.md << EOL
-          ---
-          title: Zhangxiang2801
-          emoji: 💬
-          colorFrom: yellow
-          colorTo: purple
-          sdk: gradio
-          app_port: 7860
-          sdk_version: 5.0.1
-          app_file: __main__.py
-          pinned: false
-          python_version: 3.12
-          ---
-          EOL
-
-      # - name: Setup Git LFS
-      #   run: |
-      #       git lfs install
-      #       git lfs track "*.ipynb"  # 追踪大型 notebook 文件
-      #       git add .gitattributes
-
+          npm install -g gomtm-cli
       - name: 使用 gomtm 同步到 hf space
         run: |
           gomtm git sync-space
-
-      # - name: Push to HF
-      #   env:
-      #     HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      #   run: |
-      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      #     git config --global user.name "github-actions[bot]"
-      #     git remote add space https://huggingface.co/spaces/zhangxiang2801/zhangxiang2801
-      #     echo -e "machine huggingface.co\nlogin zhangxiang2801\npassword $HF_TOKEN" > ~/.netrc
-      #     chmod 600 ~/.netrc
-
-      #     # 确保所有 LFS 文件都已下载
-      #     git lfs pull
-
-      #     # 创建新的分支，只包含当前状态
-      #     git checkout --orphan temp_branch
-      #     git add -A
-      #     git commit -m "Initial commit"
-
-      #     # 强制推送新分支
-      #     git push --force space temp_branch:main
