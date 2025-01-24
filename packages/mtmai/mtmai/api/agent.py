@@ -56,7 +56,7 @@ async def stream(messageId: str):
 
 @router.get("/hello/ag")
 async def hello_ag():
-    from mtmaisdk.clients.rest import ApiClient
+    from mtmai.gomtmclients.rest import ApiClient
 
     print("ApiClient")
     print(ApiClient)
