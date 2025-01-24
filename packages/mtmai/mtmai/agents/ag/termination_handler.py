@@ -13,6 +13,7 @@ class Message:
 class Termination:
     reason: str
 
+
 class TerminationHandler(DefaultInterventionHandler):
     def __init__(self) -> None:
         self._termination_value: Termination | None = None
@@ -28,4 +29,4 @@ class TerminationHandler(DefaultInterventionHandler):
 
     @property
     def has_terminated(self) -> bool:
-        return self._termination_value is not None        return self._termination_value is not None
+        return self._termination_value is not None

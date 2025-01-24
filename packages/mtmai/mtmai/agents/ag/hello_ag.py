@@ -1,30 +1,19 @@
-import asyncio
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from ag import termination_handler
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core import (
-    EVENT_LOGGER_NAME,
-    AgentId,
-    DefaultTopicId,
-    MessageContext,
-    RoutedAgent,
-    SingleThreadedAgentRuntime,
-    default_subscription,
-    message_handler,
-)
+from autogen_core import (EVENT_LOGGER_NAME, AgentId, DefaultTopicId,
+                          MessageContext, RoutedAgent,
+                          SingleThreadedAgentRuntime, default_subscription,
+                          message_handler)
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import (
-    AssistantMessage,
-    ChatCompletionClient,
-    SystemMessage,
-    UserMessage,
-)
-from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_core.models import (AssistantMessage, ChatCompletionClient,
+                                 SystemMessage, UserMessage)
 
-from mtmai.ag.trace import LLMUsageTracker
+from .model_client import get_oai_Model
+from .termination_handler import termination_handler
+from .trace import LLMUsageTracker
 
 # 配置日志
 logging.basicConfig(
@@ -65,24 +54,6 @@ class Message:
     content: str
 
 
-def getOaiModel():
-    model_client = OpenAIChatCompletionClient(
-        model="llama3.3-70b",
-        api_key="ZGd2VL8B9KxqMB3HIsTaNXmp5iM9ew3c",
-        base_url="https://llama3-3-70b.lepton.run/api/v1/",
-        model_info={
-            "vision": False,
-            "function_calling": True,
-            "json_output": True,
-            "family": "unknown",
-        },
-        # stream=True,
-        max_tokens=8000,
-        temperature=0.8,
-    )
-    return model_client
-
-
 @default_subscription
 class Assistant(RoutedAgent):
     def __init__(self, name: str, model_client: ChatCompletionClient) -> None:
@@ -119,12 +90,12 @@ class Assistant(RoutedAgent):
         await self.publish_message(Message(content=result.content), DefaultTopicId())  # type: ignore
 
 
-async def main() -> None:
+async def hello_ag_run() -> None:
     logger.info("开始初始化agent")
 
     agent = LoggingAssistantAgent(
         "blog_writer",
-        getOaiModel(),
+        get_oai_Model(),
         system_message="""你是一位极具洞察力的科技博主，擅长:
         1. 发现和分享AI领域最新、最有趣的应用和趋势
         2. 用生动的案例和数据支撑观点
@@ -169,13 +140,13 @@ async def main() -> None:
     cathy = await Assistant.register(
         runtime,
         "cathy",
-        lambda: Assistant(name="Cathy", model_client=getOaiModel()),
+        lambda: Assistant(name="Cathy", model_client=get_oai_Model()),
     )
 
     joe = await Assistant.register(
         runtime,
         "joe",
-        lambda: Assistant(name="Joe", model_client=getOaiModel()),
+        lambda: Assistant(name="Joe", model_client=get_oai_Model()),
     )
 
     runtime.start()
@@ -185,7 +156,3 @@ async def main() -> None:
         sender=AgentId(cathy, "default"),
     )
     await runtime.stop_when_idle()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
