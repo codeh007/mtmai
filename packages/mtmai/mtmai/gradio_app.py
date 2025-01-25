@@ -8,6 +8,7 @@ from huggingface_hub import InferenceClient
 
 default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
 
+load_dotenv()
 # 搜索并加载环境变量文件
 for env_file in default_env_files:
     env_path = Path(env_file)
