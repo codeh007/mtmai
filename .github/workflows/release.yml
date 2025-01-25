@@ -65,7 +65,7 @@ jobs:
 
       - name: 更新版本号
         run: |
-          gomtm tool patch-version
+          (cd packages/mtmai && gomtm tool patch-version)
 
       - name: 发布 pipy 包
         run: |
