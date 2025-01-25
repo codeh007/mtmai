@@ -14,16 +14,21 @@ for env_file in default_env_files:
     env_path = Path(env_file)
     if env_path.exists():
         load_dotenv(env_path)
-token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-if not token:
-    raise ValueError("HUGGINGFACEHUB_API_TOKEN 未设置")
-"""
-For more information on `huggingface_hub` Inference API support, please check the docs: https://huggingface.co/docs/huggingface_hub/v0.22.2/en/guides/inference
-"""
-client = InferenceClient(
-    "HuggingFaceH4/zephyr-7b-beta",
-    token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
-)
+# token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+# if not token:
+#     raise ValueError("HUGGINGFACEHUB_API_TOKEN 未设置")
+
+
+def getInferenceClient():
+    """
+    For more information on `huggingface_hub` Inference API support, please check the docs: https://huggingface.co/docs/huggingface_hub/v0.22.2/en/guides/inference
+    """
+    if not os.getenv("HUGGINGFACEHUB_API_TOKEN"):
+        raise ValueError("HUGGINGFACEHUB_API_TOKEN 未设置")
+    return InferenceClient(
+        "HuggingFaceH4/zephyr-7b-beta",
+        token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
+    )
 
 
 def respond(
@@ -46,7 +51,7 @@ def respond(
 
     response = ""
 
-    for message in client.chat_completion(
+    for message in getInferenceClient().chat_completion(
         messages,
         max_tokens=max_tokens,
         stream=True,
