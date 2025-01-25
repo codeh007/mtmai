@@ -32,7 +32,8 @@ class UpdateAccountRequest(BaseModel):
     type: Optional[StrictStr] = None
     tenant_alert_email_group: Optional[StrictStr] = Field(default=None, alias="TenantAlertEmailGroup")
     platform: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["username", "password", "token", "type", "TenantAlertEmailGroup", "platform"]
+    comment: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["username", "password", "token", "type", "TenantAlertEmailGroup", "platform", "comment"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -90,7 +91,8 @@ class UpdateAccountRequest(BaseModel):
             "token": obj.get("token"),
             "type": obj.get("type"),
             "TenantAlertEmailGroup": obj.get("TenantAlertEmailGroup"),
-            "platform": obj.get("platform")
+            "platform": obj.get("platform"),
+            "comment": obj.get("comment")
         })
         return _obj
 

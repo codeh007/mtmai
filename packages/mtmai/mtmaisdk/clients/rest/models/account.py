@@ -34,7 +34,8 @@ class Account(BaseModel):
     type: StrictStr
     tenant_alert_email_group: Optional[StrictStr] = Field(default=None, alias="TenantAlertEmailGroup")
     platform: StrictStr
-    __properties: ClassVar[List[str]] = ["metadata", "username", "password", "token", "type", "TenantAlertEmailGroup", "platform"]
+    comment: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "username", "password", "token", "type", "TenantAlertEmailGroup", "platform", "comment"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,7 +97,8 @@ class Account(BaseModel):
             "token": obj.get("token"),
             "type": obj.get("type"),
             "TenantAlertEmailGroup": obj.get("TenantAlertEmailGroup"),
-            "platform": obj.get("platform")
+            "platform": obj.get("platform"),
+            "comment": obj.get("comment")
         })
         return _obj
 
