@@ -69,13 +69,6 @@ jobs:
           #   --extra test \
           #   --extra docs
 
-      # - name: 提交更改
-      #   run: |
-      #     git add .
-      #     git commit -m "update requirements.txt"
-      #     git push
-
-
       - name: 发布 pipy 包
         run: |
           gomtm publish
