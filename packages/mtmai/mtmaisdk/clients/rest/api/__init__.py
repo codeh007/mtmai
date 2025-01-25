@@ -23,6 +23,7 @@ from mtmaisdk.clients.rest.api.assisant_api import AssisantApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
 from mtmaisdk.clients.rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
+from mtmaisdk.clients.rest.api.endpoint_api import EndpointApi
 from mtmaisdk.clients.rest.api.env_api import EnvApi
 from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
 from mtmaisdk.clients.rest.api.hf_api import HfApi

@@ -106,6 +106,8 @@ from mtmaisdk.clients.rest.models.custom_quick_action import CustomQuickAction
 from mtmaisdk.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmaisdk.clients.rest.models.document import Document
 from mtmaisdk.clients.rest.models.document_list import DocumentList
+from mtmaisdk.clients.rest.models.endpoint import Endpoint
+from mtmaisdk.clients.rest.models.endpoint_list import EndpointList
 from mtmaisdk.clients.rest.models.env import Env
 from mtmaisdk.clients.rest.models.env_list import EnvList
 from mtmaisdk.clients.rest.models.event import Event
