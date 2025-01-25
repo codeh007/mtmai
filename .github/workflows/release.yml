@@ -65,7 +65,7 @@ jobs:
 
       - name: 更新版本号
         run: |
-          gomtm tool version-patch
+          gomtm tool patch-version
 
       - name: 发布 pipy 包
         run: |
