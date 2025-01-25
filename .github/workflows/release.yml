@@ -62,12 +62,10 @@ jobs:
           # 生产环境依赖（只包含核心依赖）
           uv pip compile pyproject.toml -o requirements.txt
 
-          # 开发环境依赖（包含所有额外依赖和开发工具）
-          # uv pip compile pyproject.toml \
-          #   -o requirements-dev.txt \
-          #   --extra dev \
-          #   --extra test \
-          #   --extra docs
+
+      - name: 更新版本号
+        run: |
+          gomtm tool version-patch
 
       - name: 发布 pipy 包
         run: |
