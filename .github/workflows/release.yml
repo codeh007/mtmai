@@ -71,6 +71,10 @@ jobs:
         run: |
           gomtm publish
 
+      - name: 保存更改
+        run: |
+          gomtm git save
+
   sync_to_huggingface_space:
     needs: build
     runs-on: ubuntu-latest
