@@ -23,8 +23,6 @@ from mtmaisdk.clients.rest.models.api_meta_posthog import APIMetaPosthog
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.api_token import APIToken
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
-from mtmaisdk.clients.rest.models.account import Account
-from mtmaisdk.clients.rest.models.account_list import AccountList
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_finish import AgentFinish
 from mtmaisdk.clients.rest.models.agent_node import AgentNode
@@ -149,6 +147,8 @@ from mtmaisdk.clients.rest.models.outline import Outline
 from mtmaisdk.clients.rest.models.outline_sections_inner import OutlineSectionsInner
 from mtmaisdk.clients.rest.models.outline_sections_inner_subsections_inner import OutlineSectionsInnerSubsectionsInner
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
+from mtmaisdk.clients.rest.models.platform_account import PlatformAccount
+from mtmaisdk.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
 from mtmaisdk.clients.rest.models.postiz_channel import PostizChannel
@@ -221,9 +221,9 @@ from mtmaisdk.clients.rest.models.text_highlight import TextHighlight
 from mtmaisdk.clients.rest.models.token_chunk import TokenChunk
 from mtmaisdk.clients.rest.models.tool_call_result import ToolCallResult
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
-from mtmaisdk.clients.rest.models.update_account_request import UpdateAccountRequest
 from mtmaisdk.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmaisdk.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
+from mtmaisdk.clients.rest.models.update_platform_account_request import UpdatePlatformAccountRequest
 from mtmaisdk.clients.rest.models.update_post_request import UpdatePostRequest
 from mtmaisdk.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmaisdk.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest

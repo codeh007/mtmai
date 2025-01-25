@@ -16,7 +16,6 @@ from mtmaisdk.clients.rest.api.user_api import UserApi
 from mtmaisdk.clients.rest.api.worker_api import WorkerApi
 from mtmaisdk.clients.rest.api.workflow_api import WorkflowApi
 from mtmaisdk.clients.rest.api.workflow_run_api import WorkflowRunApi
-from mtmaisdk.clients.rest.api.account_api import AccountApi
 from mtmaisdk.clients.rest.api.admin_api import AdminApi
 from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
@@ -31,6 +30,7 @@ from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
+from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
 from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi
 from mtmaisdk.clients.rest.api.prompt_api import PromptApi
