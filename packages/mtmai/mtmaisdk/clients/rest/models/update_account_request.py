@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,10 +30,10 @@ class UpdateAccountRequest(BaseModel):
     password: Optional[StrictStr] = None
     token: Optional[StrictStr] = None
     type: Optional[StrictStr] = None
-    tenant_alert_email_group: Optional[StrictStr] = Field(default=None, alias="TenantAlertEmailGroup")
+    email: Optional[StrictStr] = None
     platform: Optional[StrictStr] = None
     comment: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["username", "password", "token", "type", "TenantAlertEmailGroup", "platform", "comment"]
+    __properties: ClassVar[List[str]] = ["username", "password", "token", "type", "email", "platform", "comment"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -90,7 +90,7 @@ class UpdateAccountRequest(BaseModel):
             "password": obj.get("password"),
             "token": obj.get("token"),
             "type": obj.get("type"),
-            "TenantAlertEmailGroup": obj.get("TenantAlertEmailGroup"),
+            "email": obj.get("email"),
             "platform": obj.get("platform"),
             "comment": obj.get("comment")
         })
