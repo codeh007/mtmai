@@ -20,7 +20,6 @@ from pydantic import Field
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.platform_account import PlatformAccount
 from mtmaisdk.clients.rest.models.platform_account_list import PlatformAccountList
-from mtmaisdk.clients.rest.models.update_platform_account_request import UpdatePlatformAccountRequest
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -297,7 +296,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update(
         self,
-        update_platform_account_request: Annotated[UpdatePlatformAccountRequest, Field(description="The platform_account properties to update")],
+        platform_account: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -315,8 +314,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
-        :param update_platform_account_request: The platform_account properties to update (required)
-        :type update_platform_account_request: UpdatePlatformAccountRequest
+        :param platform_account: The platform_account properties to update (required)
+        :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -340,7 +339,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
-            update_platform_account_request=update_platform_account_request,
+            platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -366,7 +365,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update_with_http_info(
         self,
-        update_platform_account_request: Annotated[UpdatePlatformAccountRequest, Field(description="The platform_account properties to update")],
+        platform_account: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -384,8 +383,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
-        :param update_platform_account_request: The platform_account properties to update (required)
-        :type update_platform_account_request: UpdatePlatformAccountRequest
+        :param platform_account: The platform_account properties to update (required)
+        :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -409,7 +408,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
-            update_platform_account_request=update_platform_account_request,
+            platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -435,7 +434,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update_without_preload_content(
         self,
-        update_platform_account_request: Annotated[UpdatePlatformAccountRequest, Field(description="The platform_account properties to update")],
+        platform_account: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -453,8 +452,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
-        :param update_platform_account_request: The platform_account properties to update (required)
-        :type update_platform_account_request: UpdatePlatformAccountRequest
+        :param platform_account: The platform_account properties to update (required)
+        :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -478,7 +477,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
-            update_platform_account_request=update_platform_account_request,
+            platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -499,7 +498,7 @@ class PlatformAccountApi:
 
     def _platform_account_update_serialize(
         self,
-        update_platform_account_request,
+        platform_account,
         _request_auth,
         _content_type,
         _headers,
@@ -525,8 +524,8 @@ class PlatformAccountApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if update_platform_account_request is not None:
-            _body_params = update_platform_account_request
+        if platform_account is not None:
+            _body_params = platform_account
 
 
         # set the HTTP header `Accept`
