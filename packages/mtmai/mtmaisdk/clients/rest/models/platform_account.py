@@ -36,7 +36,8 @@ class PlatformAccount(BaseModel):
     platform: StrictStr
     comment: StrictStr
     tags: List[StrictStr]
-    __properties: ClassVar[List[str]] = ["metadata", "key", "username", "password", "token", "type", "platform", "comment", "tags"]
+    properties: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "key", "username", "password", "token", "type", "platform", "comment", "tags", "properties"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,7 +101,8 @@ class PlatformAccount(BaseModel):
             "type": obj.get("type"),
             "platform": obj.get("platform"),
             "comment": obj.get("comment"),
-            "tags": obj.get("tags")
+            "tags": obj.get("tags"),
+            "properties": obj.get("properties")
         })
         return _obj
 
