@@ -17,20 +17,28 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.artifact import Artifact
-from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
+from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PromptList(BaseModel):
+class PlatformAccountUpdate(BaseModel):
     """
-    PromptList
+    PlatformAccountUpdate
     """ # noqa: E501
-    pagination: Optional[PaginationResponse] = None
-    rows: Optional[List[Artifact]] = None
-    __properties: ClassVar[List[str]] = ["pagination", "rows"]
+    metadata: Optional[APIResourceMeta] = None
+    username: Optional[StrictStr] = None
+    email: Optional[StrictStr] = None
+    password: Optional[StrictStr] = None
+    token: Optional[StrictStr] = None
+    type: Optional[StrictStr] = None
+    platform: Optional[StrictStr] = None
+    enabled: Optional[StrictBool] = None
+    comment: Optional[StrictStr] = None
+    tags: Optional[List[StrictStr]] = None
+    properties: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +58,7 @@ class PromptList(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PromptList from a JSON string"""
+        """Create an instance of PlatformAccountUpdate from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,21 +79,14 @@ class PromptList(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of pagination
-        if self.pagination:
-            _dict['pagination'] = self.pagination.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in rows (list)
-        _items = []
-        if self.rows:
-            for _item_rows in self.rows:
-                if _item_rows:
-                    _items.append(_item_rows.to_dict())
-            _dict['rows'] = _items
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PromptList from a dict"""
+        """Create an instance of PlatformAccountUpdate from a dict"""
         if obj is None:
             return None
 
@@ -93,8 +94,17 @@ class PromptList(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
-            "rows": [Artifact.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "username": obj.get("username"),
+            "email": obj.get("email"),
+            "password": obj.get("password"),
+            "token": obj.get("token"),
+            "type": obj.get("type"),
+            "platform": obj.get("platform"),
+            "enabled": obj.get("enabled"),
+            "comment": obj.get("comment"),
+            "tags": obj.get("tags"),
+            "properties": obj.get("properties")
         })
         return _obj
 

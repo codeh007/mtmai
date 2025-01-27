@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,18 +28,17 @@ class PlatformAccount(BaseModel):
     PlatformAccount
     """ # noqa: E501
     metadata: APIResourceMeta
-    key: StrictStr
     username: StrictStr
-    email: StrictStr
-    password: StrictStr
-    token: StrictStr
-    type: StrictStr
+    email: Optional[StrictStr] = None
+    password: Optional[StrictStr] = None
+    token: Optional[StrictStr] = None
+    type: Optional[StrictStr] = None
     platform: StrictStr
-    enabled: StrictBool
-    comment: StrictStr
-    tags: List[StrictStr]
-    properties: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "key", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
+    enabled: Optional[StrictBool] = None
+    comment: Optional[StrictStr] = None
+    tags: Optional[List[StrictStr]] = None
+    properties: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,7 +95,6 @@ class PlatformAccount(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "key": obj.get("key"),
             "username": obj.get("username"),
             "email": obj.get("email"),
             "password": obj.get("password"),
