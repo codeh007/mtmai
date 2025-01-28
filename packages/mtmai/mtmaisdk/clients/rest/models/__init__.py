@@ -147,9 +147,12 @@ from mtmaisdk.clients.rest.models.outline import Outline
 from mtmaisdk.clients.rest.models.outline_sections_inner import OutlineSectionsInner
 from mtmaisdk.clients.rest.models.outline_sections_inner_subsections_inner import OutlineSectionsInnerSubsectionsInner
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
+from mtmaisdk.clients.rest.models.platform import Platform
 from mtmaisdk.clients.rest.models.platform_account import PlatformAccount
 from mtmaisdk.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmaisdk.clients.rest.models.platform_account_update import PlatformAccountUpdate
+from mtmaisdk.clients.rest.models.platform_list import PlatformList
+from mtmaisdk.clients.rest.models.platform_update import PlatformUpdate
 from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
 from mtmaisdk.clients.rest.models.postiz_channel import PostizChannel

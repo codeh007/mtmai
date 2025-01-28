@@ -30,6 +30,7 @@ from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
+from mtmaisdk.clients.rest.api.platform_api import PlatformApi
 from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
 from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi

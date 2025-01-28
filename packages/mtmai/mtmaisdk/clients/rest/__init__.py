@@ -46,6 +46,7 @@ from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
+from mtmaisdk.clients.rest.api.platform_api import PlatformApi
 from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
 from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi
@@ -202,9 +203,12 @@ from mtmaisdk.clients.rest.models.outline import Outline
 from mtmaisdk.clients.rest.models.outline_sections_inner import OutlineSectionsInner
 from mtmaisdk.clients.rest.models.outline_sections_inner_subsections_inner import OutlineSectionsInnerSubsectionsInner
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
+from mtmaisdk.clients.rest.models.platform import Platform
 from mtmaisdk.clients.rest.models.platform_account import PlatformAccount
 from mtmaisdk.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmaisdk.clients.rest.models.platform_account_update import PlatformAccountUpdate
+from mtmaisdk.clients.rest.models.platform_list import PlatformList
+from mtmaisdk.clients.rest.models.platform_update import PlatformUpdate
 from mtmaisdk.clients.rest.models.post import Post
 from mtmaisdk.clients.rest.models.post_list import PostList
 from mtmaisdk.clients.rest.models.postiz_channel import PostizChannel
