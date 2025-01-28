@@ -28,10 +28,10 @@ class LlmConfig(BaseModel):
     llm config
     """ # noqa: E501
     metadata: APIResourceMeta
-    base_url: StrictStr
-    api_key: StrictStr
+    base_url: StrictStr = Field(alias="baseUrl")
+    api_key: StrictStr = Field(alias="apiKey")
     model: StrictStr = Field(description="llm model name")
-    __properties: ClassVar[List[str]] = ["metadata", "base_url", "api_key", "model"]
+    __properties: ClassVar[List[str]] = ["metadata", "baseUrl", "apiKey", "model"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,8 +88,8 @@ class LlmConfig(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "base_url": obj.get("base_url"),
-            "api_key": obj.get("api_key"),
+            "baseUrl": obj.get("baseUrl"),
+            "apiKey": obj.get("apiKey"),
             "model": obj.get("model")
         })
         return _obj
