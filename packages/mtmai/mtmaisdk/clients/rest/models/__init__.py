@@ -163,6 +163,9 @@ from mtmaisdk.clients.rest.models.postiz_state import PostizState
 from mtmaisdk.clients.rest.models.programming_language_options import ProgrammingLanguageOptions
 from mtmaisdk.clients.rest.models.prompt import Prompt
 from mtmaisdk.clients.rest.models.prompt_list import PromptList
+from mtmaisdk.clients.rest.models.proxy import Proxy
+from mtmaisdk.clients.rest.models.proxy_list import ProxyList
+from mtmaisdk.clients.rest.models.proxy_update import ProxyUpdate
 from mtmaisdk.clients.rest.models.pull_request import PullRequest
 from mtmaisdk.clients.rest.models.pull_request_state import PullRequestState
 from mtmaisdk.clients.rest.models.queue_metrics import QueueMetrics
