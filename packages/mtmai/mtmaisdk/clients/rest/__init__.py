@@ -37,6 +37,7 @@ from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
 from mtmaisdk.clients.rest.api.assisant_api import AssisantApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
+from mtmaisdk.clients.rest.api.browser_api import BrowserApi
 from mtmaisdk.clients.rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.endpoint_api import EndpointApi
@@ -120,7 +121,10 @@ from mtmaisdk.clients.rest.models.blog_post_list import BlogPostList
 from mtmaisdk.clients.rest.models.blog_post_state import BlogPostState
 from mtmaisdk.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
 from mtmaisdk.clients.rest.models.blog_task_state import BlogTaskState
+from mtmaisdk.clients.rest.models.browser import Browser
+from mtmaisdk.clients.rest.models.browser_list import BrowserList
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
+from mtmaisdk.clients.rest.models.browser_update import BrowserUpdate
 from mtmaisdk.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmaisdk.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
 from mtmaisdk.clients.rest.models.call_agent import CallAgent

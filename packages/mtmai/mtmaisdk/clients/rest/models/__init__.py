@@ -64,7 +64,10 @@ from mtmaisdk.clients.rest.models.blog_post_list import BlogPostList
 from mtmaisdk.clients.rest.models.blog_post_state import BlogPostState
 from mtmaisdk.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
 from mtmaisdk.clients.rest.models.blog_task_state import BlogTaskState
+from mtmaisdk.clients.rest.models.browser import Browser
+from mtmaisdk.clients.rest.models.browser_list import BrowserList
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
+from mtmaisdk.clients.rest.models.browser_update import BrowserUpdate
 from mtmaisdk.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmaisdk.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
 from mtmaisdk.clients.rest.models.call_agent import CallAgent
