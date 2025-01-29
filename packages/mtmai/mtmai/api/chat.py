@@ -8,6 +8,7 @@ from autogen_agentchat.teams import MagenticOneGroupChat
 from autogen_agentchat.ui import Console
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
+from json_repair import repair_json
 
 from ..agents.ag.model_client import get_oai_Model
 
@@ -41,22 +42,19 @@ class LoggingModelClient:
         self.wrapped_client = wrapped_client
 
     async def create(self, *args: Any, **kwargs: Any) -> Any:
-        LOG.info("OpenAI API Request", request_args=args, request_kwargs=kwargs)
         try:
             response = await self.wrapped_client.create(*args, **kwargs)
-
-            # 修正json格式, 原因:对于 llama3 输出的json字符串,可能不严格
-            if kwargs.get("json_output", True):
+            if kwargs.get("json_output", False):
+                # 修正json格式
                 if isinstance(response.content, str):
-                    if response.content.startswith("```json"):
-                        response.content = response.content[7:-3]
-                    if response.content.startswith("```"):
-                        response.content = response.content[6:-3]
-                    if response.content.endswith("```"):
-                        response.content = response.content[:-3]
-                    response.content = json.dumps(response.content)
+                    response.content = repair_json(response.content)
 
-            LOG.info("OpenAI API Response", content=response.content)
+            LOG.info(
+                "OpenAI API Response",
+                request_args=args,
+                request_kwargs=kwargs,
+                response_content=response.content,
+            )
             return response
         except Exception as e:
             LOG.error("OpenAI API Error", error=str(e), error_type=type(e).__name__)
@@ -65,6 +63,8 @@ class LoggingModelClient:
 
 @router.api_route(path="/test_m1", methods=["GET", "POST"])
 async def test_m1(r: Request):
+    from autogen_ext.agents.web_surfer import MultimodalWebSurfer
+
     # 测试 megentic one agent
     try:
         model_client = get_oai_Model()
@@ -74,10 +74,14 @@ async def test_m1(r: Request):
             "Assistant",
             model_client=logging_client,
         )
-        team = MagenticOneGroupChat([assistant], model_client=logging_client)
-        await Console(
-            team.run_stream(task="Provide a different proof for Fermat's Last Theorem")
+
+        surfer = MultimodalWebSurfer(
+            "WebSurfer",
+            model_client=model_client,
         )
+
+        team = MagenticOneGroupChat([surfer], model_client=logging_client)
+        await Console(team.run_stream(task="用中文写一段关于马克龙的新闻"))
 
     except Exception as e:
         LOG.error("Chat error", error=str(e))

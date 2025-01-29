@@ -1,55 +1,39 @@
-import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core import (EVENT_LOGGER_NAME, TRACE_LOGGER_NAME, AgentId,
-                          DefaultTopicId, MessageContext, RoutedAgent,
-                          SingleThreadedAgentRuntime, default_subscription,
-                          message_handler)
+from autogen_core import (
+    AgentId,
+    DefaultTopicId,
+    MessageContext,
+    RoutedAgent,
+    SingleThreadedAgentRuntime,
+    default_subscription,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import (AssistantMessage, ChatCompletionClient,
-                                 SystemMessage, UserMessage)
+from autogen_core.models import (
+    AssistantMessage,
+    ChatCompletionClient,
+    SystemMessage,
+    UserMessage,
+)
 
 from .model_client import get_oai_Model
 from .termination_handler import termination_handler
-from .trace import LLMUsageTracker
-
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("agent_execution.log"), logging.StreamHandler()],
-)
-
-# logger = logging.getLogger(__name__)
-
-# Set up the logging configuration to use the custom handler
-logger = logging.getLogger(EVENT_LOGGER_NAME)
-logger.setLevel(logging.INFO)
-llm_usage = LLMUsageTracker()
-logger.handlers = [llm_usage]
-
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger(TRACE_LOGGER_NAME)
-logger.setLevel(logging.DEBUG)
 
 
 class LoggingAssistantAgent(AssistantAgent):
     """扩展AssistantAgent以添加日志功能"""
 
     async def _process_received_message(self, message: Dict[str, Any]) -> Optional[str]:
-        logger.info(f"收到消息: {message}")
         return await super()._process_received_message(message)
 
     async def run(self, *args, **kwargs):
-        logger.info(f"Agent开始执行任务，参数: {args}, {kwargs}")
         try:
             result = await super().run(*args, **kwargs)
-            logger.info(f"任务执行完成，结果长度: {len(str(result))}")
             return result
-        except Exception as e:
-            logger.error(f"任务执行出错: {str(e)}", exc_info=True)
+        except Exception:
             raise
 
 
@@ -95,8 +79,6 @@ class Assistant(RoutedAgent):
 
 
 async def hello_ag_run() -> None:
-    logger.info("开始初始化agent")
-
     agent = LoggingAssistantAgent(
         "blog_writer",
         model_client=get_oai_Model(),
@@ -130,13 +112,10 @@ async def hello_ag_run() -> None:
     try:
         # 直接调用 agent
         result = await agent.run(task=blog_prompt)
-        logger.info("文章生成成功")
         print(result)
         # llm_usage 有额外的跟踪信息
-        print(llm_usage.prompt_tokens)
-        print(llm_usage.completion_tokens)
     except Exception:
-        logger.error("生成文章时发生错误", exc_info=True)
+        # logger.error("生成文章时发生错误", exc_info=True)
         raise
 
     # 通过 runtime 调用agent
