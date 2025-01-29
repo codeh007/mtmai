@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core import (EVENT_LOGGER_NAME, AgentId, DefaultTopicId,
-                          MessageContext, RoutedAgent,
+from autogen_core import (EVENT_LOGGER_NAME, TRACE_LOGGER_NAME, AgentId,
+                          DefaultTopicId, MessageContext, RoutedAgent,
                           SingleThreadedAgentRuntime, default_subscription,
                           message_handler)
 from autogen_core.model_context import BufferedChatCompletionContext
@@ -29,6 +29,10 @@ logger = logging.getLogger(EVENT_LOGGER_NAME)
 logger.setLevel(logging.INFO)
 llm_usage = LLMUsageTracker()
 logger.handlers = [llm_usage]
+
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(TRACE_LOGGER_NAME)
+logger.setLevel(logging.DEBUG)
 
 
 class LoggingAssistantAgent(AssistantAgent):
@@ -95,7 +99,7 @@ async def hello_ag_run() -> None:
 
     agent = LoggingAssistantAgent(
         "blog_writer",
-        get_oai_Model(),
+        model_client=get_oai_Model(),
         system_message="""你是一位极具洞察力的科技博主，擅长:
         1. 发现和分享AI领域最新、最有趣的应用和趋势
         2. 用生动的案例和数据支撑观点

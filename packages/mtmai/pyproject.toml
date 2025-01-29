@@ -89,12 +89,13 @@ dependencies = [
     "huggingface-hub>=0.27.1",
     "prefect>=3.1.13",
     # "autogenstudio>=0.1.5",
-    "autogen-agentchat>=0.4.3",
+    "autogen-agentchat>=0.4.4",
     "autogen-core>=0.4.3",
-    "autogen-ext[openai]>=0.4.3",
+    "autogen-ext[magentic-one,openai]>=0.4.3",
     "autogenstudio>=0.1.5",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
+    "opentelemetry-instrumentation-openai>=0.33.9",
 ]
 
 

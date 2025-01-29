@@ -1,45 +1,55 @@
+import json
+
 import structlog
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.messages import TextMessage
+from autogen_agentchat.teams import MagenticOneGroupChat
+from autogen_agentchat.ui import Console
 from fastapi import APIRouter, Request
+from fastapi.responses import StreamingResponse
+
+from ..agents.ag.model_client import get_oai_Model
+from ..agents.ag.trace import setup_autogen_logging
 
 router = APIRouter()
 LOG = structlog.get_logger()
+setup_autogen_logging()
 
 
 @router.api_route(path="", methods=["GET", "POST"])
 async def chat(r: Request):
     try:
-        # Get chat message from request body
         data = await r.json()
-        user_message = data.get("message", "")
-
-        # Initialize AutoGen agents
-        from autogen import AssistantAgent, UserProxyAgent
-
-        # Configure the assistant
-        assistant = AssistantAgent(
-            name="assistant", llm_config={"temperature": 0.7, "model": "gpt-3.5-turbo"}
-        )
-
-        # Configure the user proxy
-        user_proxy = UserProxyAgent(
-            name="user", human_input_mode="NEVER", max_consecutive_auto_reply=1
-        )
-
-        # Start chat with streaming response
-        from fastapi.responses import StreamingResponse
+        user_messages = data.get("messages", [])
+        user_message = user_messages[-1].get("content", "")
+        assistant = AssistantAgent(name="assistant", model_client=get_oai_Model())
 
         async def chat_stream():
-            # Initiate chat between agents
-            chat_response = user_proxy.initiate_chat(
-                assistant, message=user_message, stream=True
-            )
-
-            # Stream the response chunks
-            for chunk in chat_response:
-                if isinstance(chunk, str):
-                    yield f"data: {chunk}\n\n"
+            chat_response = assistant.run_stream(task=user_message)
+            async for chunk in chat_response:
+                if isinstance(chunk, TextMessage):
+                    yield f"0:{json.dumps(chunk.content)}\n"
 
         return StreamingResponse(chat_stream(), media_type="text/event-stream")
+
+    except Exception as e:
+        LOG.error("Chat error", error=str(e))
+        return {"error": str(e)}
+
+
+@router.api_route(path="test_m1", methods=["GET", "POST"])
+async def test_m1(r: Request):
+    # 测试 megentic one agent
+    try:
+        model_client = get_oai_Model()
+        assistant = AssistantAgent(
+            "Assistant",
+            model_client=model_client,
+        )
+        team = MagenticOneGroupChat([assistant], model_client=model_client)
+        await Console(
+            team.run_stream(task="Provide a different proof for Fermat's Last Theorem")
+        )
 
     except Exception as e:
         LOG.error("Chat error", error=str(e))
