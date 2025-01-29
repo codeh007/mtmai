@@ -16,6 +16,11 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     api_router.include_router(users.router, prefix="/users", tags=["users"])
 
+    LOG.info("api chat")
+    from mtmai.api import chat
+
+    api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
+
     LOG.info("api blog")
     from mtmai.api import blog
 
