@@ -9,11 +9,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
 from ..agents.ag.model_client import get_oai_Model
-from ..agents.ag.trace import setup_autogen_logging
 
 router = APIRouter()
 LOG = structlog.get_logger()
-setup_autogen_logging()
 
 
 @router.api_route(path="", methods=["GET", "POST"])
@@ -37,7 +35,7 @@ async def chat(r: Request):
         return {"error": str(e)}
 
 
-@router.api_route(path="test_m1", methods=["GET", "POST"])
+@router.api_route(path="/test_m1", methods=["GET", "POST"])
 async def test_m1(r: Request):
     # 测试 megentic one agent
     try:
