@@ -10,6 +10,19 @@ from typing_extensions import Annotated
 app = typer.Typer()
 
 
+def setup_env():
+    import mtmai.core.bootstraps as bootstraps
+
+    load_dotenv()
+    bootstraps.bootstrap_core()
+
+    if os.path.exists("../gomtm/env/dev.env"):
+        load_dotenv(dotenv_path=os.path.join("../gomtm/env/dev.env"))
+    MTM_DATABASE_URL = os.getenv("MTM_DATABASE_URL")
+    if MTM_DATABASE_URL:
+        os.environ["AUTOGENSTUDIO_DATABASE_URI"] = MTM_DATABASE_URL
+
+
 @app.command()
 def ui(
     host: str = "127.0.0.1",
@@ -33,8 +46,8 @@ def ui(
         appdir (str, optional): Path to the AutoGen Studio app directory. Defaults to None.
         database-uri (str, optional): Database URI to connect to. Defaults to None.
     """
-    if os.path.exists("../gomtm/env/dev.env"):
-        load_dotenv(dotenv_path=os.path.join("../gomtm/env/dev.env"))
+    setup_env()
+
     os.environ["AUTOGENSTUDIO_API_DOCS"] = str(docs)
     if appdir:
         os.environ["AUTOGENSTUDIO_APPDIR"] = appdir
@@ -99,6 +112,17 @@ def version():
     """
 
     typer.echo(f"AutoGen Studio  CLI version: {VERSION}")
+
+
+@app.command()
+def gradio():
+    from mtmai.gradio_app import demo
+
+    demo.launch(
+        share=True,
+        server_name="0.0.0.0",
+        server_port=18089,
+    )
 
 
 def run():

@@ -11,10 +11,6 @@ bootstraps.bootstrap_core()
 
 
 def main():
-    # @click.group()
-    # def cli():
-    #     pass
-
     @click.group(invoke_without_command=True)
     @click.pass_context
     def cli(ctx):
@@ -39,16 +35,6 @@ def main():
 
     #     worker_app = WorkerApp(url)
     #     asyncio.run(worker_app.deploy_mtmai_workers())
-
-    @cli.command()
-    def gradio():
-        from mtmai.gradio_app import demo
-
-        demo.launch(
-            share=True,
-            server_name="0.0.0.0",
-            server_port=18089,
-        )
 
     cli()
 
