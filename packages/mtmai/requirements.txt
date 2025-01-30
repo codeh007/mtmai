@@ -447,7 +447,9 @@ jmespath==1.0.1
 joblib==1.4.2
     # via nltk
 json-repair==0.35.0
-    # via crewai
+    # via
+    #   mtxai (pyproject.toml)
+    #   crewai
 jsonpatch==1.33
     # via
     #   langchain-core
