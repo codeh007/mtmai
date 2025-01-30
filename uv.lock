@@ -3425,7 +3425,7 @@ wheels = [
 
 [[package]]
 name = "mtxai"
-version = "0.0.29"
+version = "0.0.30"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "aiohttp" },
@@ -3439,7 +3439,6 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "browser-use" },
     { name = "cel-python" },
-    { name = "click" },
     { name = "crewai" },
     { name = "duckduckgo-search" },
     { name = "email-validator" },
@@ -3476,6 +3475,7 @@ dependencies = [
     { name = "playwright" },
     { name = "prefect" },
     { name = "psycopg2-binary" },
+    { name = "pydantic-settings" },
     { name = "python-dateutil" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -3489,6 +3489,7 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tqdm" },
     { name = "transformers" },
+    { name = "typer" },
     { name = "undetected-playwright" },
 ]
 
@@ -3546,7 +3547,6 @@ requires-dist = [
     { name = "browser-use", specifier = ">=0.1.23" },
     { name = "burr", extras = ["start"], marker = "extra == 'burr'", specifier = "==0.22.1" },
     { name = "cel-python", specifier = ">=0.1.5" },
-    { name = "click", specifier = ">=8.1.7,<9" },
     { name = "crewai", specifier = ">=0.95.0" },
     { name = "duckduckgo-search", specifier = ">=7.2.1" },
     { name = "email-validator", specifier = ">=2.2.0" },
@@ -3584,6 +3584,7 @@ requires-dist = [
     { name = "playwright", specifier = ">=1.43.0" },
     { name = "prefect", specifier = ">=3.1.13" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "pydantic-settings" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
@@ -3599,6 +3600,7 @@ requires-dist = [
     { name = "tiktoken", specifier = ">=0.7" },
     { name = "tqdm", specifier = ">=4.66.4" },
     { name = "transformers", specifier = ">=4.44.2" },
+    { name = "typer", specifier = ">=0.13.1" },
     { name = "undetected-playwright", specifier = ">=0.3.0" },
 ]
 

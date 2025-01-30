@@ -14,6 +14,7 @@ from starlette.templating import Jinja2Templates
 from mtmai.core.__version__ import version
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
+
 # from mtmai.forge.sdk.db.exceptions import NotFoundError
 # from mtmai.forge.sdk.settings_manager import SettingsManager
 from mtmai.middleware import AuthMiddleware
@@ -143,6 +144,11 @@ def build_app():
     from .gradio_app import mount_gradio_app
 
     mount_gradio_app(app)
+
+    # 挂载
+    from autogenstudio.web.app import api
+
+    app.include_router(api.router)
 
     # setup_forge_app(app)
 

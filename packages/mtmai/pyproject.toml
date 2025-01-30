@@ -19,6 +19,7 @@ classifiers = [
 ]
 requires-python = ">=3.12,<4.0"
 dependencies = [
+    "pydantic-settings",
     "litellm>=1.56.5",
     "langchain>=0.3.0",
     # "langchain-google-genai>=1.0.7",
@@ -32,7 +33,7 @@ dependencies = [
     "tiktoken>=0.7",
     "tqdm>=4.66.4",
     "minify-html>=0.15.0",
-    "click>=8.1.7,<9",
+    # "click>=8.1.7,<9",
     "free-proxy>=1.1.1",
     "playwright>=1.43.0",
     "undetected-playwright>=0.3.0",
@@ -97,6 +98,7 @@ dependencies = [
     "passlib>=1.7.4",
     "opentelemetry-instrumentation-openai>=0.33.9",
     "json-repair>=0.35.0",
+    "typer>=0.13.1",
 ]
 
 
