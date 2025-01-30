@@ -143,6 +143,7 @@ from mtmaisdk.clients.rest.models.log_line_level import LogLineLevel
 from mtmaisdk.clients.rest.models.log_line_list import LogLineList
 from mtmaisdk.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmaisdk.clients.rest.models.operataion_guide_response import OperataionGuideResponse
 from mtmaisdk.clients.rest.models.operation_enum import OperationEnum

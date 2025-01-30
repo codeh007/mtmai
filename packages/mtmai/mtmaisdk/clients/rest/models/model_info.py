@@ -17,23 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from typing import Optional, Set
 from typing_extensions import Self
 
-class LlmConfig(BaseModel):
+class ModelInfo(BaseModel):
     """
-    llm config
+    model info
     """ # noqa: E501
-    metadata: APIResourceMeta
-    base_url: StrictStr = Field(alias="baseUrl")
-    api_key: StrictStr = Field(alias="apiKey")
-    model: StrictStr = Field(description="llm model name")
-    model_info: ModelInfo = Field(alias="modelInfo")
-    __properties: ClassVar[List[str]] = ["metadata", "baseUrl", "apiKey", "model", "modelInfo"]
+    vision: StrictBool = Field(description="True if the model supports vision, aka image input, otherwise False.")
+    function_calling: StrictBool = Field(description="True if the model supports function calling, otherwise False.")
+    json_output: StrictBool = Field(description="True if the model supports json output, otherwise False. Note: this is different to structured json.")
+    family: StrictStr = Field(description="Model family should be one of the constants from :py:class:`ModelFamily` or a string representing an unknown model family.")
+    __properties: ClassVar[List[str]] = ["vision", "function_calling", "json_output", "family"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +50,7 @@ class LlmConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of LlmConfig from a JSON string"""
+        """Create an instance of ModelInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,17 +71,11 @@ class LlmConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of model_info
-        if self.model_info:
-            _dict['modelInfo'] = self.model_info.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of LlmConfig from a dict"""
+        """Create an instance of ModelInfo from a dict"""
         if obj is None:
             return None
 
@@ -92,11 +83,10 @@ class LlmConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "baseUrl": obj.get("baseUrl"),
-            "apiKey": obj.get("apiKey"),
-            "model": obj.get("model"),
-            "modelInfo": ModelInfo.from_dict(obj["modelInfo"]) if obj.get("modelInfo") is not None else None
+            "vision": obj.get("vision"),
+            "function_calling": obj.get("function_calling"),
+            "json_output": obj.get("json_output"),
+            "family": obj.get("family") if obj.get("family") is not None else 'unknown'
         })
         return _obj
 

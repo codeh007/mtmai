@@ -1,12 +1,13 @@
+import os
 import threading
 
-import structlog
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from loguru import logger
 from starlette.templating import Jinja2Templates
 
 # from mtmai import analytics
@@ -26,7 +27,7 @@ from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 
 # from mtmai.workflows.workers import deploy_mtmai_workers
 
-LOG = structlog.stdlib.get_logger()
+# LOG = structlog.stdlib.get_logger()
 
 
 # class ExecutionDatePlugin(Plugin):
@@ -120,8 +121,6 @@ def build_app():
         # app.include_router(api_router, prefix=settings.API_V1_STR)
         mount_api_routes(app, prefix=settings.API_V1_STR)
 
-    setup_main_routes()
-
     if settings.OTEL_ENABLED:
         from mtmai.mtlibs import otel
 
@@ -141,14 +140,11 @@ def build_app():
         )
         app.add_middleware(AuthMiddleware)
 
+    # 挂载
+    mount_autogenstudio_app(app)
     from .gradio_app import mount_gradio_app
 
     mount_gradio_app(app)
-
-    # 挂载
-    from autogenstudio.web.app import api
-
-    app.include_router(api.router)
 
     # setup_forge_app(app)
 
@@ -222,13 +218,11 @@ def build_app():
 
 
 async def serve():
-    # try:
     # analytics.capture("skyvern-oss-run-server")
-    load_dotenv()
+    if os.path.exists("../gomtm/env/mtmai.env"):
+        load_dotenv(dotenv_path=os.path.join("../gomtm/env/mtmai.env"))
 
     app = build_app()
-    # threading.Thread(target=start_deamon_serve).start()
-
     config = uvicorn.Config(
         app,
         host=settings.SERVE_IP,
@@ -249,13 +243,13 @@ async def serve():
     )
     server_url = f"{settings.server_host.split('://')[0]}://{host}:{settings.PORT}"
 
-    LOG.info(
+    logger.info(
         "server config.", host="0.0.0.0", port=settings.PORT, server_url=server_url
     )
     server = uvicorn.Server(config)
 
     try:
-        LOG.info(
+        logger.info(
             "server starting",
             host="0.0.0.0",
             port=settings.PORT,
@@ -263,7 +257,7 @@ async def serve():
         )
         await server.serve()
     except Exception as e:
-        LOG.error("Error in uvicorn server:", exc_info=e)
+        logger.error("Error in uvicorn server:", exc_info=e)
         raise
 
 
@@ -276,7 +270,7 @@ def start_deamon_serve():
     启动后台独立服务
     根据具体环境自动启动
     """
-    LOG.info("start_deamon_serve")
+    logger.info("start_deamon_serve")
     if is_in_dev():
         from mtmai.flows.deployments import start_prefect_deployment
 
@@ -340,5 +334,11 @@ def start_deamon_serve():
 
     # threading.Thread(target=run_easy_spider_server).start()
 
-    LOG.info("start deamon finished")
-    LOG.info("start deamon finished")
+    logger.info("start deamon finished")
+
+
+def mount_autogenstudio_app(app: FastAPI):
+    logger.info("mount autogenstudio")
+    from autogenstudio.web.app import api
+
+    app.include_router(api.router, prefix="/autogenstudio")

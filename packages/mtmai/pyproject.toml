@@ -89,11 +89,10 @@ dependencies = [
     "lxml-html-clean>=0.4.1",
     "huggingface-hub>=0.27.1",
     "prefect>=3.1.13",
-    # "autogenstudio>=0.1.5",
-    "autogen-agentchat>=0.4.4",
-    "autogen-core>=0.4.3",
-    "autogen-ext[magentic-one,openai]>=0.4.3",
-    "autogenstudio>=0.1.5",
+    # "autogen-agentchat>=0.4.0",
+    "autogen-core>=0.4.0.0",
+    "autogen-ext[magentic-one,openai]>=0.4.0",
+    # "autogenstudio>=0.4.0.0",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
     "opentelemetry-instrumentation-openai>=0.33.9",
@@ -102,11 +101,12 @@ dependencies = [
 ]
 
 
+[project.scripts]
+mtmai = "mtmai.cli:run"
 
-
-[project.optional-dependencies]
-    burr = ["burr[start]==0.22.1"]
-    docs = ["sphinx==6.0", "furo==2024.5.6"]
+# [project.optional-dependencies]
+#     burr = ["burr[start]==0.22.1"]
+    # docs = ["sphinx==6.0", "furo==2024.5.6"]
 
 # [project.optional-dependencies]
 [dependency-groups]

@@ -1,7 +1,5 @@
-import structlog
 from fastapi import APIRouter, FastAPI
-
-LOG = structlog.stdlib.get_logger()
+from loguru import logger
 
 
 def mount_api_routes(app: FastAPI, prefix="/"):
@@ -10,38 +8,38 @@ def mount_api_routes(app: FastAPI, prefix="/"):
     from mtmai.api import auth
 
     api_router.include_router(auth.router, tags=["auth"])
-    LOG.info("api users")
+    logger.info("api users")
 
     from mtmai.api import users
 
     api_router.include_router(users.router, prefix="/users", tags=["users"])
 
-    LOG.info("api chat")
+    logger.info("api chat")
     from mtmai.api import chat
 
     api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 
-    LOG.info("api blog")
+    logger.info("api blog")
     from mtmai.api import blog
 
     api_router.include_router(blog.router, prefix="/posts", tags=["posts"])
 
-    LOG.info("api image")
+    logger.info("api image")
     from mtmai.api import image
 
     api_router.include_router(image.router, prefix="/image", tags=["image"])
 
-    LOG.info("api train")
+    logger.info("api train")
     from mtmai.api import train
 
     api_router.include_router(train.router, prefix="/train", tags=["train"])
 
-    LOG.info("api metrics")
+    logger.info("api metrics")
     from mtmai.api import metrics
 
     api_router.include_router(metrics.router, prefix="/metrics", tags=["metrics"])
 
-    LOG.info("api agent")
+    logger.info("api agent")
     from mtmai.api import agent
 
     api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
@@ -66,7 +64,7 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     # api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
 
-    LOG.info("api openai")
+    logger.info("api openai")
     from mtmai.api import openai
 
     api_router.include_router(openai.router, tags=["openai"])
@@ -81,7 +79,7 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     # api_router.include_router(workbench.router, prefix="/workbench", tags=["workbench"])
 
-    LOG.info("api logs")
+    logger.info("api logs")
     from mtmai.api import logs
 
     api_router.include_router(logs.router, prefix="/logs", tags=["logs"])
@@ -96,7 +94,7 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     # api_router.include_router(artifact.router, prefix="/artifact", tags=["artifact"])
 
-    LOG.info("api config")
+    logger.info("api config")
     from mtmai.api import config
 
     api_router.include_router(config.router, prefix="/config", tags=["config"])
