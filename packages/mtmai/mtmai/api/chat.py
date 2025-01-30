@@ -63,7 +63,7 @@ class LoggingModelClient:
 
 @router.api_route(path="/test_m1", methods=["GET", "POST"])
 async def test_m1(r: Request):
-    from autogen_ext.agents.web_surfer import MultimodalWebSurfer
+    from autogen_ext.agents.web_surfer import PlaywrightController
 
     # 测试 megentic one agent
     try:
@@ -75,8 +75,8 @@ async def test_m1(r: Request):
             model_client=logging_client,
         )
 
-        surfer = MultimodalWebSurfer(
-            "WebSurfer",
+        surfer = PlaywrightController(
+            downloads_folder=".vol/WebSurfer",
             model_client=model_client,
         )
 

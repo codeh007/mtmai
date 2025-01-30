@@ -7,7 +7,8 @@ def get_oai_Model():
         api_key="ZGd2VL8B9KxqMB3HIsTaNXmp5iM9ew3c",
         base_url="https://llama3-3-70b.lepton.run/api/v1/",
         model_info={
-            "vision": False,
+            # "vision": False,
+            "vision": True,
             "function_calling": True,
             "json_output": True,
             "family": "unknown",
