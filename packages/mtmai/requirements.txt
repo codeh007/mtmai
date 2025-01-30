@@ -137,7 +137,6 @@ chromadb==0.6.3
     # via crewai
 click==8.1.8
     # via
-    #   mtxai (pyproject.toml)
     #   apprise
     #   crewai
     #   duckduckgo-search
@@ -883,6 +882,7 @@ pydantic-extra-types==2.10.2
     # via prefect
 pydantic-settings==2.7.1
     # via
+    #   mtxai (pyproject.toml)
     #   langchain-community
     #   phidata
     #   prefect
@@ -1164,6 +1164,7 @@ transformers==4.48.1
     # via mtxai (pyproject.toml)
 typer==0.13.1
     # via
+    #   mtxai (pyproject.toml)
     #   autogenstudio
     #   chromadb
     #   instructor
