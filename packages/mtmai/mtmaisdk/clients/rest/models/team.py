@@ -31,7 +31,8 @@ class Team(BaseModel):
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
     version: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version"]
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -90,7 +91,8 @@ class Team(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
             "userId": obj.get("userId"),
-            "version": obj.get("version")
+            "version": obj.get("version"),
+            "config": obj.get("config")
         })
         return _obj
 
