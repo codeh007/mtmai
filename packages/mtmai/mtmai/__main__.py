@@ -118,8 +118,8 @@ def serve(
 
     """
 
-    os.environ["AUTOGENSTUDIO_API_DOCS"] = str(docs)
-    os.environ["AUTOGENSTUDIO_TEAM_FILE"] = team
+    # os.environ["AUTOGENSTUDIO_API_DOCS"] = str(docs)
+    # os.environ["AUTOGENSTUDIO_TEAM_FILE"] = team
 
     # validate the team file
     # if not os.path.exists(team):

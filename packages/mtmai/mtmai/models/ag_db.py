@@ -11,8 +11,6 @@ from sqlmodel import JSON, Column, DateTime, Field, SQLModel, func
 
 from .ag import MessageConfig, MessageMeta, TeamResult
 
-# from .types import MessageConfig, MessageMeta, TeamResult
-
 
 class Team(SQLModel, table=True):
     __table_args__ = {"sqlite_autoincrement": True}

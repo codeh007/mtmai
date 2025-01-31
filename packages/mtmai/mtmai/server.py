@@ -114,13 +114,14 @@ def build_app():
     async def generic_exception_handler(request: Request, exc: Exception):  # noqa: ARG001
         return JSONResponse(status_code=500, content={"detail": str(exc)})
 
-    def setup_main_routes():
+    def setup_main_routes(target_app: FastAPI):
         from mtmai.api import home
 
-        app.include_router(home.router)
+        target_app.include_router(home.router)
         # app.include_router(api_router, prefix=settings.API_V1_STR)
-        mount_api_routes(app, prefix=settings.API_V1_STR)
+        mount_api_routes(target_app, prefix=settings.API_V1_STR)
 
+    setup_main_routes(app)
     if settings.OTEL_ENABLED:
         from mtmai.mtlibs import otel
 

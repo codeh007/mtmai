@@ -8,8 +8,7 @@ from fastapi import APIRouter
 from ..models.ag import Response
 from ..teammanager import TeamManager
 
-# app = FastAPI()
-team_file_path = "data.json"
+# team_file_path = "data.json"
 team_file_path = os.environ.get("AUTOGENSTUDIO_TEAM_FILE", None)
 
 
