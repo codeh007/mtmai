@@ -214,6 +214,9 @@ from mtmaisdk.clients.rest.models.step_run_event_reason import StepRunEventReaso
 from mtmaisdk.clients.rest.models.step_run_event_severity import StepRunEventSeverity
 from mtmaisdk.clients.rest.models.step_run_status import StepRunStatus
 from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
+from mtmaisdk.clients.rest.models.team import Team
+from mtmaisdk.clients.rest.models.team_list import TeamList
+from mtmaisdk.clients.rest.models.team_update import TeamUpdate
 from mtmaisdk.clients.rest.models.tenant import Tenant
 from mtmaisdk.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmaisdk.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
