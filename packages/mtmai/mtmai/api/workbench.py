@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-import structlog
+
 from mtmai.deps import OptionalUserDep, SessionDep
 from mtmai.models.chat import (
     AssisantConfig,
@@ -14,8 +14,6 @@ from mtmai.models.chat import (
 )
 
 router = APIRouter()
-LOG = structlog.get_logger()
-
 
 
 class WorkbenchConfigRequest(BaseModel):

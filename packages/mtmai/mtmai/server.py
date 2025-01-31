@@ -142,7 +142,7 @@ def build_app():
         app.add_middleware(AuthMiddleware)
 
     # 挂载
-    mount_autogenstudio_app(app)
+    # mount_autogenstudio_app(app)
     from .gradio_app import mount_gradio_app
 
     mount_gradio_app(app)
@@ -338,8 +338,8 @@ def start_deamon_serve():
     logger.info("start deamon finished")
 
 
-def mount_autogenstudio_app(app: FastAPI):
-    logger.info("mount autogenstudio")
-    from autogenstudio.web.app import api
+# def mount_autogenstudio_app(app: FastAPI):
+#     logger.info("mount autogenstudio")
+#     from autogenstudio.web.app import api
 
-    app.include_router(api.router, prefix="/autogenstudio")
+#     app.include_router(api.router, prefix="/autogenstudio")

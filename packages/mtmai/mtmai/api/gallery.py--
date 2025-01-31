@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from ..database import DatabaseManager
 from ..deps import get_db
-from ..models.ag_db import Gallery, GalleryConfig, Response, Run, Session
+from ..models.ag import Response
+from ..models.ag_db import Gallery, GalleryConfig, Run, Session
 
 router = APIRouter()
 

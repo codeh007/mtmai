@@ -54,15 +54,15 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     api_router.include_router(sessions.router, prefix="/sessions", tags=["sessions"])
 
-    logger.info("api agents")
-    from mtmai.api import agents
+    # logger.info("api agents")
+    # from mtmai.api import agents
 
-    api_router.include_router(agents.router, prefix="/agents", tags=["agents"])
+    # api_router.include_router(agents.router, prefix="/agents", tags=["agents"])
 
-    logger.info("api gallery")
-    from mtmai.api import gallery
+    # logger.info("api gallery")
+    # from mtmai.api import gallery
 
-    api_router.include_router(gallery.router, prefix="/gallery", tags=["gallery"])
+    # api_router.include_router(gallery.router, prefix="/gallery", tags=["gallery"])
 
     logger.info("api teams")
     from mtmai.api import teams
