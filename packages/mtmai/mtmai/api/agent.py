@@ -1,4 +1,3 @@
-import structlog
 from fastapi import APIRouter
 
 # from mtmaisdk.clients.rest import AgentNodeRunRequest
@@ -6,7 +5,6 @@ from fastapi import APIRouter
 # from pydantic import BaseModel
 
 router = APIRouter()
-LOG = structlog.get_logger()
 
 # @router.post("/message")
 # async def message(data: MessageAckRequest):

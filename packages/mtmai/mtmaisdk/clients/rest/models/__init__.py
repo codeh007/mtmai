@@ -23,6 +23,7 @@ from mtmaisdk.clients.rest.models.api_meta_posthog import APIMetaPosthog
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.api_token import APIToken
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
+from mtmaisdk.clients.rest.models.agent import Agent
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_finish import AgentFinish
 from mtmaisdk.clients.rest.models.agent_node import AgentNode

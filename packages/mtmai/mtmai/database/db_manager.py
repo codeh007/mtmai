@@ -7,7 +7,8 @@ from loguru import logger
 from sqlalchemy import exc, inspect, text
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
-from ..datamodel import Response, Team
+from ..models.ag import Response
+from ..models.ag_db import Team
 from ..teammanager import TeamManager
 from .schema_manager import SchemaManager
 
@@ -32,7 +33,9 @@ class DatabaseManager:
             base_dir=base_dir,
         )
 
-    def initialize_database(self, auto_upgrade: bool = False, force_init_alembic: bool = True) -> Response:
+    def initialize_database(
+        self, auto_upgrade: bool = False, force_init_alembic: bool = True
+    ) -> Response:
         """
         Initialize database and migrations in the correct order.
 
@@ -41,7 +44,9 @@ class DatabaseManager:
             force_init_alembic: If True, reinitialize alembic configuration even if it exists
         """
         if not self._init_lock.acquire(blocking=False):
-            return Response(message="Database initialization already in progress", status=False)
+            return Response(
+                message="Database initialization already in progress", status=False
+            )
 
         try:
             inspector = inspect(self.engine)
@@ -53,14 +58,20 @@ class DatabaseManager:
                 SQLModel.metadata.create_all(self.engine)
 
                 if self.schema_manager.initialize_migrations(force=force_init_alembic):
-                    return Response(message="Database initialized successfully", status=True)
+                    return Response(
+                        message="Database initialized successfully", status=True
+                    )
                 return Response(message="Failed to initialize migrations", status=False)
 
             # Handle existing database
             if auto_upgrade:
                 logger.info("Checking database schema...")
-                if self.schema_manager.ensure_schema_up_to_date():  # <-- Use this instead
-                    return Response(message="Database schema is up to date", status=True)
+                if (
+                    self.schema_manager.ensure_schema_up_to_date()
+                ):  # <-- Use this instead
+                    return Response(
+                        message="Database schema is up to date", status=True
+                    )
                 return Response(message="Database upgrade failed", status=False)
 
             return Response(message="Database is ready", status=True)
@@ -82,7 +93,9 @@ class DatabaseManager:
         """
         if not self._init_lock.acquire(blocking=False):
             logger.warning("Database reset already in progress")
-            return Response(message="Database reset already in progress", status=False, data=None)
+            return Response(
+                message="Database reset already in progress", status=False, data=None
+            )
 
         try:
             # Dispose existing connections
@@ -115,7 +128,9 @@ class DatabaseManager:
                 self.initialize_database(auto_upgrade=False, force_init_alembic=True)
 
             return Response(
-                message="Database reset successfully" if recreate_tables else "Database tables dropped successfully",
+                message="Database reset successfully"
+                if recreate_tables
+                else "Database tables dropped successfully",
                 status=True,
                 data=None,
             )
@@ -146,7 +161,9 @@ class DatabaseManager:
 
         with Session(self.engine) as session:
             try:
-                existing_model = session.exec(select(model_class).where(model_class.id == model.id)).first()
+                existing_model = session.exec(
+                    select(model_class).where(model_class.id == model.id)
+                ).first()
                 if existing_model:
                     model.updated_at = datetime.now()
                     for key, value in model.model_dump().items():
@@ -159,7 +176,12 @@ class DatabaseManager:
                 session.refresh(model)
             except Exception as e:
                 session.rollback()
-                logger.error("Error while updating/creating " + str(model_class.__name__) + ": " + str(e))
+                logger.error(
+                    "Error while updating/creating "
+                    + str(model_class.__name__)
+                    + ": "
+                    + str(e)
+                )
                 status = False
 
         return Response(
@@ -173,7 +195,10 @@ class DatabaseManager:
         )
 
     def _model_to_dict(self, model_obj):
-        return {col.name: getattr(model_obj, col.name) for col in model_obj.__table__.columns}
+        return {
+            col.name: getattr(model_obj, col.name)
+            for col in model_obj.__table__.columns
+        }
 
     def get(
         self,
@@ -191,21 +216,33 @@ class DatabaseManager:
             try:
                 statement = select(model_class)
                 if filters:
-                    conditions = [getattr(model_class, col) == value for col, value in filters.items()]
+                    conditions = [
+                        getattr(model_class, col) == value
+                        for col, value in filters.items()
+                    ]
                     statement = statement.where(and_(*conditions))
 
                 if hasattr(model_class, "created_at") and order:
-                    order_by_clause = getattr(model_class.created_at, order)()  # Dynamically apply asc/desc
+                    order_by_clause = getattr(
+                        model_class.created_at, order
+                    )()  # Dynamically apply asc/desc
                     statement = statement.order_by(order_by_clause)
 
                 items = session.exec(statement).all()
-                result = [self._model_to_dict(item) if return_json else item for item in items]
+                result = [
+                    self._model_to_dict(item) if return_json else item for item in items
+                ]
                 status_message = f"{model_class.__name__} Retrieved Successfully"
             except Exception as e:
                 session.rollback()
                 status = False
                 status_message = f"Error while fetching {model_class.__name__}"
-                logger.error("Error while getting items: " + str(model_class.__name__) + " " + str(e))
+                logger.error(
+                    "Error while getting items: "
+                    + str(model_class.__name__)
+                    + " "
+                    + str(e)
+                )
 
             return Response(message=status_message, status=status, data=result)
 
@@ -218,7 +255,10 @@ class DatabaseManager:
             try:
                 statement = select(model_class)
                 if filters:
-                    conditions = [getattr(model_class, col) == value for col, value in filters.items()]
+                    conditions = [
+                        getattr(model_class, col) == value
+                        for col, value in filters.items()
+                    ]
                     statement = statement.where(and_(*conditions))
 
                 rows = session.exec(statement).all()
@@ -247,7 +287,10 @@ class DatabaseManager:
         return Response(message=status_message, status=status, data=None)
 
     async def import_team(
-        self, team_config: Union[str, Path, dict], user_id: str, check_exists: bool = False
+        self,
+        team_config: Union[str, Path, dict],
+        user_id: str,
+        check_exists: bool = False,
     ) -> Response:
         try:
             # Load config if path provided
@@ -261,7 +304,9 @@ class DatabaseManager:
                 existing = await self._check_team_exists(config, user_id)
                 if existing:
                     return Response(
-                        message="Identical team configuration already exists", status=True, data={"id": existing.id}
+                        message="Identical team configuration already exists",
+                        status=True,
+                        data={"id": existing.id},
                     )
 
             # Store in database
@@ -295,7 +340,9 @@ class DatabaseManager:
             results = []
             for config in configs:
                 try:
-                    result = await self.import_team(team_config=config, user_id=user_id, check_exists=check_exists)
+                    result = await self.import_team(
+                        team_config=config, user_id=user_id, check_exists=check_exists
+                    )
 
                     # Add result info
                     results.append(
@@ -310,7 +357,9 @@ class DatabaseManager:
                     logger.error(f"Failed to import team config: {str(e)}")
                     results.append({"status": False, "message": str(e), "id": None})
 
-            return Response(message="Directory import complete", status=True, data=results)
+            return Response(
+                message="Directory import complete", status=True, data=results
+            )
 
         except Exception as e:
             logger.error(f"Failed to import directory: {str(e)}")

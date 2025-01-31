@@ -10,7 +10,7 @@ from autogen_core.tools import FunctionTool
 from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-from autogenstudio.datamodel import Gallery, GalleryComponents, GalleryItems, GalleryMetadata
+from ..models.ag import Gallery, GalleryComponents, GalleryItems, GalleryMetadata
 
 
 class GalleryBuilder:
@@ -100,7 +100,10 @@ class GalleryBuilder:
             items=GalleryItems(
                 teams=self.teams,
                 components=GalleryComponents(
-                    agents=self.agents, models=self.models, tools=self.tools, terminations=self.terminations
+                    agents=self.agents,
+                    models=self.models,
+                    tools=self.tools,
+                    terminations=self.terminations,
                 ),
             ),
         )
@@ -177,7 +180,9 @@ def create_default_gallery() -> Gallery:
     builder.add_agent(calc_assistant.dump_component())
 
     # Create calculator team
-    calc_team = RoundRobinGroupChat(participants=[calc_assistant], termination_condition=calc_or_term)
+    calc_team = RoundRobinGroupChat(
+        participants=[calc_assistant], termination_condition=calc_or_term
+    )
     builder.add_team(calc_team.dump_component())
 
     # Create web surfer agent

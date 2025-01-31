@@ -2,13 +2,12 @@ import asyncio
 import os
 
 import typer
-from autogenstudio.version import VERSION
 from dotenv import load_dotenv
 
 import mtmai.core.bootstraps as bootstraps
 from mtmai.core.config import settings
 
-load_dotenv()
+# load_dotenv()
 app = typer.Typer()
 
 
@@ -141,13 +140,13 @@ def serve(
     asyncio.run(serve())
 
 
-@app.command()
-def version():
-    """
-    Print the version of the AutoGen Studio UI CLI.
-    """
+# @app.command()
+# def version():
+#     """
+#     Print the version of the AutoGen Studio UI CLI.
+#     """
 
-    typer.echo(f"AutoGen Studio  CLI version: {VERSION}")
+#     typer.echo(f"AutoGen Studio  CLI version: {VERSION}")
 
 
 @app.command()
@@ -166,4 +165,5 @@ def run():
 
 
 if __name__ == "__main__":
+    app()
     app()
