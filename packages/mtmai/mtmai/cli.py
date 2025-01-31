@@ -7,6 +7,8 @@ from autogenstudio.version import VERSION
 from dotenv import load_dotenv
 from typing_extensions import Annotated
 
+from mtmai.core.config import settings
+
 app = typer.Typer()
 
 
@@ -59,7 +61,7 @@ def ui(
     uvicorn.run(
         "autogenstudio.web.app:app",
         host=host,
-        port=port,
+        port=settings.PORT,
         workers=workers,
         reload=reload,
         reload_excludes=["**/alembic/*", "**/alembic.ini", "**/versions/*"]
