@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
       "cwd": "${workspaceFolder}",
-      "args": ["ui"],
+      "args": ["serve"],
       "jinja": true,
       "justMyCode": false,
       "envFile": "${workspaceFolder}/../gomtm/env/dev.env",
@@ -16,12 +16,6 @@
         // "DISPLAY": ":1",
         // "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
         // "PYTHONPATH---": "${workspaceFolder}/.venv/lib/python3.11/site-packages"
-      },
-      "windows": {
-        "env": {
-          "http_proxy": "http://127.0.0.1:10809",
-          "https_proxy": "http://127.0.0.1:10809"
-        }
       }
     },
     // {
