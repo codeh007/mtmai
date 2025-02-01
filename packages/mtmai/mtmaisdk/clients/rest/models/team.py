@@ -31,8 +31,8 @@ class Team(BaseModel):
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
     version: Optional[StrictStr] = None
-    component: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "component"]
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -92,7 +92,7 @@ class Team(BaseModel):
             "name": obj.get("name"),
             "userId": obj.get("userId"),
             "version": obj.get("version"),
-            "component": obj.get("component")
+            "config": obj.get("config")
         })
         return _obj
 

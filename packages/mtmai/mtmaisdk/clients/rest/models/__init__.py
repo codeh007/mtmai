@@ -217,6 +217,7 @@ from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_list import TeamList
 from mtmaisdk.clients.rest.models.team_update import TeamUpdate
+from mtmaisdk.clients.rest.models.team_update_config import TeamUpdateConfig
 from mtmaisdk.clients.rest.models.tenant import Tenant
 from mtmaisdk.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmaisdk.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
