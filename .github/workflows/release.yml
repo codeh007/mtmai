@@ -22,6 +22,8 @@ permissions:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MAIN_GH_TOKEN: ${{ secrets.MAIN_GH_TOKEN }}
+  MAIN_GH_USER: ${{ secrets.MAIN_GH_USER }}
   PIPY_TOKEN: ${{ secrets.PIPY_TOKEN }}
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
