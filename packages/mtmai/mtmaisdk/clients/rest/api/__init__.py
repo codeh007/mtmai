@@ -27,6 +27,7 @@ from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.endpoint_api import EndpointApi
 from mtmaisdk.clients.rest.api.env_api import EnvApi
 from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
+from mtmaisdk.clients.rest.api.galleries_api import GalleriesApi
 from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi

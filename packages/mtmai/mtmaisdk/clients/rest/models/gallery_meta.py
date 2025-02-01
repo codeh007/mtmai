@@ -17,23 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.component_model import ComponentModel
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamUpdate(BaseModel):
+class GalleryMeta(BaseModel):
     """
-    TeamUpdate
+    GalleryMeta
     """ # noqa: E501
-    metadata: APIResourceMeta
-    name: StrictStr
-    user_id: StrictStr = Field(alias="userId")
+    author: StrictStr
+    created_at: StrictStr
+    updated_at: StrictStr
     version: StrictStr
-    config: ComponentModel
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
+    description: Optional[StrictStr] = None
+    tags: Optional[List[Any]] = None
+    license: Optional[StrictStr] = None
+    homepage: Optional[StrictStr] = None
+    category: Optional[StrictStr] = None
+    last_synced: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["author", "created_at", "updated_at", "version", "description", "tags", "license", "homepage", "category", "last_synced"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +56,7 @@ class TeamUpdate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a JSON string"""
+        """Create an instance of GalleryMeta from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,17 +77,11 @@ class TeamUpdate(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a dict"""
+        """Create an instance of GalleryMeta from a dict"""
         if obj is None:
             return None
 
@@ -92,11 +89,16 @@ class TeamUpdate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "name": obj.get("name"),
-            "userId": obj.get("userId"),
+            "author": obj.get("author"),
+            "created_at": obj.get("created_at"),
+            "updated_at": obj.get("updated_at"),
             "version": obj.get("version"),
-            "config": ComponentModel.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "description": obj.get("description"),
+            "tags": obj.get("tags"),
+            "license": obj.get("license"),
+            "homepage": obj.get("homepage"),
+            "category": obj.get("category"),
+            "last_synced": obj.get("last_synced")
         })
         return _obj
 

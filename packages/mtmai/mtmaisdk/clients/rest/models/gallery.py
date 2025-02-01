@@ -20,20 +20,22 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.component_model import ComponentModel
+from mtmaisdk.clients.rest.models.gallery_items import GalleryItems
+from mtmaisdk.clients.rest.models.gallery_meta import GalleryMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamUpdate(BaseModel):
+class Gallery(BaseModel):
     """
-    TeamUpdate
+    Gallery
     """ # noqa: E501
     metadata: APIResourceMeta
     name: StrictStr
+    url: StrictStr
     user_id: StrictStr = Field(alias="userId")
-    version: StrictStr
-    config: ComponentModel
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
+    meta: GalleryMeta
+    items: GalleryItems
+    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "userId", "meta", "items"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +55,7 @@ class TeamUpdate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a JSON string"""
+        """Create an instance of Gallery from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,14 +79,17 @@ class TeamUpdate(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of meta
+        if self.meta:
+            _dict['meta'] = self.meta.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of items
+        if self.items:
+            _dict['items'] = self.items.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a dict"""
+        """Create an instance of Gallery from a dict"""
         if obj is None:
             return None
 
@@ -94,9 +99,10 @@ class TeamUpdate(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
+            "url": obj.get("url"),
             "userId": obj.get("userId"),
-            "version": obj.get("version"),
-            "config": ComponentModel.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "meta": GalleryMeta.from_dict(obj["meta"]) if obj.get("meta") is not None else None,
+            "items": GalleryItems.from_dict(obj["items"]) if obj.get("items") is not None else None
         })
         return _obj
 

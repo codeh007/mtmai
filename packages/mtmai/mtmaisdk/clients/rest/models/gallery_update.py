@@ -20,20 +20,17 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.component_model import ComponentModel
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamUpdate(BaseModel):
+class GalleryUpdate(BaseModel):
     """
-    TeamUpdate
+    GalleryUpdate
     """ # noqa: E501
     metadata: APIResourceMeta
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
-    version: StrictStr
-    config: ComponentModel
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +50,7 @@ class TeamUpdate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a JSON string"""
+        """Create an instance of GalleryUpdate from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,14 +74,11 @@ class TeamUpdate(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamUpdate from a dict"""
+        """Create an instance of GalleryUpdate from a dict"""
         if obj is None:
             return None
 
@@ -94,9 +88,7 @@ class TeamUpdate(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
-            "userId": obj.get("userId"),
-            "version": obj.get("version"),
-            "config": ComponentModel.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "userId": obj.get("userId")
         })
         return _obj
 

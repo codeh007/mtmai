@@ -86,6 +86,7 @@ from mtmaisdk.clients.rest.models.chat_model_list import ChatModelList
 from mtmaisdk.clients.rest.models.chat_req import ChatReq
 from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.common_result import CommonResult
+from mtmaisdk.clients.rest.models.component_model import ComponentModel
 from mtmaisdk.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmaisdk.clients.rest.models.create_api_token_response import CreateAPITokenResponse
 from mtmaisdk.clients.rest.models.create_artifactt_request import CreateArtifacttRequest
@@ -124,6 +125,12 @@ from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
 from mtmaisdk.clients.rest.models.flow_names import FlowNames
 from mtmaisdk.clients.rest.models.form_field import FormField
 from mtmaisdk.clients.rest.models.frontend_config import FrontendConfig
+from mtmaisdk.clients.rest.models.gallery import Gallery
+from mtmaisdk.clients.rest.models.gallery_components import GalleryComponents
+from mtmaisdk.clients.rest.models.gallery_items import GalleryItems
+from mtmaisdk.clients.rest.models.gallery_list import GalleryList
+from mtmaisdk.clients.rest.models.gallery_meta import GalleryMeta
+from mtmaisdk.clients.rest.models.gallery_update import GalleryUpdate
 from mtmaisdk.clients.rest.models.gen_article_input import GenArticleInput
 from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.gen_article_state_all_of_oulines import GenArticleStateAllOfOulines
@@ -217,7 +224,6 @@ from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_list import TeamList
 from mtmaisdk.clients.rest.models.team_update import TeamUpdate
-from mtmaisdk.clients.rest.models.team_update_config import TeamUpdateConfig
 from mtmaisdk.clients.rest.models.tenant import Tenant
 from mtmaisdk.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmaisdk.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
