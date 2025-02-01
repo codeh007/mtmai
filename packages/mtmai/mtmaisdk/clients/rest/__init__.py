@@ -54,6 +54,8 @@ from mtmaisdk.clients.rest.api.post_api import PostApi
 from mtmaisdk.clients.rest.api.posts_api import PostsApi
 from mtmaisdk.clients.rest.api.prompt_api import PromptApi
 from mtmaisdk.clients.rest.api.proxy_api import ProxyApi
+from mtmaisdk.clients.rest.api.session_api import SessionApi
+from mtmaisdk.clients.rest.api.sessions_api import SessionsApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
 from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
 from mtmaisdk.clients.rest.api.subscribe_api import SubscribeApi
@@ -265,6 +267,9 @@ from mtmaisdk.clients.rest.models.scheduled_workflows_order_by_field import Sche
 from mtmaisdk.clients.rest.models.schema_form import SchemaForm
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
+from mtmaisdk.clients.rest.models.session import Session
+from mtmaisdk.clients.rest.models.session_list import SessionList
+from mtmaisdk.clients.rest.models.session_update import SessionUpdate
 from mtmaisdk.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmaisdk.clients.rest.models.site import Site
 from mtmaisdk.clients.rest.models.site_host import SiteHost

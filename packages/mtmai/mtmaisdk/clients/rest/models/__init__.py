@@ -204,6 +204,9 @@ from mtmaisdk.clients.rest.models.scheduled_workflows_order_by_field import Sche
 from mtmaisdk.clients.rest.models.schema_form import SchemaForm
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
+from mtmaisdk.clients.rest.models.session import Session
+from mtmaisdk.clients.rest.models.session_list import SessionList
+from mtmaisdk.clients.rest.models.session_update import SessionUpdate
 from mtmaisdk.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmaisdk.clients.rest.models.site import Site
 from mtmaisdk.clients.rest.models.site_host import SiteHost
