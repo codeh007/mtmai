@@ -55,7 +55,7 @@ jobs:
 
       - name: install gomtm
         run: |
-          npm install -g gomtm-cli
+          bun install -g gomtm-cli
 
 
       - name: Generate requirements.txt
