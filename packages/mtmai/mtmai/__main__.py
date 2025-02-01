@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 import mtmai.core.bootstraps as bootstraps
 from mtmai.core.config import settings
 
-# load_dotenv()
-app = typer.Typer()
+app = typer.Typer(invoke_without_command=True)
 
 
 def setup_env():
@@ -44,12 +43,6 @@ setup_env()
 #         asyncio.run(serve())
 
 #     cli()
-
-
-# if __name__ == "__main__":
-#     main()
-#     main()
-
 
 # @app.command()
 # def ui(
@@ -140,15 +133,6 @@ def serve(
     asyncio.run(serve())
 
 
-# @app.command()
-# def version():
-#     """
-#     Print the version of the AutoGen Studio UI CLI.
-#     """
-
-#     typer.echo(f"AutoGen Studio  CLI version: {VERSION}")
-
-
 @app.command()
 def gradio():
     from mtmai.gradio_app import demo
@@ -160,10 +144,16 @@ def gradio():
     )
 
 
+@app.callback()
+def main(ctx: typer.Context):
+    if ctx.invoked_subcommand is None:
+        # 如果没有指定子命令，默认执行 serve 命令
+        ctx.invoke(serve)
+
+
 def run():
     app()
 
 
 if __name__ == "__main__":
-    app()
     app()

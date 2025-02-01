@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
       "cwd": "${workspaceFolder}",
-      "args": ["serve"],
+      // "args": ["serve"],
       "jinja": true,
       "justMyCode": false,
       "envFile": "${workspaceFolder}/../gomtm/env/dev.env",
