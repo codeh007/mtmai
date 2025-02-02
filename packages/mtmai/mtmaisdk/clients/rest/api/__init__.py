@@ -45,7 +45,4 @@ from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
 from mtmaisdk.clients.rest.api.subscribe_api import SubscribeApi
 from mtmaisdk.clients.rest.api.team_api import TeamApi
 from mtmaisdk.clients.rest.api.teams_api import TeamsApi
-from mtmaisdk.clients.rest.api.tool_api import ToolApi
-from mtmaisdk.clients.rest.api.tools_api import ToolsApi
-from mtmaisdk.clients.rest.api.websearch_api import WebsearchApi
 
