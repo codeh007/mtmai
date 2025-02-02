@@ -17,29 +17,29 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.agent_config_one_of import AgentConfigOneOf
+from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTCONFIG_ONE_OF_SCHEMAS = ["AgentConfigOneOf", "AgentConfigOneOf1", "AgentConfigOneOf2", "AgentConfigOneOf3", "AgentConfigOneOf4"]
+AGENTCONFIG_ONE_OF_SCHEMAS = ["AssistantAgentConfig", "FileSurferAgentConfig", "MagenticOneCoderAgentConfig", "MultimodalWebSurferAgentConfig", "UserProxyAgentConfig"]
 
 class AgentConfig(BaseModel):
     """
     AgentConfig
     """
-    # data type: AgentConfigOneOf
-    oneof_schema_1_validator: Optional[AgentConfigOneOf] = None
-    # data type: AgentConfigOneOf1
-    oneof_schema_2_validator: Optional[AgentConfigOneOf1] = None
-    # data type: AgentConfigOneOf2
-    oneof_schema_3_validator: Optional[AgentConfigOneOf2] = None
-    # data type: AgentConfigOneOf3
-    oneof_schema_4_validator: Optional[AgentConfigOneOf3] = None
-    # data type: AgentConfigOneOf4
-    oneof_schema_5_validator: Optional[AgentConfigOneOf4] = None
-    actual_instance: Optional[Union[AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4]] = None
-    one_of_schemas: Set[str] = { "AgentConfigOneOf", "AgentConfigOneOf1", "AgentConfigOneOf2", "AgentConfigOneOf3", "AgentConfigOneOf4" }
+    # data type: AssistantAgentConfig
+    oneof_schema_1_validator: Optional[AssistantAgentConfig] = None
+    # data type: UserProxyAgentConfig
+    oneof_schema_2_validator: Optional[UserProxyAgentConfig] = None
+    # data type: MultimodalWebSurferAgentConfig
+    oneof_schema_3_validator: Optional[MultimodalWebSurferAgentConfig] = None
+    # data type: FileSurferAgentConfig
+    oneof_schema_4_validator: Optional[FileSurferAgentConfig] = None
+    # data type: MagenticOneCoderAgentConfig
+    oneof_schema_5_validator: Optional[MagenticOneCoderAgentConfig] = None
+    actual_instance: Optional[Union[AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentConfig", "FileSurferAgentConfig", "MagenticOneCoderAgentConfig", "MultimodalWebSurferAgentConfig", "UserProxyAgentConfig" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -62,37 +62,37 @@ class AgentConfig(BaseModel):
         instance = AgentConfig.model_construct()
         error_messages = []
         match = 0
-        # validate data type: AgentConfigOneOf
-        if not isinstance(v, AgentConfigOneOf):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentConfigOneOf`")
+        # validate data type: AssistantAgentConfig
+        if not isinstance(v, AssistantAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentConfig`")
         else:
             match += 1
-        # validate data type: AgentConfigOneOf1
-        if not isinstance(v, AgentConfigOneOf1):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentConfigOneOf1`")
+        # validate data type: UserProxyAgentConfig
+        if not isinstance(v, UserProxyAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `UserProxyAgentConfig`")
         else:
             match += 1
-        # validate data type: AgentConfigOneOf2
-        if not isinstance(v, AgentConfigOneOf2):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentConfigOneOf2`")
+        # validate data type: MultimodalWebSurferAgentConfig
+        if not isinstance(v, MultimodalWebSurferAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MultimodalWebSurferAgentConfig`")
         else:
             match += 1
-        # validate data type: AgentConfigOneOf3
-        if not isinstance(v, AgentConfigOneOf3):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentConfigOneOf3`")
+        # validate data type: FileSurferAgentConfig
+        if not isinstance(v, FileSurferAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FileSurferAgentConfig`")
         else:
             match += 1
-        # validate data type: AgentConfigOneOf4
-        if not isinstance(v, AgentConfigOneOf4):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentConfigOneOf4`")
+        # validate data type: MagenticOneCoderAgentConfig
+        if not isinstance(v, MagenticOneCoderAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MagenticOneCoderAgentConfig`")
         else:
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentConfig with oneOf schemas: AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentConfig with oneOf schemas: AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -107,43 +107,43 @@ class AgentConfig(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into AgentConfigOneOf
+        # deserialize data into AssistantAgentConfig
         try:
-            instance.actual_instance = AgentConfigOneOf.from_json(json_str)
+            instance.actual_instance = AssistantAgentConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentConfigOneOf1
+        # deserialize data into UserProxyAgentConfig
         try:
-            instance.actual_instance = AgentConfigOneOf1.from_json(json_str)
+            instance.actual_instance = UserProxyAgentConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentConfigOneOf2
+        # deserialize data into MultimodalWebSurferAgentConfig
         try:
-            instance.actual_instance = AgentConfigOneOf2.from_json(json_str)
+            instance.actual_instance = MultimodalWebSurferAgentConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentConfigOneOf3
+        # deserialize data into FileSurferAgentConfig
         try:
-            instance.actual_instance = AgentConfigOneOf3.from_json(json_str)
+            instance.actual_instance = FileSurferAgentConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentConfigOneOf4
+        # deserialize data into MagenticOneCoderAgentConfig
         try:
-            instance.actual_instance = AgentConfigOneOf4.from_json(json_str)
+            instance.actual_instance = MagenticOneCoderAgentConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentConfig with oneOf schemas: AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentConfig with oneOf schemas: AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -157,7 +157,7 @@ class AgentConfig(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentConfigOneOf, AgentConfigOneOf1, AgentConfigOneOf2, AgentConfigOneOf3, AgentConfigOneOf4]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
@@ -172,10 +172,10 @@ class AgentConfig(BaseModel):
         """Returns the string representation of the actual instance"""
         return pprint.pformat(self.model_dump())
 
-from mtmaisdk.clients.rest.models.agent_config_one_of1 import AgentConfigOneOf1
-from mtmaisdk.clients.rest.models.agent_config_one_of2 import AgentConfigOneOf2
-from mtmaisdk.clients.rest.models.agent_config_one_of3 import AgentConfigOneOf3
-from mtmaisdk.clients.rest.models.agent_config_one_of4 import AgentConfigOneOf4
+from mtmaisdk.clients.rest.models.file_surfer_agent_config import FileSurferAgentConfig
+from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
+from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
+from mtmaisdk.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 # TODO: Rewrite to not use raise_errors
 AgentConfig.model_rebuild(raise_errors=False)
 
