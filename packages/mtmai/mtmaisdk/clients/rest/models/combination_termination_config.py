@@ -17,26 +17,36 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-from mtmaisdk.clients.rest.models.team_types import TeamTypes
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Model0(BaseModel):
+class CombinationTerminationConfig(BaseModel):
     """
-    Model0
+    CombinationTerminationConfig
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[TeamTypes] = None
-    termination_condition: Optional[TerminationConfig] = None
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition"]
+    termination_type: StrictStr
+    operator: StrictStr
+    conditions: List[TerminationConfig]
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "termination_type", "operator", "conditions"]
+
+    @field_validator('termination_type')
+    def termination_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['CombinationTermination']):
+            raise ValueError("must be one of enum values ('CombinationTermination')")
+        return value
+
+    @field_validator('operator')
+    def operator_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['and', 'or']):
+            raise ValueError("must be one of enum values ('and', 'or')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +66,7 @@ class Model0(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Model0 from a JSON string"""
+        """Create an instance of CombinationTerminationConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,21 +87,18 @@ class Model0(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in conditions (list)
         _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
+        if self.conditions:
+            for _item_conditions in self.conditions:
+                if _item_conditions:
+                    _items.append(_item_conditions.to_dict())
+            _dict['conditions'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Model0 from a dict"""
+        """Create an instance of CombinationTerminationConfig from a dict"""
         if obj is None:
             return None
 
@@ -102,11 +109,13 @@ class Model0(BaseModel):
             "component_type": obj.get("component_type"),
             "version": obj.get("version"),
             "description": obj.get("description"),
-            "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "termination_type": obj.get("termination_type"),
+            "operator": obj.get("operator"),
+            "conditions": [TerminationConfig.from_dict(_item) for _item in obj["conditions"]] if obj.get("conditions") is not None else None
         })
         return _obj
 
+from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
+# TODO: Rewrite to not use raise_errors
+CombinationTerminationConfig.model_rebuild(raise_errors=False)
 

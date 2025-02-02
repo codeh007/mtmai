@@ -17,17 +17,16 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
 from mtmaisdk.clients.rest.models.team_types import TeamTypes
 from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Model0(BaseModel):
+class AgentConfigOneOf1(BaseModel):
     """
-    Model0
+    AgentConfigOneOf1
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
@@ -36,7 +35,15 @@ class Model0(BaseModel):
     participants: Optional[List[AgentConfig]] = None
     team_type: Optional[TeamTypes] = None
     termination_condition: Optional[TerminationConfig] = None
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition"]
+    agent_type: StrictStr
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition", "agent_type"]
+
+    @field_validator('agent_type')
+    def agent_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['UserProxyAgent']):
+            raise ValueError("must be one of enum values ('UserProxyAgent')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +63,7 @@ class Model0(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Model0 from a JSON string"""
+        """Create an instance of AgentConfigOneOf1 from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -91,7 +98,7 @@ class Model0(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Model0 from a dict"""
+        """Create an instance of AgentConfigOneOf1 from a dict"""
         if obj is None:
             return None
 
@@ -105,8 +112,12 @@ class Model0(BaseModel):
             "name": obj.get("name"),
             "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
+            "agent_type": obj.get("agent_type")
         })
         return _obj
 
+from mtmaisdk.clients.rest.models.agent_config import AgentConfig
+# TODO: Rewrite to not use raise_errors
+AgentConfigOneOf1.model_rebuild(raise_errors=False)
 

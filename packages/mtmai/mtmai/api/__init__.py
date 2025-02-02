@@ -8,31 +8,31 @@ def mount_api_routes(app: FastAPI, prefix="/"):
     from mtmai.api import auth
 
     api_router.include_router(auth.router, tags=["auth"])
-    logger.info("api users")
+    # logger.info("api users")
 
-    from mtmai.api import users
+    # from mtmai.api import users
 
-    api_router.include_router(users.router, prefix="/users", tags=["users"])
+    # api_router.include_router(users.router, prefix="/users", tags=["users"])
 
     logger.info("api chat")
     from mtmai.api import chat
 
     api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 
-    logger.info("api blog")
-    from mtmai.api import blog
+    # logger.info("api blog")
+    # from mtmai.api import blog
 
-    api_router.include_router(blog.router, prefix="/posts", tags=["posts"])
+    # api_router.include_router(blog.router, prefix="/posts", tags=["posts"])
 
-    logger.info("api image")
-    from mtmai.api import image
+    # logger.info("api image")
+    # from mtmai.api import image
 
-    api_router.include_router(image.router, prefix="/image", tags=["image"])
+    # api_router.include_router(image.router, prefix="/image", tags=["image"])
 
-    logger.info("api train")
-    from mtmai.api import train
+    # logger.info("api train")
+    # from mtmai.api import train
 
-    api_router.include_router(train.router, prefix="/train", tags=["train"])
+    # api_router.include_router(train.router, prefix="/train", tags=["train"])
 
     # logger.info("api metrics")
     # from mtmai.api import metrics
@@ -44,10 +44,10 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
 
-    logger.info("api predict")
-    from mtmai.api import predict
+    # logger.info("api predict")
+    # from mtmai.api import predict
 
-    api_router.include_router(predict.router, prefix="/predict", tags=["predict"])
+    # api_router.include_router(predict.router, prefix="/predict", tags=["predict"])
 
     logger.info("api sessions")
     from mtmai.api import sessions
@@ -114,10 +114,10 @@ def mount_api_routes(app: FastAPI, prefix="/"):
 
     # api_router.include_router(workbench.router, prefix="/workbench", tags=["workbench"])
 
-    logger.info("api logs")
-    from mtmai.api import logs
+    # logger.info("api logs")
+    # from mtmai.api import logs
 
-    api_router.include_router(logs.router, prefix="/logs", tags=["logs"])
+    # api_router.include_router(logs.router, prefix="/logs", tags=["logs"])
 
     # LOG.info("api thread")
     # from mtmai.api import thread

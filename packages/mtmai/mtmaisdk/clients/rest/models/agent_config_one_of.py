@@ -17,26 +17,32 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-from mtmaisdk.clients.rest.models.team_types import TeamTypes
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
+from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Model0(BaseModel):
+class AgentConfigOneOf(BaseModel):
     """
-    Model0
+    AgentConfigOneOf
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[TeamTypes] = None
-    termination_condition: Optional[TerminationConfig] = None
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition"]
+    description: StrictStr
+    name: StrictStr
+    agent_type: StrictStr
+    system_message: Optional[StrictStr] = None
+    model_client: Dict[str, Any]
+    tools: List[ToolConfig]
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
+
+    @field_validator('agent_type')
+    def agent_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['AssistantAgent']):
+            raise ValueError("must be one of enum values ('AssistantAgent')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +62,7 @@ class Model0(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Model0 from a JSON string"""
+        """Create an instance of AgentConfigOneOf from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,21 +83,21 @@ class Model0(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        # override the default output from pydantic by calling `to_dict()` of model_client
+        if self.model_client:
+            _dict['model_client'] = self.model_client.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
         _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
+        if self.tools:
+            for _item_tools in self.tools:
+                if _item_tools:
+                    _items.append(_item_tools.to_dict())
+            _dict['tools'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Model0 from a dict"""
+        """Create an instance of AgentConfigOneOf from a dict"""
         if obj is None:
             return None
 
@@ -103,9 +109,10 @@ class Model0(BaseModel):
             "version": obj.get("version"),
             "description": obj.get("description"),
             "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "agent_type": obj.get("agent_type"),
+            "system_message": obj.get("system_message"),
+            "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
         })
         return _obj
 
