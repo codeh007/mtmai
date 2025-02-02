@@ -219,6 +219,7 @@ from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of imp
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of1 import RewriteArtifactMetaToolResponseOneOf1
 from mtmaisdk.clients.rest.models.run import Run
 from mtmaisdk.clients.rest.models.run_new_task_response import RunNewTaskResponse
+from mtmaisdk.clients.rest.models.run_status import RunStatus
 from mtmaisdk.clients.rest.models.sns_integration import SNSIntegration
 from mtmaisdk.clients.rest.models.scheduled_run_status import ScheduledRunStatus
 from mtmaisdk.clients.rest.models.scheduled_workflows import ScheduledWorkflows
@@ -237,7 +238,6 @@ from mtmaisdk.clients.rest.models.site_host import SiteHost
 from mtmaisdk.clients.rest.models.site_host_list import SiteHostList
 from mtmaisdk.clients.rest.models.site_list import SiteList
 from mtmaisdk.clients.rest.models.slack_webhook import SlackWebhook
-from mtmaisdk.clients.rest.models.status import Status
 from mtmaisdk.clients.rest.models.step import Step
 from mtmaisdk.clients.rest.models.step_run import StepRun
 from mtmaisdk.clients.rest.models.step_run_archive import StepRunArchive

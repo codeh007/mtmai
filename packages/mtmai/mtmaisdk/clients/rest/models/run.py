@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
@@ -37,13 +37,6 @@ class Run(BaseModel):
     messages: List[ChatMessage]
     error_message: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "status", "task", "team_result", "messages", "error_message"]
-
-    @field_validator('status')
-    def status_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['created', 'active', 'awaiting_input', 'timeout', 'complete', 'error', 'stopped']):
-            raise ValueError("must be one of enum values ('created', 'active', 'awaiting_input', 'timeout', 'complete', 'error', 'stopped')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

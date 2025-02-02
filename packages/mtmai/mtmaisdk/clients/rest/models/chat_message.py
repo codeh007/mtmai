@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
+from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from typing import Optional, Set
 from typing_extensions import Self
@@ -32,7 +33,8 @@ class ChatMessage(BaseModel):
     content: StrictStr
     created_at: StrictStr = Field(alias="createdAt")
     thread_id: StrictStr = Field(alias="threadId")
-    __properties: ClassVar[List[str]] = ["id", "role", "content", "createdAt", "threadId"]
+    config: ChatMessageConfig
+    __properties: ClassVar[List[str]] = ["id", "role", "content", "createdAt", "threadId", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,6 +75,9 @@ class ChatMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -89,7 +94,8 @@ class ChatMessage(BaseModel):
             "role": obj.get("role"),
             "content": obj.get("content"),
             "createdAt": obj.get("createdAt"),
-            "threadId": obj.get("threadId")
+            "threadId": obj.get("threadId"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

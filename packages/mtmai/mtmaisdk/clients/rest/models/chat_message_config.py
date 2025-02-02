@@ -13,153 +13,77 @@
 
 
 from __future__ import annotations
-import json
 import pprint
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.handoff_message_config import HandoffMessageConfig
-from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
-from mtmaisdk.clients.rest.models.stop_message_config import StopMessageConfig
-from mtmaisdk.clients.rest.models.text_message_config import TextMessageConfig
-from pydantic import StrictStr, Field
-from typing import Union, List, Set, Optional, Dict
-from typing_extensions import Literal, Self
+import re  # noqa: F401
+import json
 
-CHATMESSAGECONFIG_ONE_OF_SCHEMAS = ["HandoffMessageConfig", "MultiModalMessageConfig", "StopMessageConfig", "TextMessageConfig"]
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from typing import Optional, Set
+from typing_extensions import Self
 
 class ChatMessageConfig(BaseModel):
     """
     ChatMessageConfig
-    """
-    # data type: TextMessageConfig
-    oneof_schema_1_validator: Optional[TextMessageConfig] = None
-    # data type: MultiModalMessageConfig
-    oneof_schema_2_validator: Optional[MultiModalMessageConfig] = None
-    # data type: StopMessageConfig
-    oneof_schema_3_validator: Optional[StopMessageConfig] = None
-    # data type: HandoffMessageConfig
-    oneof_schema_4_validator: Optional[HandoffMessageConfig] = None
-    actual_instance: Optional[Union[HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig]] = None
-    one_of_schemas: Set[str] = { "HandoffMessageConfig", "MultiModalMessageConfig", "StopMessageConfig", "TextMessageConfig" }
+    """ # noqa: E501
+    message_type: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["message_type", "source"]
 
     model_config = ConfigDict(
+        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    def __init__(self, *args, **kwargs) -> None:
-        if args:
-            if len(args) > 1:
-                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
-            if kwargs:
-                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
-            super().__init__(actual_instance=args[0])
-        else:
-            super().__init__(**kwargs)
-
-    @field_validator('actual_instance')
-    def actual_instance_must_validate_oneof(cls, v):
-        instance = ChatMessageConfig.model_construct()
-        error_messages = []
-        match = 0
-        # validate data type: TextMessageConfig
-        if not isinstance(v, TextMessageConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `TextMessageConfig`")
-        else:
-            match += 1
-        # validate data type: MultiModalMessageConfig
-        if not isinstance(v, MultiModalMessageConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MultiModalMessageConfig`")
-        else:
-            match += 1
-        # validate data type: StopMessageConfig
-        if not isinstance(v, StopMessageConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `StopMessageConfig`")
-        else:
-            match += 1
-        # validate data type: HandoffMessageConfig
-        if not isinstance(v, HandoffMessageConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `HandoffMessageConfig`")
-        else:
-            match += 1
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in ChatMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when setting `actual_instance` in ChatMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig. Details: " + ", ".join(error_messages))
-        else:
-            return v
-
-    @classmethod
-    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
-        return cls.from_json(json.dumps(obj))
-
-    @classmethod
-    def from_json(cls, json_str: str) -> Self:
-        """Returns the object represented by the json string"""
-        instance = cls.model_construct()
-        error_messages = []
-        match = 0
-
-        # deserialize data into TextMessageConfig
-        try:
-            instance.actual_instance = TextMessageConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into MultiModalMessageConfig
-        try:
-            instance.actual_instance = MultiModalMessageConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into StopMessageConfig
-        try:
-            instance.actual_instance = StopMessageConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into HandoffMessageConfig
-        try:
-            instance.actual_instance = HandoffMessageConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into ChatMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when deserializing the JSON string into ChatMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig. Details: " + ", ".join(error_messages))
-        else:
-            return instance
+    def to_str(self) -> str:
+        """Returns the string representation of the model using alias"""
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the actual instance"""
-        if self.actual_instance is None:
-            return "null"
+        """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
+        return json.dumps(self.to_dict())
 
-        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
-            return self.actual_instance.to_json()
-        else:
-            return json.dumps(self.actual_instance)
+    @classmethod
+    def from_json(cls, json_str: str) -> Optional[Self]:
+        """Create an instance of ChatMessageConfig from a JSON string"""
+        return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig]]:
-        """Returns the dict representation of the actual instance"""
-        if self.actual_instance is None:
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([
+        ])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
+        return _dict
+
+    @classmethod
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+        """Create an instance of ChatMessageConfig from a dict"""
+        if obj is None:
             return None
 
-        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
-            return self.actual_instance.to_dict()
-        else:
-            # primitive type
-            return self.actual_instance
+        if not isinstance(obj, dict):
+            return cls.model_validate(obj)
 
-    def to_str(self) -> str:
-        """Returns the string representation of the actual instance"""
-        return pprint.pformat(self.model_dump())
+        _obj = cls.model_validate({
+            "message_type": obj.get("message_type"),
+            "source": obj.get("source")
+        })
+        return _obj
 
 
