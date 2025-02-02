@@ -118,6 +118,7 @@ from mtmaisdk.clients.rest.models.assisant_config_configurable import AssisantCo
 from mtmaisdk.clients.rest.models.assisant_list import AssisantList
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.assistant import Assistant
+from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState
 from mtmaisdk.clients.rest.models.blog import Blog
 from mtmaisdk.clients.rest.models.blog_config import BlogConfig
@@ -188,6 +189,8 @@ from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
 from mtmaisdk.clients.rest.models.flow_names import FlowNames
 from mtmaisdk.clients.rest.models.form_field import FormField
 from mtmaisdk.clients.rest.models.frontend_config import FrontendConfig
+from mtmaisdk.clients.rest.models.function_call import FunctionCall
+from mtmaisdk.clients.rest.models.function_execution_result import FunctionExecutionResult
 from mtmaisdk.clients.rest.models.gallery import Gallery
 from mtmaisdk.clients.rest.models.gallery_components import GalleryComponents
 from mtmaisdk.clients.rest.models.gallery_items import GalleryItems
@@ -199,6 +202,7 @@ from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.gen_article_state_all_of_oulines import GenArticleStateAllOfOulines
 from mtmaisdk.clients.rest.models.gen_topic_result import GenTopicResult
 from mtmaisdk.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
+from mtmaisdk.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmaisdk.clients.rest.models.hf_account import HfAccount
 from mtmaisdk.clients.rest.models.image_content import ImageContent
 from mtmaisdk.clients.rest.models.job import Job
@@ -217,6 +221,8 @@ from mtmaisdk.clients.rest.models.log_line_order_by_direction import LogLineOrde
 from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByField
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
+from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
+from mtmaisdk.clients.rest.models.multi_modal_message_config_all_of_content import MultiModalMessageConfigAllOfContent
 from mtmaisdk.clients.rest.models.operataion_guide_response import OperataionGuideResponse
 from mtmaisdk.clients.rest.models.operation_enum import OperationEnum
 from mtmaisdk.clients.rest.models.outline import Outline
@@ -253,6 +259,7 @@ from mtmaisdk.clients.rest.models.reject_invite_request import RejectInviteReque
 from mtmaisdk.clients.rest.models.replay_event_request import ReplayEventRequest
 from mtmaisdk.clients.rest.models.replay_workflow_runs_request import ReplayWorkflowRunsRequest
 from mtmaisdk.clients.rest.models.replay_workflow_runs_response import ReplayWorkflowRunsResponse
+from mtmaisdk.clients.rest.models.request_usage import RequestUsage
 from mtmaisdk.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
 from mtmaisdk.clients.rest.models.research_request import ResearchRequest
 from mtmaisdk.clients.rest.models.research_response import ResearchResponse
@@ -287,6 +294,7 @@ from mtmaisdk.clients.rest.models.step_run_event_list import StepRunEventList
 from mtmaisdk.clients.rest.models.step_run_event_reason import StepRunEventReason
 from mtmaisdk.clients.rest.models.step_run_event_severity import StepRunEventSeverity
 from mtmaisdk.clients.rest.models.step_run_status import StepRunStatus
+from mtmaisdk.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_list import TeamList
@@ -307,8 +315,11 @@ from mtmaisdk.clients.rest.models.tenant_resource_limit import TenantResourceLim
 from mtmaisdk.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmaisdk.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmaisdk.clients.rest.models.text_highlight import TextHighlight
+from mtmaisdk.clients.rest.models.text_message_config import TextMessageConfig
 from mtmaisdk.clients.rest.models.token_chunk import TokenChunk
+from mtmaisdk.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmaisdk.clients.rest.models.tool_call_result import ToolCallResult
+from mtmaisdk.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
 from mtmaisdk.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmaisdk.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
