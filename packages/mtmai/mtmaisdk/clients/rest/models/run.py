@@ -20,7 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.agent_message_config import AgentMessageConfig
-from mtmaisdk.clients.rest.models.run_messages_inner import RunMessagesInner
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +34,7 @@ class Run(BaseModel):
     status: StrictStr
     task: AgentMessageConfig
     team_result: Dict[str, Any]
-    messages: List[RunMessagesInner]
+    messages: List[ChatMessage]
     error_message: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "status", "task", "team_result", "messages", "error_message"]
 
@@ -115,7 +115,7 @@ class Run(BaseModel):
             "status": obj.get("status"),
             "task": AgentMessageConfig.from_dict(obj["task"]) if obj.get("task") is not None else None,
             "team_result": TeamResult.from_dict(obj["team_result"]) if obj.get("team_result") is not None else None,
-            "messages": [RunMessagesInner.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
+            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
             "error_message": obj.get("error_message")
         })
         return _obj
