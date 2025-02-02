@@ -18,6 +18,10 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
+from mtmaisdk.clients.rest.models.file_surfer_agent_config import FileSurferAgentConfig
+from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
+from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
+from mtmaisdk.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
@@ -172,10 +176,4 @@ class AgentConfig(BaseModel):
         """Returns the string representation of the actual instance"""
         return pprint.pformat(self.model_dump())
 
-from mtmaisdk.clients.rest.models.file_surfer_agent_config import FileSurferAgentConfig
-from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
-from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
-from mtmaisdk.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
-# TODO: Rewrite to not use raise_errors
-AgentConfig.model_rebuild(raise_errors=False)
 

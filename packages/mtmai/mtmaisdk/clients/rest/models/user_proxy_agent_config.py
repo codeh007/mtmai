@@ -19,8 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.team_types import TeamTypes
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
+from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,13 +29,13 @@ class UserProxyAgentConfig(BaseModel):
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[TeamTypes] = None
-    termination_condition: Optional[TerminationConfig] = None
+    description: StrictStr
+    name: StrictStr
     agent_type: StrictStr
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition", "agent_type"]
+    system_message: Optional[StrictStr] = None
+    model_client: Optional[Any]
+    tools: List[ToolConfig]
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
 
     @field_validator('agent_type')
     def agent_type_validate_enum(cls, value):
@@ -84,16 +83,18 @@ class UserProxyAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
         _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
+        if self.tools:
+            for _item_tools in self.tools:
+                if _item_tools:
+                    _items.append(_item_tools.to_dict())
+            _dict['tools'] = _items
+        # set to None if model_client (nullable) is None
+        # and model_fields_set contains the field
+        if self.model_client is None and "model_client" in self.model_fields_set:
+            _dict['model_client'] = None
+
         return _dict
 
     @classmethod
@@ -110,14 +111,11 @@ class UserProxyAgentConfig(BaseModel):
             "version": obj.get("version"),
             "description": obj.get("description"),
             "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "agent_type": obj.get("agent_type")
+            "agent_type": obj.get("agent_type"),
+            "system_message": obj.get("system_message"),
+            "model_client": obj.get("model_client"),
+            "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
         })
         return _obj
 
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-# TODO: Rewrite to not use raise_errors
-UserProxyAgentConfig.model_rebuild(raise_errors=False)
 

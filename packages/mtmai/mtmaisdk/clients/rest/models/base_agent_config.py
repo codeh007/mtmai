@@ -17,15 +17,16 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.agent_types import AgentTypes
 from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MultimodalWebSurferAgentConfig(BaseModel):
+class BaseAgentConfig(BaseModel):
     """
-    MultimodalWebSurferAgentConfig
+    BaseAgentConfig
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
@@ -36,13 +37,6 @@ class MultimodalWebSurferAgentConfig(BaseModel):
     model_client: Optional[Any]
     tools: List[ToolConfig]
     __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
-
-    @field_validator('agent_type')
-    def agent_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MultimodalWebSurfer']):
-            raise ValueError("must be one of enum values ('MultimodalWebSurfer')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -62,7 +56,7 @@ class MultimodalWebSurferAgentConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a JSON string"""
+        """Create an instance of BaseAgentConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -99,7 +93,7 @@ class MultimodalWebSurferAgentConfig(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a dict"""
+        """Create an instance of BaseAgentConfig from a dict"""
         if obj is None:
             return None
 

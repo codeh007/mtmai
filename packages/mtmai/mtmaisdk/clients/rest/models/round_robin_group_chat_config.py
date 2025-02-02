@@ -19,29 +19,24 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MultimodalWebSurferAgentConfig(BaseModel):
+class RoundRobinGroupChatConfig(BaseModel):
     """
-    MultimodalWebSurferAgentConfig
+    RoundRobinGroupChatConfig
     """ # noqa: E501
-    component_type: StrictStr
-    version: Optional[StrictStr] = None
-    description: StrictStr
-    name: StrictStr
-    agent_type: StrictStr
-    system_message: Optional[StrictStr] = None
-    model_client: Optional[Any]
-    tools: List[ToolConfig]
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
+    team_type: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["team_type"]
 
-    @field_validator('agent_type')
-    def agent_type_validate_enum(cls, value):
+    @field_validator('team_type')
+    def team_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['MultimodalWebSurfer']):
-            raise ValueError("must be one of enum values ('MultimodalWebSurfer')")
+        if value is None:
+            return value
+
+        if value not in set(['RoundRobinGroupChat']):
+            raise ValueError("must be one of enum values ('RoundRobinGroupChat')")
         return value
 
     model_config = ConfigDict(
@@ -62,7 +57,7 @@ class MultimodalWebSurferAgentConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a JSON string"""
+        """Create an instance of RoundRobinGroupChatConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -83,23 +78,11 @@ class MultimodalWebSurferAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
-        _items = []
-        if self.tools:
-            for _item_tools in self.tools:
-                if _item_tools:
-                    _items.append(_item_tools.to_dict())
-            _dict['tools'] = _items
-        # set to None if model_client (nullable) is None
-        # and model_fields_set contains the field
-        if self.model_client is None and "model_client" in self.model_fields_set:
-            _dict['model_client'] = None
-
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a dict"""
+        """Create an instance of RoundRobinGroupChatConfig from a dict"""
         if obj is None:
             return None
 
@@ -107,14 +90,7 @@ class MultimodalWebSurferAgentConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "description": obj.get("description"),
-            "name": obj.get("name"),
-            "agent_type": obj.get("agent_type"),
-            "system_message": obj.get("system_message"),
-            "model_client": obj.get("model_client"),
-            "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
+            "team_type": obj.get("team_type")
         })
         return _obj
 

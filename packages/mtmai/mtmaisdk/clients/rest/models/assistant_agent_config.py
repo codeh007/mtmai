@@ -33,7 +33,7 @@ class AssistantAgentConfig(BaseModel):
     name: StrictStr
     agent_type: StrictStr
     system_message: Optional[StrictStr] = None
-    model_client: Dict[str, Any]
+    model_client: Optional[Any]
     tools: List[ToolConfig]
     __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
 
@@ -83,9 +83,6 @@ class AssistantAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of model_client
-        if self.model_client:
-            _dict['model_client'] = self.model_client.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
         _items = []
         if self.tools:
@@ -93,6 +90,11 @@ class AssistantAgentConfig(BaseModel):
                 if _item_tools:
                     _items.append(_item_tools.to_dict())
             _dict['tools'] = _items
+        # set to None if model_client (nullable) is None
+        # and model_fields_set contains the field
+        if self.model_client is None and "model_client" in self.model_fields_set:
+            _dict['model_client'] = None
+
         return _dict
 
     @classmethod
@@ -111,7 +113,7 @@ class AssistantAgentConfig(BaseModel):
             "name": obj.get("name"),
             "agent_type": obj.get("agent_type"),
             "system_message": obj.get("system_message"),
-            "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "model_client": obj.get("model_client"),
             "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
         })
         return _obj

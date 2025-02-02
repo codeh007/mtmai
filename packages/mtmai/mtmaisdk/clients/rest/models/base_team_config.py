@@ -17,32 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.tool_config import ToolConfig
+from mtmaisdk.clients.rest.models.agent_config import AgentConfig
+from mtmaisdk.clients.rest.models.team_types import TeamTypes
+from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MultimodalWebSurferAgentConfig(BaseModel):
+class BaseTeamConfig(BaseModel):
     """
-    MultimodalWebSurferAgentConfig
+    BaseTeamConfig
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
-    description: StrictStr
-    name: StrictStr
-    agent_type: StrictStr
-    system_message: Optional[StrictStr] = None
-    model_client: Optional[Any]
-    tools: List[ToolConfig]
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
-
-    @field_validator('agent_type')
-    def agent_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MultimodalWebSurfer']):
-            raise ValueError("must be one of enum values ('MultimodalWebSurfer')")
-        return value
+    description: Optional[StrictStr] = None
+    name: Optional[StrictStr] = None
+    participants: Optional[List[AgentConfig]] = None
+    team_type: Optional[TeamTypes] = None
+    termination_condition: Optional[TerminationConfig] = None
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -62,7 +56,7 @@ class MultimodalWebSurferAgentConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a JSON string"""
+        """Create an instance of BaseTeamConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -83,23 +77,21 @@ class MultimodalWebSurferAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
         _items = []
-        if self.tools:
-            for _item_tools in self.tools:
-                if _item_tools:
-                    _items.append(_item_tools.to_dict())
-            _dict['tools'] = _items
-        # set to None if model_client (nullable) is None
-        # and model_fields_set contains the field
-        if self.model_client is None and "model_client" in self.model_fields_set:
-            _dict['model_client'] = None
-
+        if self.participants:
+            for _item_participants in self.participants:
+                if _item_participants:
+                    _items.append(_item_participants.to_dict())
+            _dict['participants'] = _items
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MultimodalWebSurferAgentConfig from a dict"""
+        """Create an instance of BaseTeamConfig from a dict"""
         if obj is None:
             return None
 
@@ -111,10 +103,9 @@ class MultimodalWebSurferAgentConfig(BaseModel):
             "version": obj.get("version"),
             "description": obj.get("description"),
             "name": obj.get("name"),
-            "agent_type": obj.get("agent_type"),
-            "system_message": obj.get("system_message"),
-            "model_client": obj.get("model_client"),
-            "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
+            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "team_type": obj.get("team_type"),
+            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

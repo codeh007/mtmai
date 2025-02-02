@@ -120,10 +120,12 @@ from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.assistant import Assistant
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
+from mtmaisdk.clients.rest.models.base_agent_config import BaseAgentConfig
 from mtmaisdk.clients.rest.models.base_config import BaseConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_model_config import BaseModelConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState
+from mtmaisdk.clients.rest.models.base_team_config import BaseTeamConfig
 from mtmaisdk.clients.rest.models.base_termination_config import BaseTerminationConfig
 from mtmaisdk.clients.rest.models.blog import Blog
 from mtmaisdk.clients.rest.models.blog_config import BlogConfig
@@ -232,7 +234,6 @@ from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByF
 from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
 from mtmaisdk.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmaisdk.clients.rest.models.message_v2 import MessageV2
-from mtmaisdk.clients.rest.models.model0 import Model0
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from mtmaisdk.clients.rest.models.model_config_azure_config import ModelConfigAzureConfig
 from mtmaisdk.clients.rest.models.model_config_v2 import ModelConfigV2
@@ -286,6 +287,7 @@ from mtmaisdk.clients.rest.models.research_response import ResearchResponse
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response import RewriteArtifactMetaToolResponse
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of import RewriteArtifactMetaToolResponseOneOf
 from mtmaisdk.clients.rest.models.rewrite_artifact_meta_tool_response_one_of1 import RewriteArtifactMetaToolResponseOneOf1
+from mtmaisdk.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmaisdk.clients.rest.models.run import Run
 from mtmaisdk.clients.rest.models.run_new_task_response import RunNewTaskResponse
 from mtmaisdk.clients.rest.models.run_status import RunStatus
@@ -296,6 +298,7 @@ from mtmaisdk.clients.rest.models.scheduled_workflows_list import ScheduledWorkf
 from mtmaisdk.clients.rest.models.scheduled_workflows_order_by_field import ScheduledWorkflowsOrderByField
 from mtmaisdk.clients.rest.models.schema_form import SchemaForm
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
+from mtmaisdk.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmaisdk.clients.rest.models.session import Session
 from mtmaisdk.clients.rest.models.session_list import SessionList
