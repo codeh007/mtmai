@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-import structlog
+# import structlog
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.teams import MagenticOneGroupChat
@@ -9,14 +9,13 @@ from autogen_agentchat.ui import Console
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from json_repair import repair_json
+from loguru import logger
 
 from ..agents.ag.model_client import get_oai_Model
 
 router = APIRouter()
-LOG = structlog.get_logger()
 
-
-@router.api_route(path="", methods=["GET", "POST"])
+@router.api_route(path="tenants/{tenant}/chat", methods=["GET", "POST"])
 async def chat(r: Request):
     try:
         data = await r.json()
@@ -33,7 +32,7 @@ async def chat(r: Request):
         return StreamingResponse(chat_stream(), media_type="text/event-stream")
 
     except Exception as e:
-        LOG.error("Chat error", error=str(e))
+        logger.error("Chat error", error=str(e))
         return {"error": str(e)}
 
 
@@ -49,7 +48,7 @@ class LoggingModelClient:
                 if isinstance(response.content, str):
                     response.content = repair_json(response.content)
 
-            LOG.info(
+            logger.info(
                 "OpenAI API Response",
                 request_args=args,
                 request_kwargs=kwargs,
@@ -57,7 +56,7 @@ class LoggingModelClient:
             )
             return response
         except Exception as e:
-            LOG.error("OpenAI API Error", error=str(e), error_type=type(e).__name__)
+            logger.error("OpenAI API Error", error=str(e), error_type=type(e).__name__)
             raise
 
 
@@ -84,5 +83,5 @@ async def test_m1(r: Request):
         await Console(team.run_stream(task="用中文写一段关于马克龙的新闻"))
 
     except Exception as e:
-        LOG.error("Chat error", error=str(e))
+        logger.error("Chat error", error=str(e))
         return {"error": str(e)}
