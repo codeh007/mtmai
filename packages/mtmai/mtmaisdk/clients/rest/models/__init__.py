@@ -285,6 +285,7 @@ from mtmaisdk.clients.rest.models.tenant_resource_limit import TenantResourceLim
 from mtmaisdk.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmaisdk.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
+from mtmaisdk.clients.rest.models.termination_types import TerminationTypes
 from mtmaisdk.clients.rest.models.text_highlight import TextHighlight
 from mtmaisdk.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from mtmaisdk.clients.rest.models.text_message_config import TextMessageConfig

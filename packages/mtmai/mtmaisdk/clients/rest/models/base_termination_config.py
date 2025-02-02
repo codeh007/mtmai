@@ -17,8 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.termination_types import TerminationTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,16 +32,6 @@ class BaseTerminationConfig(BaseModel):
     description: Optional[StrictStr] = None
     termination_type: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["component_type", "version", "description", "termination_type"]
-
-    @field_validator('termination_type')
-    def termination_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['MaxMessageTermination', 'StopMessageTermination', 'TextMentionTermination', 'TimeoutTermination', 'CombinationTermination']):
-            raise ValueError("must be one of enum values ('MaxMessageTermination', 'StopMessageTermination', 'TextMentionTermination', 'TimeoutTermination', 'CombinationTermination')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
