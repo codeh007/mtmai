@@ -4,8 +4,6 @@ from typing import Any
 # import structlog
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.teams import MagenticOneGroupChat
-from autogen_agentchat.ui import Console
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from json_repair import repair_json
@@ -14,6 +12,7 @@ from loguru import logger
 from ..agents.ag.model_client import get_oai_Model
 
 router = APIRouter()
+
 
 @router.api_route(path="tenants/{tenant}/chat", methods=["GET", "POST"])
 async def chat(r: Request):
@@ -60,28 +59,28 @@ class LoggingModelClient:
             raise
 
 
-@router.api_route(path="/test_m1", methods=["GET", "POST"])
-async def test_m1(r: Request):
-    from autogen_ext.agents.web_surfer import PlaywrightController
+# @router.api_route(path="/test_m1", methods=["GET", "POST"])
+# async def test_m1(r: Request):
+#     from autogen_ext.agents.web_surfer import PlaywrightController
 
-    # 测试 megentic one agent
-    try:
-        model_client = get_oai_Model()
-        logging_client = LoggingModelClient(model_client)
+#     # 测试 megentic one agent
+#     try:
+#         model_client = get_oai_Model()
+#         logging_client = LoggingModelClient(model_client)
 
-        assistant = AssistantAgent(
-            "Assistant",
-            model_client=logging_client,
-        )
+#         assistant = AssistantAgent(
+#             "Assistant",
+#             model_client=logging_client,
+#         )
 
-        surfer = PlaywrightController(
-            downloads_folder=".vol/WebSurfer",
-            model_client=model_client,
-        )
+#         surfer = PlaywrightController(
+#             downloads_folder=".vol/WebSurfer",
+#             model_client=model_client,
+#         )
 
-        team = MagenticOneGroupChat([surfer], model_client=logging_client)
-        await Console(team.run_stream(task="用中文写一段关于马克龙的新闻"))
+#         team = MagenticOneGroupChat([surfer], model_client=logging_client)
+#         await Console(team.run_stream(task="用中文写一段关于马克龙的新闻"))
 
-    except Exception as e:
-        logger.error("Chat error", error=str(e))
-        return {"error": str(e)}
+#     except Exception as e:
+#         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
