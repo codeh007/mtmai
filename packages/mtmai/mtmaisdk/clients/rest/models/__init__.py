@@ -59,6 +59,7 @@ from mtmaisdk.clients.rest.models.assisant_list import AssisantList
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.assistant import Assistant
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
+from mtmaisdk.clients.rest.models.assistant_base import AssistantBase
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmaisdk.clients.rest.models.base_agent_config import BaseAgentConfig
 from mtmaisdk.clients.rest.models.base_config import BaseConfig
@@ -86,7 +87,6 @@ from mtmaisdk.clients.rest.models.call_agent import CallAgent
 from mtmaisdk.clients.rest.models.call_agent_result import CallAgentResult
 from mtmaisdk.clients.rest.models.cancel_event_request import CancelEventRequest
 from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
-from mtmaisdk.clients.rest.models.canvas_graph_params_action import CanvasGraphParamsAction
 from mtmaisdk.clients.rest.models.chat_completions_req import ChatCompletionsReq
 from mtmaisdk.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
@@ -183,12 +183,11 @@ from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWo
 from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
 from mtmaisdk.clients.rest.models.multi_modal_message_config_all_of_content import MultiModalMessageConfigAllOfContent
 from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
+from mtmaisdk.clients.rest.models.node_run_action import NodeRunAction
 from mtmaisdk.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmaisdk.clients.rest.models.operataion_guide_response import OperataionGuideResponse
 from mtmaisdk.clients.rest.models.operation_enum import OperationEnum
 from mtmaisdk.clients.rest.models.outline import Outline
-from mtmaisdk.clients.rest.models.outline_sections_inner import OutlineSectionsInner
-from mtmaisdk.clients.rest.models.outline_sections_inner_subsections_inner import OutlineSectionsInnerSubsectionsInner
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
 from mtmaisdk.clients.rest.models.platform import Platform
 from mtmaisdk.clients.rest.models.platform_account import PlatformAccount
@@ -238,6 +237,7 @@ from mtmaisdk.clients.rest.models.scheduled_workflows_list import ScheduledWorkf
 from mtmaisdk.clients.rest.models.scheduled_workflows_order_by_field import ScheduledWorkflowsOrderByField
 from mtmaisdk.clients.rest.models.schema_form import SchemaForm
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
+from mtmaisdk.clients.rest.models.section import Section
 from mtmaisdk.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmaisdk.clients.rest.models.session import Session
@@ -262,6 +262,7 @@ from mtmaisdk.clients.rest.models.step_run_event_severity import StepRunEventSev
 from mtmaisdk.clients.rest.models.step_run_status import StepRunStatus
 from mtmaisdk.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
+from mtmaisdk.clients.rest.models.subsection import Subsection
 from mtmaisdk.clients.rest.models.task_result import TaskResult
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_config import TeamConfig

@@ -18,18 +18,17 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmaisdk.clients.rest.models.section import Section
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Outline(BaseModel):
+class NodeRunAction(BaseModel):
     """
-    Outline
+    节点运行
     """ # noqa: E501
-    page_title: StrictStr = Field(description="Title of the Wikipedia page", alias="pageTitle")
-    sections: List[Section] = Field(description="Titles and descriptions for each section of the Wikipedia page")
-    __properties: ClassVar[List[str]] = ["pageTitle", "sections"]
+    action: Optional[StrictStr] = Field(default=None, description="动作")
+    input: Optional[Dict[str, Any]] = Field(default=None, description="输入")
+    __properties: ClassVar[List[str]] = ["action", "input"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +48,7 @@ class Outline(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Outline from a JSON string"""
+        """Create an instance of NodeRunAction from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,18 +69,11 @@ class Outline(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in sections (list)
-        _items = []
-        if self.sections:
-            for _item_sections in self.sections:
-                if _item_sections:
-                    _items.append(_item_sections.to_dict())
-            _dict['sections'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Outline from a dict"""
+        """Create an instance of NodeRunAction from a dict"""
         if obj is None:
             return None
 
@@ -89,8 +81,8 @@ class Outline(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pageTitle": obj.get("pageTitle"),
-            "sections": [Section.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None
+            "action": obj.get("action"),
+            "input": obj.get("input")
         })
         return _obj
 

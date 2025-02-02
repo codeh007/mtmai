@@ -17,19 +17,22 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmaisdk.clients.rest.models.section import Section
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Outline(BaseModel):
+class AssistantBase(BaseModel):
     """
-    Outline
+    AssistantBase
     """ # noqa: E501
-    page_title: StrictStr = Field(description="Title of the Wikipedia page", alias="pageTitle")
-    sections: List[Section] = Field(description="Titles and descriptions for each section of the Wikipedia page")
-    __properties: ClassVar[List[str]] = ["pageTitle", "sections"]
+    assistant_id: StrictStr = Field(description="The ID of the assistant")
+    graph_id: StrictStr = Field(description="The ID of the graph")
+    config: Dict[str, Any] = Field(description="The assistant config")
+    created_at: StrictStr = Field(description="The time the assistant was created")
+    metadata: Dict[str, Any] = Field(description="The assistant metadata")
+    version: Union[StrictFloat, StrictInt] = Field(description="The version of the assistant")
+    __properties: ClassVar[List[str]] = ["assistant_id", "graph_id", "config", "created_at", "metadata", "version"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +52,7 @@ class Outline(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Outline from a JSON string"""
+        """Create an instance of AssistantBase from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,18 +73,11 @@ class Outline(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in sections (list)
-        _items = []
-        if self.sections:
-            for _item_sections in self.sections:
-                if _item_sections:
-                    _items.append(_item_sections.to_dict())
-            _dict['sections'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Outline from a dict"""
+        """Create an instance of AssistantBase from a dict"""
         if obj is None:
             return None
 
@@ -89,8 +85,12 @@ class Outline(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pageTitle": obj.get("pageTitle"),
-            "sections": [Section.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None
+            "assistant_id": obj.get("assistant_id"),
+            "graph_id": obj.get("graph_id"),
+            "config": obj.get("config"),
+            "created_at": obj.get("created_at"),
+            "metadata": obj.get("metadata"),
+            "version": obj.get("version")
         })
         return _obj
 

@@ -18,18 +18,19 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmaisdk.clients.rest.models.section import Section
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.subsection import Subsection
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Outline(BaseModel):
+class Section(BaseModel):
     """
-    Outline
+    Section
     """ # noqa: E501
-    page_title: StrictStr = Field(description="Title of the Wikipedia page", alias="pageTitle")
-    sections: List[Section] = Field(description="Titles and descriptions for each section of the Wikipedia page")
-    __properties: ClassVar[List[str]] = ["pageTitle", "sections"]
+    section_title: StrictStr = Field(description="Title of the section")
+    description: StrictStr = Field(description="Content of the section")
+    subsections: Optional[List[Subsection]] = Field(default=None, description="Titles and descriptions for each subsection of the Wikipedia page")
+    __properties: ClassVar[List[str]] = ["section_title", "description", "subsections"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class Outline(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Outline from a JSON string"""
+        """Create an instance of Section from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,18 +71,18 @@ class Outline(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in sections (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in subsections (list)
         _items = []
-        if self.sections:
-            for _item_sections in self.sections:
-                if _item_sections:
-                    _items.append(_item_sections.to_dict())
-            _dict['sections'] = _items
+        if self.subsections:
+            for _item_subsections in self.subsections:
+                if _item_subsections:
+                    _items.append(_item_subsections.to_dict())
+            _dict['subsections'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Outline from a dict"""
+        """Create an instance of Section from a dict"""
         if obj is None:
             return None
 
@@ -89,8 +90,9 @@ class Outline(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pageTitle": obj.get("pageTitle"),
-            "sections": [Section.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None
+            "section_title": obj.get("section_title"),
+            "description": obj.get("description"),
+            "subsections": [Subsection.from_dict(_item) for _item in obj["subsections"]] if obj.get("subsections") is not None else None
         })
         return _obj
 

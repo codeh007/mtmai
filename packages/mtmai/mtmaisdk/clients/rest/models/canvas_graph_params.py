@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
-from mtmaisdk.clients.rest.models.canvas_graph_params_action import CanvasGraphParamsAction
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,7 +29,7 @@ class CanvasGraphParams(BaseModel):
     """ # noqa: E501
     step_limit: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="步骤限制(没用上)", alias="stepLimit")
     messages: Optional[List[ChatMessage]] = None
-    action: Optional[CanvasGraphParamsAction] = None
+    action: Optional[Dict[str, Any]] = None
     language: Optional[StrictStr] = Field(default=None, description="语言")
     custom_quick_action_id: Optional[StrictStr] = Field(default=None, description="自定义快速动作ID", alias="customQuickActionId")
     artifact_id: Optional[StrictStr] = Field(default=None, description="工件ID", alias="artifactId")
@@ -118,7 +117,7 @@ class CanvasGraphParams(BaseModel):
         _obj = cls.model_validate({
             "stepLimit": obj.get("stepLimit"),
             "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
-            "action": CanvasGraphParamsAction.from_dict(obj["action"]) if obj.get("action") is not None else None,
+            "action": NodeRunAction.from_dict(obj["action"]) if obj.get("action") is not None else None,
             "language": obj.get("language"),
             "customQuickActionId": obj.get("customQuickActionId"),
             "artifactId": obj.get("artifactId"),
