@@ -98,6 +98,7 @@ dependencies = [
     "opentelemetry-instrumentation-openai>=0.33.9",
     "json-repair>=0.35.0",
     "typer>=0.13.1",
+    "pydantic>=2.10.5",
 ]
 
 

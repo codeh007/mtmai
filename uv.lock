@@ -3290,7 +3290,7 @@ wheels = [
 
 [[package]]
 name = "mtxai"
-version = "0.0.57"
+version = "0.0.58"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "aiohttp" },
@@ -3338,6 +3338,7 @@ dependencies = [
     { name = "playwright" },
     { name = "prefect" },
     { name = "psycopg2-binary" },
+    { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dateutil" },
     { name = "python-dotenv" },
@@ -3434,6 +3435,7 @@ requires-dist = [
     { name = "playwright", specifier = ">=1.43.0" },
     { name = "prefect", specifier = ">=3.1.13" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "pydantic", specifier = ">=2.10.5" },
     { name = "pydantic-settings" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },

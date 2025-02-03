@@ -3,22 +3,24 @@ from typing import Any
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from json_repair import repair_json
 from loguru import logger
 
 from ..agents.ag.model_client import get_oai_Model
+from ..gomtmclients.rest.models.chat_req import ChatReq
 
 router = APIRouter()
 
 
 @router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])
-async def chat(r: Request):
+async def chat(r: ChatReq):
     try:
-        data = await r.json()
-        user_messages = data.get("messages", [])
-        user_message = user_messages[-1].get("content", "")
+        user_messages = r.messages
+        if len(user_messages) == 0:
+            raise HTTPException(status_code=400, detail="No messages provided")
+        user_message = user_messages[-1].content
         assistant = AssistantAgent(name="assistant", model_client=get_oai_Model())
 
         async def chat_stream():

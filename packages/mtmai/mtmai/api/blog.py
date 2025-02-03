@@ -130,12 +130,3 @@ async def get_post(
         updated_at=blog_post.updated_at,
         author=blog_post.author,
     )
-
-
-# @router.post("/post_test1")
-# async def post_test1(
-#     *,
-#     db: AsyncSessionDep,
-# ):
-#     result = await flow_article_gen()
-#     return result

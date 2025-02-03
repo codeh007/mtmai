@@ -69,3 +69,43 @@ rm -rf $tmp_dir
 #     # Linux and others
 #     find ${GEN_DIR}/contracts -type f -name '*_grpc.py' -print0 | xargs -0 sed -i 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
 # fi
+
+# 生成服务器端代码 (openapi-generator-cli 的fastapi 生成功能不够好,改用 : fastapi-code-generator)
+#
+
+
+# echo "生成服务器端代码到: ${server_dst_dir}"
+
+# openapi-generator-cli generate \
+#     -i ${PROJECT_DIR}/bin/oas/openapi.yaml \
+#     -g python-fastapi \
+#     -o $server_dst_dir \
+#     --skip-validate-spec \
+#     --package-name mtmaisdk.server \
+#     --source-folder testabc
+
+echo "=========================================================================="
+echo "使用 fastapi-code-generator 生成服务器端代码"
+echo "=========================================================================="
+# 提示: 1:使用 openapi-generator-cli -g 是能够生成服务器端代码,但是总感觉不是那么回事
+#      2: 使用 fastapi-codegen 不能生成服务器端代码,原因是 fastapi-codegen 不能正确处理复杂的 openapi.yaml ,
+#         当前一直报错,无法正确生成
+#      3: fastapi-codegen 实际底层使用了 datamodel-codegen, 可以使用 datamodel-codegen 生成相关的 models 结构.
+#      4: 对于服务器的实现最好不要使用完全的服务器生成,仅生成 components(models)的结构就够了.
+# command -v fastapi-codegen || uv pip install fastapi-code-generator
+
+# fastapi-codegen --input ${PROJECT_DIR}/bin/oas/openapi.yaml \
+#     --output ./mtmai/server \
+#     --output-model-type pydantic.BaseModel
+
+
+# server_dst_dir=./mtmai/server
+# mkdir -p $server_dst_dir
+# # 先生成数据模型
+# datamodel-codegen --input ${PROJECT_DIR}/bin/oas/openapi.yaml \
+#     --output ./mtmai/server/models.py \
+#     --target-python-version 3.12 \
+#     --use-schema-description \
+#     --use-annotated \
+#     --use-field-description \
+#     --field-constraints
