@@ -114,21 +114,16 @@ echo "==========================================================================
 gen_gomtmclient(){
     ROOT_DIR=$(pwd)
     PROJECT_DIR=$(realpath ../../../gomtm)
-    GEN_DIR=$(realpath ./mtmaisdk)
+    dst_dir=./mtmai/gomtmclients/rest
+    # GEN_DIR=$(realpath ./mtmaisdk)
 
-    ROOT_DIR=$(pwd)
-
-    echo "生成 mtm python sdk PROJECT_DIR:${PROJECT_DIR}, GEN_DIR:${GEN_DIR}"
+    # echo "生成 mtm python sdk PROJECT_DIR:${PROJECT_DIR}, GEN_DIR:${GEN_DIR}"
 
     # deps
-    version=7.3.0
+    # version=7.3.0
 
     command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
-
-    dst_dir=./mtmai/gomtmclients/rest
-
     mkdir -p $dst_dir
-
     # 因为 openapi-generator-cli 会生成完整python project, 有很不必要的文件
     tmp_dir=/tmp
     # generate into tmp folder
