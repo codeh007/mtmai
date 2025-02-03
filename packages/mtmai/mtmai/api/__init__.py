@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI
 from loguru import logger
 
 
-def mount_api_routes(app: FastAPI, prefix="/"):
+def mount_api_routes(app: FastAPI, prefix=""):
     api_router = APIRouter()
 
     from mtmai.api import auth
@@ -17,7 +17,7 @@ def mount_api_routes(app: FastAPI, prefix="/"):
     logger.info("api chat")
     from mtmai.api import chat
 
-    api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
+    api_router.include_router(chat.router, tags=["chat"])
 
     # logger.info("api blog")
     # from mtmai.api import blog

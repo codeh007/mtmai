@@ -1,7 +1,6 @@
 import json
 from typing import Any
 
-# import structlog
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from fastapi import APIRouter, Request
@@ -14,7 +13,7 @@ from ..agents.ag.model_client import get_oai_Model
 router = APIRouter()
 
 
-@router.api_route(path="tenants/{tenant}/chat", methods=["GET", "POST"])
+@router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])
 async def chat(r: Request):
     try:
         data = await r.json()
@@ -83,4 +82,5 @@ class LoggingModelClient:
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
 #         return {"error": str(e)}

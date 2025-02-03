@@ -336,10 +336,3 @@ def start_deamon_serve():
     # threading.Thread(target=run_easy_spider_server).start()
 
     logger.info("start deamon finished")
-
-
-# def mount_autogenstudio_app(app: FastAPI):
-#     logger.info("mount autogenstudio")
-#     from autogenstudio.web.app import api
-
-#     app.include_router(api.router, prefix="/autogenstudio")
