@@ -1,15 +1,12 @@
-import json
 from typing import Any
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.messages import TextMessage
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
 from json_repair import repair_json
 from loguru import logger
 
-from ..agents.ag.model_client import get_oai_Model
+from ..database.gallery_builder import create_default_gallery
 from ..gomtmclients.rest.models.chat_req import ChatReq
+from ..teammanager import TeamManager
 
 router = APIRouter()
 
@@ -20,19 +17,31 @@ async def chat(r: ChatReq):
         user_messages = r.messages
         if len(user_messages) == 0:
             raise HTTPException(status_code=400, detail="No messages provided")
-        user_message = user_messages[-1].content
-        assistant = AssistantAgent(name="assistant", model_client=get_oai_Model())
+        task = user_messages[-1].content
+        # 练习1: 简单调用
 
-        async def chat_stream():
-            chat_response = assistant.run_stream(task=user_message)
-            async for chunk in chat_response:
-                if isinstance(chunk, TextMessage):
-                    yield f"0:{json.dumps(chunk.content)}\n"
+        # assistant = AssistantAgent(name="assistant", model_client=get_oai_Model())
 
-        return StreamingResponse(chat_stream(), media_type="text/event-stream")
+        # async def chat_stream():
+        #     chat_response = assistant.run_stream(task=user_message)
+        #     async for chunk in chat_response:
+        #         if isinstance(chunk, TextMessage):
+        #             yield f"0:{json.dumps(chunk.content)}\n"
+
+        # return StreamingResponse(chat_stream(), media_type="text/event-stream")
+
+        team_manager = TeamManager()
+        gallery = create_default_gallery()
+
+        # for item in gallery.items:
+        #     print(item)
+
+        team_to_run = gallery.items.teams[0]
+        result_message = await team_manager.run(task=task, team_config=team_to_run)
+        return result_message
 
     except Exception as e:
-        logger.error("Chat error", error=str(e))
+        logger.error("Chat error", error=e)
         return {"error": str(e)}
 
 
@@ -84,5 +93,6 @@ class LoggingModelClient:
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from ..deps import get_db
-from ..models.ag_db import Message, Run, RunStatus, Session
+from ..models.ag_db import Message, Run
 
 router = APIRouter()
 
@@ -16,34 +16,34 @@ class CreateRunRequest(BaseModel):
     user_id: str
 
 
-@router.post("/")
-async def create_run(
-    request: CreateRunRequest,
-    db=Depends(get_db),
-) -> Dict:
-    """Create a new run with initial state"""
-    session_response = db.get(
-        Session,
-        filters={"id": request.session_id, "user_id": request.user_id},
-        return_json=False,
-    )
-    if not session_response.status or not session_response.data:
-        raise HTTPException(status_code=404, detail="Session not found")
+# @router.post("/")
+# async def create_run(
+#     request: CreateRunRequest,
+#     db=Depends(get_db),
+# ) -> Dict:
+#     """Create a new run with initial state"""
+#     session_response = db.get(
+#         Session,
+#         filters={"id": request.session_id, "user_id": request.user_id},
+#         return_json=False,
+#     )
+#     if not session_response.status or not session_response.data:
+#         raise HTTPException(status_code=404, detail="Session not found")
 
-    try:
-        # Create run with default state
-        run = db.upsert(
-            Run(
-                session_id=request.session_id,
-                status=RunStatus.CREATED,
-                task=None,  # Will be set when run starts
-                team_result=None,
-            ),
-            return_json=False,
-        )
-        return {"status": run.status, "data": {"run_id": str(run.data.id)}}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+#     try:
+#         # Create run with default state
+#         run = db.upsert(
+#             Run(
+#                 session_id=request.session_id,
+#                 status=RunStatus.CREATED,
+#                 task=None,  # Will be set when run starts
+#                 team_result=None,
+#             ),
+#             return_json=False,
+#         )
+#         return {"status": run.status, "data": {"run_id": str(run.data.id)}}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 # We might want to add these endpoints:

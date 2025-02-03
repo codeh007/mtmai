@@ -5,11 +5,10 @@ from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import ComponentModel
-from autogen_core.models import ModelInfo
 from autogen_core.tools import FunctionTool
 from autogen_ext.agents.web_surfer import MultimodalWebSurfer
-from autogen_ext.models.openai import OpenAIChatCompletionClient
 
+from ..agents.ag.model_client import get_oai_Model
 from ..models.ag import Gallery, GalleryComponents, GalleryItems, GalleryMetadata
 
 
@@ -121,19 +120,33 @@ def create_default_gallery() -> Gallery:
     )
 
     # Create base model client
-    base_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
-    builder.add_model(base_model.dump_component())
+    # base_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
+    base_model = get_oai_Model()
+    # base_model = OpenAIChatCompletionClient(
+    #     model="deepseek-r1:1.5b",
+    #     base_url="http://localhost:11434/v1",
+    #     api_key="placeholder",
+    #     model_info={
+    #         "vision": False,
+    #         "function_calling": ,
+    #         "json_output": False,
+    #         "family": ModelFamily.R1,
+    #     },
+    # )
+    c = base_model.dump_component()
+    print(c)
+    builder.add_model(c)
 
-    mistral_vllm_model = OpenAIChatCompletionClient(
-        model="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
-        base_url="http://localhost:1234/v1",
-        model_info=ModelInfo(vision=False, function_calling=True, json_output=False),
-    )
-    builder.add_model(mistral_vllm_model.dump_component())
+    # mistral_vllm_model = OpenAIChatCompletionClient(
+    #     model="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+    #     base_url="http://localhost:1234/v1",
+    #     model_info=ModelInfo(vision=False, function_calling=True, json_output=False),
+    # )
+    # builder.add_model(mistral_vllm_model.dump_component())
 
     # Create websurfer model client
-    websurfer_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
-    builder.add_model(websurfer_model.dump_component())
+    # websurfer_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
+    # builder.add_model(websurfer_model.dump_component())
 
     def calculator(a: float, b: float, operator: str) -> str:
         try:
@@ -159,6 +172,7 @@ def create_default_gallery() -> Gallery:
         func=calculator,
         global_imports=[],
     )
+    # calculator_tool.
     builder.add_tool(calculator_tool.dump_component())
 
     # Create termination conditions for calculator team
@@ -189,7 +203,7 @@ def create_default_gallery() -> Gallery:
     websurfer_agent = MultimodalWebSurfer(
         name="websurfer_agent",
         description="an agent that solves tasks by browsing the web",
-        model_client=websurfer_model,
+        model_client=base_model,
         headless=True,
     )
     builder.add_agent(websurfer_agent.dump_component())
@@ -199,7 +213,7 @@ def create_default_gallery() -> Gallery:
         name="assistant_agent",
         description="an agent that verifies and summarizes information",
         system_message="You are a task verification assistant who is working with a web surfer agent to solve tasks. At each point, check if the task has been completed as requested by the user. If the websurfer_agent responds and the task has not yet been completed, respond with what is left to do and then say 'keep going'. If and only when the task has been completed, summarize and present a final answer that directly addresses the user task in detail and then respond with TERMINATE.",
-        model_client=websurfer_model,
+        model_client=base_model,
     )
     builder.add_agent(verification_assistant.dump_component())
 
@@ -245,4 +259,5 @@ Read the above conversation. Then select the next role from {participants} to pl
 
 #     # Save to file
 #     with open("gallery_default.json", "w") as f:
+#         f.write(gallery.model_dump_json(indent=2))
 #         f.write(gallery.model_dump_json(indent=2))

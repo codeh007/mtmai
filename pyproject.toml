@@ -12,15 +12,15 @@ dev = [
     "rich",
     "polars",
     "pytest_mock",
-    "poethepoet",
+    # "poethepoet",
     "packaging",
-    "grpcio-tools~=1.62.0",
-    "mypy-protobuf",
+    # "grpcio-tools~=1.62.0",
+    # "mypy-protobuf",
     "cookiecutter",
     "poethepoet",
     "tomli",
     "tomli-w",
-    "chainlit",
+    # "chainlit",
 ]
 [tool.uv.sources]
 mtmai = { workspace = true }
