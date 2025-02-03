@@ -757,6 +757,7 @@ pycparser==2.22
     # via cffi
 pydantic==2.10.6
     # via
+    #   mtxai (pyproject.toml)
     #   anthropic
     #   autogen-core
     #   browser-use
