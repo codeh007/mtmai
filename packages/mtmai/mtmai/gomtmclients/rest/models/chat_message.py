@@ -18,7 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.gomtmclients.rest.models.chat_message_config import ChatMessageConfig
 from mtmai.gomtmclients.rest.models.chat_message_role import ChatMessageRole
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,9 +31,10 @@ class ChatMessage(BaseModel):
     id: StrictStr
     role: ChatMessageRole
     content: StrictStr
-    created_at: StrictStr = Field(alias="createdAt")
-    thread_id: StrictStr = Field(alias="threadId")
-    __properties: ClassVar[List[str]] = ["id", "role", "content", "createdAt", "threadId"]
+    created_at: Optional[StrictStr] = Field(default=None, alias="createdAt")
+    source: Optional[StrictStr] = None
+    config: Optional[ChatMessageConfig] = None
+    __properties: ClassVar[List[str]] = ["id", "role", "content", "createdAt", "source", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,6 +75,9 @@ class ChatMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -89,7 +94,8 @@ class ChatMessage(BaseModel):
             "role": obj.get("role"),
             "content": obj.get("content"),
             "createdAt": obj.get("createdAt"),
-            "threadId": obj.get("threadId")
+            "source": obj.get("source"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmai.gomtmclients.rest.models.outline_sections_inner import OutlineSectionsInner
+from mtmai.gomtmclients.rest.models.section import Section
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,7 @@ class Outline(BaseModel):
     Outline
     """ # noqa: E501
     page_title: StrictStr = Field(description="Title of the Wikipedia page", alias="pageTitle")
-    sections: List[OutlineSectionsInner] = Field(description="Titles and descriptions for each section of the Wikipedia page")
+    sections: List[Section] = Field(description="Titles and descriptions for each section of the Wikipedia page")
     __properties: ClassVar[List[str]] = ["pageTitle", "sections"]
 
     model_config = ConfigDict(
@@ -90,7 +90,7 @@ class Outline(BaseModel):
 
         _obj = cls.model_validate({
             "pageTitle": obj.get("pageTitle"),
-            "sections": [OutlineSectionsInner.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None
+            "sections": [Section.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None
         })
         return _obj
 
