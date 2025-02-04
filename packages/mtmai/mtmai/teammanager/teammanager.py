@@ -140,3 +140,8 @@ class TeamManager:
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
+
+    async def create_default_team(self):
+        """创建默认测试团队"""
+        # return await self._create_team(team_config=team_to_run)
+        pass
