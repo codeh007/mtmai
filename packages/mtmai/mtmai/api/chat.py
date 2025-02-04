@@ -1,11 +1,12 @@
-from typing import Any
+import json
 
 from fastapi import APIRouter, HTTPException
-from json_repair import repair_json
+from fastapi.responses import StreamingResponse
 from loguru import logger
 
+from ..agents.ag.team_builder import TeamBuilder
+from ..agents.ag.team_runner import TeamRunner
 from ..gomtmclients.rest.models.chat_req import ChatReq
-from ..teammanager import TeamManager
 
 router = APIRouter()
 
@@ -29,41 +30,24 @@ async def chat(r: ChatReq):
 
         # return StreamingResponse(chat_stream(), media_type="text/event-stream")
 
-        team_manager = TeamManager()
-        team = await team_manager.create_demo_team()
-        team_component = team.dump_component()
-        result_message = await team_manager.run(task=task, team_config=team_component)
-        return result_message
+        team_builder = TeamBuilder()
+        team = await team_builder.create_demo_team()
+        team_runner = TeamRunner()
+
+        async def stream_response():
+            async for message in team_runner.run_stream(
+                task=task, team_config=team.dump_component()
+            ):
+                yield f"0:{json.dumps(message)}\n"
+
+        # stream
+        return StreamingResponse(
+            content=stream_response(), media_type="text/event-stream"
+        )
 
     except Exception as e:
         logger.exception("Chat error")
         return {"error": str(e)}
-
-
-class LoggingModelClient:
-    def __init__(self, wrapped_client):
-        self.wrapped_client = wrapped_client
-
-    async def create(self, *args: Any, **kwargs: Any) -> Any:
-        try:
-            response = await self.wrapped_client.create(*args, **kwargs)
-            if kwargs.get("json_output", False):
-                # 修正json格式
-                if isinstance(response.content, str):
-                    response.content = repair_json(response.content)
-
-            logger.info(
-                "OpenAI API Response",
-                request_args=args,
-                request_kwargs=kwargs,
-                response_content=response.content,
-            )
-            return response
-        except Exception as e:
-            logger.exception(
-                "OpenAI API Error", error=str(e), error_type=type(e).__name__
-            )
-            raise
 
 
 # @router.api_route(path="/test_m1", methods=["GET", "POST"])
@@ -90,6 +74,7 @@ class LoggingModelClient:
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}

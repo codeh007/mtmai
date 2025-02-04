@@ -1,16 +1,8 @@
-def calculator_tool(a: float, b: float, operator: str) -> str:
+def web_search(query: str) -> str:
+    """
+    搜索网络信息
+    """
     try:
-        if operator == "+":
-            return str(a + b)
-        elif operator == "-":
-            return str(a - b)
-        elif operator == "*":
-            return str(a * b)
-        elif operator == "/":
-            if b == 0:
-                return "Error: Division by zero"
-            return str(a / b)
-        else:
-            return "Error: Invalid operator. Please use +, -, *, or /"
+        return "搜索结果: 123"
     except Exception as e:
         return f"Error: {str(e)}"

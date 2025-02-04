@@ -52,12 +52,12 @@ async def stream(messageId: str):
     pass
 
 
-@router.get("/hello/ag")
-async def hello_ag():
-    from mtmai.gomtmclients.rest import ApiClient
+# @router.get("/hello/ag")
+# async def hello_ag():
+#     from mtmai.gomtmclients.rest import ApiClient
 
-    print("ApiClient")
-    print(ApiClient)
-    return {
-        "hello": "ag",
-    }
+#     print("ApiClient")
+#     print(ApiClient)
+#     return {
+#         "hello": "ag",
+#     }

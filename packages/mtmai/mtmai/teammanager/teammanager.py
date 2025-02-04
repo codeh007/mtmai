@@ -6,18 +6,11 @@ from typing import AsyncGenerator, Callable, List, Optional, Union
 
 import aiofiles
 import yaml
-from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core import CancellationToken, Component, ComponentModel
-from autogen_core.models import ModelFamily
-from autogen_core.tools import FunctionTool
-from autogen_ext.models.openai import OpenAIChatCompletionClient
 
 from ..models.ag import TeamResult
-from ..tools.calculator import calculator_tool
 
 logger = logging.getLogger(__name__)
 
@@ -147,45 +140,3 @@ class TeamManager:
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
-
-    async def create_demo_team(self):
-        """创建默认测试团队"""
-        # base_model = get_oai_Model()
-
-        base_model = OpenAIChatCompletionClient(
-            model="deepseek-r1:1.5b",
-            base_url="http://localhost:11434/v1",
-            api_key="placeholder",
-            model_info={
-                "vision": False,
-                "function_calling": True,
-                "json_output": True,
-                "family": ModelFamily.R1,
-            },
-        )
-
-        aaa = base_model.dump_component()
-        print(aaa)
-
-        calculator_fn_tool = FunctionTool(
-            name="calculator",
-            description="A simple calculator that performs basic arithmetic operations",
-            func=calculator_tool,
-            global_imports=[],
-        )
-
-        calc_assistant = AssistantAgent(
-            name="assistant_agent",
-            system_message="You are a helpful assistant. Solve tasks carefully. When done, say TERMINATE.",
-            model_client=base_model,
-            tools=[calculator_fn_tool],
-        )
-        # Create termination conditions for calculator team
-        calc_text_term = TextMentionTermination(text="TERMINATE")
-        calc_max_term = MaxMessageTermination(max_messages=10)
-        calc_or_term = calc_text_term | calc_max_term
-        calc_or_term = calc_text_term | calc_max_term
-        calc_team = RoundRobinGroupChat(
-            participants=[calc_assistant], termination_condition=calc_or_term
-        )
-        return calc_team
