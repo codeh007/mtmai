@@ -49,6 +49,7 @@ class TeamBuilder:
             system_message="You are a helpful assistant",
             # 提示: 流式token 需要设置 model_client_stream=True
             #       设置后,可以使用 run_stream 中获取流式token
+            #       对应的事件类型是: ModelClientStreamingChunkEvent
             model_client_stream=True,
             reflect_on_tool_use=True,  # Reflect on tool use.
         )
