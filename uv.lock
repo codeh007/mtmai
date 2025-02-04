@@ -3244,7 +3244,7 @@ requires-dist = [
     { name = "aiostream", specifier = ">=0.5.2" },
     { name = "alembic", specifier = ">=1.14.1" },
     { name = "async-timeout", specifier = ">=4.0.3" },
-    { name = "autogen-agentchat", specifier = ">=0.4.2,<0.5" },
+    { name = "autogen-agentchat", specifier = ">=0.4.5,<0.5" },
     { name = "autogen-core", specifier = ">=0.4.5,<0.5" },
     { name = "autogen-ext", extras = ["magentic-one", "openai", "azure"], specifier = ">=0.4.5,<0.5" },
     { name = "autogenstudio", specifier = ">=0.4" },

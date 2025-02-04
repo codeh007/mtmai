@@ -12,9 +12,10 @@ from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermi
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core import CancellationToken, Component, ComponentModel
+from autogen_core.models import ModelFamily
 from autogen_core.tools import FunctionTool
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-from ..agents.ag.model_client import get_oai_Model
 from ..models.ag import TeamResult
 from ..tools.calculator import calculator_tool
 
@@ -149,7 +150,23 @@ class TeamManager:
 
     async def create_demo_team(self):
         """创建默认测试团队"""
-        base_model = get_oai_Model()
+        # base_model = get_oai_Model()
+
+        base_model = OpenAIChatCompletionClient(
+            model="deepseek-r1:1.5b",
+            base_url="http://localhost:11434/v1",
+            api_key="placeholder",
+            model_info={
+                "vision": False,
+                "function_calling": True,
+                "json_output": True,
+                "family": ModelFamily.R1,
+            },
+        )
+
+        aaa = base_model.dump_component()
+        print(aaa)
+
         calculator_fn_tool = FunctionTool(
             name="calculator",
             description="A simple calculator that performs basic arithmetic operations",

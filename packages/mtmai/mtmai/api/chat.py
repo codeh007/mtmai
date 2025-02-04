@@ -31,11 +31,12 @@ async def chat(r: ChatReq):
 
         team_manager = TeamManager()
         team = await team_manager.create_demo_team()
-        result_message = await team_manager.run(task=task, team_config=team)
+        team_component = team.dump_component()
+        result_message = await team_manager.run(task=task, team_config=team_component)
         return result_message
 
     except Exception as e:
-        logger.error("Chat error", error=e)
+        logger.exception("Chat error")
         return {"error": str(e)}
 
 
@@ -59,7 +60,9 @@ class LoggingModelClient:
             )
             return response
         except Exception as e:
-            logger.error("OpenAI API Error", error=str(e), error_type=type(e).__name__)
+            logger.exception(
+                "OpenAI API Error", error=str(e), error_type=type(e).__name__
+            )
             raise
 
 
