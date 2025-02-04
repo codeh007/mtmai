@@ -250,12 +250,16 @@ greenlet==3.1.1
     #   sqlalchemy
 grpcio==1.70.0
     # via
+    #   mtxai (pyproject.toml)
     #   chromadb
     #   google-api-core
     #   grpcio-status
+    #   grpcio-tools
     #   opentelemetry-exporter-otlp-proto-grpc
 grpcio-status==1.62.3
     # via google-api-core
+grpcio-tools==1.70.0
+    # via mtxai (pyproject.toml)
 h11==0.14.0
     # via
     #   httpcore
@@ -654,6 +658,7 @@ protobuf==5.29.3
     #   google-generativeai
     #   googleapis-common-protos
     #   grpcio-status
+    #   grpcio-tools
     #   onnxruntime
     #   opentelemetry-proto
     #   proto-plus
@@ -837,7 +842,9 @@ scrapegraph-py==1.10.2
 semchunk==3.0.1
     # via mtxai (pyproject.toml)
 setuptools==75.8.0
-    # via browser-use
+    # via
+    #   browser-use
+    #   grpcio-tools
 shellingham==1.5.4
     # via typer
 simpleeval==1.0.3
