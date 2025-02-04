@@ -1,12 +1,11 @@
 import logging
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.conditions import (MaxMessageTermination,
-                                          TextMentionTermination)
+from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.tools import FunctionTool
 
-from ...tools.calculator import web_search
+from ..tools.calculator import web_search
 from .model_client import get_oai_Model
 
 logger = logging.getLogger(__name__)
