@@ -17,12 +17,13 @@ from mtmaisdk.context.context import Context
 from mtmaisdk.contracts.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
-from mtmaisdk.utils.types import WorkflowValidator
-from mtmaisdk.utils.typing import is_basemodel_subclass
 from mtmaisdk.v2.callable import HatchetCallable
 from mtmaisdk.worker.action_listener_process import worker_action_listener_process
 from mtmaisdk.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmaisdk.workflow import WorkflowInterface
+
+from mtmai.utils.types import WorkflowValidator
+from mtmai.utils.typing import is_basemodel_subclass
 
 T = TypeVar("T")
 
@@ -343,4 +344,5 @@ def register_on_worker(callable: HatchetCallable[T], worker: Worker) -> None:
 
     opts = callable.to_workflow_opts()
 
+    worker.register_workflow_from_opts(opts.name, opts)
     worker.register_workflow_from_opts(opts.name, opts)

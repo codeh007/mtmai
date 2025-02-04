@@ -5,8 +5,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any, TypeVar, cast
 from warnings import warn
 
-from pydantic import BaseModel, StrictStr
-
 from mtmaisdk.clients.events import EventClient
 from mtmaisdk.clients.rest.tenacity_utils import tenacity_retry
 from mtmaisdk.clients.rest_client import RestApi
@@ -14,8 +12,10 @@ from mtmaisdk.clients.run_event_listener import RunEventListenerClient
 from mtmaisdk.clients.workflow_listener import PooledWorkflowRunListener
 from mtmaisdk.context.worker_context import WorkerContext
 from mtmaisdk.contracts.dispatcher_pb2 import OverridesData
-from mtmaisdk.utils.types import WorkflowValidator
 from mtmaisdk.workflow_run import WorkflowRunRef
+from pydantic import BaseModel, StrictStr
+
+from mtmai.utils.types import WorkflowValidator
 
 from ..clients.admin import (
     AdminClient,

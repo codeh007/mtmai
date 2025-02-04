@@ -29,13 +29,14 @@ from mtmaisdk.contracts.dispatcher_pb2 import (
 )
 from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
-from mtmaisdk.utils.tracing import create_tracer, parse_carrier_from_metadata
-from mtmaisdk.utils.types import WorkflowValidator
 from mtmaisdk.v2.callable import DurableContext
 from mtmaisdk.worker.action_listener_process import ActionEvent
 from mtmaisdk.worker.runner.utils.capture_logs import copy_context_vars, sr, wr
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+
+from mtmai.utils.tracing import create_tracer, parse_carrier_from_metadata
+from mtmai.utils.types import WorkflowValidator
 
 
 class WorkerStatus(Enum):

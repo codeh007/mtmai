@@ -70,12 +70,13 @@ class WorkerApp:
         if not worker:
             raise ValueError("worker not found")
 
-        from mtmai.workflows.flow_assistant import FlowAssistant
+        # from mtmai.workflows.flow_assistant import FlowAssistant
 
-        worker.register_workflow(FlowAssistant())
-        from mtmai.workflows.flow_crewai import FlowCrewAIAgent
+        # worker.register_workflow(FlowAssistant())
 
-        worker.register_workflow(FlowCrewAIAgent())
+        # from mtmai.workflows.flow_crewai import FlowCrewAIAgent
+
+        # worker.register_workflow(FlowCrewAIAgent())
 
         from mtmai.workflows.flow_browser import FlowBrowser
 

@@ -8,9 +8,7 @@ from mtmaisdk.clients.rest.models.api_meta_auth import APIMetaAuth
 from mtmaisdk.clients.rest.models.api_meta_integration import APIMetaIntegration
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.api_token import APIToken
-from mtmaisdk.clients.rest.models.create_api_token_request import (
-    CreateAPITokenRequest,
-)
+from mtmaisdk.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmaisdk.clients.rest.models.create_api_token_response import (
     CreateAPITokenResponse,
 )
@@ -25,9 +23,7 @@ from mtmaisdk.clients.rest.models.event import Event
 from mtmaisdk.clients.rest.models.event_data import EventData
 from mtmaisdk.clients.rest.models.event_key_list import EventKeyList
 from mtmaisdk.clients.rest.models.event_list import EventList
-from mtmaisdk.clients.rest.models.event_order_by_direction import (
-    EventOrderByDirection,
-)
+from mtmaisdk.clients.rest.models.event_order_by_direction import EventOrderByDirection
 from mtmaisdk.clients.rest.models.event_order_by_field import EventOrderByField
 from mtmaisdk.clients.rest.models.event_workflow_run_summary import (
     EventWorkflowRunSummary,
@@ -35,9 +31,7 @@ from mtmaisdk.clients.rest.models.event_workflow_run_summary import (
 from mtmaisdk.clients.rest.models.get_step_run_diff_response import (
     GetStepRunDiffResponse,
 )
-from mtmaisdk.clients.rest.models.github_app_installation import (
-    GithubAppInstallation,
-)
+from mtmaisdk.clients.rest.models.github_app_installation import GithubAppInstallation
 from mtmaisdk.clients.rest.models.github_branch import GithubBranch
 from mtmaisdk.clients.rest.models.github_repo import GithubRepo
 from mtmaisdk.clients.rest.models.job import Job
@@ -46,9 +40,7 @@ from mtmaisdk.clients.rest.models.job_run_status import JobRunStatus
 from mtmaisdk.clients.rest.models.link_github_repository_request import (
     LinkGithubRepositoryRequest,
 )
-from mtmaisdk.clients.rest.models.list_api_tokens_response import (
-    ListAPITokensResponse,
-)
+from mtmaisdk.clients.rest.models.list_api_tokens_response import ListAPITokensResponse
 from mtmaisdk.clients.rest.models.list_github_app_installations_response import (
     ListGithubAppInstallationsResponse,
 )
@@ -124,7 +116,8 @@ from mtmaisdk.contracts.workflows_pb2 import (
     StickyStrategy,
     WorkerLabelComparator,
 )
-from mtmaisdk.utils.aio_utils import sync_to_async
+
+from mtmai.utils.aio_utils import sync_to_async
 
 from .client import new_client
 from .clients.admin import (

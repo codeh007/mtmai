@@ -1,5 +1,4 @@
 import asyncio
-import os
 import threading
 import uuid
 from datetime import datetime
@@ -12,6 +11,14 @@ from fastapi import APIRouter, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+
+# from mtmlib import mtutils
+from pydantic import ValidationError
+from starlette.requests import HTTPConnection
+from starlette.requests import Request as StarletteRequest
+from starlette.templating import Jinja2Templates
+from starlette_context.plugins.base import Plugin
+
 from mtmai import analytics
 from mtmai.app_forge import setup_forge_app
 from mtmai.core import coreutils
@@ -22,13 +29,7 @@ from mtmai.exceptions import SkyvernHTTPException
 from mtmai.forge.sdk.db.exceptions import NotFoundError
 from mtmai.forge.sdk.settings_manager import SettingsManager
 from mtmai.middleware import AuthMiddleware
-from mtmaisdk.utils.env import is_in_docker, is_in_huggingface, is_in_windows
-from mtmlib import mtutils
-from pydantic import ValidationError
-from starlette.requests import HTTPConnection
-from starlette.requests import Request as StarletteRequest
-from starlette.templating import Jinja2Templates
-from starlette_context.plugins.base import Plugin
+from mtmai.utils.env import is_in_docker, is_in_huggingface, is_in_windows
 
 # from mtmai.workflows.workers import deploy_mtmai_workers
 
@@ -443,5 +444,7 @@ def start_deamon_serve():
             from mtmai.mtlibs.server.easyspider import run_easy_spider_server
 
             threading.Thread(target=run_easy_spider_server).start()
+
+    LOG.info("start deamon finished")
 
     LOG.info("start deamon finished")

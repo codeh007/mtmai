@@ -7,7 +7,6 @@ from multiprocessing import Queue
 from typing import Any, List, Mapping, Optional
 
 import grpc
-
 from mtmaisdk.clients.dispatcher.action_listener import Action
 from mtmaisdk.clients.dispatcher.dispatcher import (
     ActionListener,
@@ -21,7 +20,8 @@ from mtmaisdk.contracts.dispatcher_pb2 import (
 )
 from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
-from mtmaisdk.utils.backoff import exp_backoff_sleep
+
+from mtmai.utils.backoff import exp_backoff_sleep
 
 ACTION_EVENT_RETRY_COUNT = 5
 
