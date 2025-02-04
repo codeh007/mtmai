@@ -30,7 +30,7 @@ class AgentNodeRunInput(BaseModel):
     """ # noqa: E501
     flow_name: Optional[StrictStr] = Field(default=None, alias="flowName")
     runner: Optional[StrictStr] = Field(default=None, description="运行器名称(对应 autogent 的 angent 入口名称)")
-    messages: Optional[List[ChatMessage]] = None
+    messages: List[ChatMessage]
     node_id: Optional[StrictStr] = Field(default=None, description="agent 节点ID(threadId)", alias="nodeId")
     is_stream: Optional[StrictBool] = Field(default=None, description="是否使用stream 传输事件", alias="isStream")
     params: AgentNodeRunInputParams

@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from mtmai.agents.ctx import init_mtmai_context
 from mtmai.worker import wfapp
 
-from ..agents.ag.team_builder import TeamBuilder
+from ..ag.team_builder import TeamBuilder
 
 
 async def run_stream(task: str):

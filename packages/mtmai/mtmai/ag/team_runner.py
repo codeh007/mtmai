@@ -7,7 +7,7 @@ from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import CancellationToken, Component, ComponentModel
 
-from ...models.ag import TeamResult
+from ..models.ag import TeamResult
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ class TeamRunner:
 
         # TBD - set input function
         return team
+
     async def run_stream(
         self,
         task: str,

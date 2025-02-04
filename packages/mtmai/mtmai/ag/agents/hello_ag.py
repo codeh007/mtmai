@@ -18,9 +18,10 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
+from loguru import logger
 
-from .model_client import get_oai_Model
-from .termination_handler import termination_handler
+from ..model_client import get_oai_Model
+from ..termination_handler import termination_handler
 
 
 class LoggingAssistantAgent(AssistantAgent):
@@ -38,12 +39,12 @@ class LoggingAssistantAgent(AssistantAgent):
 
 
 @dataclass
-class Message:
+class HelloAgentMessage:
     content: str
 
 
 @default_subscription
-class Assistant(RoutedAgent):
+class HelloAssistantAgent(RoutedAgent):
     def __init__(self, name: str, model_client: ChatCompletionClient) -> None:
         super().__init__("An assistant agent.")
         self._model_client = model_client
@@ -58,7 +59,9 @@ class Assistant(RoutedAgent):
         self._model_context = BufferedChatCompletionContext(buffer_size=5)
 
     @message_handler
-    async def handle_message(self, message: Message, ctx: MessageContext) -> None:
+    async def handle_message(
+        self, message: HelloAgentMessage, ctx: MessageContext
+    ) -> None:
         self.count += 1
         await self._model_context.add_message(
             UserMessage(content=message.content, source="user")
@@ -67,7 +70,7 @@ class Assistant(RoutedAgent):
             self._system_messages + await self._model_context.get_messages()
         )
 
-        print(f"\n{self.name}: {message.content}")
+        logger.info(f"\n{self.name}: {message.content}")
 
         if "I need to go".lower() in message.content.lower() or self.count > 2:
             return
@@ -75,7 +78,9 @@ class Assistant(RoutedAgent):
         await self._model_context.add_message(
             AssistantMessage(content=result.content, source="assistant")
         )  # type: ignore
-        await self.publish_message(Message(content=result.content), DefaultTopicId())  # type: ignore
+        await self.publish_message(
+            HelloAgentMessage(content=result.content), DefaultTopicId()
+        )  # type: ignore
 
 
 async def hello_ag_run() -> None:
@@ -120,21 +125,21 @@ async def hello_ag_run() -> None:
 
     # 通过 runtime 调用agent
     runtime = SingleThreadedAgentRuntime(intervention_handlers=[termination_handler])
-    cathy = await Assistant.register(
+    cathy = await HelloAssistantAgent.register(
         runtime,
         "cathy",
-        lambda: Assistant(name="Cathy", model_client=get_oai_Model()),
+        lambda: HelloAssistantAgent(name="Cathy", model_client=get_oai_Model()),
     )
 
-    joe = await Assistant.register(
+    joe = await HelloAssistantAgent.register(
         runtime,
         "joe",
-        lambda: Assistant(name="Joe", model_client=get_oai_Model()),
+        lambda: HelloAssistantAgent(name="Joe", model_client=get_oai_Model()),
     )
 
     runtime.start()
     await runtime.send_message(
-        Message("Joe, tell me a joke."),
+        HelloAgentMessage("Joe, tell me a joke."),
         recipient=AgentId(joe, "default"),
         sender=AgentId(cathy, "default"),
     )
