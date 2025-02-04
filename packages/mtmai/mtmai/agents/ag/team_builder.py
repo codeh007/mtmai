@@ -6,10 +6,6 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.tools import FunctionTool
 
 from ...tools.calculator import web_search
-
-# from ..agents.ag.model_client import get_oai_Model
-# from ..models.ag import TeamResult
-# from ..tools.calculator import web_search
 from .model_client import get_oai_Model
 
 logger = logging.getLogger(__name__)
@@ -43,3 +39,17 @@ class TeamBuilder:
             participants=[calc_assistant], termination_condition=calc_or_term
         )
         return calc_team
+
+    async def create_demo_agent_stream1(self):
+        """试试流式token"""
+        assistant = AssistantAgent(
+            name="assistant",
+            # tools=[get_weather],
+            model_client=get_oai_Model(),
+            system_message="You are a helpful assistant",
+            # 提示: 流式token 需要设置 model_client_stream=True
+            #       设置后,可以使用 run_stream 中获取流式token
+            model_client_stream=True,
+            reflect_on_tool_use=True,  # Reflect on tool use.
+        )
+        return assistant

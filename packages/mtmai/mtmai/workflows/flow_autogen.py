@@ -12,17 +12,20 @@ from mtmai.agents.ctx import init_mtmai_context
 from mtmai.worker import wfapp
 
 from ..agents.ag.team_builder import TeamBuilder
-from ..agents.ag.team_runner import TeamRunner
 
 
 async def run_stream(task: str):
     try:
         team_builder = TeamBuilder()
-        team = await team_builder.create_demo_team()
-        team_runner = TeamRunner()
+        # team = await team_builder.create_demo_team()
 
-        async for event in team_runner.run_stream(
-            task=task, team_config=team.dump_component()
+        agent = await team_builder.create_demo_agent_stream1()
+        # team_runner = TeamRunner()
+
+        # async for event in team_runner.run_stream(
+        async for event in agent.run_stream(
+            task=task,
+            # team_config=agent.dump_component()
         ):
             if isinstance(event, TextMessage):
                 yield f"2:{event.model_dump_json()}\n"
