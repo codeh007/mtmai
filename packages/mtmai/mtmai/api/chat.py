@@ -1,10 +1,10 @@
 import json
 
-from autogen_agentchat.messages import TextMessage, ToolCallRequestEvent
+from autogen_agentchat.messages import TextMessage
 from fastapi import APIRouter, HTTPException
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 from loguru import logger
+from pydantic import BaseModel
 
 from ..agents.ag.team_builder import TeamBuilder
 from ..agents.ag.team_runner import TeamRunner
@@ -23,15 +23,19 @@ async def run_stream(task: str):
             task=task, team_config=team.dump_component()
         ):
             if isinstance(event, TextMessage):
-                yield f"0:{json.dumps(event.content)}\n"
-            elif isinstance(event, ToolCallRequestEvent):
-                yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
+                yield f"2:{event.model_dump_json()}\n"
+            # elif isinstance(event, ToolCallRequestEvent):
+            #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
+            # elif isinstance(event, TeamResult):
+            #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
+
+            elif isinstance(event, BaseModel):
+                yield f"2:{event.model_dump_json()}\n"
             else:
-                # msg = f"unknown message: {str(event)},type:{type(event)}"
-                yield f"0:{json.dumps(jsonable_encoder(event))}\n"
+                yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
     except Exception as e:
         logger.exception("Streaming error")
-        yield f"0:{json.dumps({'error': str(e)})}\n"
+        yield f"2:{json.dumps({'error': str(e)})}\n"
 
 
 @router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])

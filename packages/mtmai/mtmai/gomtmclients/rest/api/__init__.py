@@ -38,6 +38,7 @@ from mtmai.gomtmclients.rest.api.post_api import PostApi
 from mtmai.gomtmclients.rest.api.posts_api import PostsApi
 from mtmai.gomtmclients.rest.api.prompt_api import PromptApi
 from mtmai.gomtmclients.rest.api.proxy_api import ProxyApi
+from mtmai.gomtmclients.rest.api.run_api import RunApi
 from mtmai.gomtmclients.rest.api.session_api import SessionApi
 from mtmai.gomtmclients.rest.api.sessions_api import SessionsApi
 from mtmai.gomtmclients.rest.api.site_api import SiteApi
