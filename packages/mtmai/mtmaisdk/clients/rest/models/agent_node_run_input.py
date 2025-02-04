@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.agent_node_run_input_params import AgentNodeRunInputParams
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,11 +28,13 @@ class AgentNodeRunInput(BaseModel):
     """
     agent运行节点请求
     """ # noqa: E501
-    flow_name: StrictStr = Field(alias="flowName")
+    flow_name: Optional[StrictStr] = Field(default=None, alias="flowName")
+    runner: Optional[StrictStr] = Field(default=None, description="运行器名称(对应 autogent 的 angent 入口名称)")
+    messages: Optional[List[ChatMessage]] = None
     node_id: Optional[StrictStr] = Field(default=None, description="agent 节点ID(threadId)", alias="nodeId")
     is_stream: Optional[StrictBool] = Field(default=None, description="是否使用stream 传输事件", alias="isStream")
     params: AgentNodeRunInputParams
-    __properties: ClassVar[List[str]] = ["flowName", "nodeId", "isStream", "params"]
+    __properties: ClassVar[List[str]] = ["flowName", "runner", "messages", "nodeId", "isStream", "params"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -72,6 +75,13 @@ class AgentNodeRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
+        _items = []
+        if self.messages:
+            for _item_messages in self.messages:
+                if _item_messages:
+                    _items.append(_item_messages.to_dict())
+            _dict['messages'] = _items
         # override the default output from pydantic by calling `to_dict()` of params
         if self.params:
             _dict['params'] = self.params.to_dict()
@@ -88,6 +98,8 @@ class AgentNodeRunInput(BaseModel):
 
         _obj = cls.model_validate({
             "flowName": obj.get("flowName"),
+            "runner": obj.get("runner"),
+            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
             "nodeId": obj.get("nodeId"),
             "isStream": obj.get("isStream"),
             "params": AgentNodeRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None

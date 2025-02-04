@@ -1,7 +1,8 @@
 import logging
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+from autogen_agentchat.conditions import (MaxMessageTermination,
+                                          TextMentionTermination)
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.tools import FunctionTool
 
@@ -13,6 +14,13 @@ logger = logging.getLogger(__name__)
 
 class TeamBuilder:
     """Manages team operations including loading configs and running teams"""
+
+    def create_runner_by_name(self, name: str):
+        """根据名称创建runner"""
+        if name == "demo_team":
+            return self.create_demo_team()
+        elif name == "demo_agent_stream1":
+            return self.create_demo_agent_stream1()
 
     async def create_demo_team(self):
         """创建默认测试团队"""

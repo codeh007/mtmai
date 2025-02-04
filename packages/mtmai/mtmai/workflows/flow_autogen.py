@@ -44,7 +44,7 @@ async def run_stream(task: str):
 
 
 @wfapp.workflow(
-    name="autogen-demo",
+    name="ag",
     on_events=["autogen-demo:run"],
     # input_validator=PostizState,
 )
