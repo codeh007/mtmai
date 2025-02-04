@@ -1,6 +1,8 @@
 import json
 
+from autogen_agentchat.messages import TextMessage, ToolCallRequestEvent
 from fastapi import APIRouter, HTTPException
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 from loguru import logger
 
@@ -11,6 +13,27 @@ from ..gomtmclients.rest.models.chat_req import ChatReq
 router = APIRouter()
 
 
+async def run_stream(task: str):
+    try:
+        team_builder = TeamBuilder()
+        team = await team_builder.create_demo_team()
+        team_runner = TeamRunner()
+
+        async for event in team_runner.run_stream(
+            task=task, team_config=team.dump_component()
+        ):
+            if isinstance(event, TextMessage):
+                yield f"0:{json.dumps(event.content)}\n"
+            elif isinstance(event, ToolCallRequestEvent):
+                yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
+            else:
+                # msg = f"unknown message: {str(event)},type:{type(event)}"
+                yield f"0:{json.dumps(jsonable_encoder(event))}\n"
+    except Exception as e:
+        logger.exception("Streaming error")
+        yield f"0:{json.dumps({'error': str(e)})}\n"
+
+
 @router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])
 async def chat(r: ChatReq):
     try:
@@ -18,36 +41,14 @@ async def chat(r: ChatReq):
         if len(user_messages) == 0:
             raise HTTPException(status_code=400, detail="No messages provided")
         task = user_messages[-1].content
-        # 练习1: 简单调用
 
-        # assistant = AssistantAgent(name="assistant", model_client=get_oai_Model())
-
-        # async def chat_stream():
-        #     chat_response = assistant.run_stream(task=user_message)
-        #     async for chunk in chat_response:
-        #         if isinstance(chunk, TextMessage):
-        #             yield f"0:{json.dumps(chunk.content)}\n"
-
-        # return StreamingResponse(chat_stream(), media_type="text/event-stream")
-
-        team_builder = TeamBuilder()
-        team = await team_builder.create_demo_team()
-        team_runner = TeamRunner()
-
-        async def stream_response():
-            async for message in team_runner.run_stream(
-                task=task, team_config=team.dump_component()
-            ):
-                yield f"0:{json.dumps(message)}\n"
-
-        # stream
         return StreamingResponse(
-            content=stream_response(), media_type="text/event-stream"
+            content=run_stream(task), media_type="text/event-stream"
         )
 
     except Exception as e:
         logger.exception("Chat error")
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # @router.api_route(path="/test_m1", methods=["GET", "POST"])
@@ -74,6 +75,8 @@ async def chat(r: ChatReq):
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
+#         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}
