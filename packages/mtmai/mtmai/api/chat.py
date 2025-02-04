@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException
 from json_repair import repair_json
 from loguru import logger
 
-from ..database.gallery_builder import create_default_gallery
 from ..gomtmclients.rest.models.chat_req import ChatReq
 from ..teammanager import TeamManager
 
@@ -31,13 +30,8 @@ async def chat(r: ChatReq):
         # return StreamingResponse(chat_stream(), media_type="text/event-stream")
 
         team_manager = TeamManager()
-        gallery = create_default_gallery()
-
-        # for item in gallery.items:
-        #     print(item)
-
-        team_to_run = gallery.items.teams[0]
-        result_message = await team_manager.run(task=task, team_config=team_to_run)
+        team = await team_manager.create_demo_team()
+        result_message = await team_manager.run(task=task, team_config=team)
         return result_message
 
     except Exception as e:

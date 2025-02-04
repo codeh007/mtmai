@@ -133,9 +133,7 @@ def create_default_gallery() -> Gallery:
     #         "family": ModelFamily.R1,
     #     },
     # )
-    c = base_model.dump_component()
-    print(c)
-    builder.add_model(c)
+    builder.add_model(base_model.dump_component())
 
     # mistral_vllm_model = OpenAIChatCompletionClient(
     #     model="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
