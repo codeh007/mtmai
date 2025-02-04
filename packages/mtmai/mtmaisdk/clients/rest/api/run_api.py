@@ -19,7 +19,7 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.run import Run
-from mtmaisdk.clients.rest.models.team_list import TeamList
+from mtmaisdk.clients.rest.models.run_list import RunList
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -630,7 +630,7 @@ class RunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> TeamList:
+    ) -> RunList:
         """获取租户下的run列表
 
         获取run列表
@@ -668,7 +668,7 @@ class RunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TeamList",
+            '200': "RunList",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -697,7 +697,7 @@ class RunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[TeamList]:
+    ) -> ApiResponse[RunList]:
         """获取租户下的run列表
 
         获取run列表
@@ -735,7 +735,7 @@ class RunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TeamList",
+            '200': "RunList",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -802,7 +802,7 @@ class RunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TeamList",
+            '200': "RunList",
         }
         response_data = await self.api_client.call_api(
             *_param,
