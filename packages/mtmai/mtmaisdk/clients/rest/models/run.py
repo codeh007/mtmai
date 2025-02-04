@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.agent_message_config import AgentMessageConfig
+from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,15 +29,13 @@ class Run(BaseModel):
     """
     Run
     """ # noqa: E501
-    id: StrictStr
-    created_at: StrictStr
-    updated_at: Optional[StrictStr] = None
+    metadata: APIResourceMeta
     status: StrictStr
     task: AgentMessageConfig
     team_result: Dict[str, Any]
     messages: List[ChatMessage]
     error_message: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "status", "task", "team_result", "messages", "error_message"]
+    __properties: ClassVar[List[str]] = ["metadata", "status", "task", "team_result", "messages", "error_message"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,6 +76,9 @@ class Run(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
         # override the default output from pydantic by calling `to_dict()` of task
         if self.task:
             _dict['task'] = self.task.to_dict()
@@ -102,9 +104,7 @@ class Run(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "created_at": obj.get("created_at"),
-            "updated_at": obj.get("updated_at"),
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "status": obj.get("status"),
             "task": AgentMessageConfig.from_dict(obj["task"]) if obj.get("task") is not None else None,
             "team_result": TeamResult.from_dict(obj["team_result"]) if obj.get("team_result") is not None else None,
