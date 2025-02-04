@@ -81,7 +81,12 @@ class WorkerApp:
         from mtmai.workflows.flow_browser import FlowBrowser
 
         worker.register_workflow(FlowBrowser())
+
+        from mtmai.workflows.flow_autogen import FlowAutogenDemo
+
+        worker.register_workflow(FlowAutogenDemo())
         await worker.async_start()
 
+        self.log.info("start worker finished")
         while True:
             await asyncio.sleep(1)
