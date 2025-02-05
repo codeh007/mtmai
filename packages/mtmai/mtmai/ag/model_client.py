@@ -1,6 +1,5 @@
 from typing import Unpack
 
-from autogen_core.models import ModelFamily
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.models.openai.config import (
     OpenAIClientConfiguration,
@@ -66,8 +65,8 @@ def get_oai_Model():
             "vision": False,
             "function_calling": True,
             "json_output": True,
-            "family": ModelFamily.R1,
+            # "family": ModelFamily.R1,
+            "family": "llama3",
         },
     )
-    return model_client
     return model_client

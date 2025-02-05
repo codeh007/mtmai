@@ -46,6 +46,7 @@ from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
 from mtmaisdk.clients.rest.api.galleries_api import GalleriesApi
 from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
+from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.platform_api import PlatformApi
 from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
@@ -83,6 +84,8 @@ from mtmaisdk.clients.rest.models.api_meta_posthog import APIMetaPosthog
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.api_token import APIToken
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
+from mtmaisdk.clients.rest.models.ag_event import AgEvent
+from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
 from mtmaisdk.clients.rest.models.agent import Agent
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_config import AgentConfig
@@ -136,15 +139,12 @@ from mtmaisdk.clients.rest.models.blog_post import BlogPost
 from mtmaisdk.clients.rest.models.blog_post_list import BlogPostList
 from mtmaisdk.clients.rest.models.blog_post_state import BlogPostState
 from mtmaisdk.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
-from mtmaisdk.clients.rest.models.blog_task_state import BlogTaskState
 from mtmaisdk.clients.rest.models.browser import Browser
 from mtmaisdk.clients.rest.models.browser_list import BrowserList
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
 from mtmaisdk.clients.rest.models.browser_update import BrowserUpdate
 from mtmaisdk.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmaisdk.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
-from mtmaisdk.clients.rest.models.call_agent import CallAgent
-from mtmaisdk.clients.rest.models.call_agent_result import CallAgentResult
 from mtmaisdk.clients.rest.models.cancel_event_request import CancelEventRequest
 from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
 from mtmaisdk.clients.rest.models.chat_completions_req import ChatCompletionsReq
@@ -224,7 +224,7 @@ from mtmaisdk.clients.rest.models.list_api_tokens_response import ListAPITokensR
 from mtmaisdk.clients.rest.models.list_pull_requests_response import ListPullRequestsResponse
 from mtmaisdk.clients.rest.models.list_sns_integrations import ListSNSIntegrations
 from mtmaisdk.clients.rest.models.list_slack_webhooks import ListSlackWebhooks
-from mtmaisdk.clients.rest.models.llm_config import LlmConfig
+from mtmaisdk.clients.rest.models.llm_model import LlmModel
 from mtmaisdk.clients.rest.models.log_line import LogLine
 from mtmaisdk.clients.rest.models.log_line_level import LogLineLevel
 from mtmaisdk.clients.rest.models.log_line_list import LogLineList

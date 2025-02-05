@@ -18,7 +18,7 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmaisdk.clients.rest.models.llm_config import LlmConfig
+from mtmaisdk.clients.rest.models.llm_model import LlmModel
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -42,7 +42,7 @@ class LlmApi:
     async def llm_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        slug: Annotated[StrictStr, Field(description="The slug")],
+        model: Annotated[StrictStr, Field(description="The model")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -55,15 +55,15 @@ class LlmApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> LlmConfig:
+    ) -> LlmModel:
         """执行节点
 
         执行节点
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param slug: The slug (required)
-        :type slug: str
+        :param model: The model (required)
+        :type model: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -88,7 +88,7 @@ class LlmApi:
 
         _param = self._llm_get_serialize(
             tenant=tenant,
-            slug=slug,
+            model=model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -96,7 +96,7 @@ class LlmApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LlmConfig",
+            '200': "LlmModel",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -115,7 +115,7 @@ class LlmApi:
     async def llm_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        slug: Annotated[StrictStr, Field(description="The slug")],
+        model: Annotated[StrictStr, Field(description="The model")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -128,15 +128,15 @@ class LlmApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[LlmConfig]:
+    ) -> ApiResponse[LlmModel]:
         """执行节点
 
         执行节点
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param slug: The slug (required)
-        :type slug: str
+        :param model: The model (required)
+        :type model: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -161,7 +161,7 @@ class LlmApi:
 
         _param = self._llm_get_serialize(
             tenant=tenant,
-            slug=slug,
+            model=model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -169,7 +169,7 @@ class LlmApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LlmConfig",
+            '200': "LlmModel",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -188,7 +188,7 @@ class LlmApi:
     async def llm_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        slug: Annotated[StrictStr, Field(description="The slug")],
+        model: Annotated[StrictStr, Field(description="The model")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -208,8 +208,8 @@ class LlmApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param slug: The slug (required)
-        :type slug: str
+        :param model: The model (required)
+        :type model: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -234,7 +234,7 @@ class LlmApi:
 
         _param = self._llm_get_serialize(
             tenant=tenant,
-            slug=slug,
+            model=model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -242,7 +242,7 @@ class LlmApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LlmConfig",
+            '200': "LlmModel",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -256,7 +256,7 @@ class LlmApi:
     def _llm_get_serialize(
         self,
         tenant,
-        slug,
+        model,
         _request_auth,
         _content_type,
         _headers,
@@ -280,8 +280,8 @@ class LlmApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if slug is not None:
-            _path_params['slug'] = slug
+        if model is not None:
+            _path_params['model'] = model
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -306,7 +306,7 @@ class LlmApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/llm/{slug}',
+            resource_path='/api/v1/tenants/{tenant}/llm/{model}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
