@@ -47,7 +47,7 @@ from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
 from mtmaisdk.clients.rest.api.galleries_api import GalleriesApi
 from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
-from mtmaisdk.clients.rest.api.llm_api import LlmApi
+from mtmaisdk.clients.rest.api.model_api import ModelApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.platform_api import PlatformApi
 from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
@@ -154,8 +154,6 @@ from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
-from mtmaisdk.clients.rest.models.chat_model import ChatModel
-from mtmaisdk.clients.rest.models.chat_model_list import ChatModelList
 from mtmaisdk.clients.rest.models.chat_req import ChatReq
 from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.combination_termination_config import CombinationTerminationConfig
@@ -225,7 +223,6 @@ from mtmaisdk.clients.rest.models.list_api_tokens_response import ListAPITokensR
 from mtmaisdk.clients.rest.models.list_pull_requests_response import ListPullRequestsResponse
 from mtmaisdk.clients.rest.models.list_sns_integrations import ListSNSIntegrations
 from mtmaisdk.clients.rest.models.list_slack_webhooks import ListSlackWebhooks
-from mtmaisdk.clients.rest.models.llm_model import LlmModel
 from mtmaisdk.clients.rest.models.log_line import LogLine
 from mtmaisdk.clients.rest.models.log_line_level import LogLineLevel
 from mtmaisdk.clients.rest.models.log_line_list import LogLineList
@@ -234,10 +231,12 @@ from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByF
 from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
 from mtmaisdk.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmaisdk.clients.rest.models.message_v2 import MessageV2
+from mtmaisdk.clients.rest.models.model import Model
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from mtmaisdk.clients.rest.models.model_config_azure_config import ModelConfigAzureConfig
 from mtmaisdk.clients.rest.models.model_config_v2 import ModelConfigV2
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
+from mtmaisdk.clients.rest.models.model_list import ModelList
 from mtmaisdk.clients.rest.models.model_types import ModelTypes
 from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
@@ -361,6 +360,7 @@ from mtmaisdk.clients.rest.models.tool_types import ToolTypes
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
 from mtmaisdk.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmaisdk.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
+from mtmaisdk.clients.rest.models.update_model import UpdateModel
 from mtmaisdk.clients.rest.models.update_post_request import UpdatePostRequest
 from mtmaisdk.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmaisdk.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest

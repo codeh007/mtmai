@@ -31,7 +31,7 @@ from mtmaisdk.clients.rest.api.frontend_api import FrontendApi
 from mtmaisdk.clients.rest.api.galleries_api import GalleriesApi
 from mtmaisdk.clients.rest.api.hf_api import HfApi
 from mtmaisdk.clients.rest.api.kv_api import KvApi
-from mtmaisdk.clients.rest.api.llm_api import LlmApi
+from mtmaisdk.clients.rest.api.model_api import ModelApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.platform_api import PlatformApi
 from mtmaisdk.clients.rest.api.platform_account_api import PlatformAccountApi
