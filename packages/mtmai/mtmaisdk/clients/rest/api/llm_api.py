@@ -306,7 +306,7 @@ class LlmApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/llm/{model}',
+            resource_path='/api/v1/tenants/{tenant}/models/{model}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
