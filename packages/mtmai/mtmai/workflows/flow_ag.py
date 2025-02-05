@@ -63,8 +63,8 @@ class FlowAg:
         ctx.log("FlowAg 启动")
 
         input: PostizState = cast(PostizState, hatctx.workflow_input())
-        hatctx.log(input)
-        ctx.log("输入: %s", input)
+        # hatctx.log(input)
+        # ctx.log("输入: %s", input)
         # outoput = await assisant_graph.AssistantGraph.run(input)
 
         # 获取模型配置
@@ -87,5 +87,21 @@ class FlowAg:
 
     @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
     async def step_b(self, hatctx: Context):
-        hatctx.log("step_entry2")
+        hatctx.log("stepB")
+        hatctx.done()
+        return {"result": "success"}
+
+    @wfapp.step(timeout="1m", retries=1, parents=["step_b"])
+    async def step_b_2(self, hatctx: Context):
+        hatctx.log("stepB2")
+        raise Exception("stepB2 error")
+
+    @wfapp.step(timeout="1m", retries=1, parents=["step_b_2"])
+    async def step_b_3(self, hatctx: Context):
+        hatctx.log("stepB3")
+        raise Exception("stepB3 error")
+
+    @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
+    async def step_c(self, hatctx: Context):
+        hatctx.log("stepC")
         return {"result": "success"}
