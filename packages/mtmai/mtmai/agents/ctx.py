@@ -1,43 +1,37 @@
 import asyncio
 import json
-
-# import os
 from contextvars import ContextVar
-
-# from functools import lru_cache
 from typing import Type
 
 import httpx
 import orjson
-import structlog
 from attr import make_class
-
-# from crewai import LLM
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.tools import StructuredTool
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_openai import ChatOpenAI
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver, BasePostgresSaver
+
+# from langgraph.checkpoint.postgres.aio import (AsyncPostgresSaver,
+#                                                BasePostgresSaver)
 from lazify import LazyProxy
+from loguru import logger
 from mtmaisdk import Context as HatchetContext
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel
 
-# from mtmai.agents import utils
 from mtmai.agents.graphutils import ensure_valid_llm_response_v2
 from mtmai.core.config import settings
 from mtmai.mtlibs.httpx_transport import LoggingTransport
+from mtmai.mtlibs.llms import fix_tool_calls
 
-LOG = structlog.get_logger()
-
-context_var: ContextVar["AgentContext"] = ContextVar("mtmai")
+context_var: ContextVar["AgentContext"] = ContextVar("mtmai_ctx")
 
 
 class AgentContext:
     tenant_id: str | None
     user_id: str | None
     thread_id: str | None
-    cache_checkpointer: BasePostgresSaver | None
+    # cache_checkpointer: BasePostgresSaver | None
 
     def __init__(
         self,
@@ -49,17 +43,7 @@ class AgentContext:
         self.tenant_id = tenant_id
         self.user_id = user_id
         self.thread_id = thread_id
-        # self.httpx_session: httpx.Client = None
-        # self.db: Engine = db_engine
-        # self.session: Session = Session(db_engine)
-        # embedding = get_default_embeddings()
-
-        # self.vectorstore = MtmDocStore(session=Session(db_engine), embedding=embedding)
-        # self.kvstore = MtmKvStore(db_engine)
-
-        # self.graph_config = get_graph_config()
         self._mq = None
-        # self.memMq = MemoryMQ()
         self._thread_id = thread_id
 
     def set_hatch_context(self, ctx: HatchetContext):
@@ -72,27 +56,10 @@ class AgentContext:
                 kw_args,
             )
         else:
-            LOG.info(lineformat, kw_args)
+            logger.info(lineformat, kw_args)
 
     def retrive_graph_config(self):
         return self.graph_config
-
-    # def load_doc(self):
-    #     return self.vectorstore
-
-    # async def get_crawai_llm(self, name: str = "chat"):
-    #     # llm_item = await self.get_llm_config(name)
-    #     # def my_custom_logging_fn(model_call_dict):
-    #     #     print(f"model call details=======================: {model_call_dict}")
-
-    #     return LLM(
-    #         model="openai/llama3.1-70b",
-    #         # temperature=llm_item.temperature or None,
-    #         base_url="https://llama3-1-70b.lepton.run/api/v1/",
-    #         api_key="iByWYsIUIBe6qRYBswhLVPRyiVKkYb8r",
-    #         num_retries=5,
-    #         # logger_fn=my_custom_logging_fn,
-    # )
 
     async def get_llm_openai(self, llm_config_name: str):
         # llm_item = await self.get_llm_config(llm_config_name)
@@ -189,7 +156,7 @@ class AgentContext:
                 else:
                     ai_msg = invoke_result
                 if tools:
-                    ai_msg = utils.fix_tool_calls(ai_msg)
+                    ai_msg = fix_tool_calls(ai_msg)
 
                 # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
                 tcs = ai_msg.tool_calls
@@ -202,12 +169,12 @@ class AgentContext:
                 return ai_msg
             except Exception as e:
                 if attempt < max_retries - 1:
-                    LOG.warning(
+                    logger.warning(
                         f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
                     )
                     await asyncio.sleep(sleep_time)
                 else:
-                    LOG.error(f"All {max_retries} attempts failed.")
+                    logger.error(f"All {max_retries} attempts failed.")
                     raise e
 
     async def ainvoke_model_with_structured_output(
@@ -280,7 +247,7 @@ class AgentContext:
                 else:
                     ai_msg = invoke_result
                 if tools:
-                    ai_msg = utils.fix_tool_calls(ai_msg)
+                    ai_msg = fix_tool_calls(ai_msg)
 
                 # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
                 # tcs = ai_msg.tool_calls
@@ -293,18 +260,18 @@ class AgentContext:
                 return invoke_result
             except Exception as e:
                 if attempt < max_retries - 1:
-                    LOG.warning(
+                    logger.warning(
                         f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
                     )
                     await asyncio.sleep(sleep_time)
                 else:
-                    LOG.error(f"All {max_retries} attempts failed.")
+                    logger.error(f"All {max_retries} attempts failed.")
                     raise e
 
     async def stream_messages(self, tpl: ChatPromptTemplate, messages: list[any]):
         messages2 = await tpl.ainvoke({"messages": messages})
         # config = {"configurable": {"thread_id": "abc123"}}
-        LOG.info(f"stream_messages: {messages2}")
+        logger.info(f"stream_messages: {messages2}")
         llm_inst = await self.get_llm_openai("chat")
         async for chunk in llm_inst.astream(
             messages2,
@@ -321,7 +288,7 @@ class AgentContext:
             loaded_data = orjson.loads(repaired_json)
             return make_class(**loaded_data)
         except Exception as e:
-            LOG.error(f"Error parsing JSON: {str(e)}")
+            logger.error(f"Error parsing JSON: {str(e)}")
             raise ValueError(
                 f"Failed to parse JSON and create {model_class.__name__} instance"
             ) from e
@@ -341,22 +308,21 @@ class AgentContext:
         await pool.open()
         return pool
 
-    async def checkpointer(self):
-        pool = await self.get_db_pool()
-        # if not settings.MTMAI_DATABASE_URL:
-        #     raise ValueError("MTMAI_DATABASE_URL is not set")
-        # db_str = settings.MTMAI_DATABASE_URL
-        # checkpointer = AsyncPostgresSaver.from_conn_string(db_str)
-        # aa= await AsyncPostgresSaver.from_conn_string(
-        #         settings.MTMAI_DATABASE_URL
-        #     )
-
-        checkpointer = AsyncPostgresSaver(pool)  # type: ignore
-        # if not self.cache_checkpointer:
-        #     self.cache_checkpointer = AsyncPostgresSaver.from_conn_string(
-        #         settings.MTMAI_DATABASE_URL
-        #     )
-        return checkpointer
+    # async def checkpointer(self):
+    #     pool = await self.get_db_pool()
+    #     # if not settings.MTMAI_DATABASE_URL:
+    #     #     raise ValueError("MTMAI_DATABASE_URL is not set")
+    #     # db_str = settings.MTMAI_DATABASE_URL
+    #     # checkpointer = AsyncPostgresSaver.from_conn_string(db_str)
+    #     # aa= await AsyncPostgresSaver.from_conn_string(
+    #     #         settings.MTMAI_DATABASE_URL
+    #     #     )
+    #     checkpointer = AsyncPostgresSaver(pool)  # type: ignore
+    #     # if not self.cache_checkpointer:
+    #     #     self.cache_checkpointer = AsyncPostgresSaver.from_conn_string(
+    #     #         settings.MTMAI_DATABASE_URL
+    #     #     )
+    #     return checkpointer
 
     async def get_graph_by_name(self, name: str):
         if name == "storm":
@@ -394,6 +360,11 @@ def get_mtmai_context() -> AgentContext:
 
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
+mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore

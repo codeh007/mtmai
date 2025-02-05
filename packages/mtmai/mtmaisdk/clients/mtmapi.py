@@ -48,6 +48,8 @@ from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import (
 )
 from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
+from .rest_client import AsyncRestApi
+
 
 class AsyncGomtmRestApi:
     def __init__(self, host: str, api_key: str, tenant_id: str):

@@ -1,17 +1,23 @@
 import json
+import logging
 from typing import cast
 
+from agents.ctx import AgentContext
 from autogen_agentchat.messages import TextMessage
 from fastapi import HTTPException
-from loguru import logger
+
+# from loguru import logger
 from mtmaisdk.clients.rest.models import PostizState
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
-from mtmai.agents.ctx import init_mtmai_context
+from mtmai.ag.team_builder import TeamBuilder
+from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
 
-from ..ag.team_builder import TeamBuilder
+# from ..ag.team_builder import TeamBuilder
+
+logger = logging.getLogger(__name__)
 
 
 async def run_stream(task: str):
@@ -48,14 +54,20 @@ async def run_stream(task: str):
     on_events=["autogen-demo:run"],
     # input_validator=PostizState,
 )
-class FlowAutogenDemo:
+class FlowAg:
     @wfapp.step(timeout="30m", retries=1)
     async def step_entry(self, hatctx: Context):
         init_mtmai_context(hatctx)
 
+        ctx: AgentContext = get_mtmai_context()
+        ctx.log("FlowAg 启动")
+
         input: PostizState = cast(PostizState, hatctx.workflow_input())
         hatctx.log(input)
+        ctx.log("输入: %s", input)
         # outoput = await assisant_graph.AssistantGraph.run(input)
+
+        # 获取模型配置
 
         try:
             # user_messages = r.messages
@@ -71,4 +83,9 @@ class FlowAutogenDemo:
             hatctx.log(str(e))
             raise HTTPException(status_code=500, detail=str(e))
 
+        return {"result": "success"}
+
+    @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
+    async def step_b(self, hatctx: Context):
+        hatctx.log("step_entry2")
         return {"result": "success"}

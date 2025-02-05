@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import sys
 from time import sleep
@@ -12,6 +13,8 @@ from mtmaisdk.clients.rest.configuration import Configuration
 from mtmai.core.config import settings
 
 wfapp: Hatchet = None
+
+root_logger = logging.getLogger()
 
 
 class WorkerApp:
@@ -41,7 +44,7 @@ class WorkerApp:
                 os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
                 os.environ["DISPLAY"] = ":1"
                 config_loader = loader.ConfigLoader(".")
-                cc = config_loader.load_client_config(
+                clientConfig = config_loader.load_client_config(
                     ClientConfig(
                         server_url=settings.GOMTM_URL,
                         host_port=workerConfig.grpc_host_port,
@@ -52,9 +55,14 @@ class WorkerApp:
                             ca_file="None",
                             server_name="localhost",
                         ),
+                        # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+                        logger=root_logger,
                     )
                 )
-                wfapp = Hatchet.from_config(cc, debug=True)
+                wfapp = Hatchet.from_config(
+                    clientConfig,
+                    debug=True,
+                )
                 return wfapp
             except Exception as e:
                 self.log.error(f"failed to create hatchet: {e}")
@@ -82,11 +90,12 @@ class WorkerApp:
 
         worker.register_workflow(FlowBrowser())
 
-        from mtmai.workflows.flow_autogen import FlowAutogenDemo
+        from workflows.flow_ag import FlowAg
 
-        worker.register_workflow(FlowAutogenDemo())
+        worker.register_workflow(FlowAg())
         await worker.async_start()
 
         self.log.info("start worker finished")
         while True:
+            await asyncio.sleep(1)
             await asyncio.sleep(1)
