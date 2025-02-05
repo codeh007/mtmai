@@ -131,6 +131,8 @@ async def hello_ag_run() -> None:
         lambda: HelloAssistantAgent(name="Cathy", model_client=get_oai_Model()),
     )
 
+    # runtime.
+
     joe = await HelloAssistantAgent.register(
         runtime,
         "joe",

@@ -6,8 +6,8 @@ from fastapi.responses import StreamingResponse
 from loguru import logger
 from pydantic import BaseModel
 
-from ..agents.ag.team_builder import TeamBuilder
-from ..agents.ag.team_runner import TeamRunner
+from ..ag.team_builder import TeamBuilder
+from ..ag.team_runner import TeamRunner
 from ..gomtmclients.rest.models.chat_req import ChatReq
 
 router = APIRouter()
@@ -79,9 +79,4 @@ async def chat(r: ChatReq):
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
-#         return {"error": str(e)}
-#         return {"error": str(e)}
-#         return {"error": str(e)}
-#         return {"error": str(e)}
-#         return {"error": str(e)}
 #         return {"error": str(e)}

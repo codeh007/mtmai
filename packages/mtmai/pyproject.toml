@@ -19,17 +19,8 @@ classifiers = [
 ]
 requires-python = ">=3.12,<4.0"
 dependencies = [
-#     grpcio = [
-#   { version = ">=1.64.1, !=1.68.*", markers = "python_version < '3.13'" },
-#   { version = ">=1.69.0", markers = "python_version >= '3.13'" },
-# ]
-# grpcio-tools = [
-#   { version = ">=1.64.1, !=1.68.*", markers = "python_version < '3.13'" },
-#   { version = ">=1.69.0", markers = "python_version >= '3.13'" },
-# ],
     "grpcio>=1.64.1",
     "grpcio-tools>=1.64.1",
-
     "pydantic-settings",
     "litellm>=1.56.5",
     "langchain>=0.3.0",
