@@ -1,4 +1,5 @@
 import logging
+import uuid
 from typing import cast
 
 from agents.ctx import AgentContext
@@ -95,6 +96,9 @@ class FlowAg:
                     # ),
                     # user_id=user_id,
                     data=event,
+                    framework="autogen",
+                    stepRunId=str(str(uuid.uuid4())),
+                    meta={},
                 ),
             )
             hatctx.log(result)

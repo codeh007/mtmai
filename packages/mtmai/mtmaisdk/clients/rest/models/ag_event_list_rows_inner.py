@@ -17,22 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgEvent(BaseModel):
+class AgEventListRowsInner(BaseModel):
     """
-    AgEvent
+    AgEventListRowsInner
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    id: Annotated[str, Field(min_length=0, strict=True, max_length=36)] = Field(description="the id of this resource, in UUID format")
+    created_at: datetime = Field(description="the time that this resource was created", alias="createdAt")
+    updated_at: datetime = Field(description="the time that this resource was last updated", alias="updatedAt")
     user_id: Optional[StrictStr] = Field(default=None, alias="userId")
     data: Dict[str, Any]
     framework: StrictStr
     step_run_id: StrictStr = Field(alias="stepRunId")
-    __properties: ClassVar[List[str]] = ["metadata", "userId", "data", "framework", "stepRunId"]
+    __properties: ClassVar[List[str]] = ["id", "createdAt", "updatedAt", "userId", "data", "framework", "stepRunId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +55,7 @@ class AgEvent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgEvent from a JSON string"""
+        """Create an instance of AgEventListRowsInner from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +76,11 @@ class AgEvent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgEvent from a dict"""
+        """Create an instance of AgEventListRowsInner from a dict"""
         if obj is None:
             return None
 
@@ -88,7 +88,9 @@ class AgEvent(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "id": obj.get("id"),
+            "createdAt": obj.get("createdAt"),
+            "updatedAt": obj.get("updatedAt"),
             "userId": obj.get("userId"),
             "data": obj.get("data"),
             "framework": obj.get("framework"),

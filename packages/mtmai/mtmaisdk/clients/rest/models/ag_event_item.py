@@ -23,16 +23,16 @@ from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgEvent(BaseModel):
+class AgEventItem(BaseModel):
     """
-    AgEvent
+    AgEventItem
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
     user_id: Optional[StrictStr] = Field(default=None, alias="userId")
     data: Dict[str, Any]
     framework: StrictStr
     step_run_id: StrictStr = Field(alias="stepRunId")
-    __properties: ClassVar[List[str]] = ["metadata", "userId", "data", "framework", "stepRunId"]
+    metadata: Optional[APIResourceMeta] = None
+    __properties: ClassVar[List[str]] = ["userId", "data", "framework", "stepRunId", "metadata"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +52,7 @@ class AgEvent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgEvent from a JSON string"""
+        """Create an instance of AgEventItem from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,7 +80,7 @@ class AgEvent(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgEvent from a dict"""
+        """Create an instance of AgEventItem from a dict"""
         if obj is None:
             return None
 
@@ -88,11 +88,11 @@ class AgEvent(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "userId": obj.get("userId"),
             "data": obj.get("data"),
             "framework": obj.get("framework"),
-            "stepRunId": obj.get("stepRunId")
+            "stepRunId": obj.get("stepRunId"),
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
         })
         return _obj
 
