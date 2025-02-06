@@ -1,11 +1,13 @@
-import json
 import logging
+import uuid
+from datetime import datetime
 from typing import cast
 
 from agents.ctx import AgentContext
 from autogen_agentchat.messages import TextMessage
-from fastapi import HTTPException
 from mtmaisdk.clients.rest.models import PostizState
+from mtmaisdk.clients.rest.models.ag_event import AgEvent
+from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -17,10 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 async def run_stream(task: str):
-    # try:
     team_builder = TeamBuilder()
-    # team = await team_builder.create_demo_team()
-
     agent = await team_builder.create_demo_agent_stream1()
     # team_runner = TeamRunner()
 
@@ -30,19 +29,18 @@ async def run_stream(task: str):
         # team_config=agent.dump_component()
     ):
         if isinstance(event, TextMessage):
-            yield f"2:{event.model_dump_json()}\n"
+            yield event.model_dump()
         # elif isinstance(event, ToolCallRequestEvent):
         #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
         # elif isinstance(event, TeamResult):
         #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
 
         elif isinstance(event, BaseModel):
-            yield f"2:{event.model_dump_json()}\n"
+            # yield f"2:{event.model_dump_json()}\n"
+            yield event.model_dump()
         else:
-            yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
-    # except Exception as e:
-    #     logger.exception("Streaming error")
-    #     yield f"2:{json.dumps({'error': str(e)})}\n"
+            # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
+            yield event.model_dump()
 
 
 @wfapp.workflow(
@@ -63,22 +61,38 @@ class FlowAg:
         # ctx.log("输入: %s", input)
         # outoput = await assisant_graph.AssistantGraph.run(input)
 
+        tenant_id = getTenantId(hatctx)
+        if not tenant_id:
+            raise Exception("tenantId 不能为空")
+        user_id = getUserId(hatctx)
+        if not user_id:
+            raise Exception("userId 不能为空")
+        logger.info("当前租户: %s", tenant_id)
+        # 临时代码
+        r = await hatctx.rest_client.aio.ag_events_api.ag_event_list(tenant=tenant_id)
+        hatctx.log(r)
+
         # 获取模型配置
-
-        try:
-            # user_messages = r.messages
-            # if len(user_messages) == 0:
-            #     raise HTTPException(status_code=400, detail="No messages provided")
-            # task = user_messages[-1].content
-            task = "hello"
-            async for event in run_stream(task):
-                hatctx.log(event)
-
-        except Exception as e:
-            logger.exception("Chat error")
-            hatctx.log(str(e))
-            raise HTTPException(status_code=500, detail=str(e))
-
+        # user_messages = r.messages
+        # if len(user_messages) == 0:
+        #     raise HTTPException(status_code=400, detail="No messages provided")
+        # task = user_messages[-1].content
+        task = "hello"
+        async for event in run_stream(task):
+            hatctx.log(event)
+            result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
+                tenant=tenant_id,
+                ag_event=AgEvent(
+                    metadata=APIResourceMeta(
+                        id=str(uuid.uuid4()),
+                        created_at=datetime.now().isoformat(),
+                        updated_at=datetime.now().isoformat(),
+                    ),
+                    user_id=user_id,
+                    data=event,
+                ),
+            )
+            hatctx.log(result)
         return {"result": "success"}
 
     @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
@@ -101,4 +115,11 @@ class FlowAg:
     async def step_c(self, hatctx: Context):
         hatctx.log("stepC")
         return {"result": "success"}
-        return {"result": "success"}
+
+
+def getTenantId(hatctx: Context):
+    return hatctx.additional_metadata().get("tenantId")
+
+
+def getUserId(hatctx: Context):
+    return hatctx.additional_metadata().get("userId")

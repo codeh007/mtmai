@@ -3,6 +3,7 @@ import atexit
 import threading
 from typing import Any
 
+from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
 from mtmaisdk.clients.rest.api.llm_api import LlmApi
@@ -15,35 +16,39 @@ from mtmaisdk.clients.rest.api_client import ApiClient
 from mtmaisdk.clients.rest.configuration import Configuration
 from mtmaisdk.clients.rest.models import TriggerWorkflowRunRequest
 from mtmaisdk.clients.rest.models.event_list import EventList
-from mtmaisdk.clients.rest.models.event_order_by_direction import \
-    EventOrderByDirection
+from mtmaisdk.clients.rest.models.event_order_by_direction import EventOrderByDirection
 from mtmaisdk.clients.rest.models.event_order_by_field import EventOrderByField
 from mtmaisdk.clients.rest.models.log_line_level import LogLineLevel
 from mtmaisdk.clients.rest.models.log_line_list import LogLineList
-from mtmaisdk.clients.rest.models.log_line_order_by_direction import \
-    LogLineOrderByDirection
-from mtmaisdk.clients.rest.models.log_line_order_by_field import \
-    LogLineOrderByField
-from mtmaisdk.clients.rest.models.replay_event_request import \
-    ReplayEventRequest
-from mtmaisdk.clients.rest.models.replay_workflow_runs_request import \
-    ReplayWorkflowRunsRequest
-from mtmaisdk.clients.rest.models.replay_workflow_runs_response import \
-    ReplayWorkflowRunsResponse
+from mtmaisdk.clients.rest.models.log_line_order_by_direction import (
+    LogLineOrderByDirection,
+)
+from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmaisdk.clients.rest.models.replay_event_request import ReplayEventRequest
+from mtmaisdk.clients.rest.models.replay_workflow_runs_request import (
+    ReplayWorkflowRunsRequest,
+)
+from mtmaisdk.clients.rest.models.replay_workflow_runs_response import (
+    ReplayWorkflowRunsResponse,
+)
 from mtmaisdk.clients.rest.models.workflow import Workflow
 from mtmaisdk.clients.rest.models.workflow_kind import WorkflowKind
 from mtmaisdk.clients.rest.models.workflow_list import WorkflowList
 from mtmaisdk.clients.rest.models.workflow_run import WorkflowRun
-from mtmaisdk.clients.rest.models.workflow_run_cancel200_response import \
-    WorkflowRunCancel200Response
+from mtmaisdk.clients.rest.models.workflow_run_cancel200_response import (
+    WorkflowRunCancel200Response,
+)
 from mtmaisdk.clients.rest.models.workflow_run_list import WorkflowRunList
-from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import \
-    WorkflowRunOrderByDirection
-from mtmaisdk.clients.rest.models.workflow_run_order_by_field import \
-    WorkflowRunOrderByField
+from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
+    WorkflowRunOrderByDirection,
+)
+from mtmaisdk.clients.rest.models.workflow_run_order_by_field import (
+    WorkflowRunOrderByField,
+)
 from mtmaisdk.clients.rest.models.workflow_run_status import WorkflowRunStatus
-from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import \
-    WorkflowRunsCancelRequest
+from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import (
+    WorkflowRunsCancelRequest,
+)
 from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
 
@@ -64,6 +69,7 @@ class AsyncRestApi:
         self._log_api = None
         self._default_api = None
         self._llm_api = None
+        self._ag_events_api = None
 
     @property
     def api_client(self):
@@ -107,18 +113,26 @@ class AsyncRestApi:
             self._log_api = LogApi(self.api_client)
 
         return self._log_api
+
     @property
     def mtmai_api(self):
         if self._mtmai_api is None:
             self._mtmai_api = MtmaiApi(self.api_client)
 
         return self._mtmai_api
+
     @property
     def llm_api(self):
         if self._llm_api is None:
             self._llm_api = LlmApi(self.api_client)
         return self._llm_api
-    
+
+    @property
+    def ag_events_api(self):
+        if self._ag_events_api is None:
+            self._ag_events_api = AgEventsApi(self.api_client)
+        return self._ag_events_api
+
     async def close(self):
         # Ensure the aiohttp client session is closed
         if self._api_client is not None:
