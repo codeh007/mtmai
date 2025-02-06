@@ -13,9 +13,6 @@ from mtmai.ag.team_builder import TeamBuilder
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
 
-# from loguru import logger
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -103,4 +100,5 @@ class FlowAg:
     @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
     async def step_c(self, hatctx: Context):
         hatctx.log("stepC")
+        return {"result": "success"}
         return {"result": "success"}
