@@ -1,5 +1,4 @@
 import logging
-import uuid
 from typing import cast
 
 from agents.ctx import AgentContext
@@ -94,10 +93,10 @@ class FlowAg:
                     #     created_at=datetime.now(timezone.utc).isoformat(),
                     #     updated_at=datetime.now(timezone.utc).isoformat(),
                     # ),
-                    # user_id=user_id,
+                    user_id=user_id,
                     data=event,
                     framework="autogen",
-                    stepRunId=str(str(uuid.uuid4())),
+                    stepRunId=hatctx.step_run_id,
                     meta={},
                 ),
             )

@@ -82,6 +82,7 @@ from mtmaisdk.clients.rest.models.api_meta_auth import APIMetaAuth
 from mtmaisdk.clients.rest.models.api_meta_integration import APIMetaIntegration
 from mtmaisdk.clients.rest.models.api_meta_posthog import APIMetaPosthog
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmaisdk.clients.rest.models.api_resource_meta_properties import APIResourceMetaProperties
 from mtmaisdk.clients.rest.models.api_token import APIToken
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
 from mtmaisdk.clients.rest.models.ag_event import AgEvent

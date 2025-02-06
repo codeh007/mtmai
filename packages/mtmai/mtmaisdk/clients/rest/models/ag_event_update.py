@@ -17,10 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,15 +27,13 @@ class AgEventUpdate(BaseModel):
     """
     AgEventUpdate
     """ # noqa: E501
-    id: Annotated[str, Field(min_length=0, strict=True, max_length=36)] = Field(description="the id of this resource, in UUID format")
-    created_at: datetime = Field(description="the time that this resource was created", alias="createdAt")
-    updated_at: datetime = Field(description="the time that this resource was last updated", alias="updatedAt")
     metadata: Optional[APIResourceMeta] = None
     user_id: Optional[StrictStr] = Field(default=None, alias="userId")
     data: Dict[str, Any]
     framework: StrictStr
     step_run_id: StrictStr = Field(alias="stepRunId")
-    __properties: ClassVar[List[str]] = ["id", "createdAt", "updatedAt", "metadata", "userId", "data", "framework", "stepRunId"]
+    meta: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "userId", "data", "framework", "stepRunId", "meta"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,14 +89,12 @@ class AgEventUpdate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "createdAt": obj.get("createdAt"),
-            "updatedAt": obj.get("updatedAt"),
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "userId": obj.get("userId"),
             "data": obj.get("data"),
             "framework": obj.get("framework"),
-            "stepRunId": obj.get("stepRunId")
+            "stepRunId": obj.get("stepRunId"),
+            "meta": obj.get("meta")
         })
         return _obj
 
