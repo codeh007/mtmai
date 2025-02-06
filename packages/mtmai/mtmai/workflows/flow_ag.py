@@ -46,7 +46,10 @@ async def run_stream(task: str):
     # input_validator=PostizState,
 )
 class FlowAg:
-    @wfapp.step(timeout="30m", retries=1)
+    @wfapp.step(
+        timeout="30m",
+        # retries=1
+    )
     async def step_entry(self, hatctx: Context):
         init_mtmai_context(hatctx)
 
@@ -64,7 +67,7 @@ class FlowAg:
         user_id = getUserId(hatctx)
         if not user_id:
             raise Exception("userId 不能为空")
-        logger.info("当前租户: %s", tenant_id)
+        logger.info("当前租户: %s, 当前用户: %s", tenant_id, user_id)
         # 临时代码
         r = await hatctx.rest_client.aio.ag_events_api.ag_event_list(tenant=tenant_id)
         hatctx.log(r)
