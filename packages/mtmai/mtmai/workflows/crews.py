@@ -1,9 +1,6 @@
 from textwrap import dedent
-
 from crewai import Agent, Crew, Process, Task
 from pydantic import BaseModel
-
-# from mtmai.agents.ctx import mtmai_context
 from mtmai.agents.tools.tools import get_tools
 from mtmai.models.book_gen import BookOutline
 

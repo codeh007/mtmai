@@ -2,6 +2,7 @@ import logging
 from typing import cast
 
 from agents.ctx import AgentContext
+from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import TextMessage
 from mtmaisdk.clients.rest.models import PostizState
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
@@ -35,6 +36,10 @@ async def run_stream(task: str):
         elif isinstance(event, BaseModel):
             # yield f"2:{event.model_dump_json()}\n"
             yield event.model_dump()
+        elif isinstance(event, TaskResult):
+            # 最终的结果
+            # yield event
+            pass
         else:
             # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
             yield event.model_dump()
