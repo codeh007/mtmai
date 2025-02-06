@@ -17,24 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.gomtmclients.rest.models.agent_node_run_input_params import AgentNodeRunInputParams
-from mtmai.gomtmclients.rest.models.chat_message import ChatMessage
+from mtmai.gomtmclients.rest.models.model import Model
+from mtmai.gomtmclients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentNodeRunInput(BaseModel):
+class ModelList(BaseModel):
     """
-    agent运行节点请求
+    ModelList
     """ # noqa: E501
-    flow_name: Optional[StrictStr] = Field(default=None, alias="flowName")
-    runner: Optional[StrictStr] = Field(default=None, description="运行器名称(对应 autogent 的 angent 入口名称)")
-    messages: List[ChatMessage]
-    node_id: Optional[StrictStr] = Field(default=None, description="agent 节点ID(threadId)", alias="nodeId")
-    is_stream: Optional[StrictBool] = Field(default=None, description="是否使用stream 传输事件", alias="isStream")
-    params: AgentNodeRunInputParams
-    __properties: ClassVar[List[str]] = ["flowName", "runner", "messages", "nodeId", "isStream", "params"]
+    pagination: Optional[PaginationResponse] = None
+    rows: Optional[List[Model]] = None
+    __properties: ClassVar[List[str]] = ["pagination", "rows"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +50,7 @@ class AgentNodeRunInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentNodeRunInput from a JSON string"""
+        """Create an instance of ModelList from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,21 +71,21 @@ class AgentNodeRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
+        # override the default output from pydantic by calling `to_dict()` of pagination
+        if self.pagination:
+            _dict['pagination'] = self.pagination.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in rows (list)
         _items = []
-        if self.messages:
-            for _item_messages in self.messages:
-                if _item_messages:
-                    _items.append(_item_messages.to_dict())
-            _dict['messages'] = _items
-        # override the default output from pydantic by calling `to_dict()` of params
-        if self.params:
-            _dict['params'] = self.params.to_dict()
+        if self.rows:
+            for _item_rows in self.rows:
+                if _item_rows:
+                    _items.append(_item_rows.to_dict())
+            _dict['rows'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentNodeRunInput from a dict"""
+        """Create an instance of ModelList from a dict"""
         if obj is None:
             return None
 
@@ -97,12 +93,8 @@ class AgentNodeRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "flowName": obj.get("flowName"),
-            "runner": obj.get("runner"),
-            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
-            "nodeId": obj.get("nodeId"),
-            "isStream": obj.get("isStream"),
-            "params": AgentNodeRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None
+            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
+            "rows": [Model.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
         })
         return _obj
 

@@ -30,8 +30,9 @@ class ChatReq(BaseModel):
     thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
     profile: Optional[StrictStr] = None
     messages: List[ChatMessage]
+    runner: Optional[StrictStr] = None
     params: Optional[Dict[str, Any]] = Field(default=None, description="附加的表单数据")
-    __properties: ClassVar[List[str]] = ["threadId", "profile", "messages", "params"]
+    __properties: ClassVar[List[str]] = ["threadId", "profile", "messages", "runner", "params"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,6 +95,7 @@ class ChatReq(BaseModel):
             "threadId": obj.get("threadId"),
             "profile": obj.get("profile"),
             "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
+            "runner": obj.get("runner"),
             "params": obj.get("params")
         })
         return _obj

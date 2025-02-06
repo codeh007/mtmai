@@ -18,23 +18,16 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.gomtmclients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.gomtmclients.rest.models.chat_message_config import ChatMessageConfig
-from mtmai.gomtmclients.rest.models.chat_message_role import ChatMessageRole
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatMessage(BaseModel):
+class EventBase(BaseModel):
     """
-    单个聊天消息
+    EventBase
     """ # noqa: E501
-    metadata: APIResourceMeta
-    role: ChatMessageRole
-    content: StrictStr
-    source: Optional[StrictStr] = None
-    config: Optional[ChatMessageConfig] = None
-    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "config"]
+    type: StrictStr
+    __properties: ClassVar[List[str]] = ["type"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +47,7 @@ class ChatMessage(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatMessage from a JSON string"""
+        """Create an instance of EventBase from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,17 +68,11 @@ class ChatMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatMessage from a dict"""
+        """Create an instance of EventBase from a dict"""
         if obj is None:
             return None
 
@@ -93,11 +80,7 @@ class ChatMessage(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "role": obj.get("role"),
-            "content": obj.get("content"),
-            "source": obj.get("source"),
-            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "type": obj.get("type")
         })
         return _obj
 

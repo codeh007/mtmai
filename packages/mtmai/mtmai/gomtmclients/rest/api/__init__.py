@@ -17,6 +17,7 @@ from mtmai.gomtmclients.rest.api.worker_api import WorkerApi
 from mtmai.gomtmclients.rest.api.workflow_api import WorkflowApi
 from mtmai.gomtmclients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmai.gomtmclients.rest.api.admin_api import AdminApi
+from mtmai.gomtmclients.rest.api.ag_events_api import AgEventsApi
 from mtmai.gomtmclients.rest.api.agent_api import AgentApi
 from mtmai.gomtmclients.rest.api.artifact_api import ArtifactApi
 from mtmai.gomtmclients.rest.api.assisant_api import AssisantApi
@@ -30,7 +31,7 @@ from mtmai.gomtmclients.rest.api.frontend_api import FrontendApi
 from mtmai.gomtmclients.rest.api.galleries_api import GalleriesApi
 from mtmai.gomtmclients.rest.api.hf_api import HfApi
 from mtmai.gomtmclients.rest.api.kv_api import KvApi
-from mtmai.gomtmclients.rest.api.llm_api import LlmApi
+from mtmai.gomtmclients.rest.api.model_api import ModelApi
 from mtmai.gomtmclients.rest.api.mtmai_api import MtmaiApi
 from mtmai.gomtmclients.rest.api.platform_api import PlatformApi
 from mtmai.gomtmclients.rest.api.platform_account_api import PlatformAccountApi

@@ -17,27 +17,19 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.gomtmclients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.gomtmclients.rest.models.chat_message import ChatMessage
-from mtmai.gomtmclients.rest.models.gen_article_state_all_of_oulines import GenArticleStateAllOfOulines
 from typing import Optional, Set
 from typing_extensions import Self
 
-class GenArticleState(BaseModel):
+class UpdateModel(BaseModel):
     """
-    GenArticleState
+    UpdateModel
     """ # noqa: E501
-    metadata: APIResourceMeta
-    thread_id: Optional[StrictStr] = Field(default=None, description="线程ID", alias="threadId")
-    messages: List[ChatMessage] = Field(description="聊天消息")
-    topic: StrictStr = Field(description="当前关联的主题")
-    prompt: Optional[StrictStr] = Field(default=None, description="关键提示语")
-    title: Optional[StrictStr] = Field(default=None, description="文章主标题")
-    sub_title: Optional[StrictStr] = Field(default=None, description="文章副标题", alias="subTitle")
-    oulines: Optional[List[GenArticleStateAllOfOulines]] = Field(default=None, description="文章大纲列表")
-    __properties: ClassVar[List[str]] = ["metadata", "threadId", "messages", "topic", "prompt", "title", "subTitle", "oulines"]
+    metadata: Optional[APIResourceMeta] = None
+    name: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["metadata", "name"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -57,7 +49,7 @@ class GenArticleState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of GenArticleState from a JSON string"""
+        """Create an instance of UpdateModel from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -81,25 +73,11 @@ class GenArticleState(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
-        _items = []
-        if self.messages:
-            for _item_messages in self.messages:
-                if _item_messages:
-                    _items.append(_item_messages.to_dict())
-            _dict['messages'] = _items
-        # override the default output from pydantic by calling `to_dict()` of each item in oulines (list)
-        _items = []
-        if self.oulines:
-            for _item_oulines in self.oulines:
-                if _item_oulines:
-                    _items.append(_item_oulines.to_dict())
-            _dict['oulines'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of GenArticleState from a dict"""
+        """Create an instance of UpdateModel from a dict"""
         if obj is None:
             return None
 
@@ -108,13 +86,7 @@ class GenArticleState(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "threadId": obj.get("threadId"),
-            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
-            "topic": obj.get("topic"),
-            "prompt": obj.get("prompt"),
-            "title": obj.get("title"),
-            "subTitle": obj.get("subTitle"),
-            "oulines": [GenArticleStateAllOfOulines.from_dict(_item) for _item in obj["oulines"]] if obj.get("oulines") is not None else None
+            "name": obj.get("name")
         })
         return _obj
 

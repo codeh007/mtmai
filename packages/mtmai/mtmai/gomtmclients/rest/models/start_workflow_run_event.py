@@ -17,24 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.gomtmclients.rest.models.agent_node_run_input_params import AgentNodeRunInputParams
-from mtmai.gomtmclients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentNodeRunInput(BaseModel):
+class StartWorkflowRunEvent(BaseModel):
     """
-    agent运行节点请求
+    用户调用工作流后, 后端返回工作流启动状态的事件, 一般用于根据 Id,从 stream api 中进一步拉取更加详细的事件
     """ # noqa: E501
-    flow_name: Optional[StrictStr] = Field(default=None, alias="flowName")
-    runner: Optional[StrictStr] = Field(default=None, description="运行器名称(对应 autogent 的 angent 入口名称)")
-    messages: List[ChatMessage]
-    node_id: Optional[StrictStr] = Field(default=None, description="agent 节点ID(threadId)", alias="nodeId")
-    is_stream: Optional[StrictBool] = Field(default=None, description="是否使用stream 传输事件", alias="isStream")
-    params: AgentNodeRunInputParams
-    __properties: ClassVar[List[str]] = ["flowName", "runner", "messages", "nodeId", "isStream", "params"]
+    type: StrictStr
+    workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
+    __properties: ClassVar[List[str]] = ["type", "workflowRunId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +48,7 @@ class AgentNodeRunInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentNodeRunInput from a JSON string"""
+        """Create an instance of StartWorkflowRunEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,21 +69,11 @@ class AgentNodeRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
-        _items = []
-        if self.messages:
-            for _item_messages in self.messages:
-                if _item_messages:
-                    _items.append(_item_messages.to_dict())
-            _dict['messages'] = _items
-        # override the default output from pydantic by calling `to_dict()` of params
-        if self.params:
-            _dict['params'] = self.params.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentNodeRunInput from a dict"""
+        """Create an instance of StartWorkflowRunEvent from a dict"""
         if obj is None:
             return None
 
@@ -97,12 +81,8 @@ class AgentNodeRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "flowName": obj.get("flowName"),
-            "runner": obj.get("runner"),
-            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
-            "nodeId": obj.get("nodeId"),
-            "isStream": obj.get("isStream"),
-            "params": AgentNodeRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None
+            "type": obj.get("type"),
+            "workflowRunId": obj.get("workflowRunId")
         })
         return _obj
 
