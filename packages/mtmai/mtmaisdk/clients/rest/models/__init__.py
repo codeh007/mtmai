@@ -24,7 +24,9 @@ from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.api_token import APIToken
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
 from mtmaisdk.clients.rest.models.ag_event import AgEvent
+from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
+from mtmaisdk.clients.rest.models.ag_event_update import AgEventUpdate
 from mtmaisdk.clients.rest.models.agent import Agent
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_config import AgentConfig

@@ -19,6 +19,7 @@ from typing_extensions import Annotated
 from pydantic import Field
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.ag_event import AgEvent
+from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
@@ -43,7 +44,7 @@ class AgEventsApi:
     async def ag_event_create(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        ag_event: AgEvent,
+        ag_event_create: AgEventCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -63,8 +64,8 @@ class AgEventsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param ag_event: (required)
-        :type ag_event: AgEvent
+        :param ag_event_create: (required)
+        :type ag_event_create: AgEventCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -89,7 +90,7 @@ class AgEventsApi:
 
         _param = self._ag_event_create_serialize(
             tenant=tenant,
-            ag_event=ag_event,
+            ag_event_create=ag_event_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -116,7 +117,7 @@ class AgEventsApi:
     async def ag_event_create_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        ag_event: AgEvent,
+        ag_event_create: AgEventCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -136,8 +137,8 @@ class AgEventsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param ag_event: (required)
-        :type ag_event: AgEvent
+        :param ag_event_create: (required)
+        :type ag_event_create: AgEventCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -162,7 +163,7 @@ class AgEventsApi:
 
         _param = self._ag_event_create_serialize(
             tenant=tenant,
-            ag_event=ag_event,
+            ag_event_create=ag_event_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -189,7 +190,7 @@ class AgEventsApi:
     async def ag_event_create_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        ag_event: AgEvent,
+        ag_event_create: AgEventCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -209,8 +210,8 @@ class AgEventsApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param ag_event: (required)
-        :type ag_event: AgEvent
+        :param ag_event_create: (required)
+        :type ag_event_create: AgEventCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -235,7 +236,7 @@ class AgEventsApi:
 
         _param = self._ag_event_create_serialize(
             tenant=tenant,
-            ag_event=ag_event,
+            ag_event_create=ag_event_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -257,7 +258,7 @@ class AgEventsApi:
     def _ag_event_create_serialize(
         self,
         tenant,
-        ag_event,
+        ag_event_create,
         _request_auth,
         _content_type,
         _headers,
@@ -285,8 +286,8 @@ class AgEventsApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if ag_event is not None:
-            _body_params = ag_event
+        if ag_event_create is not None:
+            _body_params = ag_event_create
 
 
         # set the HTTP header `Accept`

@@ -1,13 +1,10 @@
 import logging
-import uuid
-from datetime import datetime
 from typing import cast
 
 from agents.ctx import AgentContext
 from autogen_agentchat.messages import TextMessage
 from mtmaisdk.clients.rest.models import PostizState
-from mtmaisdk.clients.rest.models.ag_event import AgEvent
-from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -82,13 +79,13 @@ class FlowAg:
             hatctx.log(event)
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
                 tenant=tenant_id,
-                ag_event=AgEvent(
-                    metadata=APIResourceMeta(
-                        id=str(uuid.uuid4()),
-                        created_at=datetime.now().isoformat(),
-                        updated_at=datetime.now().isoformat(),
-                    ),
-                    user_id=user_id,
+                ag_event_create=AgEventCreate(
+                    # metadata=APIResourceMeta(
+                    #     id=str(uuid.uuid4()),
+                    #     created_at=datetime.now(timezone.utc).isoformat(),
+                    #     updated_at=datetime.now(timezone.utc).isoformat(),
+                    # ),
+                    # user_id=user_id,
                     data=event,
                 ),
             )
