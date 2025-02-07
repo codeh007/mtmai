@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import cast
 
@@ -88,11 +89,6 @@ class FlowAg:
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
                 tenant=tenant_id,
                 ag_event_create=AgEventCreate(
-                    # metadata=APIResourceMeta(
-                    #     id=str(uuid.uuid4()),
-                    #     created_at=datetime.now(timezone.utc).isoformat(),
-                    #     updated_at=datetime.now(timezone.utc).isoformat(),
-                    # ),
                     user_id=user_id,
                     data=event,
                     framework="autogen",
@@ -100,7 +96,10 @@ class FlowAg:
                     meta={},
                 ),
             )
+
             hatctx.log(result)
+            stream_bytes = json.dumps(event)
+            hatctx.put_stream(stream_bytes)
         return {"result": "success"}
 
     @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])

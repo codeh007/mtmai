@@ -30,6 +30,7 @@ class EventTypes(str, Enum):
     ASSISANTREPLY = 'assisantReply'
     ENDWORKFLOWRUN = 'endWorkflowRun'
     STEPRUN = 'stepRun'
+    TEXTMESSAGE = 'textMessage'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
