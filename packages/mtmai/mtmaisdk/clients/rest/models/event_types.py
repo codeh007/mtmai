@@ -27,6 +27,7 @@ class EventTypes(str, Enum):
     allowed enum values
     """
     STARTWORKFLOWRUN = 'startWorkflowRun'
+    ASSISANTREPLY = 'assisantReply'
     ENDWORKFLOWRUN = 'endWorkflowRun'
     STEPRUN = 'stepRun'
 
