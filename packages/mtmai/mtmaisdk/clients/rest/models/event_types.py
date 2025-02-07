@@ -26,11 +26,11 @@ class EventTypes(str, Enum):
     """
     allowed enum values
     """
-    STARTWORKFLOWRUN = 'startWorkflowRun'
-    ASSISANTREPLY = 'assisantReply'
-    ENDWORKFLOWRUN = 'endWorkflowRun'
-    STEPRUN = 'stepRun'
-    TEXTMESSAGE = 'textMessage'
+    WORKFLOWRUNSTART = 'WorkflowRunStart'
+    WORKFLOWRUNEND = 'WorkflowRunEnd'
+    ASSISTANTREPLY = 'AssistantReply'
+    STEPRUN = 'StepRun'
+    TEXTMESSAGE = 'TextMessage'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
