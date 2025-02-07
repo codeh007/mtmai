@@ -28,7 +28,6 @@ class EventTypes(str, Enum):
     """
     WORKFLOWRUNSTART = 'WorkflowRunStart'
     WORKFLOWRUNEND = 'WorkflowRunEnd'
-    ASSISTANTREPLY = 'AssistantReply'
     STEPRUN = 'StepRun'
     TEXTMESSAGE = 'TextMessage'
 

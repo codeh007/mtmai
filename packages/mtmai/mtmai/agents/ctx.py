@@ -337,6 +337,12 @@ class AgentContext:
         json1 = json.dumps(data)
         self.hatchet_ctx.put_stream(f"0:{json1}\n")
 
+    def getTenantId(self):
+        return self.hatchet_ctx.additional_metadata().get("tenantId")
+
+    def getUserId(self):
+        return self.hatchet_ctx.additional_metadata().get("userId")
+
 
 def init_mtmai_context(hatchetCtx: HatchetContext) -> AgentContext:
     tenant_id = None
@@ -358,14 +364,4 @@ def get_mtmai_context() -> AgentContext:
         raise RuntimeError("mtmai_context  error")
 
 
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
-mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore
 mtmai_context: AgentContext = LazyProxy(get_mtmai_context, enable_cache=False)  # type: ignore

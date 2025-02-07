@@ -5,8 +5,8 @@ from typing import cast
 from agents.ctx import AgentContext
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import TextMessage
-from mtmaisdk.clients.rest.models import PostizState
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
+from mtmaisdk.clients.rest.models.agent_node_run_input import AgentNodeRunInput
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -49,7 +49,7 @@ async def run_stream(task: str):
 @wfapp.workflow(
     name="ag",
     on_events=["autogen-demo:run"],
-    # input_validator=PostizState,
+    input_validator=AgentNodeRunInput,
 )
 class FlowAg:
     @wfapp.step(
@@ -58,32 +58,26 @@ class FlowAg:
     )
     async def step_entry(self, hatctx: Context):
         init_mtmai_context(hatctx)
-
         ctx: AgentContext = get_mtmai_context()
-        ctx.log("FlowAg 启动")
-
-        input: PostizState = cast(PostizState, hatctx.workflow_input())
-        # hatctx.log(input)
-        # ctx.log("输入: %s", input)
-        # outoput = await assisant_graph.AssistantGraph.run(input)
-
-        tenant_id = getTenantId(hatctx)
+        input = cast(AgentNodeRunInput, hatctx.workflow_input())
+        tenant_id = ctx.getTenantId()
         if not tenant_id:
-            raise Exception("tenantId 不能为空")
-        user_id = getUserId(hatctx)
+            raise ValueError("tenantId 不能为空")
+        user_id = ctx.getUserId()
         if not user_id:
-            raise Exception("userId 不能为空")
+            raise ValueError("userId 不能为空")
         logger.info("当前租户: %s, 当前用户: %s", tenant_id, user_id)
         # 临时代码
         r = await hatctx.rest_client.aio.ag_events_api.ag_event_list(tenant=tenant_id)
         hatctx.log(r)
 
         # 获取模型配置
-        # user_messages = r.messages
-        # if len(user_messages) == 0:
-        #     raise HTTPException(status_code=400, detail="No messages provided")
-        # task = user_messages[-1].content
-        task = "hello"
+        user_messages = input.messages
+        if len(user_messages) == 0:
+            raise ValueError("No messages provided")
+        task = user_messages[-1].content
+        # task = "hello"
+        logger.info("任务: %s", task)
         async for event in run_stream(task):
             hatctx.log(event)
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
@@ -122,11 +116,3 @@ class FlowAg:
     async def step_c(self, hatctx: Context):
         hatctx.log("stepC")
         return {"result": "success"}
-
-
-def getTenantId(hatctx: Context):
-    return hatctx.additional_metadata().get("tenantId")
-
-
-def getUserId(hatctx: Context):
-    return hatctx.additional_metadata().get("userId")
