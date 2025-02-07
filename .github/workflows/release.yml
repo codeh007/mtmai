@@ -26,6 +26,7 @@ env:
   MAIN_GH_USER: ${{ secrets.MAIN_GH_USER }}
   PIPY_TOKEN: ${{ secrets.PIPY_TOKEN }}
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  PUPPETEER_SKIP_DOWNLOAD: true
 
 jobs:
   build:
