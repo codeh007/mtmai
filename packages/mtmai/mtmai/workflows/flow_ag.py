@@ -76,8 +76,6 @@ class FlowAg:
         if len(user_messages) == 0:
             raise ValueError("No messages provided")
         task = user_messages[-1].content
-        # task = "hello"
-        logger.info("任务: %s", task)
         async for event in run_stream(task):
             hatctx.log(event)
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
