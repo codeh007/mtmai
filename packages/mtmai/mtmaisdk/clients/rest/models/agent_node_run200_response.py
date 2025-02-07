@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.event_base import EventBase
+from mtmaisdk.clients.rest.models.event_types import EventTypes
 from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.start_workflow_run_event import StartWorkflowRunEvent
 from mtmaisdk.clients.rest.models.token_chunk import TokenChunk
@@ -26,24 +27,26 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTNODERUN200RESPONSE_ONE_OF_SCHEMAS = ["AssisantState", "EventBase", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk"]
+AGENTNODERUN200RESPONSE_ONE_OF_SCHEMAS = ["AssisantState", "EventBase", "EventTypes", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk"]
 
 class AgentNodeRun200Response(BaseModel):
     """
     AgentNodeRun200Response
     """
+    # data type: EventTypes
+    oneof_schema_1_validator: Optional[EventTypes] = None
     # data type: EventBase
-    oneof_schema_1_validator: Optional[EventBase] = None
+    oneof_schema_2_validator: Optional[EventBase] = None
     # data type: StartWorkflowRunEvent
-    oneof_schema_2_validator: Optional[StartWorkflowRunEvent] = None
+    oneof_schema_3_validator: Optional[StartWorkflowRunEvent] = None
     # data type: TokenChunk
-    oneof_schema_3_validator: Optional[TokenChunk] = None
+    oneof_schema_4_validator: Optional[TokenChunk] = None
     # data type: AssisantState
-    oneof_schema_4_validator: Optional[AssisantState] = None
+    oneof_schema_5_validator: Optional[AssisantState] = None
     # data type: GenArticleState
-    oneof_schema_5_validator: Optional[GenArticleState] = None
-    actual_instance: Optional[Union[AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk]] = None
-    one_of_schemas: Set[str] = { "AssisantState", "EventBase", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk" }
+    oneof_schema_6_validator: Optional[GenArticleState] = None
+    actual_instance: Optional[Union[AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk]] = None
+    one_of_schemas: Set[str] = { "AssisantState", "EventBase", "EventTypes", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -66,6 +69,11 @@ class AgentNodeRun200Response(BaseModel):
         instance = AgentNodeRun200Response.model_construct()
         error_messages = []
         match = 0
+        # validate data type: EventTypes
+        if not isinstance(v, EventTypes):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `EventTypes`")
+        else:
+            match += 1
         # validate data type: EventBase
         if not isinstance(v, EventBase):
             error_messages.append(f"Error! Input type `{type(v)}` is not `EventBase`")
@@ -93,10 +101,10 @@ class AgentNodeRun200Response(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -111,6 +119,12 @@ class AgentNodeRun200Response(BaseModel):
         error_messages = []
         match = 0
 
+        # deserialize data into EventTypes
+        try:
+            instance.actual_instance = EventTypes.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
         # deserialize data into EventBase
         try:
             instance.actual_instance = EventBase.from_json(json_str)
@@ -144,10 +158,10 @@ class AgentNodeRun200Response(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentNodeRun200Response with oneOf schemas: AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -161,7 +175,7 @@ class AgentNodeRun200Response(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssisantState, EventBase, GenArticleState, StartWorkflowRunEvent, TokenChunk]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssisantState, EventBase, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

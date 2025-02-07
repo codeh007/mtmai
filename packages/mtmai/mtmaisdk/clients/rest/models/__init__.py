@@ -133,6 +133,7 @@ from mtmaisdk.clients.rest.models.event_key_list import EventKeyList
 from mtmaisdk.clients.rest.models.event_list import EventList
 from mtmaisdk.clients.rest.models.event_order_by_direction import EventOrderByDirection
 from mtmaisdk.clients.rest.models.event_order_by_field import EventOrderByField
+from mtmaisdk.clients.rest.models.event_types import EventTypes
 from mtmaisdk.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
 from mtmaisdk.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
