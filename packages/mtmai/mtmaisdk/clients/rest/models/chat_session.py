@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,7 +28,10 @@ class ChatSession(BaseModel):
     聊天 Session
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["metadata"]
+    name: StrictStr
+    version: StrictStr
+    team: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["metadata", "name", "version", "team"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +87,10 @@ class ChatSession(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "name": obj.get("name"),
+            "version": obj.get("version"),
+            "team": obj.get("team")
         })
         return _obj
 
