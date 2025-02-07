@@ -154,6 +154,9 @@ from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
 from mtmaisdk.clients.rest.models.chat_req import ChatReq
+from mtmaisdk.clients.rest.models.chat_session import ChatSession
+from mtmaisdk.clients.rest.models.chat_session_list import ChatSessionList
+from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
 from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.combination_termination_config import CombinationTerminationConfig
 from mtmaisdk.clients.rest.models.common_result import CommonResult
