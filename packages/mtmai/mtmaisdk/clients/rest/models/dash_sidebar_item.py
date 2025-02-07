@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,7 +32,7 @@ class DashSidebarItem(BaseModel):
     icon: Optional[StrictStr] = Field(default=None, description="图标")
     default_expanded: Optional[StrictBool] = Field(default=None, description="默认展开", alias="defaultExpanded")
     admin_only: Optional[StrictBool] = Field(default=None, description="只允许超级管理员查看", alias="adminOnly")
-    children: Optional[List[DashSidebarItem]] = None
+    children: Optional[List[DashSidebarItemLeaf]] = None
     __properties: ClassVar[List[str]] = ["title", "url", "icon", "defaultExpanded", "adminOnly", "children"]
 
     model_config = ConfigDict(
@@ -97,10 +98,8 @@ class DashSidebarItem(BaseModel):
             "icon": obj.get("icon"),
             "defaultExpanded": obj.get("defaultExpanded"),
             "adminOnly": obj.get("adminOnly"),
-            "children": [DashSidebarItem.from_dict(_item) for _item in obj["children"]] if obj.get("children") is not None else None
+            "children": [DashSidebarItemLeaf.from_dict(_item) for _item in obj["children"]] if obj.get("children") is not None else None
         })
         return _obj
 
-# TODO: Rewrite to not use raise_errors
-DashSidebarItem.model_rebuild(raise_errors=False)
 

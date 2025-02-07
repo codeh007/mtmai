@@ -13,117 +13,125 @@
 
 
 from __future__ import annotations
-import pprint
-import re  # noqa: F401
 import json
+import pprint
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
+from typing import Any, List, Optional
+from mtmaisdk.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
+from mtmaisdk.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
+from pydantic import StrictStr, Field
+from typing import Union, List, Set, Optional, Dict
+from typing_extensions import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-from mtmaisdk.clients.rest.models.model_config import ModelConfig
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
-from typing import Optional, Set
-from typing_extensions import Self
+TEAMCONFIG_ONE_OF_SCHEMAS = ["RoundRobinGroupChatConfig", "SelectorGroupChatConfig"]
 
 class TeamConfig(BaseModel):
     """
     TeamConfig
-    """ # noqa: E501
-    component_type: StrictStr
-    version: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[StrictStr] = None
-    termination_condition: Optional[TerminationConfig] = None
-    selector_prompt: Optional[StrictStr] = None
-    model_client: Optional[ModelConfig] = None
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition", "selector_prompt", "model_client"]
-
-    @field_validator('team_type')
-    def team_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['SelectorGroupChat']):
-            raise ValueError("must be one of enum values ('SelectorGroupChat')")
-        return value
+    """
+    # data type: RoundRobinGroupChatConfig
+    oneof_schema_1_validator: Optional[RoundRobinGroupChatConfig] = None
+    # data type: SelectorGroupChatConfig
+    oneof_schema_2_validator: Optional[SelectorGroupChatConfig] = None
+    actual_instance: Optional[Union[RoundRobinGroupChatConfig, SelectorGroupChatConfig]] = None
+    one_of_schemas: Set[str] = { "RoundRobinGroupChatConfig", "SelectorGroupChatConfig" }
 
     model_config = ConfigDict(
-        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    def to_str(self) -> str:
-        """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+    def __init__(self, *args, **kwargs) -> None:
+        if args:
+            if len(args) > 1:
+                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
+            if kwargs:
+                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
+            super().__init__(actual_instance=args[0])
+        else:
+            super().__init__(**kwargs)
+
+    @field_validator('actual_instance')
+    def actual_instance_must_validate_oneof(cls, v):
+        instance = TeamConfig.model_construct()
+        error_messages = []
+        match = 0
+        # validate data type: RoundRobinGroupChatConfig
+        if not isinstance(v, RoundRobinGroupChatConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatConfig`")
+        else:
+            match += 1
+        # validate data type: SelectorGroupChatConfig
+        if not isinstance(v, SelectorGroupChatConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatConfig`")
+        else:
+            match += 1
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when setting `actual_instance` in TeamConfig with oneOf schemas: RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when setting `actual_instance` in TeamConfig with oneOf schemas: RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        else:
+            return v
+
+    @classmethod
+    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
+        return cls.from_json(json.dumps(obj))
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Self:
+        """Returns the object represented by the json string"""
+        instance = cls.model_construct()
+        error_messages = []
+        match = 0
+
+        # deserialize data into RoundRobinGroupChatConfig
+        try:
+            instance.actual_instance = RoundRobinGroupChatConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SelectorGroupChatConfig
+        try:
+            instance.actual_instance = SelectorGroupChatConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when deserializing the JSON string into TeamConfig with oneOf schemas: RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when deserializing the JSON string into TeamConfig with oneOf schemas: RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        else:
+            return instance
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        """Returns the JSON representation of the actual instance"""
+        if self.actual_instance is None:
+            return "null"
 
-    @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamConfig from a JSON string"""
-        return cls.from_dict(json.loads(json_str))
+        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
+            return self.actual_instance.to_json()
+        else:
+            return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([
-        ])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of model_client
-        if self.model_client:
-            _dict['model_client'] = self.model_client.to_dict()
-        return _dict
-
-    @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamConfig from a dict"""
-        if obj is None:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], RoundRobinGroupChatConfig, SelectorGroupChatConfig]]:
+        """Returns the dict representation of the actual instance"""
+        if self.actual_instance is None:
             return None
 
-        if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
+            return self.actual_instance.to_dict()
+        else:
+            # primitive type
+            return self.actual_instance
 
-        _obj = cls.model_validate({
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "description": obj.get("description"),
-            "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "selector_prompt": obj.get("selector_prompt"),
-            "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
-        })
-        return _obj
+    def to_str(self) -> str:
+        """Returns the string representation of the actual instance"""
+        return pprint.pformat(self.model_dump())
 
 

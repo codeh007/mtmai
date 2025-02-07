@@ -19,9 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,16 +27,10 @@ class SelectorGroupChatConfig(BaseModel):
     """
     SelectorGroupChatConfig
     """ # noqa: E501
-    component_type: StrictStr
-    version: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
     team_type: Optional[StrictStr] = None
-    termination_condition: Optional[TerminationConfig] = None
     selector_prompt: Optional[StrictStr] = None
     model_client: Optional[ModelConfig] = None
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "participants", "team_type", "termination_condition", "selector_prompt", "model_client"]
+    __properties: ClassVar[List[str]] = ["team_type", "selector_prompt", "model_client"]
 
     @field_validator('team_type')
     def team_type_validate_enum(cls, value):
@@ -89,16 +81,6 @@ class SelectorGroupChatConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
@@ -114,13 +96,7 @@ class SelectorGroupChatConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "description": obj.get("description"),
-            "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "team_type": obj.get("team_type"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
             "selector_prompt": obj.get("selector_prompt"),
             "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
         })

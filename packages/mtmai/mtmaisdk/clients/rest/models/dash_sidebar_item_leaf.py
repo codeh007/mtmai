@@ -17,21 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-from mtmaisdk.clients.rest.models.team_types import TeamTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BaseTeamConfig(BaseModel):
+class DashSidebarItemLeaf(BaseModel):
     """
-    BaseTeamConfig
+    DashSidebarItemLeaf
     """ # noqa: E501
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[TeamTypes] = None
-    __properties: ClassVar[List[str]] = ["name", "participants", "team_type"]
+    title: StrictStr = Field(description="名称")
+    url: StrictStr = Field(description="url 例如/login")
+    icon: Optional[StrictStr] = Field(default=None, description="图标")
+    admin_only: Optional[StrictBool] = Field(default=None, description="只允许超级管理员查看", alias="adminOnly")
+    __properties: ClassVar[List[str]] = ["title", "url", "icon", "adminOnly"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +50,7 @@ class BaseTeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BaseTeamConfig from a JSON string"""
+        """Create an instance of DashSidebarItemLeaf from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,18 +71,11 @@ class BaseTeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BaseTeamConfig from a dict"""
+        """Create an instance of DashSidebarItemLeaf from a dict"""
         if obj is None:
             return None
 
@@ -91,9 +83,10 @@ class BaseTeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type")
+            "title": obj.get("title"),
+            "url": obj.get("url"),
+            "icon": obj.get("icon"),
+            "adminOnly": obj.get("adminOnly")
         })
         return _obj
 

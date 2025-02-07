@@ -122,6 +122,7 @@ from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import CronWorkf
 from mtmaisdk.clients.rest.models.custom_quick_action import CustomQuickAction
 from mtmaisdk.clients.rest.models.db_model import DBModel
 from mtmaisdk.clients.rest.models.dash_sidebar_item import DashSidebarItem
+from mtmaisdk.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
 from mtmaisdk.clients.rest.models.endpoint import Endpoint
 from mtmaisdk.clients.rest.models.endpoint_list import EndpointList
 from mtmaisdk.clients.rest.models.env import Env
