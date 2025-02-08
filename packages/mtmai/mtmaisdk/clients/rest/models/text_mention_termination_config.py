@@ -26,8 +26,8 @@ class TextMentionTerminationConfig(BaseModel):
     """
     TextMentionTerminationConfig
     """ # noqa: E501
-    provider: Optional[StrictStr] = Field(default=None, description="Describes how the component can be instantiated.")
-    component_type: Optional[StrictStr] = Field(default=None, description="Logical type of the component. If missing, the component assumes the default type of the provider.")
+    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
     version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
