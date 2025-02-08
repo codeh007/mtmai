@@ -17,13 +17,25 @@ from mtmai.worker import wfapp
 logger = logging.getLogger(__name__)
 
 
-async def run_stream(task: str):
+async def run_stream(hatctx: Context, task: str, team_id: str):
+    ctx: AgentContext = get_mtmai_context()
+
+    tenant_id = ctx.getTenantId()
+    team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
+        tenant=tenant_id, team=team_id
+    )
+    if team_data is None:
+        raise ValueError("team not found")
+
     team_builder = TeamBuilder()
-    agent = await team_builder.create_demo_agent_stream1()
+    # agent = await team_builder.create_demo_agent_stream1()
+
+    team_data.config.pop("version")
+    team = await team_builder.create_team(team_data.config)
     # team_runner = TeamRunner()
 
     # async for event in team_runner.run_stream(
-    async for event in agent.run_stream(
+    async for event in team.run_stream(
         task=task,
         # team_config=agent.dump_component()
     ):
@@ -66,7 +78,11 @@ class FlowAg:
         user_id = ctx.getUserId()
         if not user_id:
             raise ValueError("userId 不能为空")
+        team_id = input.team_id
+        if not team_id:
+            raise ValueError("teamId 不能为空")
         logger.info("当前租户: %s, 当前用户: %s", tenant_id, user_id)
+
         # 临时代码
         r = await hatctx.rest_client.aio.ag_events_api.ag_event_list(tenant=tenant_id)
         hatctx.log(r)
@@ -76,7 +92,7 @@ class FlowAg:
         if len(user_messages) == 0:
             raise ValueError("No messages provided")
         task = user_messages[-1].content
-        async for event in run_stream(task):
+        async for event in run_stream(ctx, task, team_id):
             hatctx.log(event)
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
                 tenant=tenant_id,

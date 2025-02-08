@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmaisdk.clients.rest.models.component_model import ComponentModel
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,8 +32,8 @@ class Team(BaseModel):
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
     version: Optional[StrictStr] = None
-    config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]
+    component: ComponentModel
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -76,6 +77,9 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of component
+        if self.component:
+            _dict['component'] = self.component.to_dict()
         return _dict
 
     @classmethod
@@ -92,7 +96,7 @@ class Team(BaseModel):
             "name": obj.get("name"),
             "userId": obj.get("userId"),
             "version": obj.get("version"),
-            "config": obj.get("config")
+            "component": ComponentModel.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 

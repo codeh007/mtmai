@@ -1,8 +1,12 @@
 import logging
+from pathlib import Path
+from typing import Callable, Optional, Union
 
 from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.base import Team
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_core import Component, ComponentModel
 from autogen_core.tools import FunctionTool
 
 from ..tools.calculator import web_search
@@ -61,3 +65,27 @@ class TeamBuilder:
             reflect_on_tool_use=True,  # Reflect on tool use.
         )
         return assistant
+
+    async def create_team(
+        self,
+        team_config: Union[str, Path, dict, ComponentModel],
+        input_func: Optional[Callable] = None,
+    ) -> Component:
+        """Create team instance from config"""
+        # Handle different input types
+        if isinstance(team_config, (str, Path)):
+            config = await self.load_from_file(team_config)
+        elif isinstance(team_config, dict):
+            config = team_config
+        else:
+            config = team_config.model_dump()
+
+        # Use Component.load_component directly
+        team = Team.load_component(config)
+
+        for agent in team._participants:
+            if hasattr(agent, "input_func"):
+                agent.input_func = input_func
+
+        # TBD - set input function
+        return team

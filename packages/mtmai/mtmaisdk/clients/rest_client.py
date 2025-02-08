@@ -51,6 +51,8 @@ from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import (
 )
 from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
+from .rest.api.teams_api import TeamsApi
+
 
 class AsyncRestApi:
     def __init__(self, host: str, api_key: str, tenant_id: str):
@@ -70,6 +72,7 @@ class AsyncRestApi:
         self._default_api = None
         self._llm_api = None
         self._ag_events_api = None
+        self._teams_api = None
 
     @property
     def api_client(self):
@@ -132,6 +135,12 @@ class AsyncRestApi:
         if self._ag_events_api is None:
             self._ag_events_api = AgEventsApi(self.api_client)
         return self._ag_events_api
+
+    @property
+    def teams_api(self):
+        if self._teams_api is None:
+            self._teams_api = TeamsApi(self.api_client)
+        return self._teams_api
 
     async def close(self):
         # Ensure the aiohttp client session is closed
@@ -439,4 +448,5 @@ class RestApi:
         )
 
     def events_replay(self, event_ids: list[str] | EventList) -> EventList:
+        return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))
