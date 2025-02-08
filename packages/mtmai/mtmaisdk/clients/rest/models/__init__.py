@@ -65,7 +65,6 @@ from mtmaisdk.clients.rest.models.assistant import Assistant
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmaisdk.clients.rest.models.assistant_base import AssistantBase
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
-from mtmaisdk.clients.rest.models.base_config import BaseConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_model_config import BaseModelConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState

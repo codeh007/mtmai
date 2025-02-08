@@ -30,7 +30,7 @@ async def run_stream(hatctx: Context, task: str, team_id: str):
     team_builder = TeamBuilder()
     # agent = await team_builder.create_demo_agent_stream1()
 
-    team_data.component.pop("version")
+    # team_data.component.pop("version")
     team = await team_builder.create_team(team_data.component)
     # team_runner = TeamRunner()
 
@@ -116,17 +116,19 @@ class FlowAg:
         hatctx.done()
         return {"result": "success"}
 
-    @wfapp.step(timeout="1m", retries=1, parents=["step_b"])
-    async def step_b_2(self, hatctx: Context):
-        hatctx.log("stepB2")
-        raise Exception("stepB2 error")
+    # @wfapp.step(timeout="1m", retries=1, parents=["step_b"])
+    # async def step_b_2(self, hatctx: Context):
+    #     hatctx.log("stepB2")
+    #     # raise Exception("stepB2 error")
+    #     return {"result": "success"}
 
-    @wfapp.step(timeout="1m", retries=1, parents=["step_b_2"])
-    async def step_b_3(self, hatctx: Context):
-        hatctx.log("stepB3")
-        raise Exception("stepB3 error")
+    # @wfapp.step(timeout="1m", retries=1, parents=["step_b_2"])
+    # async def step_b_3(self, hatctx: Context):
+    #     hatctx.log("stepB3")
+    #     # raise Exception("stepB3 error")
+    #     return {"result": "success"}
 
-    @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
-    async def step_c(self, hatctx: Context):
-        hatctx.log("stepC")
-        return {"result": "success"}
+    # @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
+    # async def step_c(self, hatctx: Context):
+    #     hatctx.log("stepC")
+    #     return {"result": "success"}

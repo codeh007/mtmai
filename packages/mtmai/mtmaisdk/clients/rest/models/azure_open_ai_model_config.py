@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,9 +26,13 @@ class AzureOpenAIModelConfig(BaseModel):
     """
     AzureOpenAIModelConfig
     """ # noqa: E501
-    component_type: StrictStr
-    version: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
+    provider: Optional[StrictStr] = Field(default=None, description="Describes how the component can be instantiated.")
+    component_type: Optional[StrictStr] = Field(default=None, description="Logical type of the component. If missing, the component assumes the default type of the provider.")
+    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
+    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    config: Optional[Dict[str, Any]] = Field(default=None, description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     model: StrictStr
     model_type: StrictStr
     api_key: Optional[StrictStr] = None
@@ -37,7 +41,7 @@ class AzureOpenAIModelConfig(BaseModel):
     api_version: StrictStr
     azure_endpoint: StrictStr
     azure_ad_token_provider: StrictStr
-    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "model", "model_type", "api_key", "base_url", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
 
     @field_validator('model_type')
     def model_type_validate_enum(cls, value):
@@ -97,9 +101,13 @@ class AzureOpenAIModelConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "provider": obj.get("provider"),
             "component_type": obj.get("component_type"),
             "version": obj.get("version"),
+            "component_version": obj.get("component_version"),
             "description": obj.get("description"),
+            "label": obj.get("label"),
+            "config": obj.get("config"),
             "model": obj.get("model"),
             "model_type": obj.get("model_type"),
             "api_key": obj.get("api_key"),
