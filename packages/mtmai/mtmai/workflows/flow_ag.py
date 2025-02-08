@@ -30,8 +30,8 @@ async def run_stream(hatctx: Context, task: str, team_id: str):
     team_builder = TeamBuilder()
     # agent = await team_builder.create_demo_agent_stream1()
 
-    team_data.config.pop("version")
-    team = await team_builder.create_team(team_data.config)
+    team_data.component.pop("version")
+    team = await team_builder.create_team(team_data.component)
     # team_runner = TeamRunner()
 
     # async for event in team_runner.run_stream(

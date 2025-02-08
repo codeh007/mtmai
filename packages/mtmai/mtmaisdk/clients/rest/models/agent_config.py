@@ -13,167 +13,103 @@
 
 
 from __future__ import annotations
-import json
 import pprint
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
-from mtmaisdk.clients.rest.models.file_surfer_agent_config import FileSurferAgentConfig
-from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
-from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
-from mtmaisdk.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
-from pydantic import StrictStr, Field
-from typing import Union, List, Set, Optional, Dict
-from typing_extensions import Literal, Self
+import re  # noqa: F401
+import json
 
-AGENTCONFIG_ONE_OF_SCHEMAS = ["AssistantAgentConfig", "FileSurferAgentConfig", "MagenticOneCoderAgentConfig", "MultimodalWebSurferAgentConfig", "UserProxyAgentConfig"]
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.agent_types import AgentTypes
+from mtmaisdk.clients.rest.models.tool_config import ToolConfig
+from typing import Optional, Set
+from typing_extensions import Self
 
 class AgentConfig(BaseModel):
     """
     AgentConfig
-    """
-    # data type: AssistantAgentConfig
-    oneof_schema_1_validator: Optional[AssistantAgentConfig] = None
-    # data type: UserProxyAgentConfig
-    oneof_schema_2_validator: Optional[UserProxyAgentConfig] = None
-    # data type: MultimodalWebSurferAgentConfig
-    oneof_schema_3_validator: Optional[MultimodalWebSurferAgentConfig] = None
-    # data type: FileSurferAgentConfig
-    oneof_schema_4_validator: Optional[FileSurferAgentConfig] = None
-    # data type: MagenticOneCoderAgentConfig
-    oneof_schema_5_validator: Optional[MagenticOneCoderAgentConfig] = None
-    actual_instance: Optional[Union[AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig]] = None
-    one_of_schemas: Set[str] = { "AssistantAgentConfig", "FileSurferAgentConfig", "MagenticOneCoderAgentConfig", "MultimodalWebSurferAgentConfig", "UserProxyAgentConfig" }
+    """ # noqa: E501
+    component_type: StrictStr
+    version: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
+    name: StrictStr
+    agent_type: StrictStr
+    system_message: Optional[StrictStr] = None
+    model_client: Optional[Any] = None
+    tools: Optional[List[ToolConfig]] = None
+    __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
 
     model_config = ConfigDict(
+        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    def __init__(self, *args, **kwargs) -> None:
-        if args:
-            if len(args) > 1:
-                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
-            if kwargs:
-                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
-            super().__init__(actual_instance=args[0])
-        else:
-            super().__init__(**kwargs)
-
-    @field_validator('actual_instance')
-    def actual_instance_must_validate_oneof(cls, v):
-        instance = AgentConfig.model_construct()
-        error_messages = []
-        match = 0
-        # validate data type: AssistantAgentConfig
-        if not isinstance(v, AssistantAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentConfig`")
-        else:
-            match += 1
-        # validate data type: UserProxyAgentConfig
-        if not isinstance(v, UserProxyAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `UserProxyAgentConfig`")
-        else:
-            match += 1
-        # validate data type: MultimodalWebSurferAgentConfig
-        if not isinstance(v, MultimodalWebSurferAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MultimodalWebSurferAgentConfig`")
-        else:
-            match += 1
-        # validate data type: FileSurferAgentConfig
-        if not isinstance(v, FileSurferAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `FileSurferAgentConfig`")
-        else:
-            match += 1
-        # validate data type: MagenticOneCoderAgentConfig
-        if not isinstance(v, MagenticOneCoderAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MagenticOneCoderAgentConfig`")
-        else:
-            match += 1
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
-        else:
-            return v
-
-    @classmethod
-    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
-        return cls.from_json(json.dumps(obj))
-
-    @classmethod
-    def from_json(cls, json_str: str) -> Self:
-        """Returns the object represented by the json string"""
-        instance = cls.model_construct()
-        error_messages = []
-        match = 0
-
-        # deserialize data into AssistantAgentConfig
-        try:
-            instance.actual_instance = AssistantAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into UserProxyAgentConfig
-        try:
-            instance.actual_instance = UserProxyAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into MultimodalWebSurferAgentConfig
-        try:
-            instance.actual_instance = MultimodalWebSurferAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into FileSurferAgentConfig
-        try:
-            instance.actual_instance = FileSurferAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into MagenticOneCoderAgentConfig
-        try:
-            instance.actual_instance = MagenticOneCoderAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentConfig with oneOf schemas: AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig. Details: " + ", ".join(error_messages))
-        else:
-            return instance
+    def to_str(self) -> str:
+        """Returns the string representation of the model using alias"""
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the actual instance"""
-        if self.actual_instance is None:
-            return "null"
+        """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
+        return json.dumps(self.to_dict())
 
-        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
-            return self.actual_instance.to_json()
-        else:
-            return json.dumps(self.actual_instance)
+    @classmethod
+    def from_json(cls, json_str: str) -> Optional[Self]:
+        """Create an instance of AgentConfig from a JSON string"""
+        return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentConfig, FileSurferAgentConfig, MagenticOneCoderAgentConfig, MultimodalWebSurferAgentConfig, UserProxyAgentConfig]]:
-        """Returns the dict representation of the actual instance"""
-        if self.actual_instance is None:
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([
+        ])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
+        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
+        _items = []
+        if self.tools:
+            for _item_tools in self.tools:
+                if _item_tools:
+                    _items.append(_item_tools.to_dict())
+            _dict['tools'] = _items
+        # set to None if model_client (nullable) is None
+        # and model_fields_set contains the field
+        if self.model_client is None and "model_client" in self.model_fields_set:
+            _dict['model_client'] = None
+
+        return _dict
+
+    @classmethod
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+        """Create an instance of AgentConfig from a dict"""
+        if obj is None:
             return None
 
-        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
-            return self.actual_instance.to_dict()
-        else:
-            # primitive type
-            return self.actual_instance
+        if not isinstance(obj, dict):
+            return cls.model_validate(obj)
 
-    def to_str(self) -> str:
-        """Returns the string representation of the actual instance"""
-        return pprint.pformat(self.model_dump())
+        _obj = cls.model_validate({
+            "component_type": obj.get("component_type"),
+            "version": obj.get("version"),
+            "description": obj.get("description"),
+            "name": obj.get("name"),
+            "agent_type": obj.get("agent_type"),
+            "system_message": obj.get("system_message"),
+            "model_client": obj.get("model_client"),
+            "tools": [ToolConfig.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None
+        })
+        return _obj
 
 

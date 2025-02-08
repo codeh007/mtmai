@@ -17,8 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.agent_types import AgentTypes
 from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,20 +30,13 @@ class AssistantAgentConfig(BaseModel):
     """ # noqa: E501
     component_type: StrictStr
     version: Optional[StrictStr] = None
-    description: StrictStr
+    description: Optional[StrictStr] = None
     name: StrictStr
-    agent_type: StrictStr
+    agent_type: AgentTypes
     system_message: Optional[StrictStr] = None
-    model_client: Optional[Any]
-    tools: List[ToolConfig]
+    model_client: Optional[Any] = None
+    tools: Optional[List[ToolConfig]] = None
     __properties: ClassVar[List[str]] = ["component_type", "version", "description", "name", "agent_type", "system_message", "model_client", "tools"]
-
-    @field_validator('agent_type')
-    def agent_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['AssistantAgent']):
-            raise ValueError("must be one of enum values ('AssistantAgent')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

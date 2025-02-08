@@ -124,7 +124,6 @@ from mtmaisdk.clients.rest.models.assistant import Assistant
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmaisdk.clients.rest.models.assistant_base import AssistantBase
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
-from mtmaisdk.clients.rest.models.base_agent_config import BaseAgentConfig
 from mtmaisdk.clients.rest.models.base_config import BaseConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_model_config import BaseModelConfig
@@ -200,7 +199,6 @@ from mtmaisdk.clients.rest.models.event_types import EventTypes
 from mtmaisdk.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
 from mtmaisdk.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
-from mtmaisdk.clients.rest.models.file_surfer_agent_config import FileSurferAgentConfig
 from mtmaisdk.clients.rest.models.form_field import FormField
 from mtmaisdk.clients.rest.models.frontend_config import FrontendConfig
 from mtmaisdk.clients.rest.models.function_call import FunctionCall
@@ -233,7 +231,6 @@ from mtmaisdk.clients.rest.models.log_line_level import LogLineLevel
 from mtmaisdk.clients.rest.models.log_line_list import LogLineList
 from mtmaisdk.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByField
-from mtmaisdk.clients.rest.models.magentic_one_coder_agent_config import MagenticOneCoderAgentConfig
 from mtmaisdk.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmaisdk.clients.rest.models.message_v2 import MessageV2
 from mtmaisdk.clients.rest.models.model import Model
@@ -246,7 +243,6 @@ from mtmaisdk.clients.rest.models.model_types import ModelTypes
 from mtmaisdk.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
 from mtmaisdk.clients.rest.models.multi_modal_message_config_all_of_content import MultiModalMessageConfigAllOfContent
-from mtmaisdk.clients.rest.models.multimodal_web_surfer_agent_config import MultimodalWebSurferAgentConfig
 from mtmaisdk.clients.rest.models.node_run_action import NodeRunAction
 from mtmaisdk.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmaisdk.clients.rest.models.operataion_guide_response import OperataionGuideResponse
@@ -376,7 +372,6 @@ from mtmaisdk.clients.rest.models.update_worker_request import UpdateWorkerReque
 from mtmaisdk.clients.rest.models.user import User
 from mtmaisdk.clients.rest.models.user_change_password_request import UserChangePasswordRequest
 from mtmaisdk.clients.rest.models.user_login_request import UserLoginRequest
-from mtmaisdk.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 from mtmaisdk.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmaisdk.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmaisdk.clients.rest.models.user_tenant_public import UserTenantPublic
