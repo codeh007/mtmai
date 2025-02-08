@@ -32,9 +32,10 @@ class AgentNodeRunInput(BaseModel):
     flow_name: Optional[StrictStr] = Field(default=None, alias="flowName")
     runner: Optional[StrictStr] = Field(default=None, description="运行器名称(对应 autogent 的 angent 入口名称)")
     node_id: Optional[StrictStr] = Field(default=None, description="agent 节点ID(threadId)", alias="nodeId")
+    team_id: Optional[StrictStr] = Field(default=None, description="团队ID", alias="teamId")
     is_stream: Optional[StrictBool] = Field(default=None, description="是否使用stream 传输事件", alias="isStream")
     params: Optional[AgentNodeRunInputParams] = None
-    __properties: ClassVar[List[str]] = ["messages", "flowName", "runner", "nodeId", "isStream", "params"]
+    __properties: ClassVar[List[str]] = ["messages", "flowName", "runner", "nodeId", "teamId", "isStream", "params"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -101,6 +102,7 @@ class AgentNodeRunInput(BaseModel):
             "flowName": obj.get("flowName"),
             "runner": obj.get("runner"),
             "nodeId": obj.get("nodeId"),
+            "teamId": obj.get("teamId"),
             "isStream": obj.get("isStream"),
             "params": AgentNodeRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None
         })
