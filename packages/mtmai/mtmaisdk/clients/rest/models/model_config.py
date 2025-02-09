@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from typing import Optional, Set
@@ -48,16 +48,6 @@ class ModelConfig(BaseModel):
     default_headers: Optional[Dict[str, Any]] = None
     model_info: Optional[ModelInfo] = None
     __properties: ClassVar[List[str]] = ["model", "model_type", "api_key", "base_url", "timeout", "max_retries", "frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "organization", "default_headers", "model_info"]
-
-    @field_validator('response_format')
-    def response_format_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['json_object', 'text']):
-            raise ValueError("must be one of enum values ('json_object', 'text')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

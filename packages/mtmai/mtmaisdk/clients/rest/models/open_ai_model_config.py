@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
+from mtmaisdk.clients.rest.models.response_format import ResponseFormat
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -54,16 +55,6 @@ class OpenAIModelConfig(BaseModel):
         """Validates the enum"""
         if value not in set(['OpenAIChatCompletionClient']):
             raise ValueError("must be one of enum values ('OpenAIChatCompletionClient')")
-        return value
-
-    @field_validator('response_format')
-    def response_format_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['json_object', 'text']):
-            raise ValueError("must be one of enum values ('json_object', 'text')")
         return value
 
     model_config = ConfigDict(
