@@ -36,8 +36,8 @@ class AgentConfig(BaseModel):
     model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
     model_client: Dict[str, Any]
-    tools: Optional[List[ToolComponent]] = None
-    handoffs: Optional[List[StrictStr]] = None
+    tools: List[ToolComponent]
+    handoffs: List[StrictStr]
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr
     __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
@@ -118,8 +118,8 @@ class AgentConfig(BaseModel):
             "model_client": ModelComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
             "tools": [ToolComponent.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
             "handoffs": obj.get("handoffs"),
-            "reflect_on_tool_use": obj.get("reflect_on_tool_use"),
-            "tool_call_summary_format": obj.get("tool_call_summary_format")
+            "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
+            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'
         })
         return _obj
 
