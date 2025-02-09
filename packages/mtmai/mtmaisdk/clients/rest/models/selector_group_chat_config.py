@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.component_types import ComponentTypes
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from typing import Optional, Set
 from typing_extensions import Self

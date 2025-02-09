@@ -147,6 +147,7 @@ from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
 from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.common_result import CommonResult
 from mtmaisdk.clients.rest.models.component_model import ComponentModel
+from mtmaisdk.clients.rest.models.component_types import ComponentTypes
 from mtmaisdk.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmaisdk.clients.rest.models.create_api_token_response import CreateAPITokenResponse
 from mtmaisdk.clients.rest.models.create_artifactt_request import CreateArtifacttRequest

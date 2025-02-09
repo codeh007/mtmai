@@ -19,6 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.component_types import ComponentTypes
+from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -37,11 +39,12 @@ class AzureOpenAIModelConfig(BaseModel):
     model_type: StrictStr
     api_key: Optional[StrictStr] = None
     base_url: Optional[StrictStr] = None
+    model_info: Optional[ModelInfo] = None
     azure_deployment: StrictStr
     api_version: StrictStr
     azure_endpoint: StrictStr
     azure_ad_token_provider: StrictStr
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url", "model_info", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
 
     @field_validator('model_type')
     def model_type_validate_enum(cls, value):
@@ -89,6 +92,9 @@ class AzureOpenAIModelConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of model_info
+        if self.model_info:
+            _dict['model_info'] = self.model_info.to_dict()
         return _dict
 
     @classmethod
@@ -112,6 +118,7 @@ class AzureOpenAIModelConfig(BaseModel):
             "model_type": obj.get("model_type"),
             "api_key": obj.get("api_key"),
             "base_url": obj.get("base_url"),
+            "model_info": ModelInfo.from_dict(obj["model_info"]) if obj.get("model_info") is not None else None,
             "azure_deployment": obj.get("azure_deployment"),
             "api_version": obj.get("api_version"),
             "azure_endpoint": obj.get("azure_endpoint"),

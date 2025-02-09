@@ -19,6 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.component_types import ComponentTypes
+from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -37,7 +39,8 @@ class OpenAIModelConfig(BaseModel):
     model_type: StrictStr
     api_key: Optional[StrictStr] = None
     base_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url"]
+    model_info: Optional[ModelInfo] = None
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url", "model_info"]
 
     @field_validator('model_type')
     def model_type_validate_enum(cls, value):
@@ -85,6 +88,9 @@ class OpenAIModelConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of model_info
+        if self.model_info:
+            _dict['model_info'] = self.model_info.to_dict()
         return _dict
 
     @classmethod
@@ -107,7 +113,8 @@ class OpenAIModelConfig(BaseModel):
             "model": obj.get("model"),
             "model_type": obj.get("model_type"),
             "api_key": obj.get("api_key"),
-            "base_url": obj.get("base_url")
+            "base_url": obj.get("base_url"),
+            "model_info": ModelInfo.from_dict(obj["model_info"]) if obj.get("model_info") is not None else None
         })
         return _obj
 

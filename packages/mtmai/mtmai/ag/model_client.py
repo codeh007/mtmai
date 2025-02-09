@@ -6,9 +6,6 @@ from autogen_ext.models.openai.config import (
     OpenAIClientConfigurationConfigModel,
 )
 
-# from json_repair import repair_json
-# from loguru import logger
-
 
 class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
     """

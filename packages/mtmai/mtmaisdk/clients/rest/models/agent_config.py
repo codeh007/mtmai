@@ -105,7 +105,7 @@ class AgentConfig(BaseModel):
             "name": obj.get("name"),
             "description": obj.get("description"),
             "agent_type": obj.get("agent_type"),
-            "model_client_stream": obj.get("model_client_stream"),
+            "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
             "model_client": obj.get("model_client"),
             "tools": [ToolComponent.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
