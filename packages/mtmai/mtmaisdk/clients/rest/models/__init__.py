@@ -57,7 +57,6 @@ from mtmaisdk.clients.rest.models.artifact_tool_response import ArtifactToolResp
 from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmaisdk.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
-from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState

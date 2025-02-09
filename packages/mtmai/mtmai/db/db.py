@@ -52,9 +52,6 @@ def get_engine():
     )
 
 
-# engine = get_engine()
-
-
 # 全局连接池对象
 pool: AsyncConnectionPool | None = None
 

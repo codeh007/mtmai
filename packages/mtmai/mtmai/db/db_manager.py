@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import Optional, Union
 
 from loguru import logger
+from mtmaisdk.clients.rest.models.team import Team
 from sqlalchemy import exc, inspect, text
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
-from ..models.ag import Response
-from ..models.ag_db import Team
+from mtmai.models.ag import Response
+
 from ..teammanager import TeamManager
-from .schema_manager import SchemaManager
 
 
 class DatabaseManager:
@@ -28,10 +28,10 @@ class DatabaseManager:
         connection_args = {"check_same_thread": True} if "sqlite" in engine_uri else {}
 
         self.engine = create_engine(engine_uri, connect_args=connection_args)
-        self.schema_manager = SchemaManager(
-            engine=self.engine,
-            base_dir=base_dir,
-        )
+        # self.schema_manager = SchemaManager(
+        #     engine=self.engine,
+        #     base_dir=base_dir,
+        # )
 
     def initialize_database(
         self, auto_upgrade: bool = False, force_init_alembic: bool = True

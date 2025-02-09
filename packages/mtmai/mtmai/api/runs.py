@@ -1,12 +1,9 @@
 # /api/runs routes
-from typing import Dict
-from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ..deps import get_db
-from ..models.ag_db import Message, Run
+# from ..deps import get_db
 
 router = APIRouter()
 
@@ -49,21 +46,21 @@ class CreateRunRequest(BaseModel):
 # We might want to add these endpoints:
 
 
-@router.get("/{run_id}")
-async def get_run(run_id: UUID, db=Depends(get_db)) -> Dict:
-    """Get run details including task and result"""
-    run = db.get(Run, filters={"id": run_id}, return_json=False)
-    if not run.status or not run.data:
-        raise HTTPException(status_code=404, detail="Run not found")
+# @router.get("/{run_id}")
+# async def get_run(run_id: UUID, db=Depends(get_db)) -> Dict:
+#     """Get run details including task and result"""
+#     run = db.get(Run, filters={"id": run_id}, return_json=False)
+#     if not run.status or not run.data:
+#         raise HTTPException(status_code=404, detail="Run not found")
 
-    return {"status": True, "data": run.data[0]}
+#     return {"status": True, "data": run.data[0]}
 
 
-@router.get("/{run_id}/messages")
-async def get_run_messages(run_id: UUID, db=Depends(get_db)) -> Dict:
-    """Get all messages for a run"""
-    messages = db.get(
-        Message, filters={"run_id": run_id}, order="created_at asc", return_json=False
-    )
+# @router.get("/{run_id}/messages")
+# async def get_run_messages(run_id: UUID, db=Depends(get_db)) -> Dict:
+#     """Get all messages for a run"""
+#     messages = db.get(
+#         Message, filters={"run_id": run_id}, order="created_at asc", return_json=False
+#     )
 
-    return {"status": True, "data": messages.data}
+#     return {"status": True, "data": messages.data}

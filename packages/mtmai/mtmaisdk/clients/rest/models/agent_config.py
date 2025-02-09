@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_types import AgentTypes
 from mtmaisdk.clients.rest.models.tool_component import ToolComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,22 +27,17 @@ class AgentConfig(BaseModel):
     """
     AgentConfig
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
-    description: Optional[StrictStr] = None
-    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     name: StrictStr
+    description: Optional[StrictStr] = None
     agent_type: StrictStr
+    model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
     model_client: Optional[Any] = None
     tools: Optional[List[ToolComponent]] = None
     handoffs: Optional[List[StrictStr]] = None
     reflect_on_tool_use: Optional[StrictBool] = None
     tool_call_summary_format: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "name", "agent_type", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
+    __properties: ClassVar[List[str]] = ["name", "description", "agent_type", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -108,15 +102,10 @@ class AgentConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config"),
             "name": obj.get("name"),
+            "description": obj.get("description"),
             "agent_type": obj.get("agent_type"),
+            "model_client_stream": obj.get("model_client_stream"),
             "system_message": obj.get("system_message"),
             "model_client": obj.get("model_client"),
             "tools": [ToolComponent.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,

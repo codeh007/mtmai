@@ -10,10 +10,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from mtmai.core.config import HEADER_SITE_HOST, settings
 from mtmai.crud.curd_site import get_site_domain
 from mtmai.db.db import get_async_engine, get_checkpointer
+from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
 from mtmai.models.site import Site
 
-from .database import DatabaseManager
 from .teammanager import TeamManager
 
 # from .ws_connection import WebSocketManager
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 # Global manager instances
-_db_manager: Optional[DatabaseManager] = None
+# _db_manager: Optional[DatabaseManager] = None
 # _websocket_manager: Optional[WebSocketManager] = None
 _team_manager: Optional[TeamManager] = None
 
