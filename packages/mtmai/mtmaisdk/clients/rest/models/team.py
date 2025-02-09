@@ -20,7 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.team_config import TeamConfig
+from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,9 +32,8 @@ class Team(BaseModel):
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
     version: Optional[StrictStr] = None
-    config: Optional[TeamConfig] = None
-    component: TeamConfig
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config", "component"]
+    component: TeamComponent
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -78,9 +77,6 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         # override the default output from pydantic by calling `to_dict()` of component
         if self.component:
             _dict['component'] = self.component.to_dict()
@@ -100,8 +96,7 @@ class Team(BaseModel):
             "name": obj.get("name"),
             "userId": obj.get("userId"),
             "version": obj.get("version"),
-            "config": TeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
-            "component": TeamConfig.from_dict(obj["component"]) if obj.get("component") is not None else None
+            "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 

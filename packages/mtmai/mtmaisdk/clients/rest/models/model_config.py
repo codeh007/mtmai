@@ -27,11 +27,12 @@ class ModelConfig(BaseModel):
     """
     ModelConfig
     """ # noqa: E501
+    model: StrictStr
     temperature: Optional[Union[StrictFloat, StrictInt]] = None
     model_provider: Optional[StrictStr] = Field(default=None, alias="modelProvider")
     max_tokens: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, alias="maxTokens")
     azure_config: Optional[ModelConfigAzureConfig] = Field(default=None, alias="azureConfig")
-    __properties: ClassVar[List[str]] = ["temperature", "modelProvider", "maxTokens", "azureConfig"]
+    __properties: ClassVar[List[str]] = ["model", "temperature", "modelProvider", "maxTokens", "azureConfig"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,6 +88,7 @@ class ModelConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "model": obj.get("model"),
             "temperature": obj.get("temperature"),
             "modelProvider": obj.get("modelProvider"),
             "maxTokens": obj.get("maxTokens"),

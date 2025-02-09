@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,7 +33,7 @@ class CombinationTerminationConfig(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Optional[Dict[str, Any]] = Field(default=None, description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
+    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     termination_type: StrictStr
     operator: StrictStr
     conditions: List[TerminationConfig]
@@ -123,7 +124,4 @@ class CombinationTerminationConfig(BaseModel):
         })
         return _obj
 
-from mtmaisdk.clients.rest.models.termination_config import TerminationConfig
-# TODO: Rewrite to not use raise_errors
-CombinationTerminationConfig.model_rebuild(raise_errors=False)
 

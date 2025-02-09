@@ -17,10 +17,10 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_config import AgentConfig
-from mtmaisdk.clients.rest.models.team_types import TeamTypes
+from mtmaisdk.clients.rest.models.agent_component import AgentComponent
+from mtmaisdk.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,17 +28,10 @@ class TeamConfig(BaseModel):
     """
     TeamConfig
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
-    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Optional[Dict[str, Any]] = Field(default=None, description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
-    name: Optional[StrictStr] = None
-    participants: Optional[List[AgentConfig]] = None
-    team_type: Optional[TeamTypes] = None
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "name", "participants", "team_type"]
+    max_turns: Optional[StrictInt] = None
+    participants: Optional[List[AgentComponent]] = None
+    termination_condition: Optional[TerminationComponent] = None
+    __properties: ClassVar[List[str]] = ["max_turns", "participants", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -86,6 +79,9 @@ class TeamConfig(BaseModel):
                 if _item_participants:
                     _items.append(_item_participants.to_dict())
             _dict['participants'] = _items
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
@@ -98,16 +94,9 @@ class TeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config"),
-            "name": obj.get("name"),
-            "participants": [AgentConfig.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "team_type": obj.get("team_type")
+            "max_turns": obj.get("max_turns"),
+            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

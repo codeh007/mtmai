@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from typing import Optional, Set
@@ -27,10 +27,17 @@ class SelectorGroupChatConfig(BaseModel):
     """
     SelectorGroupChatConfig
     """ # noqa: E501
+    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
+    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
+    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     team_type: Optional[StrictStr] = None
     selector_prompt: Optional[StrictStr] = None
     model_client: Optional[ModelConfig] = None
-    __properties: ClassVar[List[str]] = ["team_type", "selector_prompt", "model_client"]
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "team_type", "selector_prompt", "model_client"]
 
     @field_validator('team_type')
     def team_type_validate_enum(cls, value):
@@ -96,6 +103,13 @@ class SelectorGroupChatConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "provider": obj.get("provider"),
+            "component_type": obj.get("component_type"),
+            "version": obj.get("version"),
+            "component_version": obj.get("component_version"),
+            "description": obj.get("description"),
+            "label": obj.get("label"),
+            "config": obj.get("config"),
             "team_type": obj.get("team_type"),
             "selector_prompt": obj.get("selector_prompt"),
             "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
