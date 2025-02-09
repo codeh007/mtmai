@@ -30,6 +30,7 @@ class EventTypes(str, Enum):
     WORKFLOWRUNEND = 'WorkflowRunEnd'
     STEPRUN = 'StepRun'
     TEXTMESSAGE = 'TextMessage'
+    MODELCLIENTSTREAMINGCHUNKEVENT = 'ModelClientStreamingChunkEvent'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
