@@ -17,9 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional, Union
-from mtmaisdk.clients.rest.models.model_config_azure_config import ModelConfigAzureConfig
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.model_types import ModelTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,12 +27,18 @@ class ModelConfig(BaseModel):
     """
     ModelConfig
     """ # noqa: E501
+    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
+    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
+    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     model: StrictStr
-    temperature: Optional[Union[StrictFloat, StrictInt]] = None
-    model_provider: Optional[StrictStr] = Field(default=None, alias="modelProvider")
-    max_tokens: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, alias="maxTokens")
-    azure_config: Optional[ModelConfigAzureConfig] = Field(default=None, alias="azureConfig")
-    __properties: ClassVar[List[str]] = ["model", "temperature", "modelProvider", "maxTokens", "azureConfig"]
+    model_type: StrictStr
+    api_key: Optional[StrictStr] = None
+    base_url: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,9 +79,6 @@ class ModelConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of azure_config
-        if self.azure_config:
-            _dict['azureConfig'] = self.azure_config.to_dict()
         return _dict
 
     @classmethod
@@ -88,11 +91,17 @@ class ModelConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "provider": obj.get("provider"),
+            "component_type": obj.get("component_type"),
+            "version": obj.get("version"),
+            "component_version": obj.get("component_version"),
+            "description": obj.get("description"),
+            "label": obj.get("label"),
+            "config": obj.get("config"),
             "model": obj.get("model"),
-            "temperature": obj.get("temperature"),
-            "modelProvider": obj.get("modelProvider"),
-            "maxTokens": obj.get("maxTokens"),
-            "azureConfig": ModelConfigAzureConfig.from_dict(obj["azureConfig"]) if obj.get("azureConfig") is not None else None
+            "model_type": obj.get("model_type"),
+            "api_key": obj.get("api_key"),
+            "base_url": obj.get("base_url")
         })
         return _obj
 

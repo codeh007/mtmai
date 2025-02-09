@@ -67,7 +67,6 @@ from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentCo
 from mtmaisdk.clients.rest.models.assistant_base import AssistantBase
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
-from mtmaisdk.clients.rest.models.base_model_config import BaseModelConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState
 from mtmaisdk.clients.rest.models.blog import Blog
 from mtmaisdk.clients.rest.models.blog_config import BlogConfig
@@ -173,8 +172,6 @@ from mtmaisdk.clients.rest.models.max_message_termination_config_component impor
 from mtmaisdk.clients.rest.models.model import Model
 from mtmaisdk.clients.rest.models.model_component import ModelComponent
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
-from mtmaisdk.clients.rest.models.model_config_azure_config import ModelConfigAzureConfig
-from mtmaisdk.clients.rest.models.model_config_v2 import ModelConfigV2
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from mtmaisdk.clients.rest.models.model_list import ModelList
 from mtmaisdk.clients.rest.models.model_types import ModelTypes
@@ -319,7 +316,6 @@ from mtmaisdk.clients.rest.models.user_register_request import UserRegisterReque
 from mtmaisdk.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmaisdk.clients.rest.models.user_tenant_public import UserTenantPublic
 from mtmaisdk.clients.rest.models.web_search_result import WebSearchResult
-from mtmaisdk.clients.rest.models.web_socket_message import WebSocketMessage
 from mtmaisdk.clients.rest.models.webhook_worker import WebhookWorker
 from mtmaisdk.clients.rest.models.webhook_worker_create_request import WebhookWorkerCreateRequest
 from mtmaisdk.clients.rest.models.webhook_worker_create_response import WebhookWorkerCreateResponse
