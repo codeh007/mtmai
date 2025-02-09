@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.component_types import ComponentTypes
+from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -33,7 +34,7 @@ class ModelComponent(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Optional[Any]
+    config: ModelConfig
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     model_config = ConfigDict(
@@ -75,11 +76,9 @@ class ModelComponent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if config (nullable) is None
-        # and model_fields_set contains the field
-        if self.config is None and "config" in self.model_fields_set:
-            _dict['config'] = None
-
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -98,7 +97,7 @@ class ModelComponent(BaseModel):
             "component_version": obj.get("component_version"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": obj.get("config")
+            "config": ModelConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

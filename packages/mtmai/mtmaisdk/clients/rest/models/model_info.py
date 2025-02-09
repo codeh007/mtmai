@@ -17,20 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool
 from typing import Any, ClassVar, Dict, List
+from mtmaisdk.clients.rest.models.model_family import ModelFamily
 from typing import Optional, Set
 from typing_extensions import Self
 
 class ModelInfo(BaseModel):
     """
-    model info
+    ModelInfo
     """ # noqa: E501
-    vision: StrictBool = Field(description="True if the model supports vision, aka image input, otherwise False.")
-    function_calling: StrictBool = Field(description="True if the model supports function calling, otherwise False.")
-    json_output: StrictBool = Field(description="True if the model supports json output, otherwise False. Note: this is different to structured json.")
-    family: StrictStr = Field(description="Model family should be one of the constants from :py:class:`ModelFamily` or a string representing an unknown model family.")
-    __properties: ClassVar[List[str]] = ["vision", "function_calling", "json_output", "family"]
+    family: ModelFamily
+    vision: StrictBool
+    function_calling: StrictBool
+    json_output: StrictBool
+    __properties: ClassVar[List[str]] = ["family", "vision", "function_calling", "json_output"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,10 +84,10 @@ class ModelInfo(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "family": obj.get("family"),
             "vision": obj.get("vision"),
             "function_calling": obj.get("function_calling"),
-            "json_output": obj.get("json_output"),
-            "family": obj.get("family") if obj.get("family") is not None else 'unknown'
+            "json_output": obj.get("json_output")
         })
         return _obj
 

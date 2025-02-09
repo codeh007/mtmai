@@ -29,7 +29,7 @@ class MultiModalMessageConfig(BaseModel):
     MultiModalMessageConfig
     """ # noqa: E501
     source: Optional[StrictStr] = None
-    models_usage: Optional[Dict[str, Any]] = None
+    models_usage: Optional[RequestUsage] = None
     content: Optional[List[MultiModalMessageConfigAllOfContent]] = None
     __properties: ClassVar[List[str]] = ["source", "models_usage", "content"]
 

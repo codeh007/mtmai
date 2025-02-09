@@ -28,7 +28,7 @@ class HandoffMessageConfig(BaseModel):
     HandoffMessageConfig
     """ # noqa: E501
     source: Optional[StrictStr] = None
-    models_usage: Optional[Dict[str, Any]] = None
+    models_usage: Optional[RequestUsage] = None
     content: StrictStr
     target: StrictStr
     __properties: ClassVar[List[str]] = ["source", "models_usage", "content", "target"]

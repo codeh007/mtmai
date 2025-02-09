@@ -18,22 +18,21 @@ from enum import Enum
 from typing_extensions import Self
 
 
-class TerminationTypes(str, Enum):
+class ModelFamily(str, Enum):
     """
-    TerminationTypes
+    ModelFamily
     """
 
     """
     allowed enum values
     """
-    MAXMESSAGETERMINATION = 'MaxMessageTermination'
-    STOPMESSAGETERMINATION = 'StopMessageTermination'
-    TEXTMENTIONTERMINATION = 'TextMentionTermination'
-    TIMEOUTTERMINATION = 'TimeoutTermination'
+    R1 = 'r1'
+    OPENAI = 'openai'
+    UNKNOWN = 'unknown'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
-        """Create an instance of TerminationTypes from a JSON string"""
+        """Create an instance of ModelFamily from a JSON string"""
         return cls(json.loads(json_str))
 
 

@@ -29,7 +29,7 @@ class ToolCallResultMessageConfig(BaseModel):
     ToolCallResultMessageConfig
     """ # noqa: E501
     source: Optional[StrictStr] = None
-    models_usage: Optional[Dict[str, Any]] = None
+    models_usage: Optional[RequestUsage] = None
     content: List[FunctionExecutionResult]
     __properties: ClassVar[List[str]] = ["source", "models_usage", "content"]
 

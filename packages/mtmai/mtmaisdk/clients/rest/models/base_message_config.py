@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.request_usage import RequestUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +28,7 @@ class BaseMessageConfig(BaseModel):
     BaseMessageConfig
     """ # noqa: E501
     source: Optional[StrictStr] = None
-    models_usage: Optional[Dict[str, Any]] = None
+    models_usage: Optional[RequestUsage] = None
     __properties: ClassVar[List[str]] = ["source", "models_usage"]
 
     model_config = ConfigDict(

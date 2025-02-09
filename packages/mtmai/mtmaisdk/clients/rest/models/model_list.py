@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.model import Model
+from mtmaisdk.clients.rest.models.model_component import ModelComponent
 from mtmaisdk.clients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,7 +29,7 @@ class ModelList(BaseModel):
     ModelList
     """ # noqa: E501
     pagination: Optional[PaginationResponse] = None
-    rows: Optional[List[Model]] = None
+    rows: Optional[List[ModelComponent]] = None
     __properties: ClassVar[List[str]] = ["pagination", "rows"]
 
     model_config = ConfigDict(
@@ -94,7 +94,7 @@ class ModelList(BaseModel):
 
         _obj = cls.model_validate({
             "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
-            "rows": [Model.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
+            "rows": [ModelComponent.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
         })
         return _obj
 

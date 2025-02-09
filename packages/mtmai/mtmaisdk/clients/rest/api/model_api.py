@@ -18,7 +18,7 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmaisdk.clients.rest.models.model import Model
+from mtmaisdk.clients.rest.models.model_component import ModelComponent
 from mtmaisdk.clients.rest.models.model_list import ModelList
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
@@ -55,7 +55,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
+    ) -> ModelComponent:
         """model_create
 
         大语言模型配置
@@ -93,7 +93,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -124,7 +124,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
+    ) -> ApiResponse[ModelComponent]:
         """model_create
 
         大语言模型配置
@@ -162,7 +162,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -231,7 +231,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -325,7 +325,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
+    ) -> ModelComponent:
         """model_get
 
 
@@ -365,7 +365,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -395,7 +395,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
+    ) -> ApiResponse[ModelComponent]:
         """model_get
 
 
@@ -435,7 +435,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -505,7 +505,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -857,7 +857,7 @@ class ModelApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        model_component: Annotated[ModelComponent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -870,7 +870,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
+    ) -> ModelComponent:
         """model_update
 
         Update an model
@@ -879,8 +879,8 @@ class ModelApi:
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param model_component: The model properties to update (required)
+        :type model_component: ModelComponent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -906,7 +906,7 @@ class ModelApi:
         _param = self._model_update_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            model_component=model_component,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -914,7 +914,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -934,7 +934,7 @@ class ModelApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        model_component: Annotated[ModelComponent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -947,7 +947,7 @@ class ModelApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
+    ) -> ApiResponse[ModelComponent]:
         """model_update
 
         Update an model
@@ -956,8 +956,8 @@ class ModelApi:
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param model_component: The model properties to update (required)
+        :type model_component: ModelComponent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -983,7 +983,7 @@ class ModelApi:
         _param = self._model_update_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            model_component=model_component,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -991,7 +991,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -1011,7 +1011,7 @@ class ModelApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        model_component: Annotated[ModelComponent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1033,8 +1033,8 @@ class ModelApi:
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param model_component: The model properties to update (required)
+        :type model_component: ModelComponent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1060,7 +1060,7 @@ class ModelApi:
         _param = self._model_update_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            model_component=model_component,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1068,7 +1068,7 @@ class ModelApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelComponent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -1083,7 +1083,7 @@ class ModelApi:
         self,
         tenant,
         model,
-        model2,
+        model_component,
         _request_auth,
         _content_type,
         _headers,
@@ -1113,8 +1113,8 @@ class ModelApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if model2 is not None:
-            _body_params = model2
+        if model_component is not None:
+            _body_params = model_component
 
 
         # set the HTTP header `Accept`

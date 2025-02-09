@@ -19,14 +19,13 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
 from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
-from mtmaisdk.clients.rest.models.crew_ai_params import CrewAIParams
 from mtmaisdk.clients.rest.models.research_request import ResearchRequest
 from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTNODERUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "CanvasGraphParams", "CrewAIParams", "ResearchRequest", "ScrapeGraphParams"]
+AGENTNODERUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "CanvasGraphParams", "ResearchRequest", "ScrapeGraphParams"]
 
 class AgentNodeRunInputParams(BaseModel):
     """
@@ -34,16 +33,14 @@ class AgentNodeRunInputParams(BaseModel):
     """
     # data type: ResearchRequest
     oneof_schema_1_validator: Optional[ResearchRequest] = None
-    # data type: CrewAIParams
-    oneof_schema_2_validator: Optional[CrewAIParams] = None
     # data type: ScrapeGraphParams
-    oneof_schema_3_validator: Optional[ScrapeGraphParams] = None
+    oneof_schema_2_validator: Optional[ScrapeGraphParams] = None
     # data type: BrowserParams
-    oneof_schema_4_validator: Optional[BrowserParams] = None
+    oneof_schema_3_validator: Optional[BrowserParams] = None
     # data type: CanvasGraphParams
-    oneof_schema_5_validator: Optional[CanvasGraphParams] = None
-    actual_instance: Optional[Union[BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams]] = None
-    one_of_schemas: Set[str] = { "BrowserParams", "CanvasGraphParams", "CrewAIParams", "ResearchRequest", "ScrapeGraphParams" }
+    oneof_schema_4_validator: Optional[CanvasGraphParams] = None
+    actual_instance: Optional[Union[BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams]] = None
+    one_of_schemas: Set[str] = { "BrowserParams", "CanvasGraphParams", "ResearchRequest", "ScrapeGraphParams" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -71,11 +68,6 @@ class AgentNodeRunInputParams(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ResearchRequest`")
         else:
             match += 1
-        # validate data type: CrewAIParams
-        if not isinstance(v, CrewAIParams):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `CrewAIParams`")
-        else:
-            match += 1
         # validate data type: ScrapeGraphParams
         if not isinstance(v, ScrapeGraphParams):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ScrapeGraphParams`")
@@ -93,10 +85,10 @@ class AgentNodeRunInputParams(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -114,12 +106,6 @@ class AgentNodeRunInputParams(BaseModel):
         # deserialize data into ResearchRequest
         try:
             instance.actual_instance = ResearchRequest.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into CrewAIParams
-        try:
-            instance.actual_instance = CrewAIParams.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -144,10 +130,10 @@ class AgentNodeRunInputParams(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentNodeRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -161,7 +147,7 @@ class AgentNodeRunInputParams(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, CanvasGraphParams, CrewAIParams, ResearchRequest, ScrapeGraphParams]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, CanvasGraphParams, ResearchRequest, ScrapeGraphParams]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

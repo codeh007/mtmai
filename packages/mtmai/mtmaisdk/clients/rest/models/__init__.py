@@ -104,7 +104,6 @@ from mtmaisdk.clients.rest.models.create_site_request import CreateSiteRequest
 from mtmaisdk.clients.rest.models.create_tenant_alert_email_group_request import CreateTenantAlertEmailGroupRequest
 from mtmaisdk.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
 from mtmaisdk.clients.rest.models.create_tenant_request import CreateTenantRequest
-from mtmaisdk.clients.rest.models.crew_ai_params import CrewAIParams
 from mtmaisdk.clients.rest.models.cron_workflows import CronWorkflows
 from mtmaisdk.clients.rest.models.cron_workflows_list import CronWorkflowsList
 from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
@@ -160,9 +159,9 @@ from mtmaisdk.clients.rest.models.log_line_order_by_direction import LogLineOrde
 from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByField
 from mtmaisdk.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmaisdk.clients.rest.models.max_message_termination_config_component import MaxMessageTerminationConfigComponent
-from mtmaisdk.clients.rest.models.model import Model
 from mtmaisdk.clients.rest.models.model_component import ModelComponent
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
+from mtmaisdk.clients.rest.models.model_family import ModelFamily
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from mtmaisdk.clients.rest.models.model_list import ModelList
 from mtmaisdk.clients.rest.models.model_types import ModelTypes
