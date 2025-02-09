@@ -28,7 +28,6 @@ from mtmaisdk.clients.rest.models.ag_event import AgEvent
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
 from mtmaisdk.clients.rest.models.ag_event_update import AgEventUpdate
-from mtmaisdk.clients.rest.models.agent import Agent
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_component import AgentComponent
 from mtmaisdk.clients.rest.models.agent_config import AgentConfig
@@ -57,14 +56,8 @@ from mtmaisdk.clients.rest.models.artifact_markdown_v3 import ArtifactMarkdownV3
 from mtmaisdk.clients.rest.models.artifact_tool_response import ArtifactToolResponse
 from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmaisdk.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
-from mtmaisdk.clients.rest.models.assisant import Assisant
-from mtmaisdk.clients.rest.models.assisant_config import AssisantConfig
-from mtmaisdk.clients.rest.models.assisant_config_configurable import AssisantConfigConfigurable
-from mtmaisdk.clients.rest.models.assisant_list import AssisantList
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
-from mtmaisdk.clients.rest.models.assistant import Assistant
 from mtmaisdk.clients.rest.models.assistant_agent_config import AssistantAgentConfig
-from mtmaisdk.clients.rest.models.assistant_base import AssistantBase
 from mtmaisdk.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmaisdk.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmaisdk.clients.rest.models.base_state import BaseState
@@ -112,8 +105,6 @@ from mtmaisdk.clients.rest.models.create_tenant_alert_email_group_request import
 from mtmaisdk.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
 from mtmaisdk.clients.rest.models.create_tenant_request import CreateTenantRequest
 from mtmaisdk.clients.rest.models.crew_ai_params import CrewAIParams
-from mtmaisdk.clients.rest.models.crew_ai_agent import CrewAiAgent
-from mtmaisdk.clients.rest.models.crew_ai_task import CrewAiTask
 from mtmaisdk.clients.rest.models.cron_workflows import CronWorkflows
 from mtmaisdk.clients.rest.models.cron_workflows_list import CronWorkflowsList
 from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
@@ -237,10 +228,7 @@ from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
 from mtmaisdk.clients.rest.models.section import Section
 from mtmaisdk.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmaisdk.clients.rest.models.semaphore_slots import SemaphoreSlots
-from mtmaisdk.clients.rest.models.session import Session
-from mtmaisdk.clients.rest.models.session_list import SessionList
 from mtmaisdk.clients.rest.models.session_runs import SessionRuns
-from mtmaisdk.clients.rest.models.session_update import SessionUpdate
 from mtmaisdk.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmaisdk.clients.rest.models.site import Site
 from mtmaisdk.clients.rest.models.site_host import SiteHost

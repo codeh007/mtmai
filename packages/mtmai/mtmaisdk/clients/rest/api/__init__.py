@@ -20,7 +20,6 @@ from mtmaisdk.clients.rest.api.admin_api import AdminApi
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
 from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
-from mtmaisdk.clients.rest.api.assisant_api import AssisantApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
 from mtmaisdk.clients.rest.api.browser_api import BrowserApi
 from mtmaisdk.clients.rest.api.chat_api import ChatApi
