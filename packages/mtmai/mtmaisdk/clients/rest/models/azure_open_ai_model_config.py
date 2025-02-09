@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.component_types import ComponentTypes
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from mtmaisdk.clients.rest.models.model_info import ModelInfo
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,29 +27,47 @@ class AzureOpenAIModelConfig(BaseModel):
     """
     AzureOpenAIModelConfig
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
-    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
     model: StrictStr
     model_type: StrictStr
     api_key: Optional[StrictStr] = None
     base_url: Optional[StrictStr] = None
+    timeout: Optional[Union[StrictFloat, StrictInt]] = None
+    max_retries: Optional[StrictInt] = None
+    frequency_penalty: Optional[Union[StrictFloat, StrictInt]] = None
+    logit_bias: Optional[StrictInt] = None
+    max_tokens: Optional[StrictInt] = None
+    n: Optional[StrictInt] = None
+    presence_penalty: Optional[Union[StrictFloat, StrictInt]] = None
+    response_format: Optional[StrictStr] = None
+    seed: Optional[StrictInt] = None
+    stop: Optional[List[StrictStr]] = None
+    temperature: Optional[Union[StrictFloat, StrictInt]] = None
+    top_p: Optional[Union[StrictFloat, StrictInt]] = None
+    user: Optional[StrictStr] = None
+    organization: Optional[StrictStr] = None
+    default_headers: Optional[Dict[str, Any]] = None
     model_info: Optional[ModelInfo] = None
     azure_deployment: StrictStr
     api_version: StrictStr
     azure_endpoint: StrictStr
     azure_ad_token_provider: StrictStr
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "model", "model_type", "api_key", "base_url", "model_info", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
+    __properties: ClassVar[List[str]] = ["model", "model_type", "api_key", "base_url", "timeout", "max_retries", "frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "organization", "default_headers", "model_info", "azure_deployment", "api_version", "azure_endpoint", "azure_ad_token_provider"]
 
     @field_validator('model_type')
     def model_type_validate_enum(cls, value):
         """Validates the enum"""
         if value not in set(['AzureOpenAIChatCompletionClient']):
             raise ValueError("must be one of enum values ('AzureOpenAIChatCompletionClient')")
+        return value
+
+    @field_validator('response_format')
+    def response_format_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['json_object', 'text']):
+            raise ValueError("must be one of enum values ('json_object', 'text')")
         return value
 
     model_config = ConfigDict(
@@ -107,17 +124,25 @@ class AzureOpenAIModelConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config"),
             "model": obj.get("model"),
             "model_type": obj.get("model_type"),
             "api_key": obj.get("api_key"),
             "base_url": obj.get("base_url"),
+            "timeout": obj.get("timeout"),
+            "max_retries": obj.get("max_retries"),
+            "frequency_penalty": obj.get("frequency_penalty"),
+            "logit_bias": obj.get("logit_bias"),
+            "max_tokens": obj.get("max_tokens"),
+            "n": obj.get("n"),
+            "presence_penalty": obj.get("presence_penalty"),
+            "response_format": obj.get("response_format"),
+            "seed": obj.get("seed"),
+            "stop": obj.get("stop"),
+            "temperature": obj.get("temperature"),
+            "top_p": obj.get("top_p"),
+            "user": obj.get("user"),
+            "organization": obj.get("organization"),
+            "default_headers": obj.get("default_headers"),
             "model_info": ModelInfo.from_dict(obj["model_info"]) if obj.get("model_info") is not None else None,
             "azure_deployment": obj.get("azure_deployment"),
             "api_version": obj.get("api_version"),
