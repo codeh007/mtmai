@@ -1,14 +1,14 @@
 import json
 
 from autogen_agentchat.messages import TextMessage
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
 from ..ag.team_builder import TeamBuilder
 from ..ag.team_runner import TeamRunner
-from ..gomtmclients.rest.models.chat_req import ChatReq
+
+# from ..gomtmclients.rest.models.chat_req import ChatReq
 
 router = APIRouter()
 
@@ -38,21 +38,21 @@ async def run_stream(task: str):
         yield f"2:{json.dumps({'error': str(e)})}\n"
 
 
-@router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])
-async def chat(r: ChatReq):
-    try:
-        user_messages = r.messages
-        if len(user_messages) == 0:
-            raise HTTPException(status_code=400, detail="No messages provided")
-        task = user_messages[-1].content
+# @router.api_route(path="/tenants/{tenant}/chat", methods=["GET", "POST"])
+# async def chat(r: ChatReq):
+#     try:
+#         user_messages = r.messages
+#         if len(user_messages) == 0:
+#             raise HTTPException(status_code=400, detail="No messages provided")
+#         task = user_messages[-1].content
 
-        return StreamingResponse(
-            content=run_stream(task), media_type="text/event-stream"
-        )
+#         return StreamingResponse(
+#             content=run_stream(task), media_type="text/event-stream"
+#         )
 
-    except Exception as e:
-        logger.exception("Chat error")
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         logger.exception("Chat error")
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
 # @router.api_route(path="/test_m1", methods=["GET", "POST"])
@@ -79,4 +79,5 @@ async def chat(r: ChatReq):
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
 #         return {"error": str(e)}

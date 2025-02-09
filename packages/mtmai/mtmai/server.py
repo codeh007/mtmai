@@ -1,3 +1,4 @@
+import asyncio
 import os
 import threading
 
@@ -8,20 +9,17 @@ from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from loguru import logger
-from starlette.templating import Jinja2Templates
 
-# from mtmai import analytics
-# from mtmai.app_forge import setup_forge_app
 from mtmai.core.__version__ import version
 from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
-
-# from mtmai.forge.sdk.db.exceptions import NotFoundError
-# from mtmai.forge.sdk.settings_manager import SettingsManager
 from mtmai.middleware import AuthMiddleware
 
 from .api import mount_api_routes
 from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
+
+# from starlette.templating import Jinja2Templates
+
 
 # from starlette_context.plugins.base import Plugin
 
@@ -42,9 +40,19 @@ from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        # deploy_mtmai_workers()
-        yield
-        # await taskWroker.stop()
+        try:
+            from mtmai.worker import WorkerApp
+
+            worker_app = WorkerApp()
+            worker_task = asyncio.create_task(worker_app.deploy_mtmai_workers())
+            yield
+        finally:
+            await worker_app.stop()
+            worker_task.cancel()
+            try:
+                await worker_task
+            except asyncio.CancelledError:
+                pass
 
     def custom_generate_unique_id(route: APIRoute) -> str:
         if len(route.tags) > 0:
@@ -85,7 +93,7 @@ def build_app():
         },
         openapi_tags=openapi_tags,
     )
-    templates = Jinja2Templates(directory="templates")
+    # templates = Jinja2Templates(directory="templates")
 
     # if is_in_dev():
     #     from mtmai.api import admin
@@ -141,15 +149,9 @@ def build_app():
         )
         app.add_middleware(AuthMiddleware)
 
-    # 挂载
-    # mount_autogenstudio_app(app)
     from .gradio_app import mount_gradio_app
 
     mount_gradio_app(app)
-
-    # setup_forge_app(app)
-
-    # from starlette_context.middleware import RawContextMiddleware
 
     # app.add_middleware(
     #     RawContextMiddleware,
@@ -160,8 +162,6 @@ def build_app():
     #         # UserAgentPlugin(),
     #     ),
     # )
-
-    # from fastapi import FastAPI
 
     # @app.exception_handler(NotFoundError)
     # async def handle_not_found_error(request: Request, exc: NotFoundError) -> Response:

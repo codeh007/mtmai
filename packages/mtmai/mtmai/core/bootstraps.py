@@ -11,6 +11,8 @@ def bootstrap_core():
     from .logging import setup_logging
 
     load_dotenv()
+    if os.path.exists("../gomtm/env/dev.env"):
+        load_dotenv(dotenv_path=os.path.join("../gomtm/env/dev.env"))
     setup_logging()
     logger = logging.getLogger()
     logger.info(
@@ -28,3 +30,5 @@ def bootstrap_core():
     if settings.SOCKS_PROXY:
         logger.info(f"SOCKS_PROXY: {settings.SOCKS_PROXY}")
         os.environ["SOCKS_PROXY"] = settings.SOCKS_PROXY
+
+

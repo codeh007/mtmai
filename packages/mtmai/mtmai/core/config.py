@@ -73,13 +73,6 @@ class Settings(BaseSettings):
     vercel_token: str | None = None
 
     PROJECT_NAME: str = "mtmai"
-    # SENTRY_DSN: HttpUrl | None = None
-    # POSTGRES_SERVER: str = "POSTGRES_SERVER"
-    # POSTGRES_PORT: int = 5432
-    # POSTGRES_USER: str = "POSTGRES_USER"
-    # POSTGRES_PASSWORD: str = ""
-    # POSTGRES_DB: str = ""
-
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PORT: int = 587
@@ -96,12 +89,6 @@ class Settings(BaseSettings):
     CLOUDFLARE_API_TOKEN: str | None = None
     CLOUDFLARE_AI_TOKEN: str | None = None
 
-    # tembo
-    TEMBO_TOKEN: str | None = None
-    TEMBO_ORG: str | None = None
-    TEMBO_INST: str | None = None
-    TEMBO_DATA_DOMAIN: str | None = None
-
     # logging
     LOGGING_LEVEL: str | None = "info"
     LOGGING_PATH: str | None = ""
@@ -117,7 +104,6 @@ class Settings(BaseSettings):
     @property
     def storage_dir(self) -> str:
         if Path(".vol").exists():
-            # if mtutils.is_in_gitpod():
             return ".vol"
         return ".vol"
 
@@ -235,9 +221,6 @@ class Settings(BaseSettings):
     SELENIUM_DISPLAY: str | None = None  # ":1"
     SELENIUM_PORT: int = 4444
     SELENIUM_HUB_URL: str | None = None
-
-    # mtmflow
-    # MTMFLOW_URL_BASE: str = "http://localhost:8001"
 
     # 其他
     graph_config_path: str = "configs/graph_config.yml"

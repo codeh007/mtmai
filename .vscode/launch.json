@@ -10,74 +10,26 @@
 			// "args": ["serve"],
 			"jinja": true,
 			"justMyCode": false,
-			"envFile": "${workspaceFolder}/../gomtm/env/dev.env",
-			"env": {
-				// "PORT": "8066",
-				// "DISPLAY": ":1",
-				// "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-				// "PYTHONPATH---": "${workspaceFolder}/.venv/lib/python3.11/site-packages"
-			}
-		},
-		// {
-		// 	"name": "autogenstudio",
-		// 	"type": "debugpy",
-		// 	"request": "launch",
-		// 	"program": "${workspaceFolder}/packages/mtmai/mtmai/cli.py",
-		// 	"cwd": "${workspaceFolder}",
-		// 	"args": ["ui"],
-		// 	"jinja": true,
-		// 	"justMyCode": false,
-		// 	"envFile": "${workspaceFolder}/../gomtm/env/dev.env",
-		// 	"env": {
-		// 		// "PORT": "8066",
-		// 		// "DISPLAY": ":1",
-		// 		// "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-		// 		// "PYTHONPATH---": "${workspaceFolder}/.venv/lib/python3.11/site-packages"
-		// 	},
-		// 	"windows": {
-		// 		"env": {
-		// 			"http_proxy": "http://127.0.0.1:10809",
-		// 			"https_proxy": "http://127.0.0.1:10809"
-		// 		}
-		// 	}
-		// },
-		{
-			"name": "mtmai_worker",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
-			"cwd": "${workspaceFolder}",
-			"args": ["worker"],
-			"jinja": true,
-			"justMyCode": false,
-			"envFile": "${workspaceFolder}/.env",
-			"env": {
-				"PORT": "8066",
-				"DISPLAY": ":1",
-				"MTM_DEV": "development",
-				"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90"
-				// "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
-				// "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
-			}
+			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		}
 		// {
-		//   "name": "gradio_app",
-		//   "type": "debugpy",
-		//   "request": "launch",
-		//   "program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
-		//   "cwd": "${workspaceFolder}",
-		//   "args": ["gradio"],
-		//   "jinja": true,
-		//   "justMyCode": false,
-		//   "envFile": "${workspaceFolder}/.env",
-		//   "env": {
-		//     "PORT": "8066",
-		//     "DISPLAY": ":1",
-		//     "MTM_DEV": "development",
-		//     "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90",
-		//     "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
-		//     // "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
-		//   }
+		// 	"name": "mtmai_worker",
+		// 	"type": "debugpy",
+		// 	"request": "launch",
+		// 	"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+		// 	"cwd": "${workspaceFolder}",
+		// 	"args": ["worker"],
+		// 	"jinja": true,
+		// 	"justMyCode": false,
+		// 	"envFile": "${workspaceFolder}/.env",
+		// 	"env": {
+		// 		"PORT": "8066",
+		// 		"DISPLAY": ":1",
+		// 		"MTM_DEV": "development",
+		// 		"DEBUGPY_PROCESS_SPAWN_TIMEOUT": "90"
+		// 		// "PYTHONPATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+		// 		// "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/packages/mtmai"
+		// 	}
 		// }
 	]
 }

@@ -15,14 +15,15 @@ from mtmai.models.site import Site
 
 from .database import DatabaseManager
 from .teammanager import TeamManager
-from .ws_connection import WebSocketManager
+
+# from .ws_connection import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
 
 # Global manager instances
 _db_manager: Optional[DatabaseManager] = None
-_websocket_manager: Optional[WebSocketManager] = None
+# _websocket_manager: Optional[WebSocketManager] = None
 _team_manager: Optional[TeamManager] = None
 
 
@@ -47,14 +48,14 @@ async def get_db() -> DatabaseManager:
     return _db_manager
 
 
-async def get_websocket_manager() -> WebSocketManager:
-    """Dependency provider for connection manager"""
-    if not _websocket_manager:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Connection manager not initialized",
-        )
-    return _websocket_manager
+# async def get_websocket_manager() -> WebSocketManager:
+#     """Dependency provider for connection manager"""
+#     if not _websocket_manager:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Connection manager not initialized",
+#         )
+#     return _websocket_manager
 
 
 async def get_team_manager() -> TeamManager:
@@ -102,8 +103,8 @@ async def init_managers(database_uri: str, config_dir: str, app_root: str) -> No
         )
 
         # Initialize connection manager
-        _websocket_manager = WebSocketManager(db_manager=_db_manager)
-        logger.info("Connection manager initialized")
+        # _websocket_manager = WebSocketManager(db_manager=_db_manager)
+        # logger.info("Connection manager initialized")
 
         # Initialize team manager
         _team_manager = TeamManager()
@@ -164,7 +165,7 @@ async def get_managers():
     """Get all managers in one dependency"""
     return {
         "db": await get_db(),
-        "connection": await get_websocket_manager(),
+        # "connection": await get_websocket_manager(),
         "team": await get_team_manager(),
     }
 

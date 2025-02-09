@@ -42,10 +42,10 @@ def mount_api_routes(app: FastAPI, prefix=""):
 
     api_router.include_router(runs.router, prefix="/runs", tags=["runs"])
 
-    logger.info("api ws")
-    from mtmai.api import ws
+    # logger.info("api ws")
+    # from mtmai.api import ws
 
-    api_router.include_router(ws.router, prefix="/ws", tags=["ws"])
+    # api_router.include_router(ws.router, prefix="/ws", tags=["ws"])
 
     # LOG.info("api form")
     # from mtmai.api import form

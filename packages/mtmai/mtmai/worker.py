@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import sys
@@ -18,11 +17,12 @@ root_logger = logging.getLogger()
 
 
 class WorkerApp:
-    def __init__(self, backend_url: str | None):
-        self.backend_url = backend_url
+    def __init__(self):
+        self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
             raise ValueError("backend_url is not set")
         self.log = structlog.get_logger()
+        self.worker = None  # 添加 worker 属性以便后续停止
 
     async def setup(self):
         global wfapp
@@ -74,8 +74,8 @@ class WorkerApp:
     async def deploy_mtmai_workers(self):
         await self.setup()
         self.log.info("start worker")
-        worker = wfapp.worker("pyworker")
-        if not worker:
+        self.worker = wfapp.worker("pyworker")  # 保存 worker 实例
+        if not self.worker:
             raise ValueError("worker not found")
 
         # from mtmai.workflows.flow_assistant import FlowAssistant
@@ -88,14 +88,18 @@ class WorkerApp:
 
         from mtmai.workflows.flow_browser import FlowBrowser
 
-        worker.register_workflow(FlowBrowser())
+        self.worker.register_workflow(FlowBrowser())
 
         from workflows.flow_ag import FlowAg
 
-        worker.register_workflow(FlowAg())
-        await worker.async_start()
+        self.worker.register_workflow(FlowAg())
+        await self.worker.async_start()
 
         self.log.info("start worker finished")
-        while True:
-            await asyncio.sleep(1)
-            await asyncio.sleep(1)
+
+    async def stop(self):
+        """停止 worker"""
+        if self.worker:
+            self.log.info("stopping worker")
+            await self.worker.async_stop()
+            self.log.info("worker stopped")
