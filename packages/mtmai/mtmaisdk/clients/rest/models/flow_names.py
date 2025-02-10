@@ -26,12 +26,12 @@ class FlowNames(str, Enum):
     """
     allowed enum values
     """
+    ASSISANT = 'assisant'
+    AG = 'ag'
     RESEARCH = 'research'
-    BLOGAUTO = 'blogAuto'
-    TENANT = 'tenant'
-    RESOURCEACTION = 'resourceAction'
-    ONESHOTDEMO = 'oneShotDemo'
     BROWSER = 'browser'
+    TENANT = 'tenant'
+    NEWS = 'news'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
