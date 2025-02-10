@@ -4,7 +4,7 @@ from typing import cast
 
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from mtmaisdk.clients.rest.models.agent_node_run_input import AgentNodeRunInput
+from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.context.context import Context
 
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 @wfapp.workflow(
     name="ag",
     on_events=["ag:run"],
-    input_validator=AgentNodeRunInput,
+    input_validator=AgentRunInput,
 )
 class FlowAg:
     @wfapp.step(
@@ -28,7 +28,7 @@ class FlowAg:
 
         init_mtmai_context(hatctx)
         ctx: AgentContext = get_mtmai_context()
-        input = cast(AgentNodeRunInput, hatctx.workflow_input())
+        input = cast(AgentRunInput, hatctx.workflow_input())
         tenant_id = ctx.getTenantId()
         if not tenant_id:
             raise ValueError("tenantId 不能为空")
