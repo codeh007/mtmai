@@ -9,9 +9,9 @@ from autogen_core import CancellationToken, Component, ComponentModel
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
-from ..agents.ctx import get_mtmai_context
-from ..models.ag import TeamResult
-from .team_builder import TeamBuilder
+from mtmai.ag.team_builder import TeamBuilder
+from mtmai.agents.ctx import get_mtmai_context
+from mtmai.models.ag import TeamResult
 
 logger = logging.getLogger(__name__)
 

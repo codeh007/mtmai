@@ -9,7 +9,8 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core import Component, ComponentModel
 from autogen_core.tools import FunctionTool
 
-from ..tools.calculator import web_search
+from mtmai.tools.calculator import web_search
+
 from .model_client import get_oai_Model
 
 logger = logging.getLogger(__name__)
