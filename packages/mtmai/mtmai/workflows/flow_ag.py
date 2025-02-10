@@ -5,6 +5,7 @@ from typing import cast
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest.models.flow_ag_payload import FlowAgPayload
 from mtmaisdk.context.context import Context
 
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
@@ -35,21 +36,38 @@ class FlowAg:
         user_id = ctx.getUserId()
         if not user_id:
             raise ValueError("userId 不能为空")
-        team_id = input.team_id
+        # bbb = input.params.actual_instance
+        # eee = cast(FloadAgPayload, input.params.one_of_schemas)
+        # aaa = input.params.actual_instance_must_validate_oneof(
+        #     hatctx.input.get("params")
+        # )
+        params = FlowAgPayload.model_validate(hatctx.input.get("params"))
+
+        team_id = params.team_id
         if not team_id:
             raise ValueError("teamId 不能为空")
+
+        if len(params.messages) == 0:
+            raise ValueError("No messages provided")
         logger.info("当前租户: %s, 当前用户: %s", tenant_id, user_id)
 
         # 临时代码
         r = await hatctx.rest_client.aio.ag_events_api.ag_event_list(tenant=tenant_id)
         hatctx.log(r)
 
-        # 获取模型配置
-        user_messages = input.messages
-        if len(user_messages) == 0:
+        # 获取聊天消息
+        if len(params.messages) == 0:
             raise ValueError("No messages provided")
-        task = user_messages[-1].content
+        task = params.messages[-1].content
 
+        # 聊天消息入库
+        # await hatctx.rest_client.aio.ag_events_api.ag_event_create(
+        #     tenant=tenant_id,
+        #     ag_event_create=AgEventCreate(
+        #         user_id=user_id,
+        #         data=params.messages,
+        #     ),
+        # )
         team_runner = TeamRunner()
         async for event in team_runner.run_stream_v2(ctx, task, team_id):
             hatctx.log(event)

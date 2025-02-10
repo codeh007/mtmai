@@ -129,7 +129,7 @@ class TeamBuilder:
             system_message="You are a helpful assistant that can take in all of the suggestions and advice from the other agents and provide a detailed final travel plan. You must ensure that the final plan is integrated and complete. YOUR FINAL RESPONSE MUST BE THE COMPLETE PLAN. When the plan is complete and all perspectives are integrated, you can respond with TERMINATE.",
         )
 
-        termination = TextMentionTermination("TERMINATE")
+        termination = TextMentionTermination(text="TERMINATE")
         group_chat = RoundRobinGroupChat(
             participants=[
                 planner_agent,

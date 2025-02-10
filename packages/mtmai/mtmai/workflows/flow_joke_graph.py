@@ -1,19 +1,22 @@
+import logging
 import uuid
 from typing import cast
 
-import structlog
+# import structlog
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph
 from langgraph.graph.graph import CompiledGraph
+from mtmaisdk.clients.rest.models import AgentNodeRunRequest
+from mtmaisdk.context.context import Context
+
 from mtmai.agents.ctx import init_mtmai_context, mtmai_context
 from mtmai.agents.graphutils import is_internal_node, is_skip_kind
 from mtmai.agents.joke_graph import joke_graph
 from mtmai.core.coreutils import is_in_dev
 from mtmai.worker import wfapp
-from mtmaisdk.clients.rest.models import AgentNodeRunRequest
-from mtmaisdk.context.context import Context
 
-LOG = structlog.get_logger()
+# LOG = structlog.get_logger()
+logger = logging.getLogger(__name__)
 
 
 @wfapp.workflow(
@@ -87,20 +90,20 @@ class PyJokeFlow:
 
             if not is_internal_node(node_name):
                 if not is_skip_kind(kind):
-                    LOG.info("[event] %s@%s", kind, node_name)
+                    logger.info("[event] %s@%s", kind, node_name)
                     # mtmai_context.emit("logs", {"on": kind, "node_name": node_name})
 
             # if kind == "on_chat_model_stream":
             #     yield data
 
             if kind == "on_chain_start":
-                LOG.info("on_chain_start %s:", node_name)
+                logger.info("on_chain_start %s:", node_name)
                 # output = data.get("output")
                 if node_name == "__start__":
                     pass
 
             if kind == "on_chain_end":
-                LOG.info("on_chain_end %s:", node_name)
+                logger.info("on_chain_end %s:", node_name)
                 output = data.get("output")
                 if node_name == "__start__":
                     pass
@@ -122,4 +125,5 @@ class PyJokeFlow:
 
             if kind == "on_tool_end":
                 pass
+                # output = data.get("output")
                 # output = data.get("output")

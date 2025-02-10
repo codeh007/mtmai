@@ -125,7 +125,7 @@ from mtmaisdk.clients.rest.models.event_types import EventTypes
 from mtmaisdk.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
 from mtmaisdk.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
-from mtmaisdk.clients.rest.models.fload_ag_payload import FloadAgPayload
+from mtmaisdk.clients.rest.models.flow_ag_payload import FlowAgPayload
 from mtmaisdk.clients.rest.models.flow_assisant_payload import FlowAssisantPayload
 from mtmaisdk.clients.rest.models.flow_names import FlowNames
 from mtmaisdk.clients.rest.models.flow_tenant_payload import FlowTenantPayload

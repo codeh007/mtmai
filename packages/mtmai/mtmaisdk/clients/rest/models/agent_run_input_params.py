@@ -18,14 +18,14 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
-from mtmaisdk.clients.rest.models.fload_ag_payload import FloadAgPayload
+from mtmaisdk.clients.rest.models.flow_ag_payload import FlowAgPayload
 from mtmaisdk.clients.rest.models.flow_assisant_payload import FlowAssisantPayload
 from mtmaisdk.clients.rest.models.flow_tenant_payload import FlowTenantPayload
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTRUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "FloadAgPayload", "FlowAssisantPayload", "FlowTenantPayload"]
+AGENTRUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "FlowAgPayload", "FlowAssisantPayload", "FlowTenantPayload"]
 
 class AgentRunInputParams(BaseModel):
     """
@@ -35,12 +35,12 @@ class AgentRunInputParams(BaseModel):
     oneof_schema_1_validator: Optional[FlowAssisantPayload] = None
     # data type: FlowTenantPayload
     oneof_schema_2_validator: Optional[FlowTenantPayload] = None
-    # data type: FloadAgPayload
-    oneof_schema_3_validator: Optional[FloadAgPayload] = None
+    # data type: FlowAgPayload
+    oneof_schema_3_validator: Optional[FlowAgPayload] = None
     # data type: BrowserParams
     oneof_schema_4_validator: Optional[BrowserParams] = None
-    actual_instance: Optional[Union[BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload]] = None
-    one_of_schemas: Set[str] = { "BrowserParams", "FloadAgPayload", "FlowAssisantPayload", "FlowTenantPayload" }
+    actual_instance: Optional[Union[BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload]] = None
+    one_of_schemas: Set[str] = { "BrowserParams", "FlowAgPayload", "FlowAssisantPayload", "FlowTenantPayload" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -73,9 +73,9 @@ class AgentRunInputParams(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `FlowTenantPayload`")
         else:
             match += 1
-        # validate data type: FloadAgPayload
-        if not isinstance(v, FloadAgPayload):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `FloadAgPayload`")
+        # validate data type: FlowAgPayload
+        if not isinstance(v, FlowAgPayload):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowAgPayload`")
         else:
             match += 1
         # validate data type: BrowserParams
@@ -85,10 +85,10 @@ class AgentRunInputParams(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -115,9 +115,9 @@ class AgentRunInputParams(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into FloadAgPayload
+        # deserialize data into FlowAgPayload
         try:
-            instance.actual_instance = FloadAgPayload.from_json(json_str)
+            instance.actual_instance = FlowAgPayload.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -130,10 +130,10 @@ class AgentRunInputParams(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -147,7 +147,7 @@ class AgentRunInputParams(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, FlowAgPayload, FlowAssisantPayload, FlowTenantPayload]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

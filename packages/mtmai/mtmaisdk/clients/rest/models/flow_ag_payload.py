@@ -17,21 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_component import AgentComponent
-from mtmaisdk.clients.rest.models.component_model import ComponentModel
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamConfig(BaseModel):
+class FlowAgPayload(BaseModel):
     """
-    TeamConfig
+    FlowAgPayload
     """ # noqa: E501
-    max_turns: Optional[StrictInt] = None
-    participants: Optional[List[AgentComponent]] = None
-    termination_condition: Optional[ComponentModel] = None
-    __properties: ClassVar[List[str]] = ["max_turns", "participants", "termination_condition"]
+    team_id: StrictStr = Field(alias="teamId")
+    session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
+    messages: List[ChatMessage]
+    __properties: ClassVar[List[str]] = ["teamId", "sessionId", "messages"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +50,7 @@ class TeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamConfig from a JSON string"""
+        """Create an instance of FlowAgPayload from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,21 +71,18 @@ class TeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
         _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
+        if self.messages:
+            for _item_messages in self.messages:
+                if _item_messages:
+                    _items.append(_item_messages.to_dict())
+            _dict['messages'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamConfig from a dict"""
+        """Create an instance of FlowAgPayload from a dict"""
         if obj is None:
             return None
 
@@ -94,9 +90,9 @@ class TeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "max_turns": obj.get("max_turns"),
-            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "termination_condition": ComponentModel.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "teamId": obj.get("teamId"),
+            "sessionId": obj.get("sessionId"),
+            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None
         })
         return _obj
 

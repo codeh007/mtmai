@@ -77,7 +77,7 @@ class TeamRunner:
                     if hasattr(agent, "close"):
                         await agent.close()
 
-    async def run_stream_v2(hatctx: Context, task: str, team_id: str):
+    async def run_stream_v2(self, hatctx: Context, task: str, team_id: str):
         ctx = get_mtmai_context()
 
         tenant_id = ctx.getTenantId()
@@ -90,7 +90,7 @@ class TeamRunner:
         team_builder = TeamBuilder()
         # agent = await team_builder.create_demo_agent_stream1()
 
-        team = await team_builder.create_team(team_data.component)
+        team = await team_builder.create_team(team_data.component.model_dump())
         # team_runner = TeamRunner()
 
         # async for event in team_runner.run_stream(
