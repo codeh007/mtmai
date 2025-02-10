@@ -3,8 +3,11 @@ from typing import cast
 
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest.models.team_component import TeamComponent
+from mtmaisdk.clients.rest.models.team_create import TeamCreate
 from mtmaisdk.context.context import Context
 
+from mtmai.ag.team_builder import TeamBuilder
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
 
@@ -14,7 +17,7 @@ logger = logging.getLogger(__name__)
 @wfapp.workflow(
     name="tenant",
     on_events=["tenant:run"],
-    input_validator=AgentRunInput,
+    # input_validator=AgentRunInput,
 )
 class FlowTenant:
     """
@@ -40,7 +43,24 @@ class FlowTenant:
 
         # 获取模型配置
         logger.info("获取模型配置")
-        r = await hatctx.rest_client.aio.model_api.model_list(tenant=tenant_id)
+        r = await hatctx.rest_client.aio.model_api.model_get(
+            tenant=tenant_id, model="default"
+        )
         hatctx.log(r)
 
+        model_config = r.config
+        team_builder = TeamBuilder()
+        team1 = await team_builder.create_travel_agent(model_config)
+        hatctx.log(team1)
+
+        # 保存 team
+        r = await hatctx.rest_client.aio.teams_api.team_create(
+            tenant=tenant_id,
+            team_create=TeamCreate(
+                label="travel_agent",
+                description=team1.component_description or "",
+                component=TeamComponent(**team1.dump_component().model_dump()),
+            ),
+        )
+        hatctx.log(r)
         return {"result": "success"}

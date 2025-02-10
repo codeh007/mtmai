@@ -18,35 +18,29 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.browser_params import BrowserParams
-from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
 from mtmaisdk.clients.rest.models.fload_ag_payload import FloadAgPayload
-from mtmaisdk.clients.rest.models.flow_payload import FlowPayload
-from mtmaisdk.clients.rest.models.research_request import ResearchRequest
-from mtmaisdk.clients.rest.models.scrape_graph_params import ScrapeGraphParams
+from mtmaisdk.clients.rest.models.flow_assisant_payload import FlowAssisantPayload
+from mtmaisdk.clients.rest.models.flow_tenant_payload import FlowTenantPayload
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTRUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "CanvasGraphParams", "FloadAgPayload", "FlowPayload", "ResearchRequest", "ScrapeGraphParams"]
+AGENTRUNINPUTPARAMS_ONE_OF_SCHEMAS = ["BrowserParams", "FloadAgPayload", "FlowAssisantPayload", "FlowTenantPayload"]
 
 class AgentRunInputParams(BaseModel):
     """
     AgentRunInputParams
     """
-    # data type: FlowPayload
-    oneof_schema_1_validator: Optional[FlowPayload] = None
+    # data type: FlowAssisantPayload
+    oneof_schema_1_validator: Optional[FlowAssisantPayload] = None
+    # data type: FlowTenantPayload
+    oneof_schema_2_validator: Optional[FlowTenantPayload] = None
     # data type: FloadAgPayload
-    oneof_schema_2_validator: Optional[FloadAgPayload] = None
-    # data type: ResearchRequest
-    oneof_schema_3_validator: Optional[ResearchRequest] = None
-    # data type: ScrapeGraphParams
-    oneof_schema_4_validator: Optional[ScrapeGraphParams] = None
+    oneof_schema_3_validator: Optional[FloadAgPayload] = None
     # data type: BrowserParams
-    oneof_schema_5_validator: Optional[BrowserParams] = None
-    # data type: CanvasGraphParams
-    oneof_schema_6_validator: Optional[CanvasGraphParams] = None
-    actual_instance: Optional[Union[BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams]] = None
-    one_of_schemas: Set[str] = { "BrowserParams", "CanvasGraphParams", "FloadAgPayload", "FlowPayload", "ResearchRequest", "ScrapeGraphParams" }
+    oneof_schema_4_validator: Optional[BrowserParams] = None
+    actual_instance: Optional[Union[BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload]] = None
+    one_of_schemas: Set[str] = { "BrowserParams", "FloadAgPayload", "FlowAssisantPayload", "FlowTenantPayload" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -69,9 +63,14 @@ class AgentRunInputParams(BaseModel):
         instance = AgentRunInputParams.model_construct()
         error_messages = []
         match = 0
-        # validate data type: FlowPayload
-        if not isinstance(v, FlowPayload):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowPayload`")
+        # validate data type: FlowAssisantPayload
+        if not isinstance(v, FlowAssisantPayload):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowAssisantPayload`")
+        else:
+            match += 1
+        # validate data type: FlowTenantPayload
+        if not isinstance(v, FlowTenantPayload):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowTenantPayload`")
         else:
             match += 1
         # validate data type: FloadAgPayload
@@ -79,32 +78,17 @@ class AgentRunInputParams(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `FloadAgPayload`")
         else:
             match += 1
-        # validate data type: ResearchRequest
-        if not isinstance(v, ResearchRequest):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ResearchRequest`")
-        else:
-            match += 1
-        # validate data type: ScrapeGraphParams
-        if not isinstance(v, ScrapeGraphParams):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ScrapeGraphParams`")
-        else:
-            match += 1
         # validate data type: BrowserParams
         if not isinstance(v, BrowserParams):
             error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserParams`")
         else:
             match += 1
-        # validate data type: CanvasGraphParams
-        if not isinstance(v, CanvasGraphParams):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `CanvasGraphParams`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -119,9 +103,15 @@ class AgentRunInputParams(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into FlowPayload
+        # deserialize data into FlowAssisantPayload
         try:
-            instance.actual_instance = FlowPayload.from_json(json_str)
+            instance.actual_instance = FlowAssisantPayload.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into FlowTenantPayload
+        try:
+            instance.actual_instance = FlowTenantPayload.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -131,37 +121,19 @@ class AgentRunInputParams(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into ResearchRequest
-        try:
-            instance.actual_instance = ResearchRequest.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into ScrapeGraphParams
-        try:
-            instance.actual_instance = ScrapeGraphParams.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         # deserialize data into BrowserParams
         try:
             instance.actual_instance = BrowserParams.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into CanvasGraphParams
-        try:
-            instance.actual_instance = CanvasGraphParams.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputParams with oneOf schemas: BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +147,7 @@ class AgentRunInputParams(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, CanvasGraphParams, FloadAgPayload, FlowPayload, ResearchRequest, ScrapeGraphParams]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserParams, FloadAgPayload, FlowAssisantPayload, FlowTenantPayload]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

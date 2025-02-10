@@ -28,7 +28,6 @@ class FlowNames(str, Enum):
     """
     ASSISANT = 'assisant'
     AG = 'ag'
-    RESEARCH = 'research'
     BROWSER = 'browser'
     TENANT = 'tenant'
     NEWS = 'news'

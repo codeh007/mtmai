@@ -41,6 +41,5 @@ from mtmaisdk.clients.rest.api.proxy_api import ProxyApi
 from mtmaisdk.clients.rest.api.run_api import RunApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
 from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
-from mtmaisdk.clients.rest.api.team_api import TeamApi
 from mtmaisdk.clients.rest.api.teams_api import TeamsApi
 

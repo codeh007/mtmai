@@ -19,7 +19,11 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
+from mtmaisdk.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
+from mtmaisdk.clients.rest.models.node_run_action import NodeRunAction
+from mtmaisdk.clients.rest.models.text_highlight import TextHighlight
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,17 +33,17 @@ class CanvasGraphParams(BaseModel):
     """ # noqa: E501
     step_limit: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="步骤限制(没用上)", alias="stepLimit")
     messages: Optional[List[ChatMessage]] = None
-    action: Optional[Dict[str, Any]] = None
+    action: Optional[NodeRunAction] = None
     language: Optional[StrictStr] = Field(default=None, description="语言")
     custom_quick_action_id: Optional[StrictStr] = Field(default=None, description="自定义快速动作ID", alias="customQuickActionId")
     artifact_id: Optional[StrictStr] = Field(default=None, description="工件ID", alias="artifactId")
     fix_bugs: Optional[StrictBool] = Field(default=None, description="是否修复bug", alias="fixBugs")
-    highlighted_code: Optional[Dict[str, Any]] = Field(default=None, alias="highlightedCode")
-    highlighted_text: Optional[Dict[str, Any]] = Field(default=None, alias="highlightedText")
+    highlighted_code: Optional[CodeHighlight] = Field(default=None, alias="highlightedCode")
+    highlighted_text: Optional[TextHighlight] = Field(default=None, alias="highlightedText")
     regenerate_with_emojis: Optional[StrictBool] = Field(default=None, description="是否使用表情符号重新生成", alias="regenerateWithEmojis")
     reading_level: Optional[StrictStr] = Field(default=None, description="阅读级别", alias="readingLevel")
     artifact_length: Optional[StrictStr] = Field(default=None, description="工具内容长度,(文章,代码内容长度)", alias="artifactLength")
-    artifact: Optional[Dict[str, Any]] = None
+    artifact: Optional[ArtifactV3] = None
     add_comments: Optional[StrictBool] = Field(default=None, alias="addComments")
     add_logs: Optional[StrictBool] = Field(default=None, alias="addLogs")
     port_language: Optional[StrictStr] = Field(default=None, alias="portLanguage")

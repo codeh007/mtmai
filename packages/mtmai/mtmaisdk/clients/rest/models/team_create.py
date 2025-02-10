@@ -19,23 +19,21 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.clients.rest.models.team_types import TeamTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Team(BaseModel):
+class TeamCreate(BaseModel):
     """
-    Team
+    TeamCreate
     """ # noqa: E501
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
     version: Optional[StrictInt] = None
     team_type: Optional[StrictStr] = None
     component: TeamComponent
-    metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["label", "description", "version", "team_type", "component", "metadata"]
+    __properties: ClassVar[List[str]] = ["label", "description", "version", "team_type", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +53,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Team from a JSON string"""
+        """Create an instance of TeamCreate from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,14 +77,11 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of component
         if self.component:
             _dict['component'] = self.component.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Team from a dict"""
+        """Create an instance of TeamCreate from a dict"""
         if obj is None:
             return None
 
@@ -98,8 +93,7 @@ class Team(BaseModel):
             "description": obj.get("description"),
             "version": obj.get("version"),
             "team_type": obj.get("team_type"),
-            "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None,
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
+            "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 

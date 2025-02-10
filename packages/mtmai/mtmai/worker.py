@@ -12,7 +12,7 @@ from mtmai.core.config import settings
 
 wfapp: Hatchet = None
 
-root_logger = logging.getLogger()
+logger = logging.getLogger()
 
 
 class WorkerApp:
@@ -36,7 +36,7 @@ class WorkerApp:
         interval = 5
         for i in range(maxRetry):
             try:
-                root_logger.info("connectting...")
+                logger.info("connectting...")
                 mtmaiapi = MtmaiApi(self.api_client)
                 workerConfig = await mtmaiapi.mtmai_worker_config()
                 os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
@@ -55,7 +55,7 @@ class WorkerApp:
                             server_name="localhost",
                         ),
                         # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-                        logger=root_logger,
+                        logger=logger,
                     )
                 )
                 wfapp = Hatchet.from_config(
@@ -65,7 +65,7 @@ class WorkerApp:
                 return wfapp
             except Exception as e:
                 # self.log.error(f"failed to create hatchet: {e}")
-                root_logger.error(f"failed to create hatchet: {e}")
+                logger.error(f"failed to create hatchet: {e}")
                 if i == maxRetry - 1:
                     sys.exit(1)
                 sleep(interval)
@@ -76,42 +76,41 @@ class WorkerApp:
 
     async def deploy_mtmai_workers(self):
         try:
-            root_logger.info("worker setup")
+            logger.info("worker setup")
             await self.setup()
-            root_logger.info("start worker")
+            logger.info("start worker")
             self.worker = wfapp.worker(self.get_worker_name())
 
             # from mtmai.workflows.flow_crewai import FlowCrewAIAgent
 
             # worker.register_workflow(FlowCrewAIAgent())
 
-            root_logger.info("register flow_browser")
+            logger.info("register flow_browser")
             from mtmai.workflows.flow_browser import FlowBrowser
 
             self.worker.register_workflow(FlowBrowser())
 
-            root_logger.info("register flow_tenant")
+            logger.info("register flow_tenant")
             from workflows.flow_tenant import FlowTenant
 
             self.worker.register_workflow(FlowTenant())
 
-            root_logger.info("register flow_ag")
+            logger.info("register flow_ag")
             from workflows.flow_ag import FlowAg
 
             self.worker.register_workflow(FlowAg())
 
             await self.worker.async_start()
 
-            self.log.info("start worker finished")
+            logger.info("start worker finished")
         except Exception as e:
-            # self.log.exception(f"failed to deploy workers: {e}")
-            root_logger.exception(f"failed to deploy workers: {e}")
+            logger.exception(f"failed to deploy workers: {e}")
 
             raise e
 
     async def stop(self):
         """停止 worker"""
         if self.worker:
-            root_logger.info("stopping worker")
+            logger.info("stopping worker")
             await self.worker.async_stop()
-            root_logger.info("worker stopped")
+            logger.info("worker stopped")

@@ -28,7 +28,7 @@ class AgentRunInput(BaseModel):
     AgentRunInput
     """ # noqa: E501
     name: StrictStr
-    is_stream: Optional[StrictBool] = Field(default=None, alias="isStream")
+    is_stream: Optional[StrictBool] = Field(default=False, alias="isStream")
     params: Optional[AgentRunInputParams] = None
     __properties: ClassVar[List[str]] = ["name", "isStream", "params"]
 
@@ -86,8 +86,8 @@ class AgentRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "name": obj.get("name"),
-            "isStream": obj.get("isStream"),
+            "name": obj.get("name") if obj.get("name") is not None else FlowNames[str, object].AG,
+            "isStream": obj.get("isStream") if obj.get("isStream") is not None else False,
             "params": AgentRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None
         })
         return _obj

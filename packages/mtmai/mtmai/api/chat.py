@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
-from ..ag.team_builder import TeamBuilder
-from ..ag.team_runner import TeamRunner
+from mtmai.ag.team_builder import TeamBuilder
+from mtmai.ag.team_runner import TeamRunner
 
 # from ..gomtmclients.rest.models.chat_req import ChatReq
 

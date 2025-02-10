@@ -57,7 +57,6 @@ from mtmaisdk.clients.rest.api.proxy_api import ProxyApi
 from mtmaisdk.clients.rest.api.run_api import RunApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
 from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
-from mtmaisdk.clients.rest.api.team_api import TeamApi
 from mtmaisdk.clients.rest.api.teams_api import TeamsApi
 
 # import ApiClient
@@ -184,8 +183,9 @@ from mtmaisdk.clients.rest.models.event_update_cancel200_response import EventUp
 from mtmaisdk.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmaisdk.clients.rest.models.evt_node_step import EvtNodeStep
 from mtmaisdk.clients.rest.models.fload_ag_payload import FloadAgPayload
+from mtmaisdk.clients.rest.models.flow_assisant_payload import FlowAssisantPayload
 from mtmaisdk.clients.rest.models.flow_names import FlowNames
-from mtmaisdk.clients.rest.models.flow_payload import FlowPayload
+from mtmaisdk.clients.rest.models.flow_tenant_payload import FlowTenantPayload
 from mtmaisdk.clients.rest.models.form_field import FormField
 from mtmaisdk.clients.rest.models.frontend_config import FrontendConfig
 from mtmaisdk.clients.rest.models.function_call import FunctionCall
@@ -317,7 +317,9 @@ from mtmaisdk.clients.rest.models.task_result import TaskResult
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.clients.rest.models.team_config import TeamConfig
+from mtmaisdk.clients.rest.models.team_create import TeamCreate
 from mtmaisdk.clients.rest.models.team_list import TeamList
+from mtmaisdk.clients.rest.models.team_properties import TeamProperties
 from mtmaisdk.clients.rest.models.team_result import TeamResult
 from mtmaisdk.clients.rest.models.team_types import TeamTypes
 from mtmaisdk.clients.rest.models.team_update import TeamUpdate

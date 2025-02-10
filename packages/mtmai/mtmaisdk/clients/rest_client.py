@@ -51,6 +51,7 @@ from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import (
 )
 from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
+from .rest.api.model_api import ModelApi
 from .rest.api.teams_api import TeamsApi
 
 
@@ -73,6 +74,7 @@ class AsyncRestApi:
         self._llm_api = None
         self._ag_events_api = None
         self._teams_api = None
+        self._model_api = None
 
     @property
     def api_client(self):
@@ -141,6 +143,12 @@ class AsyncRestApi:
         if self._teams_api is None:
             self._teams_api = TeamsApi(self.api_client)
         return self._teams_api
+
+    @property
+    def model_api(self):
+        if self._model_api is None:
+            self._model_api = ModelApi(self.api_client)
+        return self._model_api
 
     async def close(self):
         # Ensure the aiohttp client session is closed

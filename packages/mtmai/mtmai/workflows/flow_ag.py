@@ -24,7 +24,7 @@ class FlowAg:
         # retries=1
     )
     async def step_entry(self, hatctx: Context):
-        from ..ag.team_runner import TeamRunner
+        from mtmai.ag.team_runner import TeamRunner
 
         init_mtmai_context(hatctx)
         ctx: AgentContext = get_mtmai_context()
