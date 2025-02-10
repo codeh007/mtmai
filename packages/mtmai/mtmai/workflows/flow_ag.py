@@ -10,8 +10,6 @@ from mtmaisdk.context.context import Context
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
 
-from ..ag.team_runner import TeamRunner
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,6 +24,8 @@ class FlowAg:
         # retries=1
     )
     async def step_entry(self, hatctx: Context):
+        from ..ag.team_runner import TeamRunner
+
         init_mtmai_context(hatctx)
         ctx: AgentContext = get_mtmai_context()
         input = cast(AgentNodeRunInput, hatctx.workflow_input())

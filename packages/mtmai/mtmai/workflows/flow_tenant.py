@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @wfapp.workflow(
     name="tenant",
     on_events=["tenant:run"],
-    input_validator=AgentNodeRunInput,
+    # input_validator=AgentNodeRunInput,
 )
 class FlowTenant:
     """

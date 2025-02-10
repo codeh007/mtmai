@@ -71,36 +71,41 @@ class WorkerApp:
                 sleep(interval)
         raise ValueError("failed to connect gomtm server")
 
+    def get_worker_name(self):
+        return "pyworker"
+
     async def deploy_mtmai_workers(self):
-        await self.setup()
-        self.log.info("start worker")
-        self.worker = wfapp.worker("pyworker")  # 保存 worker 实例
-        if not self.worker:
-            raise ValueError("worker not found")
+        try:
+            self.log.info("worker setup")
+            await self.setup()
+            self.log.info("start worker")
+            self.worker = wfapp.worker(self.get_worker_name())
 
-        # from mtmai.workflows.flow_assistant import FlowAssistant
+            # from mtmai.workflows.flow_crewai import FlowCrewAIAgent
 
-        # worker.register_workflow(FlowAssistant())
+            # worker.register_workflow(FlowCrewAIAgent())
 
-        # from mtmai.workflows.flow_crewai import FlowCrewAIAgent
+            self.log.info("register flow_browser")
+            from mtmai.workflows.flow_browser import FlowBrowser
 
-        # worker.register_workflow(FlowCrewAIAgent())
+            self.worker.register_workflow(FlowBrowser())
 
-        from mtmai.workflows.flow_browser import FlowBrowser
+            self.log.info("register flow_tenant")
+            from workflows.flow_tenant import FlowTenant
 
-        self.worker.register_workflow(FlowBrowser())
+            self.worker.register_workflow(FlowTenant())
 
-        from workflows.flow_ag import FlowAg
+            self.log.info("register flow_ag")
+            from workflows.flow_ag import FlowAg
 
-        self.worker.register_workflow(FlowAg())
+            self.worker.register_workflow(FlowAg())
 
-        from workflows.flow_tenant import FlowTenant
+            await self.worker.async_start()
 
-        self.worker.register_workflow(FlowTenant())
-
-        await self.worker.async_start()
-
-        self.log.info("start worker finished")
+            self.log.info("start worker finished")
+        except Exception as e:
+            self.log.error(f"failed to deploy workers: {e}")
+            raise e
 
     async def stop(self):
         """停止 worker"""
