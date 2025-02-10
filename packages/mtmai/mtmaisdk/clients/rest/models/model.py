@@ -17,24 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmaisdk.clients.rest.models.model_info import ModelInfo
+from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
 class Model(BaseModel):
     """
-    llm model
+    Model
     """ # noqa: E501
-    metadata: APIResourceMeta
-    base_url: StrictStr = Field(alias="baseUrl")
-    api_key: StrictStr = Field(alias="apiKey")
-    model: StrictStr = Field(description="llm model name")
-    family: StrictStr = Field(description="model family")
-    model_info: ModelInfo = Field(alias="modelInfo")
-    __properties: ClassVar[List[str]] = ["metadata", "baseUrl", "apiKey", "model", "family", "modelInfo"]
+    metadata: Optional[APIResourceMeta] = None
+    config: Optional[ModelConfig] = None
+    __properties: ClassVar[List[str]] = ["metadata", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -78,9 +74,9 @@ class Model(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of model_info
-        if self.model_info:
-            _dict['modelInfo'] = self.model_info.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -94,11 +90,7 @@ class Model(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "baseUrl": obj.get("baseUrl"),
-            "apiKey": obj.get("apiKey"),
-            "model": obj.get("model"),
-            "family": obj.get("family"),
-            "modelInfo": ModelInfo.from_dict(obj["modelInfo"]) if obj.get("modelInfo") is not None else None
+            "config": ModelConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

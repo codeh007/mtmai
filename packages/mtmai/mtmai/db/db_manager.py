@@ -10,7 +10,7 @@ from sqlmodel import Session, SQLModel, and_, create_engine, select
 
 from mtmai.models.ag import Response
 
-from ..teammanager import TeamManager
+# from ..teammanager import TeamManager
 
 
 class DatabaseManager:

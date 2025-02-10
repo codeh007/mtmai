@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
@@ -32,8 +32,19 @@ class Team(BaseModel):
     name: StrictStr
     user_id: StrictStr = Field(alias="userId")
     version: Optional[StrictStr] = None
+    team_type: Optional[StrictStr] = None
     component: TeamComponent
-    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "component"]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "team_type", "component"]
+
+    @field_validator('team_type')
+    def team_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['Assisant', 'RoundRobinGroupChat', 'SelectorGroupChat', 'MagenticOneGroupChat']):
+            raise ValueError("must be one of enum values ('Assisant', 'RoundRobinGroupChat', 'SelectorGroupChat', 'MagenticOneGroupChat')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,6 +107,7 @@ class Team(BaseModel):
             "name": obj.get("name"),
             "userId": obj.get("userId"),
             "version": obj.get("version"),
+            "team_type": obj.get("team_type"),
             "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj

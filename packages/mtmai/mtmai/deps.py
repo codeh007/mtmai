@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, AsyncGenerator, Optional
+from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -14,7 +14,7 @@ from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
 from mtmai.models.site import Site
 
-from .teammanager import TeamManager
+# from .teammanager import TeamManager
 
 # from .ws_connection import WebSocketManager
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 # Global manager instances
 # _db_manager: Optional[DatabaseManager] = None
 # _websocket_manager: Optional[WebSocketManager] = None
-_team_manager: Optional[TeamManager] = None
+# _team_manager: Optional[TeamManager] = None
 
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -58,14 +58,14 @@ async def get_db() -> DatabaseManager:
 #     return _websocket_manager
 
 
-async def get_team_manager() -> TeamManager:
-    """Dependency provider for team manager"""
-    if not _team_manager:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Team manager not initialized",
-        )
-    return _team_manager
+# async def get_team_manager() -> TeamManager:
+#     """Dependency provider for team manager"""
+#     if not _team_manager:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Team manager not initialized",
+#         )
+#     return _team_manager
 
 
 # Authentication dependency
@@ -166,7 +166,7 @@ async def get_managers():
     return {
         "db": await get_db(),
         # "connection": await get_websocket_manager(),
-        "team": await get_team_manager(),
+        # "team": await get_team_manager(),
     }
 
 

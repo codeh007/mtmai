@@ -160,6 +160,7 @@ from mtmaisdk.clients.rest.models.log_line_order_by_field import LogLineOrderByF
 from mtmaisdk.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmaisdk.clients.rest.models.max_message_termination_config_component import MaxMessageTerminationConfigComponent
 from mtmaisdk.clients.rest.models.memory_config import MemoryConfig
+from mtmaisdk.clients.rest.models.model import Model
 from mtmaisdk.clients.rest.models.model_component import ModelComponent
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from mtmaisdk.clients.rest.models.model_context import ModelContext

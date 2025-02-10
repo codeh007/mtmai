@@ -93,6 +93,11 @@ class WorkerApp:
         from workflows.flow_ag import FlowAg
 
         self.worker.register_workflow(FlowAg())
+
+        from workflows.flow_tenant import FlowTenant
+
+        self.worker.register_workflow(FlowTenant())
+
         await self.worker.async_start()
 
         self.log.info("start worker finished")

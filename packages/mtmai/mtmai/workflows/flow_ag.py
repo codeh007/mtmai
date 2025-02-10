@@ -3,63 +3,21 @@ import logging
 from typing import cast
 
 from agents.ctx import AgentContext
-from autogen_agentchat.base import TaskResult
-from autogen_agentchat.messages import TextMessage
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_node_run_input import AgentNodeRunInput
 from mtmaisdk.context.context import Context
-from pydantic import BaseModel
 
-from mtmai.ag.team_builder import TeamBuilder
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
+
+from ..ag.team_runner import TeamRunner
 
 logger = logging.getLogger(__name__)
 
 
-async def run_stream(hatctx: Context, task: str, team_id: str):
-    ctx: AgentContext = get_mtmai_context()
-
-    tenant_id = ctx.getTenantId()
-    team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
-        tenant=tenant_id, team=team_id
-    )
-    if team_data is None:
-        raise ValueError("team not found")
-
-    team_builder = TeamBuilder()
-    # agent = await team_builder.create_demo_agent_stream1()
-
-    team = await team_builder.create_team(team_data.component)
-    # team_runner = TeamRunner()
-
-    # async for event in team_runner.run_stream(
-    async for event in team.run_stream(
-        task=task,
-        # team_config=agent.dump_component()
-    ):
-        if isinstance(event, TextMessage):
-            yield event.model_dump()
-        # elif isinstance(event, ToolCallRequestEvent):
-        #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
-        # elif isinstance(event, TeamResult):
-        #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
-
-        elif isinstance(event, BaseModel):
-            # yield f"2:{event.model_dump_json()}\n"
-            yield event.model_dump()
-        elif isinstance(event, TaskResult):
-            # 最终的结果
-            # yield event
-            pass
-        else:
-            # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
-            yield event.model_dump()
-
-
 @wfapp.workflow(
     name="ag",
-    on_events=["autogen-demo:run"],
+    on_events=["ag:run"],
     input_validator=AgentNodeRunInput,
 )
 class FlowAg:
@@ -91,7 +49,9 @@ class FlowAg:
         if len(user_messages) == 0:
             raise ValueError("No messages provided")
         task = user_messages[-1].content
-        async for event in run_stream(ctx, task, team_id):
+
+        team_runner = TeamRunner()
+        async for event in team_runner.run_stream_v2(ctx, task, team_id):
             hatctx.log(event)
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
                 tenant=tenant_id,
@@ -130,4 +90,5 @@ class FlowAg:
     # @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])
     # async def step_c(self, hatctx: Context):
     #     hatctx.log("stepC")
+    #     return {"result": "success"}
     #     return {"result": "success"}

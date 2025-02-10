@@ -4,10 +4,14 @@ from pathlib import Path
 from typing import AsyncGenerator, Callable, Optional, Union
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
+from pydantic import BaseModel
 
+from ...mtmaisdk.context.context import Context
+from ..agents.ctx import get_mtmai_context
 from ..models.ag import TeamResult
+from .team_builder import TeamBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -72,3 +76,42 @@ class TeamRunner:
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
+
+    async def run_stream_v2(hatctx: Context, task: str, team_id: str):
+        ctx = get_mtmai_context()
+
+        tenant_id = ctx.getTenantId()
+        team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
+            tenant=tenant_id, team=team_id
+        )
+        if team_data is None:
+            raise ValueError("team not found")
+
+        team_builder = TeamBuilder()
+        # agent = await team_builder.create_demo_agent_stream1()
+
+        team = await team_builder.create_team(team_data.component)
+        # team_runner = TeamRunner()
+
+        # async for event in team_runner.run_stream(
+        async for event in team.run_stream(
+            task=task,
+            # team_config=agent.dump_component()
+        ):
+            if isinstance(event, TextMessage):
+                yield event.model_dump()
+            # elif isinstance(event, ToolCallRequestEvent):
+            #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
+            # elif isinstance(event, TeamResult):
+            #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
+
+            elif isinstance(event, BaseModel):
+                # yield f"2:{event.model_dump_json()}\n"
+                yield event.model_dump()
+            elif isinstance(event, TaskResult):
+                # 最终的结果
+                # yield event
+                pass
+            else:
+                # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
+                yield event.model_dump()

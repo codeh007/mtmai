@@ -98,6 +98,8 @@ class TeamsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Team",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -169,6 +171,8 @@ class TeamsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Team",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -240,6 +244,8 @@ class TeamsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Team",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
