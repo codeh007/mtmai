@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class TravelTeamBuilder:
     """Manages team operations including loading configs and running teams"""
 
-    def create_runner_by_name(self, name: str):
-        """根据名称创建runner"""
-        if name == "demo_team":
-            return self.create_demo_team()
-        elif name == "demo_agent_stream1":
-            return self.create_demo_agent_stream1()
+    # def create_runner_by_name(self, name: str):
+    #     """根据名称创建runner"""
+    #     if name == "demo_team":
+    #         return self.create_demo_team()
+    #     elif name == "demo_agent_stream1":
+    #         return self.create_demo_agent_stream1()
 
     async def create_demo_team(self):
         """创建默认测试团队"""
@@ -63,30 +63,6 @@ class TravelTeamBuilder:
             reflect_on_tool_use=True,  # Reflect on tool use.
         )
         return assistant
-
-    # async def create_team(
-    #     self,
-    #     team_config: Union[str, Path, dict, ComponentModel],
-    #     input_func: Optional[Callable] = None,
-    # ):
-    #     """Create team instance from config"""
-    #     # Handle different input types
-    #     if isinstance(team_config, (str, Path)):
-    #         config = await self.load_from_file(team_config)
-    #     elif isinstance(team_config, dict):
-    #         config = team_config
-    #     else:
-    #         config = team_config.model_dump()
-
-    #     # Use Component.load_component directly
-    #     team = Team.load_component(config)
-
-    #     for agent in team._participants:
-    #         if hasattr(agent, "input_func"):
-    #             agent.input_func = input_func
-
-    #     # TBD - set input function
-    #     return team
 
     async def create_travel_agent(self, model_config: ModelConfig):
         """创建旅行助理"""

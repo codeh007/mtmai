@@ -1,11 +1,12 @@
 import logging
 import time
 from pathlib import Path
-from typing import AsyncGenerator, Callable, Optional, Union
+from typing import Callable, Optional, Union
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
+from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
+from mtmaisdk.clients.rest.models.ag_event_types import EventNewAgentState
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
@@ -43,45 +44,45 @@ class TeamRunner:
         # TBD - set input function
         return team
 
+    # async def run_stream(
+    #     self,
+    #     task: str,
+    #     team_config: Union[str, Path, dict, ComponentModel],
+    #     input_func: Optional[Callable] = None,
+    #     cancellation_token: Optional[CancellationToken] = None,
+    # ) -> AsyncGenerator[Union[AgentEvent | ChatMessage, ChatMessage, TaskResult], None]:
+    #     """Stream team execution results"""
+    #     start_time = time.time()
+    #     team = None
+
+    #     try:
+    #         team = await self._create_team(team_config, input_func)
+
+    #         async for message in team.run_stream(
+    #             task=task, cancellation_token=cancellation_token
+    #         ):
+    #             if cancellation_token and cancellation_token.is_cancelled():
+    #                 break
+
+    #             if isinstance(message, TaskResult):
+    #                 yield TeamResult(
+    #                     task_result=message, usage="", duration=time.time() - start_time
+    #                 )
+    #             else:
+    #                 yield message
+
+    #     except Exception as e:
+    #         logger.error(f"Error running team: {e}")
+    #         raise e
+
+    #     finally:
+    #         # Ensure cleanup happens
+    #         if team and hasattr(team, "_participants"):
+    #             for agent in team._participants:
+    #                 if hasattr(agent, "close"):
+    #                     await agent.close()
+
     async def run_stream(
-        self,
-        task: str,
-        team_config: Union[str, Path, dict, ComponentModel],
-        input_func: Optional[Callable] = None,
-        cancellation_token: Optional[CancellationToken] = None,
-    ) -> AsyncGenerator[Union[AgentEvent | ChatMessage, ChatMessage, TaskResult], None]:
-        """Stream team execution results"""
-        start_time = time.time()
-        team = None
-
-        try:
-            team = await self._create_team(team_config, input_func)
-
-            async for message in team.run_stream(
-                task=task, cancellation_token=cancellation_token
-            ):
-                if cancellation_token and cancellation_token.is_cancelled():
-                    break
-
-                if isinstance(message, TaskResult):
-                    yield TeamResult(
-                        task_result=message, usage="", duration=time.time() - start_time
-                    )
-                else:
-                    yield message
-
-        except Exception as e:
-            logger.error(f"Error running team: {e}")
-            raise e
-
-        finally:
-            # Ensure cleanup happens
-            if team and hasattr(team, "_participants"):
-                for agent in team._participants:
-                    if hasattr(agent, "close"):
-                        await agent.close()
-
-    async def run_stream_v2(
         self,
         hatctx: Context,
         task: str,
@@ -91,7 +92,7 @@ class TeamRunner:
         cancellation_token: Optional[CancellationToken] = None,
     ):
         ctx = get_mtmai_context()
-
+        start_time = time.time()
         tenant_id = ctx.getTenantId()
         team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
             tenant=tenant_id, team=team_id
@@ -99,8 +100,8 @@ class TeamRunner:
         if team_data is None:
             raise ValueError("team not found")
 
+        yield EventNewAgentState(stateId=team_id)
         team = await self._create_team(team_data.component)
-        start_time = time.time()
         try:
             async for event in team.run_stream(
                 task=task,

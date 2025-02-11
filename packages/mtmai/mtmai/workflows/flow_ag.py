@@ -55,7 +55,7 @@ class FlowAg:
             raise ValueError("No messages provided")
         task = params.messages[-1].content
         team_runner = TeamRunner()
-        async for event in team_runner.run_stream_v2(ctx, task, team_id):
+        async for event in team_runner.run_stream(ctx, task, team_id):
             hatctx.log(event)
 
             _event = event

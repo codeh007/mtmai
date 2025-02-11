@@ -31,6 +31,7 @@ class EventTypes(str, Enum):
     STEPRUN = 'StepRun'
     TEXTMESSAGE = 'TextMessage'
     MODELCLIENTSTREAMINGCHUNKEVENT = 'ModelClientStreamingChunkEvent'
+    EVENTNEWAGENTSTATE = 'EventNewAgentState'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
