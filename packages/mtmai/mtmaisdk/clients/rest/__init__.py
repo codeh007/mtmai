@@ -89,7 +89,6 @@ from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
 from mtmaisdk.clients.rest.models.ag_event_update import AgEventUpdate
 from mtmaisdk.clients.rest.models.ag_state import AgState
-from mtmaisdk.clients.rest.models.ag_state_create import AgStateCreate
 from mtmaisdk.clients.rest.models.ag_state_list import AgStateList
 from mtmaisdk.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmaisdk.clients.rest.models.agent_action import AgentAction

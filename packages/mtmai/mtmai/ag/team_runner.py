@@ -117,7 +117,7 @@ class TeamRunner:
                 else:
                     yield event.model_dump()
             state_to_save = await team.save_state()
-            logger.info(f"state2: {state_to_save}")
+            # logger.info(f"state2: {state_to_save}")
 
             # 保存状态
             saveed_response = (
