@@ -34,10 +34,9 @@ from mtmaisdk.clients.rest.models.replay_workflow_runs_response import (
 from mtmaisdk.clients.rest.models.workflow import Workflow
 from mtmaisdk.clients.rest.models.workflow_kind import WorkflowKind
 from mtmaisdk.clients.rest.models.workflow_list import WorkflowList
-from mtmaisdk.clients.rest.models.workflow_run import WorkflowRun
-from mtmaisdk.clients.rest.models.workflow_run_cancel200_response import (
-    WorkflowRunCancel200Response,
-)
+from mtmaisdk.clients.rest.models.workflow_run import (
+    WorkflowRun,
+)  # WorkflowRunCancel200Response,
 from mtmaisdk.clients.rest.models.workflow_run_list import WorkflowRunList
 from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
     WorkflowRunOrderByDirection,
@@ -234,9 +233,7 @@ class AsyncRestApi:
             ),
         )
 
-    async def workflow_run_cancel(
-        self, workflow_run_id: str
-    ) -> WorkflowRunCancel200Response:
+    async def workflow_run_cancel(self, workflow_run_id: str):
         return await self.workflow_run_api.workflow_run_cancel(
             tenant=self.tenant_id,
             workflow_runs_cancel_request=WorkflowRunsCancelRequest(
@@ -244,9 +241,7 @@ class AsyncRestApi:
             ),
         )
 
-    async def workflow_run_bulk_cancel(
-        self, workflow_run_ids: list[str]
-    ) -> WorkflowRunCancel200Response:
+    async def workflow_run_bulk_cancel(self, workflow_run_ids: list[str]):
         return await self.workflow_run_api.workflow_run_cancel(
             tenant=self.tenant_id,
             workflow_runs_cancel_request=WorkflowRunsCancelRequest(
@@ -402,12 +397,10 @@ class RestApi:
     def workflow_run_get(self, workflow_run_id: str) -> WorkflowRun:
         return self._run_coroutine(self.aio.workflow_run_get(workflow_run_id))
 
-    def workflow_run_cancel(self, workflow_run_id: str) -> WorkflowRunCancel200Response:
+    def workflow_run_cancel(self, workflow_run_id: str):
         return self._run_coroutine(self.aio.workflow_run_cancel(workflow_run_id))
 
-    def workflow_run_bulk_cancel(
-        self, workflow_run_ids: list[str]
-    ) -> WorkflowRunCancel200Response:
+    def workflow_run_bulk_cancel(self, workflow_run_ids: list[str]):
         return self._run_coroutine(self.aio.workflow_run_bulk_cancel(workflow_run_ids))
 
     def workflow_run_create(
