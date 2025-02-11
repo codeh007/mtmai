@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.clients.rest.models.team_types import TeamTypes
@@ -28,12 +28,12 @@ class TeamCreate(BaseModel):
     """
     TeamCreate
     """ # noqa: E501
+    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
+    version: Optional[StrictInt] = 1
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
-    version: Optional[StrictInt] = None
-    team_type: Optional[StrictStr] = None
     component: TeamComponent
-    __properties: ClassVar[List[str]] = ["label", "description", "version", "team_type", "component"]
+    __properties: ClassVar[List[str]] = ["componentType", "version", "label", "description", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,10 +89,10 @@ class TeamCreate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "componentType": obj.get("componentType"),
+            "version": obj.get("version") if obj.get("version") is not None else 1,
             "label": obj.get("label"),
             "description": obj.get("description"),
-            "version": obj.get("version"),
-            "team_type": obj.get("team_type"),
             "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj

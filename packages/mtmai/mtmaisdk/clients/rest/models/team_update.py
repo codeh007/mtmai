@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmaisdk.clients.rest.models.component_model import ComponentModel
 from typing import Optional, Set
@@ -30,7 +30,7 @@ class TeamUpdate(BaseModel):
     """ # noqa: E501
     metadata: APIResourceMeta
     name: StrictStr
-    user_id: StrictStr = Field(alias="userId")
+    user_id: Optional[StrictStr] = Field(default=None, alias="userId")
     version: StrictStr
     config: ComponentModel
     __properties: ClassVar[List[str]] = ["metadata", "name", "userId", "version", "config"]

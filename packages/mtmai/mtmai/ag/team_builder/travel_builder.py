@@ -128,7 +128,7 @@ class TravelTeamBuilder:
         termination = TextMentionTermination(text="TERMINATE")
         max_msg_termination = MaxMessageTermination(max_messages=5)
         combined_termination = max_msg_termination & termination
-        group_chat = RoundRobinGroupChat(
+        team = RoundRobinGroupChat(
             participants=[
                 planner_agent,
                 local_agent,
@@ -137,4 +137,7 @@ class TravelTeamBuilder:
             ],
             termination_condition=combined_termination,
         )
-        return group_chat
+        team.component_version = 2
+        team.component_label = "travel_agent"
+        team.component_description = "行程规划团队"
+        return team

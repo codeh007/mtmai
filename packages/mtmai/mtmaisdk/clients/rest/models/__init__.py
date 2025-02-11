@@ -258,7 +258,6 @@ from mtmaisdk.clients.rest.models.step_run_event_reason import StepRunEventReaso
 from mtmaisdk.clients.rest.models.step_run_event_severity import StepRunEventSeverity
 from mtmaisdk.clients.rest.models.step_run_status import StepRunStatus
 from mtmaisdk.clients.rest.models.stop_message_config import StopMessageConfig
-from mtmaisdk.clients.rest.models.subscribe_request import SubscribeRequest
 from mtmaisdk.clients.rest.models.subsection import Subsection
 from mtmaisdk.clients.rest.models.task_result import TaskResult
 from mtmaisdk.clients.rest.models.team import Team

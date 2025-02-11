@@ -217,7 +217,7 @@ class CompanyResearchTeamBuilder:
         termination = TextMentionTermination(text="TERMINATE")
         max_msg_termination = MaxMessageTermination(max_messages=5)
         combined_termination = max_msg_termination & termination
-        group_chat = RoundRobinGroupChat(
+        team = RoundRobinGroupChat(
             participants=[
                 search_agent,
                 stock_analysis_agent,
@@ -225,4 +225,7 @@ class CompanyResearchTeamBuilder:
             ],
             termination_condition=combined_termination,
         )
-        return group_chat
+        team.component_version = 2
+        team.component_label = "company_research"
+        team.component_description = "公司研究团队"
+        return team
