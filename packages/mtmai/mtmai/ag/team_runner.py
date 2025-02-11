@@ -137,6 +137,7 @@ class TeamRunner:
             logger.info(f"saveed_response: {saveed_response}")
         except Exception as e:
             logger.error(f"未知错误: {e}")
+            raise e
         finally:
             # Ensure cleanup happens
             if team and hasattr(team, "_participants"):
