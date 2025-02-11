@@ -1,6 +1,4 @@
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
-
-# import models into sdk package
 from mtmaisdk.clients.rest.models.api_error import APIError
 from mtmaisdk.clients.rest.models.api_errors import APIErrors
 from mtmaisdk.clients.rest.models.api_meta import APIMeta
@@ -31,22 +29,10 @@ from mtmaisdk.clients.rest.models.event_workflow_run_summary import (
 from mtmaisdk.clients.rest.models.get_step_run_diff_response import (
     GetStepRunDiffResponse,
 )
-
-# from mtmaisdk.clients.rest.models.github_app_installation import GithubAppInstallation
-# from mtmaisdk.clients.rest.models.github_branch import GithubBranch
-# from mtmaisdk.clients.rest.models.github_repo import GithubRepo
 from mtmaisdk.clients.rest.models.job import Job
 from mtmaisdk.clients.rest.models.job_run import JobRun
 from mtmaisdk.clients.rest.models.job_run_status import JobRunStatus
-
-# from mtmaisdk.clients.rest.models.link_github_repository_request import (
-#     LinkGithubRepositoryRequest,
-# )
 from mtmaisdk.clients.rest.models.list_api_tokens_response import ListAPITokensResponse
-
-# from mtmaisdk.clients.rest.models.list_github_app_installations_response import (
-#     ListGithubAppInstallationsResponse,
-# )
 from mtmaisdk.clients.rest.models.list_pull_requests_response import (
     ListPullRequestsResponse,
 )
@@ -89,9 +75,6 @@ from mtmaisdk.clients.rest.models.user_tenant_memberships_list import (
 from mtmaisdk.clients.rest.models.user_tenant_public import UserTenantPublic
 from mtmaisdk.clients.rest.models.worker_list import WorkerList
 from mtmaisdk.clients.rest.models.workflow import Workflow
-
-# from mtmaisdk.clients.rest.models.workflow_deployment_config import \
-#     WorkflowDeploymentConfig
 from mtmaisdk.clients.rest.models.workflow_list import WorkflowList
 from mtmaisdk.clients.rest.models.workflow_run import WorkflowRun
 from mtmaisdk.clients.rest.models.workflow_run_list import WorkflowRunList

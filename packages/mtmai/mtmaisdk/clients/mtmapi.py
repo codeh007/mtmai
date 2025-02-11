@@ -32,10 +32,6 @@ from mtmaisdk.clients.rest.models.workflow import Workflow
 from mtmaisdk.clients.rest.models.workflow_kind import WorkflowKind
 from mtmaisdk.clients.rest.models.workflow_list import WorkflowList
 from mtmaisdk.clients.rest.models.workflow_run import WorkflowRun
-
-# from mtmaisdk.clients.rest.models.workflow_run_cancel200_response import (
-#     WorkflowRunCancel200Response,
-# )
 from mtmaisdk.clients.rest.models.workflow_run_list import WorkflowRunList
 from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
     WorkflowRunOrderByDirection,
@@ -411,5 +407,4 @@ class RestApi:
         )
 
     def events_replay(self, event_ids: list[str] | EventList) -> EventList:
-        return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))
