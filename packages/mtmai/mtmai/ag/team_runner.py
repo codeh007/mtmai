@@ -82,7 +82,7 @@ class TeamRunner:
         hatctx: Context,
         task: str,
         team_id: str,
-        team_config: Union[str, Path, dict, ComponentModel],
+        # team_config: Union[str, Path, dict, ComponentModel],
         input_func: Optional[Callable] = None,
         cancellation_token: Optional[CancellationToken] = None,
     ):
@@ -98,11 +98,11 @@ class TeamRunner:
         team_builder = TeamBuilder()
         # agent = await team_builder.create_demo_agent_stream1()
 
-        team = await team_builder.create_team(team_data.component.model_dump())
+        team = await team_builder.create_team(team_data.component)
         # team_runner = TeamRunner()
 
-        state1 = await team.save_state()
-        logger.info(f"state1: {state1}")
+        # state1 = await team.save_state()
+        # logger.info(f"state1: {state1}")
 
         try:
             # async for event in team_runner.run_stream(
@@ -110,6 +110,8 @@ class TeamRunner:
                 task=task,
                 # team_config=agent.dump_component()
             ):
+                if cancellation_token and cancellation_token.is_cancelled():
+                    break
                 if isinstance(event, TextMessage):
                     yield event.model_dump()
                 # elif isinstance(event, ToolCallRequestEvent):

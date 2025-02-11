@@ -54,12 +54,13 @@ class FlowTenant:
         hatctx.log(team1)
 
         # 保存 team
+        team_comp = team1.dump_component().model_dump()
         r = await hatctx.rest_client.aio.teams_api.team_create(
             tenant=tenant_id,
             team_create=TeamCreate(
                 label="travel_agent",
                 description=team1.component_description or "",
-                component=TeamComponent(**team1.dump_component().model_dump()),
+                component=TeamComponent(**team_comp),
             ),
         )
         hatctx.log(r)
