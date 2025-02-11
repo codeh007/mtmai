@@ -10,8 +10,6 @@ aiohttp==3.11.11
     # via
     #   mtxai (pyproject.toml)
     #   aiohttp-retry
-    #   auth0-python
-    #   instructor
     #   langchain
     #   langchain-community
     #   langchain-fireworks
@@ -36,15 +34,10 @@ anyio==4.8.0
     #   anthropic
     #   httpx
     #   httpx-ws
+    #   mcp
     #   openai
+    #   sse-starlette
     #   starlette
-    #   watchfiles
-appdirs==1.4.4
-    # via crewai
-asgiref==3.8.1
-    # via opentelemetry-instrumentation-asgi
-asttokens==3.0.0
-    # via stack-data
 async-timeout==5.0.1
     # via mtxai (pyproject.toml)
 attrs==24.3.0
@@ -52,20 +45,18 @@ attrs==24.3.0
     #   aiohttp
     #   jsonschema
     #   referencing
-auth0-python==4.7.2
-    # via crewai
-autogen-agentchat==0.4.5
+autogen-agentchat==0.4.6
     # via
     #   mtxai (pyproject.toml)
     #   autogen-ext
     #   autogenstudio
-autogen-core==0.4.5
+autogen-core==0.4.6
     # via
     #   mtxai (pyproject.toml)
     #   autogen-agentchat
     #   autogen-ext
     #   autogenstudio
-autogen-ext==0.4.5
+autogen-ext==0.4.6
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
@@ -88,8 +79,6 @@ babel==2.16.0
     #   courlan
 backoff==2.2.1
     # via posthog
-bcrypt==4.2.1
-    # via chromadb
 beautifulsoup4==4.12.3
     # via
     #   mtxai (pyproject.toml)
@@ -98,9 +87,9 @@ beautifulsoup4==4.12.3
     #   maincontentextractor
     #   markdownify
     #   markitdown
+    #   readabilipy
     #   scrapegraph-py
-blinker==1.9.0
-    # via crewai
+    #   yfinance
 boto3==1.36.5
     # via langchain-aws
 botocore==1.36.5
@@ -109,8 +98,6 @@ botocore==1.36.5
     #   s3transfer
 browser-use==0.1.23
     # via mtxai (pyproject.toml)
-build==1.2.2.post1
-    # via chromadb
 cachetools==5.5.1
     # via google-auth
 cel-python==0.1.5
@@ -119,7 +106,6 @@ certifi==2024.12.14
     # via
     #   httpcore
     #   httpx
-    #   kubernetes
     #   requests
     #   trafilatura
 cffi==1.17.1
@@ -131,27 +117,17 @@ charset-normalizer==3.4.1
     #   pdfminer-six
     #   requests
     #   trafilatura
-chroma-hnswlib==0.7.6
-    # via chromadb
-chromadb==0.6.3
-    # via crewai
 click==8.1.8
     # via
-    #   crewai
     #   litellm
     #   typer
     #   uvicorn
 cobble==0.1.4
     # via mammoth
-coloredlogs==15.0.1
-    # via onnxruntime
 courlan==1.3.2
     # via trafilatura
-crewai==0.95.0
-    # via mtxai (pyproject.toml)
 cryptography==43.0.3
     # via
-    #   auth0-python
     #   azure-identity
     #   msal
     #   pdfminer-six
@@ -160,18 +136,12 @@ dataclasses-json==0.6.7
     # via langchain-community
 dateparser==1.2.0
     # via htmldate
-decorator==5.1.1
-    # via ipython
 defusedxml==0.7.1
     # via
     #   langchain-anthropic
     #   youtube-transcript-api
 deprecated==1.2.15
-    # via
-    #   opentelemetry-api
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-    #   opentelemetry-semantic-conventions
+    # via opentelemetry-api
 dill==0.3.9
     # via multiprocess
 distro==1.9.0
@@ -180,23 +150,16 @@ distro==1.9.0
     #   openai
 dnspython==2.7.0
     # via email-validator
-docstring-parser==0.16
-    # via instructor
-durationpy==0.9
-    # via kubernetes
 email-validator==2.2.0
     # via mtxai (pyproject.toml)
 et-xmlfile==2.0.0
     # via openpyxl
 exa-py==1.8.4
     # via mtxai (pyproject.toml)
-executing==2.2.0
-    # via stack-data
 fastapi==0.115.7
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
-    #   chromadb
 filelock==3.17.0
     # via
     #   huggingface-hub
@@ -205,10 +168,10 @@ filetype==1.2.0
     # via langchain-google-genai
 fireworks-ai==0.15.12
     # via langchain-fireworks
-flatbuffers==25.1.21
-    # via onnxruntime
 free-proxy==1.1.3
     # via mtxai (pyproject.toml)
+frozendict==2.4.6
+    # via yfinance
 frozenlist==1.5.0
     # via
     #   aiohttp
@@ -231,7 +194,6 @@ google-auth==2.38.0
     #   google-api-python-client
     #   google-auth-httplib2
     #   google-generativeai
-    #   kubernetes
 google-auth-httplib2==0.2.0
     # via google-api-python-client
 google-generativeai==0.8.4
@@ -240,8 +202,6 @@ googleapis-common-protos==1.66.0
     # via
     #   google-api-core
     #   grpcio-status
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
 googlesearch-python==1.3.0
     # via mtxai (pyproject.toml)
 greenlet==3.1.1
@@ -251,11 +211,9 @@ greenlet==3.1.1
 grpcio==1.70.0
     # via
     #   mtxai (pyproject.toml)
-    #   chromadb
     #   google-api-core
     #   grpcio-status
     #   grpcio-tools
-    #   opentelemetry-exporter-otlp-proto-grpc
 grpcio-status==1.62.3
     # via google-api-core
 grpcio-tools==1.70.0
@@ -267,6 +225,10 @@ h11==0.14.0
     #   wsproto
 html2text==2024.2.26
     # via maincontentextractor
+html5lib==1.1
+    # via
+    #   readabilipy
+    #   yfinance
 htmldate==1.9.3
     # via trafilatura
 httpcore==1.0.7
@@ -277,19 +239,18 @@ httplib2==0.22.0
     # via
     #   google-api-python-client
     #   google-auth-httplib2
-httptools==0.6.4
-    # via uvicorn
 httpx==0.27.2
     # via
     #   anthropic
+    #   autogen-ext
     #   browser-use
-    #   chromadb
     #   fireworks-ai
     #   httpx-ws
     #   langchain-mistralai
     #   langgraph-sdk
     #   langsmith
     #   litellm
+    #   mcp
     #   ollama
     #   openai
 httpx-sse==0.4.0
@@ -297,6 +258,7 @@ httpx-sse==0.4.0
     #   fireworks-ai
     #   langchain-community
     #   langchain-mistralai
+    #   mcp
 httpx-ws==0.7.1
     # via fireworks-ai
 huggingface-hub==0.27.1
@@ -304,8 +266,6 @@ huggingface-hub==0.27.1
     #   mtxai (pyproject.toml)
     #   tokenizers
     #   transformers
-humanfriendly==10.0
-    # via coloredlogs
 idna==3.10
     # via
     #   anyio
@@ -317,25 +277,13 @@ importlib-metadata==8.4.0
     # via
     #   litellm
     #   opentelemetry-api
-importlib-resources==6.5.2
-    # via chromadb
-instructor==1.7.2
-    # via crewai
-ipython==8.31.0
-    # via pyvis
 isodate==0.7.2
     # via azure-ai-inference
-jedi==0.19.2
-    # via ipython
 jinja2==3.1.5
-    # via
-    #   instructor
-    #   litellm
-    #   pyvis
+    # via litellm
 jiter==0.8.2
     # via
     #   anthropic
-    #   instructor
     #   openai
 jmespath==1.0.1
     # via
@@ -343,27 +291,21 @@ jmespath==1.0.1
     #   botocore
     #   cel-python
 json-repair==0.35.0
-    # via
-    #   mtxai (pyproject.toml)
-    #   crewai
+    # via mtxai (pyproject.toml)
+json-schema-to-pydantic==0.2.2
+    # via autogen-ext
 jsonpatch==1.33
     # via langchain-core
-jsonpickle==4.0.1
-    # via pyvis
 jsonpointer==3.0.0
     # via jsonpatch
 jsonref==1.1.0
-    # via
-    #   autogen-core
-    #   crewai
+    # via autogen-core
 jsonschema==4.23.0
     # via litellm
 jsonschema-specifications==2024.10.1
     # via jsonschema
 justext==3.0.1
     # via trafilatura
-kubernetes==32.0.0
-    # via chromadb
 langchain==0.3.15
     # via
     #   mtxai (pyproject.toml)
@@ -425,9 +367,7 @@ lark-parser==0.12.0
 lazify==0.4.0
     # via mtxai (pyproject.toml)
 litellm==1.59.6
-    # via
-    #   mtxai (pyproject.toml)
-    #   crewai
+    # via mtxai (pyproject.toml)
 loguru==0.7.3
     # via
     #   mtxai (pyproject.toml)
@@ -439,7 +379,9 @@ lxml==5.3.0
     #   justext
     #   lxml-html-clean
     #   python-pptx
+    #   readabilipy
     #   trafilatura
+    #   yfinance
 lxml-html-clean==0.4.1
     # via
     #   mtxai (pyproject.toml)
@@ -453,7 +395,9 @@ mammoth==1.9.0
 markdown-it-py==3.0.0
     # via rich
 markdownify==0.14.1
-    # via markitdown
+    # via
+    #   markitdown
+    #   mcp-server-fetch
 markitdown==0.0.1a3
     # via autogen-ext
 markupsafe==3.0.2
@@ -462,20 +406,20 @@ markupsafe==3.0.2
     #   mako
 marshmallow==3.26.0
     # via dataclasses-json
-matplotlib-inline==0.1.7
-    # via ipython
+mcp==1.2.1
+    # via
+    #   autogen-ext
+    #   mcp-server-fetch
+mcp-server-fetch==2025.1.17
+    # via mtxai (pyproject.toml)
 mdurl==0.1.2
     # via markdown-it-py
 minify-html==0.15.0
     # via mtxai (pyproject.toml)
-mmh3==5.0.1
-    # via chromadb
 monotonic==1.6
     # via posthog
 mpire==2.10.2
     # via semchunk
-mpmath==1.3.0
-    # via sympy
 msal==1.31.1
     # via
     #   azure-identity
@@ -490,135 +434,65 @@ multidict==6.1.0
     #   yarl
 multiprocess==0.70.17
     # via mpire
+multitasking==0.0.11
+    # via yfinance
 mypy-extensions==1.0.0
     # via typing-inspect
 nanoid==2.0.0
     # via mtxai (pyproject.toml)
 nest-asyncio==1.6.0
     # via mtxai (pyproject.toml)
-networkx==3.4.2
-    # via pyvis
 numpy==1.26.4
     # via
     #   autogenstudio
-    #   chroma-hnswlib
-    #   chromadb
     #   langchain
     #   langchain-aws
     #   langchain-community
     #   markitdown
-    #   onnxruntime
     #   pandas
     #   pgvector
     #   transformers
-oauthlib==3.2.2
-    # via
-    #   kubernetes
-    #   requests-oauthlib
+    #   yfinance
 ollama==0.4.7
     # via langchain-ollama
-onnxruntime==1.20.1
-    # via chromadb
 openai==1.60.0
     # via
     #   mtxai (pyproject.toml)
     #   autogen-ext
-    #   crewai
     #   exa-py
-    #   instructor
     #   langchain-fireworks
     #   langchain-openai
     #   litellm
     #   markitdown
 openpyxl==3.1.5
-    # via
-    #   crewai
-    #   markitdown
+    # via markitdown
 opentelemetry-api==1.29.0
-    # via
-    #   autogen-core
-    #   chromadb
-    #   crewai
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-    #   opentelemetry-instrumentation
-    #   opentelemetry-instrumentation-asgi
-    #   opentelemetry-instrumentation-fastapi
-    #   opentelemetry-sdk
-    #   opentelemetry-semantic-conventions
-opentelemetry-exporter-otlp-proto-common==1.29.0
-    # via
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.29.0
-    # via chromadb
-opentelemetry-exporter-otlp-proto-http==1.29.0
-    # via crewai
-opentelemetry-instrumentation==0.50b0
-    # via
-    #   opentelemetry-instrumentation-asgi
-    #   opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-asgi==0.50b0
-    # via opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-fastapi==0.50b0
-    # via chromadb
-opentelemetry-proto==1.29.0
-    # via
-    #   opentelemetry-exporter-otlp-proto-common
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.29.0
-    # via
-    #   chromadb
-    #   crewai
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.50b0
-    # via
-    #   opentelemetry-instrumentation
-    #   opentelemetry-instrumentation-asgi
-    #   opentelemetry-instrumentation-fastapi
-    #   opentelemetry-sdk
-opentelemetry-util-http==0.50b0
-    # via
-    #   opentelemetry-instrumentation-asgi
-    #   opentelemetry-instrumentation-fastapi
+    # via autogen-core
 orjson==3.10.15
     # via
     #   mtxai (pyproject.toml)
-    #   chromadb
     #   langgraph-checkpoint-postgres
     #   langgraph-sdk
     #   langsmith
-overrides==7.7.0
-    # via chromadb
 packaging==24.2
     # via
-    #   build
     #   huggingface-hub
     #   langchain-core
     #   marshmallow
-    #   onnxruntime
-    #   opentelemetry-instrumentation
     #   transformers
 pandas==2.2.3
     # via
     #   mtxai (pyproject.toml)
     #   markitdown
-parso==0.8.4
-    # via jedi
+    #   yfinance
 passlib==1.7.4
     # via mtxai (pyproject.toml)
 pathvalidate==3.2.3
     # via markitdown
 pdfminer-six==20231228
-    # via
-    #   markitdown
-    #   pdfplumber
-pdfplumber==0.11.5
-    # via crewai
-pexpect==4.9.0
-    # via ipython
+    # via markitdown
+peewee==3.17.9
+    # via yfinance
 pgvector==0.3.6
     # via mtxai (pyproject.toml)
 pillow==11.1.0
@@ -626,8 +500,9 @@ pillow==11.1.0
     #   autogen-core
     #   autogen-ext
     #   fireworks-ai
-    #   pdfplumber
     #   python-pptx
+platformdirs==4.3.6
+    # via yfinance
 playwright==1.49.1
     # via
     #   mtxai (pyproject.toml)
@@ -637,15 +512,13 @@ playwright==1.49.1
 portalocker==2.10.1
     # via msal-extensions
 posthog==3.9.3
-    # via
-    #   browser-use
-    #   chromadb
-prompt-toolkit==3.0.50
-    # via ipython
+    # via browser-use
 propcache==0.2.1
     # via
     #   aiohttp
     #   yarl
+protego==0.4.0
+    # via mcp-server-fetch
 proto-plus==1.25.0
     # via
     #   google-ai-generativelanguage
@@ -659,8 +532,6 @@ protobuf==5.29.3
     #   googleapis-common-protos
     #   grpcio-status
     #   grpcio-tools
-    #   onnxruntime
-    #   opentelemetry-proto
     #   proto-plus
 psycopg==3.2.4
     # via
@@ -670,10 +541,6 @@ psycopg-pool==3.2.4
     # via langgraph-checkpoint-postgres
 psycopg2-binary==2.9.10
     # via mtxai (pyproject.toml)
-ptyprocess==0.7.0
-    # via pexpect
-pure-eval==0.2.3
-    # via stack-data
 puremagic==1.28
     # via markitdown
 pyasn1==0.6.1
@@ -691,12 +558,10 @@ pydantic==2.10.6
     #   autogen-core
     #   autogenstudio
     #   browser-use
-    #   chromadb
-    #   crewai
     #   fastapi
     #   fireworks-ai
     #   google-generativeai
-    #   instructor
+    #   json-schema-to-pydantic
     #   langchain
     #   langchain-anthropic
     #   langchain-aws
@@ -705,41 +570,33 @@ pydantic==2.10.6
     #   langchain-mistralai
     #   langsmith
     #   litellm
+    #   mcp
+    #   mcp-server-fetch
     #   ollama
     #   openai
     #   pydantic-settings
     #   scrapegraph-py
     #   sqlmodel
 pydantic-core==2.27.2
-    # via
-    #   instructor
-    #   pydantic
+    # via pydantic
 pydantic-settings==2.7.1
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
     #   langchain-community
+    #   mcp
 pydub==0.25.1
     # via markitdown
 pyee==12.0.0
     # via playwright
 pygments==2.19.1
     # via
-    #   ipython
     #   mpire
     #   rich
 pyjwt==2.10.1
-    # via
-    #   auth0-python
-    #   msal
+    # via msal
 pyparsing==3.2.1
     # via httplib2
-pypdfium2==4.30.1
-    # via pdfplumber
-pypika==0.48.9
-    # via chromadb
-pyproject-hooks==1.2.0
-    # via build
 python-dateutil==2.9.0.post0
     # via
     #   mtxai (pyproject.toml)
@@ -747,7 +604,6 @@ python-dateutil==2.9.0.post0
     #   cel-python
     #   dateparser
     #   htmldate
-    #   kubernetes
     #   pandas
     #   posthog
 python-dotenv==1.0.1
@@ -755,45 +611,40 @@ python-dotenv==1.0.1
     #   mtxai (pyproject.toml)
     #   autogenstudio
     #   browser-use
-    #   crewai
     #   litellm
     #   pydantic-settings
     #   scrapegraph-py
-    #   uvicorn
 python-pptx==1.0.2
     # via markitdown
 pytz==2024.2
     # via
     #   dateparser
     #   pandas
-pyvis==0.3.2
-    # via crewai
+    #   yfinance
 pyyaml==6.0.2
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
     #   cel-python
-    #   chromadb
     #   huggingface-hub
-    #   kubernetes
     #   langchain
     #   langchain-community
     #   langchain-core
     #   transformers
-    #   uvicorn
+readabilipy==0.3.0
+    # via mcp-server-fetch
 referencing==0.36.1
     # via
     #   jsonschema
     #   jsonschema-specifications
 regex==2024.11.6
     # via
-    #   crewai
     #   dateparser
+    #   readabilipy
     #   tiktoken
     #   transformers
 requests==2.32.3
     # via
-    #   auth0-python
     #   azure-core
     #   browser-use
     #   cel-python
@@ -802,31 +653,24 @@ requests==2.32.3
     #   google-api-core
     #   googlesearch-python
     #   huggingface-hub
-    #   instructor
-    #   kubernetes
     #   langchain
     #   langchain-community
     #   langchain-fireworks
     #   langsmith
     #   markitdown
+    #   mcp-server-fetch
     #   msal
-    #   opentelemetry-exporter-otlp-proto-http
     #   posthog
-    #   requests-oauthlib
     #   requests-toolbelt
     #   scrapegraph-py
     #   tiktoken
     #   transformers
+    #   yfinance
     #   youtube-transcript-api
-requests-oauthlib==2.0.0
-    # via kubernetes
 requests-toolbelt==1.0.0
     # via langsmith
 rich==13.9.4
-    # via
-    #   chromadb
-    #   instructor
-    #   typer
+    # via typer
 rpds-py==0.22.3
     # via
     #   jsonschema
@@ -852,7 +696,7 @@ simpleeval==1.0.3
 six==1.17.0
     # via
     #   azure-core
-    #   kubernetes
+    #   html5lib
     #   markdownify
     #   posthog
     #   python-dateutil
@@ -879,19 +723,18 @@ sqlmodel==0.0.22
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
-stack-data==0.6.3
-    # via ipython
+sse-starlette==2.2.1
+    # via mcp
 starlette==0.45.3
-    # via fastapi
+    # via
+    #   fastapi
+    #   mcp
+    #   sse-starlette
 structlog==25.1.0
     # via mtxai (pyproject.toml)
-sympy==1.13.3
-    # via onnxruntime
 tenacity==9.0.0
     # via
     #   mtxai (pyproject.toml)
-    #   chromadb
-    #   instructor
     #   langchain
     #   langchain-community
     #   langchain-core
@@ -905,18 +748,12 @@ tld==0.13
     # via courlan
 tokenizers==0.21.0
     # via
-    #   chromadb
     #   langchain-mistralai
     #   litellm
     #   transformers
-tomli==2.2.1
-    # via crewai
-tomli-w==1.2.0
-    # via crewai
 tqdm==4.67.1
     # via
     #   mtxai (pyproject.toml)
-    #   chromadb
     #   google-generativeai
     #   huggingface-hub
     #   mpire
@@ -925,18 +762,12 @@ tqdm==4.67.1
     #   transformers
 trafilatura==2.0.0
     # via maincontentextractor
-traitlets==5.14.3
-    # via
-    #   ipython
-    #   matplotlib-inline
 transformers==4.48.1
     # via mtxai (pyproject.toml)
 typer==0.13.1
     # via
     #   mtxai (pyproject.toml)
     #   autogenstudio
-    #   chromadb
-    #   instructor
 typing-extensions==4.12.2
     # via
     #   aiostream
@@ -947,14 +778,12 @@ typing-extensions==4.12.2
     #   azure-ai-inference
     #   azure-core
     #   azure-identity
-    #   chromadb
     #   exa-py
     #   fastapi
     #   google-generativeai
     #   huggingface-hub
     #   langchain-core
     #   openai
-    #   opentelemetry-sdk
     #   psycopg
     #   psycopg-pool
     #   pydantic
@@ -978,42 +807,30 @@ uritemplate==4.1.1
     # via google-api-python-client
 urllib3==2.3.0
     # via
-    #   auth0-python
     #   botocore
     #   cel-python
     #   courlan
     #   htmldate
-    #   kubernetes
     #   requests
     #   trafilatura
-uv==0.5.24
-    # via crewai
 uvicorn==0.34.0
     # via
     #   autogenstudio
-    #   chromadb
-uvloop==0.21.0
-    # via uvicorn
-watchfiles==1.0.4
-    # via uvicorn
-wcwidth==0.2.13
-    # via prompt-toolkit
-websocket-client==1.8.0
-    # via kubernetes
+    #   mcp
+webencodings==0.5.1
+    # via html5lib
 websockets==13.1
-    # via
-    #   autogenstudio
-    #   uvicorn
+    # via autogenstudio
 wrapt==1.17.2
-    # via
-    #   deprecated
-    #   opentelemetry-instrumentation
+    # via deprecated
 wsproto==1.2.0
     # via httpx-ws
 xlsxwriter==3.2.2
     # via python-pptx
 yarl==1.18.3
     # via aiohttp
+yfinance==0.2.52
+    # via mtxai (pyproject.toml)
 youtube-transcript-api==0.6.3
     # via markitdown
 zipp==3.21.0
