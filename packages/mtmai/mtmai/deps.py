@@ -14,10 +14,6 @@ from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
 from mtmai.models.site import Site
 
-# from .teammanager import TeamManager
-
-# from .ws_connection import WebSocketManager
-
 logger = logging.getLogger(__name__)
 
 
@@ -305,5 +301,6 @@ async def get_site(session: AsyncSessionDep, request: Request) -> Site:
         raise HTTPException(status_code=400, detail="Unable to determine site domain")
 
 
+SiteDep = Annotated[Site, Depends(get_site)]
 SiteDep = Annotated[Site, Depends(get_site)]
 SiteDep = Annotated[Site, Depends(get_site)]

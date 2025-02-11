@@ -142,4 +142,3 @@ class TeamRunner:
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
-                        await agent.close()
