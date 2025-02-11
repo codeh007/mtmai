@@ -8,6 +8,7 @@ from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
 from mtmai.tools.calculator import web_search
 
+from ..base.RoundRobinGroupChat import MtRoundRobinGroupChat
 from ..model_client import MtmOpenAIChatCompletionClient, get_oai_Model
 
 logger = logging.getLogger(__name__)
@@ -104,7 +105,7 @@ class TravelTeamBuilder:
         termination = TextMentionTermination(text="TERMINATE")
         max_msg_termination = MaxMessageTermination(max_messages=5)
         combined_termination = max_msg_termination & termination
-        team = RoundRobinGroupChat(
+        team = MtRoundRobinGroupChat(
             participants=[
                 planner_agent,
                 local_agent,

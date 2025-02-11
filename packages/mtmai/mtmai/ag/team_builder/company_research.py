@@ -2,10 +2,10 @@ import logging
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
-from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.tools import FunctionTool
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
+from ..base.RoundRobinGroupChat import MtRoundRobinGroupChat
 from ..model_client import MtmOpenAIChatCompletionClient
 
 logger = logging.getLogger(__name__)
@@ -217,7 +217,7 @@ class CompanyResearchTeamBuilder:
         termination = TextMentionTermination(text="TERMINATE")
         max_msg_termination = MaxMessageTermination(max_messages=5)
         combined_termination = max_msg_termination & termination
-        team = RoundRobinGroupChat(
+        team = MtRoundRobinGroupChat(
             participants=[
                 search_agent,
                 stock_analysis_agent,
