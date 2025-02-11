@@ -36,11 +36,6 @@ class FlowAg:
         user_id = ctx.getUserId()
         if not user_id:
             raise ValueError("userId 不能为空")
-        # bbb = input.params.actual_instance
-        # eee = cast(FloadAgPayload, input.params.one_of_schemas)
-        # aaa = input.params.actual_instance_must_validate_oneof(
-        #     hatctx.input.get("params")
-        # )
         params = FlowAgPayload.model_validate(hatctx.input.get("params"))
 
         team_id = params.team_id
