@@ -340,9 +340,15 @@ class Context(BaseContext):
         except Exception as e:
             logger.error(f"Error putting stream event: {e}")
 
-    def put_stream(self, data: str | bytes) -> None:
+    def put_stream(self, data: str | bytes | dict | BaseModel) -> None:
         if self.stepRunId == "":
             return
+
+        if isinstance(data, BaseModel):
+            data = data.model_dump()
+
+        if isinstance(data, dict):
+            data = json.dumps(data)
 
         self.stream_event_thread_pool.submit(self._put_stream, data)
 

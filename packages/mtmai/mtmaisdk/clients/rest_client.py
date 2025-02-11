@@ -51,7 +51,7 @@ from mtmaisdk.clients.rest.models.workflow_runs_cancel_request import (
 )
 from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
-from .rest.api.ag_states_api import AgStatesApi
+from .rest.api.ag_state_api import AgStateApi
 from .rest.api.model_api import ModelApi
 from .rest.api.teams_api import TeamsApi
 
@@ -155,7 +155,7 @@ class AsyncRestApi:
     @property
     def ag_state_api(self):
         if self._ag_state_api is None:
-            self._ag_state_api = AgStatesApi(self.api_client)
+            self._ag_state_api = AgStateApi(self.api_client)
         return self._ag_state_api
 
     async def close(self):

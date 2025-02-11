@@ -6,7 +6,7 @@ from typing import AsyncGenerator, Callable, Optional, Union
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
-from mtmaisdk.clients.rest.models.ag_state_create import AgStateCreate
+from mtmaisdk.clients.rest.models.ag_state import AgState
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -97,16 +97,9 @@ class TeamRunner:
             raise ValueError("team not found")
 
         team_builder = TeamBuilder()
-        # agent = await team_builder.create_demo_agent_stream1()
-
         team = await team_builder.create_team(team_data.component)
-        # team_runner = TeamRunner()
-
-        # state1 = await team.save_state()
-        # logger.info(f"state1: {state1}")
-
+        start_time = time.time()
         try:
-            # async for event in team_runner.run_stream(
             async for event in team.run_stream(
                 task=task,
                 # team_config=agent.dump_component()
@@ -124,24 +117,27 @@ class TeamRunner:
                     # yield f"2:{event.model_dump_json()}\n"
                     yield event.model_dump()
                 elif isinstance(event, TaskResult):
-                    # 最终的结果
-                    # yield event
-                    pass
+                    yield TeamResult(
+                        task_result=event, usage="", duration=time.time() - start_time
+                    )
                 else:
-                    # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
                     yield event.model_dump()
-            state2 = await team.save_state()
-            logger.info(f"state2: {state2}")
+            state_to_save = await team.save_state()
+            logger.info(f"state2: {state_to_save}")
 
             # 保存状态
-            ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_create(
-                tenant=tenant_id,
-                ag_state_create=AgStateCreate(
-                    version=state2.get("version", "1.0.0"),
-                    teamId=state2.get("team_id"),
-                    state=state2.get("state"),
-                ),
+            saveed_response = (
+                await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
+                    tenant=tenant_id,
+                    state=team_id,
+                    ag_state=AgState(
+                        version=state_to_save.get("version", "1.0.0"),
+                        teamId=state_to_save.get("team_id"),
+                        state=state_to_save,
+                    ),
+                )
             )
+            logger.info(f"saveed_response: {saveed_response}")
         finally:
             # Ensure cleanup happens
             if team and hasattr(team, "_participants"):

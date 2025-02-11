@@ -28,8 +28,9 @@ class AgStateProperties(BaseModel):
     """ # noqa: E501
     version: StrictStr
     team_id: StrictStr = Field(alias="teamId")
+    type: StrictStr
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["version", "teamId", "state"]
+    __properties: ClassVar[List[str]] = ["version", "teamId", "type", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,6 +85,7 @@ class AgStateProperties(BaseModel):
         _obj = cls.model_validate({
             "version": obj.get("version"),
             "teamId": obj.get("teamId"),
+            "type": obj.get("type"),
             "state": obj.get("state")
         })
         return _obj

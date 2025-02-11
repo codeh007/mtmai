@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import cast
 
@@ -7,6 +6,7 @@ from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.clients.rest.models.flow_ag_payload import FlowAgPayload
 from mtmaisdk.context.context import Context
+from pydantic import BaseModel
 
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
@@ -54,32 +54,25 @@ class FlowAg:
         if len(params.messages) == 0:
             raise ValueError("No messages provided")
         task = params.messages[-1].content
-
-        # 聊天消息入库
-        # await hatctx.rest_client.aio.ag_events_api.ag_event_create(
-        #     tenant=tenant_id,
-        #     ag_event_create=AgEventCreate(
-        #         user_id=user_id,
-        #         data=params.messages,
-        #     ),
-        # )
         team_runner = TeamRunner()
         async for event in team_runner.run_stream_v2(ctx, task, team_id):
             hatctx.log(event)
+
+            _event = event
+            if isinstance(event, BaseModel):
+                _event = event.model_dump()
             result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
                 tenant=tenant_id,
                 ag_event_create=AgEventCreate(
                     user_id=user_id,
-                    data=event,
+                    data=_event,
                     framework="autogen",
                     stepRunId=hatctx.step_run_id,
                     meta={},
                 ),
             )
-
             hatctx.log(result)
-            stream_bytes = json.dumps(event)
-            hatctx.put_stream(stream_bytes)
+            hatctx.put_stream(event)
         return {"result": "success"}
 
     @wfapp.step(timeout="1m", retries=1, parents=["step_entry"])

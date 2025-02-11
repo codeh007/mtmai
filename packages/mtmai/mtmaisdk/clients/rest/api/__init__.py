@@ -18,6 +18,7 @@ from mtmaisdk.clients.rest.api.workflow_api import WorkflowApi
 from mtmaisdk.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmaisdk.clients.rest.api.admin_api import AdminApi
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
+from mtmaisdk.clients.rest.api.ag_state_api import AgStateApi
 from mtmaisdk.clients.rest.api.ag_states_api import AgStatesApi
 from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
@@ -42,5 +43,6 @@ from mtmaisdk.clients.rest.api.proxy_api import ProxyApi
 from mtmaisdk.clients.rest.api.run_api import RunApi
 from mtmaisdk.clients.rest.api.site_api import SiteApi
 from mtmaisdk.clients.rest.api.site_host_api import SiteHostApi
+from mtmaisdk.clients.rest.api.team_api import TeamApi
 from mtmaisdk.clients.rest.api.teams_api import TeamsApi
 
