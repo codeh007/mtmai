@@ -6,6 +6,7 @@ from typing import AsyncGenerator, Callable, Optional, Union
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
+from mtmaisdk.clients.rest.models.ag_state_create import AgStateCreate
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -131,6 +132,16 @@ class TeamRunner:
                     yield event.model_dump()
             state2 = await team.save_state()
             logger.info(f"state2: {state2}")
+
+            # 保存状态
+            ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_create(
+                tenant=tenant_id,
+                ag_state_create=AgStateCreate(
+                    version=state2.get("version", "1.0.0"),
+                    teamId=state2.get("team_id"),
+                    state=state2.get("state"),
+                ),
+            )
         finally:
             # Ensure cleanup happens
             if team and hasattr(team, "_participants"):

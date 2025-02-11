@@ -18,6 +18,7 @@ from mtmaisdk.clients.rest.api.workflow_api import WorkflowApi
 from mtmaisdk.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmaisdk.clients.rest.api.admin_api import AdminApi
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
+from mtmaisdk.clients.rest.api.ag_states_api import AgStatesApi
 from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi

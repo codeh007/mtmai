@@ -34,6 +34,7 @@ from mtmaisdk.clients.rest.api.workflow_api import WorkflowApi
 from mtmaisdk.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmaisdk.clients.rest.api.admin_api import AdminApi
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
+from mtmaisdk.clients.rest.api.ag_states_api import AgStatesApi
 from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
@@ -85,6 +86,10 @@ from mtmaisdk.clients.rest.models.ag_event import AgEvent
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
 from mtmaisdk.clients.rest.models.ag_event_update import AgEventUpdate
+from mtmaisdk.clients.rest.models.ag_state import AgState
+from mtmaisdk.clients.rest.models.ag_state_create import AgStateCreate
+from mtmaisdk.clients.rest.models.ag_state_list import AgStateList
+from mtmaisdk.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmaisdk.clients.rest.models.agent_action import AgentAction
 from mtmaisdk.clients.rest.models.agent_component import AgentComponent
 from mtmaisdk.clients.rest.models.agent_config import AgentConfig
