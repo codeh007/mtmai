@@ -17,8 +17,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
-from typing import Any, Dict
 from typing_extensions import Annotated
+from mtmaisdk.clients.rest.models.ag_event_v2 import AgEventV2
 from mtmaisdk.clients.rest.models.agent_node import AgentNode
 from mtmaisdk.clients.rest.models.agent_node_create_request import AgentNodeCreateRequest
 from mtmaisdk.clients.rest.models.agent_node_list import AgentNodeList
@@ -1509,7 +1509,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> AgEventTypes[str, object]:
+    ) -> AgEventV2:
         """agent_stream
 
         拉取事件
@@ -1550,7 +1550,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventTypes[str, object]",
+            '200': "AgEventV2",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1582,7 +1582,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[AgEventTypes[str, object]]:
+    ) -> ApiResponse[AgEventV2]:
         """agent_stream
 
         拉取事件
@@ -1623,7 +1623,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventTypes[str, object]",
+            '200': "AgEventV2",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1696,7 +1696,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventTypes[str, object]",
+            '200': "AgEventV2",
             '400': "APIErrors",
             '403': "APIError",
         }

@@ -27,8 +27,8 @@ from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteReque
 from mtmaisdk.clients.rest.models.ag_event import AgEvent
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_event_list import AgEventList
-from mtmaisdk.clients.rest.models.ag_event_types import AgEventTypes
 from mtmaisdk.clients.rest.models.ag_event_update import AgEventUpdate
+from mtmaisdk.clients.rest.models.ag_event_v2 import AgEventV2
 from mtmaisdk.clients.rest.models.ag_state import AgState
 from mtmaisdk.clients.rest.models.ag_state_list import AgStateList
 from mtmaisdk.clients.rest.models.ag_state_properties import AgStateProperties
