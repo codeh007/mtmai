@@ -77,7 +77,15 @@ class TeamRunner:
                     if hasattr(agent, "close"):
                         await agent.close()
 
-    async def run_stream_v2(self, hatctx: Context, task: str, team_id: str):
+    async def run_stream_v2(
+        self,
+        hatctx: Context,
+        task: str,
+        team_id: str,
+        team_config: Union[str, Path, dict, ComponentModel],
+        input_func: Optional[Callable] = None,
+        cancellation_token: Optional[CancellationToken] = None,
+    ):
         ctx = get_mtmai_context()
 
         tenant_id = ctx.getTenantId()
@@ -93,25 +101,37 @@ class TeamRunner:
         team = await team_builder.create_team(team_data.component.model_dump())
         # team_runner = TeamRunner()
 
-        # async for event in team_runner.run_stream(
-        async for event in team.run_stream(
-            task=task,
-            # team_config=agent.dump_component()
-        ):
-            if isinstance(event, TextMessage):
-                yield event.model_dump()
-            # elif isinstance(event, ToolCallRequestEvent):
-            #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
-            # elif isinstance(event, TeamResult):
-            #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
+        state1 = await team.save_state()
+        logger.info(f"state1: {state1}")
 
-            elif isinstance(event, BaseModel):
-                # yield f"2:{event.model_dump_json()}\n"
-                yield event.model_dump()
-            elif isinstance(event, TaskResult):
-                # 最终的结果
-                # yield event
-                pass
-            else:
-                # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
-                yield event.model_dump()
+        try:
+            # async for event in team_runner.run_stream(
+            async for event in team.run_stream(
+                task=task,
+                # team_config=agent.dump_component()
+            ):
+                if isinstance(event, TextMessage):
+                    yield event.model_dump()
+                # elif isinstance(event, ToolCallRequestEvent):
+                #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
+                # elif isinstance(event, TeamResult):
+                #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
+
+                elif isinstance(event, BaseModel):
+                    # yield f"2:{event.model_dump_json()}\n"
+                    yield event.model_dump()
+                elif isinstance(event, TaskResult):
+                    # 最终的结果
+                    # yield event
+                    pass
+                else:
+                    # yield f"2:{json.dumps(f'unknown event: {str(event)},type:{type(event)}')}\n"
+                    yield event.model_dump()
+            state2 = await team.save_state()
+            logger.info(f"state2: {state2}")
+        finally:
+            # Ensure cleanup happens
+            if team and hasattr(team, "_participants"):
+                for agent in team._participants:
+                    if hasattr(agent, "close"):
+                        await agent.close()

@@ -6,7 +6,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Team
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_core import Component, ComponentModel
+from autogen_core import ComponentModel
 from autogen_core.tools import FunctionTool
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
@@ -72,7 +72,7 @@ class TeamBuilder:
         self,
         team_config: Union[str, Path, dict, ComponentModel],
         input_func: Optional[Callable] = None,
-    ) -> Component:
+    ):
         """Create team instance from config"""
         # Handle different input types
         if isinstance(team_config, (str, Path)):

@@ -1,22 +1,11 @@
+import logging
 import os
-from pathlib import Path
 
 import gradio as gr
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from huggingface_hub import InferenceClient
 
-default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
-
-load_dotenv()
-# 搜索并加载环境变量文件
-for env_file in default_env_files:
-    env_path = Path(env_file)
-    if env_path.exists():
-        load_dotenv(env_path)
-# token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-# if not token:
-#     raise ValueError("HUGGINGFACEHUB_API_TOKEN 未设置")
+logger = logging.getLogger(__name__)
 
 
 def getInferenceClient():
@@ -128,6 +117,7 @@ def mount_gradio_app(app: FastAPI):
 
     from .gradio_app import demo
 
+    logger.info("mount_gradio_app")
     gr.mount_gradio_app(app, demo, path="/")
 
 

@@ -1,9 +1,7 @@
 import asyncio
-import os
 import threading
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
@@ -17,24 +15,6 @@ from mtmai.middleware import AuthMiddleware
 
 from .api import mount_api_routes
 from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
-
-# from starlette.templating import Jinja2Templates
-
-
-# from starlette_context.plugins.base import Plugin
-
-# from mtmai.workflows.workers import deploy_mtmai_workers
-
-# LOG = structlog.stdlib.get_logger()
-
-
-# class ExecutionDatePlugin(Plugin):
-#     key = "execution_date"
-
-#     async def process_request(
-#         self, request: StarletteRequest | HTTPConnection
-#     ) -> datetime:
-#         return datetime.now()
 
 
 def build_app():
@@ -220,8 +200,8 @@ def build_app():
 
 async def serve():
     # analytics.capture("skyvern-oss-run-server")
-    if os.path.exists("../gomtm/env/mtmai.env"):
-        load_dotenv(dotenv_path=os.path.join("../gomtm/env/mtmai.env"))
+    # if os.path.exists("../gomtm/env/mtmai.env"):
+    #     load_dotenv(dotenv_path=os.path.join("../gomtm/env/mtmai.env"))
 
     app = build_app()
     config = uvicorn.Config(
@@ -229,12 +209,6 @@ async def serve():
         host=settings.SERVE_IP,
         port=settings.PORT,
         log_level="info",
-        # reload=not settings.is_production,
-        # !!! bug 当 使用了prefect 后，使用了这个指令： @flow，程序会被卡在： .venv/lib/python3.12/site-packages/uvicorn/config.py
-        # !!!365行：logging.config.dictConfig(self.log_config)
-        # !!! 原因未知，但是 log_config=None 后，问题消失
-        # log_config=None,
-        # reload=reload,
     )
 
     host = (

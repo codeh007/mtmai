@@ -2,8 +2,11 @@ import asyncio
 import logging
 import os
 import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
+
+default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
 
 
 def bootstrap_core():
@@ -11,8 +14,13 @@ def bootstrap_core():
     from .logging import setup_logging
 
     load_dotenv()
-    if os.path.exists("../gomtm/env/dev.env"):
-        load_dotenv(dotenv_path=os.path.join("../gomtm/env/dev.env"))
+
+    # # 搜索并加载环境变量文件
+    for env_file in default_env_files:
+        env_path = Path(env_file)
+        if env_path.exists():
+            load_dotenv(env_path)
+
     setup_logging()
     logger = logging.getLogger()
     logger.info(
@@ -30,5 +38,3 @@ def bootstrap_core():
     if settings.SOCKS_PROXY:
         logger.info(f"SOCKS_PROXY: {settings.SOCKS_PROXY}")
         os.environ["SOCKS_PROXY"] = settings.SOCKS_PROXY
-
-
