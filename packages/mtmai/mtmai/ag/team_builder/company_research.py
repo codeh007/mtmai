@@ -5,6 +5,7 @@ from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermi
 from autogen_core.tools import FunctionTool
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
+from ..base.MtWebUserProxyAgent import MtWebUserProxyAgent
 from ..base.RoundRobinGroupChat import MtRoundRobinGroupChat
 from ..model_client import MtmOpenAIChatCompletionClient
 
@@ -17,9 +18,6 @@ def google_search(query: str, num_results: int = 2, max_chars: int = 500) -> lis
 
     import requests
     from bs4 import BeautifulSoup
-    from dotenv import load_dotenv
-
-    load_dotenv()
 
     api_key = os.getenv("GOOGLE_API_KEY")
     search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
@@ -191,6 +189,9 @@ class CompanyResearchTeamBuilder:
             analyze_stock, description="Analyze stock data and generate a plot"
         )
 
+        user_proxy_agent = MtWebUserProxyAgent(
+            name="web_user",
+        )
         search_agent = AssistantAgent(
             name="Google_Search_Agent",
             model_client=model_client,
@@ -219,6 +220,7 @@ class CompanyResearchTeamBuilder:
         combined_termination = max_msg_termination & termination
         team = MtRoundRobinGroupChat(
             participants=[
+                user_proxy_agent,
                 search_agent,
                 stock_analysis_agent,
                 report_agent,

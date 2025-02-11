@@ -26,7 +26,7 @@ class AgStateUpsert(BaseModel):
     """
     AgStateUpsert
     """ # noqa: E501
-    version: StrictStr
+    version: Optional[StrictStr] = '1.0.0'
     type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["version", "type", "state"]

@@ -128,11 +128,11 @@ class TeamRunner:
                 await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
                     tenant=tenant_id,
                     state=team_id,
-                    ag_state=AgStateUpsert(
-                        id=team_id,
-                        version=state_to_save.get("version"),
+                    ag_state_upsert=AgStateUpsert(
+                        # id=team_id,
+                        # version=state_to_save.get("version"),
                         state=state_to_save,
-                        type=state_to_save.get("type"),
+                        # type=state_to_save.get("type"),
                     ),
                 )
             )

@@ -28,7 +28,7 @@ class AgState(BaseModel):
     AgState
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    version: StrictStr
+    version: Optional[StrictStr] = '1.0.0'
     type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["metadata", "version", "type", "state"]
