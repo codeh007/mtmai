@@ -28,7 +28,7 @@ class AgStateProperties(BaseModel):
     """ # noqa: E501
     version: StrictStr
     team_id: StrictStr = Field(alias="teamId")
-    type: Optional[StrictStr] = 'team'
+    type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["version", "teamId", "type", "state"]
 
@@ -85,7 +85,7 @@ class AgStateProperties(BaseModel):
         _obj = cls.model_validate({
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "teamId": obj.get("teamId"),
-            "type": obj.get("type") if obj.get("type") is not None else 'team',
+            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
             "state": obj.get("state")
         })
         return _obj

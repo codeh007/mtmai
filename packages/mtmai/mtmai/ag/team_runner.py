@@ -71,6 +71,10 @@ class TeamRunner:
                 else:
                     yield message
 
+        except Exception as e:
+            logger.error(f"Error running team: {e}")
+            raise e
+
         finally:
             # Ensure cleanup happens
             if team and hasattr(team, "_participants"):
@@ -117,8 +121,6 @@ class TeamRunner:
                 else:
                     yield event.model_dump()
             state_to_save = await team.save_state()
-            # logger.info(f"state2: {state_to_save}")
-
             # 保存状态
             saveed_response = (
                 await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
@@ -128,11 +130,13 @@ class TeamRunner:
                         version=state_to_save.get("version", "1.0.0"),
                         teamId=state_to_save.get("team_id"),
                         state=state_to_save,
-                        type=state_to_save.get("type", "team"),
+                        type=state_to_save.get("type", "TeamState"),
                     ),
                 )
             )
             logger.info(f"saveed_response: {saveed_response}")
+        except Exception as e:
+            logger.error(f"未知错误: {e}")
         finally:
             # Ensure cleanup happens
             if team and hasattr(team, "_participants"):

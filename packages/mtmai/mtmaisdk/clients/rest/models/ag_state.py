@@ -29,7 +29,7 @@ class AgState(BaseModel):
     """ # noqa: E501
     version: StrictStr
     team_id: StrictStr = Field(alias="teamId")
-    type: Optional[StrictStr] = 'team'
+    type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
     metadata: Optional[APIResourceMeta] = None
     __properties: ClassVar[List[str]] = ["version", "teamId", "type", "state", "metadata"]
@@ -90,7 +90,7 @@ class AgState(BaseModel):
         _obj = cls.model_validate({
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "teamId": obj.get("teamId"),
-            "type": obj.get("type") if obj.get("type") is not None else 'team',
+            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
             "state": obj.get("state"),
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
         })

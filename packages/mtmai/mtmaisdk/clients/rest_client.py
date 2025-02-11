@@ -53,6 +53,7 @@ from mtmaisdk.clients.rest.models.workflow_version import WorkflowVersion
 
 from .rest.api.ag_state_api import AgStateApi
 from .rest.api.model_api import ModelApi
+from .rest.api.team_api import TeamApi
 from .rest.api.teams_api import TeamsApi
 
 
@@ -75,6 +76,7 @@ class AsyncRestApi:
         self._llm_api = None
         self._ag_events_api = None
         self._teams_api = None
+        self._team_api = None
         self._model_api = None
         self._ag_state_api = None
 
@@ -145,6 +147,12 @@ class AsyncRestApi:
         if self._teams_api is None:
             self._teams_api = TeamsApi(self.api_client)
         return self._teams_api
+
+    @property
+    def team_api(self):
+        if self._team_api is None:
+            self._team_api = TeamApi(self.api_client)
+        return self._team_api
 
     @property
     def model_api(self):
@@ -464,5 +472,6 @@ class RestApi:
         )
 
     def events_replay(self, event_ids: list[str] | EventList) -> EventList:
+        return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))

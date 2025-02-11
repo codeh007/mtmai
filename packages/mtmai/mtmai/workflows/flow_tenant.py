@@ -3,8 +3,8 @@ from typing import cast
 
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
-from mtmaisdk.clients.rest.models.team_create import TeamCreate
 from mtmaisdk.context.context import Context
 
 from mtmai.ag.team_builder import TeamBuilder
@@ -55,9 +55,10 @@ class FlowTenant:
 
         # 保存 team
         team_comp = team1.dump_component().model_dump()
-        r = await hatctx.rest_client.aio.teams_api.team_create(
+        r = await hatctx.rest_client.aio.team_api.team_upsert(
             tenant=tenant_id,
-            team_create=TeamCreate(
+            team_id=team1._team_id,
+            team2=Team(
                 label="travel_agent",
                 description=team1.component_description or "",
                 component=TeamComponent(**team_comp),
