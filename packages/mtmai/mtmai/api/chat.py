@@ -4,18 +4,15 @@ from autogen_agentchat.messages import TextMessage
 from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
-
-from mtmai.ag.team_builder import TeamBuilder
+from mtmai.ag.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.ag.team_runner import TeamRunner
-
-# from ..gomtmclients.rest.models.chat_req import ChatReq
 
 router = APIRouter()
 
 
 async def run_stream(task: str):
     try:
-        team_builder = TeamBuilder()
+        team_builder = TravelTeamBuilder()
         team = await team_builder.create_demo_team()
         team_runner = TeamRunner()
 
@@ -79,5 +76,6 @@ async def run_stream(task: str):
 
 #     except Exception as e:
 #         logger.error("Chat error", error=str(e))
+#         return {"error": str(e)}
 #         return {"error": str(e)}
 #         return {"error": str(e)}

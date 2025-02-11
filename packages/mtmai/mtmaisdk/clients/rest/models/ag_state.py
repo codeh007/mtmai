@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,11 +28,10 @@ class AgState(BaseModel):
     AgState
     """ # noqa: E501
     version: StrictStr
-    team_id: StrictStr = Field(alias="teamId")
     type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
     metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["version", "teamId", "type", "state", "metadata"]
+    __properties: ClassVar[List[str]] = ["version", "type", "state", "metadata"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,7 +88,6 @@ class AgState(BaseModel):
 
         _obj = cls.model_validate({
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "teamId": obj.get("teamId"),
             "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
             "state": obj.get("state"),
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None

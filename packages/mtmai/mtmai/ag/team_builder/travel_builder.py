@@ -12,12 +12,12 @@ from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
 from mtmai.tools.calculator import web_search
 
-from .model_client import MtmOpenAIChatCompletionClient, get_oai_Model
+from ..model_client import MtmOpenAIChatCompletionClient, get_oai_Model
 
 logger = logging.getLogger(__name__)
 
 
-class TeamBuilder:
+class TravelTeamBuilder:
     """Manages team operations including loading configs and running teams"""
 
     def create_runner_by_name(self, name: str):
@@ -130,6 +130,8 @@ class TeamBuilder:
         )
 
         termination = TextMentionTermination(text="TERMINATE")
+        max_msg_termination = MaxMessageTermination(max_messages=5)
+        combined_termination = max_msg_termination & termination
         group_chat = RoundRobinGroupChat(
             participants=[
                 planner_agent,
@@ -137,6 +139,6 @@ class TeamBuilder:
                 language_agent,
                 travel_summary_agent,
             ],
-            termination_condition=termination,
+            termination_condition=combined_termination,
         )
         return group_chat

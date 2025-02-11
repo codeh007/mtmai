@@ -6,7 +6,7 @@ from typing import AsyncGenerator, Callable, Optional, Union
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
-from mtmaisdk.clients.rest.models.ag_state import AgState
+from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -126,11 +126,11 @@ class TeamRunner:
                 await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
                     tenant=tenant_id,
                     state=team_id,
-                    ag_state=AgState(
-                        version=state_to_save.get("version", "1.0.0"),
-                        teamId=state_to_save.get("team_id"),
+                    ag_state=AgStateUpsert(
+                        id=team_id,
+                        version=state_to_save.get("version"),
                         state=state_to_save,
-                        type=state_to_save.get("type", "TeamState"),
+                        type=state_to_save.get("type"),
                     ),
                 )
             )
@@ -143,4 +143,5 @@ class TeamRunner:
             if team and hasattr(team, "_participants"):
                 for agent in team._participants:
                     if hasattr(agent, "close"):
+                        await agent.close()
                         await agent.close()
