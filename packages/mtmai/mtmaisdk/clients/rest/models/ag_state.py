@@ -27,11 +27,11 @@ class AgState(BaseModel):
     """
     AgState
     """ # noqa: E501
+    metadata: Optional[APIResourceMeta] = None
     version: StrictStr
     type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
-    metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["version", "type", "state", "metadata"]
+    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,10 +87,10 @@ class AgState(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "state": obj.get("state"),
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
+            "state": obj.get("state")
         })
         return _obj
 

@@ -1,13 +1,14 @@
 import logging
 from typing import cast
 
-from ag.team_builder.travel_builder import TeamBuilder
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.context.context import Context
 
+from mtmai.ag.team_builder.company_research import CompanyResearchTeamBuilder
+from mtmai.ag.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.agents.ctx import get_mtmai_context, init_mtmai_context
 from mtmai.worker import wfapp
 
@@ -43,26 +44,30 @@ class FlowTenant:
 
         # 获取模型配置
         logger.info("获取模型配置")
-        r = await hatctx.rest_client.aio.model_api.model_get(
+        defaultModel = await hatctx.rest_client.aio.model_api.model_get(
             tenant=tenant_id, model="default"
         )
-        hatctx.log(r)
+        hatctx.log(defaultModel)
 
-        model_config = r.config
-        team_builder = TeamBuilder()
+        model_config = defaultModel.config
+        team_builder = TravelTeamBuilder()
         team1 = await team_builder.create_travel_agent(model_config)
-        hatctx.log(team1)
-
-        # 保存 team
-        team_comp = team1.dump_component().model_dump()
-        r = await hatctx.rest_client.aio.team_api.team_upsert(
-            tenant=tenant_id,
-            team_id=team1._team_id,
-            team2=Team(
-                label="travel_agent",
-                description=team1.component_description or "",
-                component=TeamComponent(**team_comp),
-            ),
+        team2 = await CompanyResearchTeamBuilder().create_company_research_team(
+            model_config
         )
-        hatctx.log(r)
+
+        all_teams = [team1, team2]
+        for team in all_teams:
+            # 保存 team
+            team_comp = team.dump_component()
+            defaultModel = await hatctx.rest_client.aio.team_api.team_upsert(
+                tenant=tenant_id,
+                team=team._team_id,
+                team2=Team(
+                    label=team_comp.label,
+                    description=team_comp.description or "",
+                    component=TeamComponent(**team_comp.model_dump()),
+                ),
+            )
+            hatctx.log(defaultModel)
         return {"result": "success"}

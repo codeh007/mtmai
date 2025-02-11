@@ -50,7 +50,7 @@ dependencies = [
     "scrapegraph-py>=1.7.0",
     "fastapi>=0.115.7",
     # "scrapegraphai>=1.33.3",
-    "crewai>=0.95.0",
+    # "crewai>=0.95.0",
     "structlog>=24.4.0",
     "langgraph>=0.2.63",
     "langgraph-checkpoint-postgres>=2.0.13",
@@ -91,9 +91,9 @@ dependencies = [
     "lxml-html-clean>=0.4.1",
     "huggingface-hub>=0.27.1",
     # "prefect>=3.1.13",
-    "autogen-core>=0.4.5,<0.5",
-    "autogen-agentchat>=0.4.5,<0.5",
-    "autogen-ext[magentic-one, openai, azure]>=0.4.5,<0.5",
+    "autogen-core>=0.4.6,<0.5",
+    "autogen-agentchat>=0.4.6,<0.5",
+    "autogen-ext[magentic-one, openai, azure, mcp, http-tool]>=0.4.6,<0.5",
     "autogenstudio>=0.4",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
@@ -103,6 +103,8 @@ dependencies = [
     "pydantic>=2.10.5",
     "alembic>=1.14.1",
     "slugify>=0.0.1",
+    "yfinance>=0.2.52",
+    "mcp-server-fetch>=2025.1.17",
 ]
 
 

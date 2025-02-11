@@ -10,7 +10,6 @@ from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
-from mtmai.ag.team_builder import TeamBuilder
 from mtmai.agents.ctx import get_mtmai_context
 from mtmai.models.ag import TeamResult
 
@@ -100,8 +99,7 @@ class TeamRunner:
         if team_data is None:
             raise ValueError("team not found")
 
-        team_builder = TeamBuilder()
-        team = await team_builder.create_team(team_data.component)
+        team = await self._create_team(team_data.component)
         start_time = time.time()
         try:
             async for event in team.run_stream(
