@@ -39,7 +39,7 @@ class TeamApi:
 
 
     @validate_call
-    async def team_update(
+    async def team_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
@@ -57,9 +57,9 @@ class TeamApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> Team:
-        """team_update
+        """team_upsert
 
-        Update an team
+        Upsert an team
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -89,7 +89,7 @@ class TeamApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._team_update_serialize(
+        _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
             team2=team2,
@@ -116,7 +116,7 @@ class TeamApi:
 
 
     @validate_call
-    async def team_update_with_http_info(
+    async def team_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
@@ -134,9 +134,9 @@ class TeamApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[Team]:
-        """team_update
+        """team_upsert
 
-        Update an team
+        Upsert an team
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -166,7 +166,7 @@ class TeamApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._team_update_serialize(
+        _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
             team2=team2,
@@ -193,7 +193,7 @@ class TeamApi:
 
 
     @validate_call
-    async def team_update_without_preload_content(
+    async def team_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
@@ -211,9 +211,9 @@ class TeamApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """team_update
+        """team_upsert
 
-        Update an team
+        Upsert an team
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -243,7 +243,7 @@ class TeamApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._team_update_serialize(
+        _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
             team2=team2,
@@ -265,7 +265,7 @@ class TeamApi:
         return response_data.response
 
 
-    def _team_update_serialize(
+    def _team_upsert_serialize(
         self,
         tenant,
         team,

@@ -108,13 +108,7 @@ class TeamRunner:
                     break
                 if isinstance(event, TextMessage):
                     yield event.model_dump()
-                # elif isinstance(event, ToolCallRequestEvent):
-                #     yield f"0:{json.dumps(obj=jsonable_encoder(event.content))}\n"
-                # elif isinstance(event, TeamResult):
-                #     yield f"0:{json.dumps(obj=event.model_dump_json())}\n"
-
                 elif isinstance(event, BaseModel):
-                    # yield f"2:{event.model_dump_json()}\n"
                     yield event.model_dump()
                 elif isinstance(event, TaskResult):
                     yield TeamResult(
@@ -134,6 +128,7 @@ class TeamRunner:
                         version=state_to_save.get("version", "1.0.0"),
                         teamId=state_to_save.get("team_id"),
                         state=state_to_save,
+                        type=state_to_save.get("type", "team"),
                     ),
                 )
             )

@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,7 @@ class AgStateCreate(BaseModel):
     """ # noqa: E501
     version: StrictStr
     team_id: StrictStr = Field(alias="teamId")
-    type: StrictStr
+    type: Optional[StrictStr] = 'team'
     state: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["version", "teamId", "type", "state"]
 
@@ -83,9 +83,9 @@ class AgStateCreate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "version": obj.get("version"),
+            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "teamId": obj.get("teamId"),
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'team',
             "state": obj.get("state")
         })
         return _obj
