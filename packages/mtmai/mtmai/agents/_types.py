@@ -96,11 +96,6 @@ class CascadingMessage:
     round: int
 
 @dataclass
-class CascadingMessage:
-    round: int
-
-
-@dataclass
 class ReceiveMessageEvent:
     round: int
     sender: str

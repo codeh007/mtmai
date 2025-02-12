@@ -23,7 +23,7 @@ def build_app():
         from mtmai.worker import WorkerAgent
         try:
             worker_app = WorkerAgent()
-            worker_task = asyncio.create_task(worker_app.deploy_workers())
+            worker_task = asyncio.create_task(worker_app.setup())
 
             yield
         finally:
