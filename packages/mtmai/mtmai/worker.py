@@ -1,8 +1,7 @@
+import asyncio
 import logging
 import os
 import sys
-from time import sleep
-
 from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
@@ -10,7 +9,7 @@ from mtmaisdk.clients.rest.configuration import Configuration
 from autogen_core import DefaultTopicId, try_get_known_serializers_for_type
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 from mtmai.core.config import settings
-from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, default_subscription, message_handler
+from autogen_core import RoutedAgent, default_subscription
 from autogen_core import (
     AgentId,
     DefaultSubscription,
@@ -20,33 +19,29 @@ from autogen_core import (
     message_handler,
 )
 
-wfapp: Hatchet = None
-
+from .flow_ag import setup_hatchet_workflows
 logger = logging.getLogger()
 
 @default_subscription
-class WorkerAppAgent(RoutedAgent):
+class WorkerAgent(RoutedAgent):
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
             raise ValueError("backend_url is not set")
         self.worker = None
         self.autogen_host = None
+        self.wfapp = None
 
     async def setup(self):
-        global wfapp
-
         self.api_client = ApiClient(
             configuration=Configuration(
                 host=self.backend_url,
             )
         )
 
-        maxRetry = 1000
-        interval = 1
+        maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
-                logger.info("connectting...")
                 mtmaiapi = MtmaiApi(self.api_client)
                 workerConfig = await mtmaiapi.mtmai_worker_config()
                 os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
@@ -68,40 +63,32 @@ class WorkerAppAgent(RoutedAgent):
                         logger=logger,
                     )
                 )
-                wfapp = Hatchet.from_config(
+                self.wfapp = Hatchet.from_config(
                     clientConfig,
                     debug=True,
                 )
-                return wfapp
+
+                self.worker = self.wfapp.worker(settings.WORKER_NAME)
+                await setup_hatchet_workflows(self.wfapp,self.worker)
+
+                logger.info("connect gomtm server success")
+                return
+
             except Exception as e:
                 if i == maxRetry - 1:
                     sys.exit(1)
-                sleep(interval)
+                logger.info(f"failed to connect gomtm server, retry {i+1},err:{e}")
+                await asyncio.sleep(settings.WORKER_INTERVAL)
         raise ValueError("failed to connect gomtm server")
 
-    async def deploy_mtmai_workers(self):
+    async def deploy_workers(self):
         try:
             await self.setup()
-            self.worker = wfapp.worker(settings.WORKER_NAME)
-            logger.info("register flow_browser")
-            from mtmai.workflows.flow_browser import FlowBrowser
-
-            self.worker.register_workflow(FlowBrowser())
-
-            logger.info("register flow_tenant, flow_ag")
-            from workflows.flow_ag import FlowAg, FlowTenant
-            self.worker.register_workflow(FlowTenant())
-            self.worker.register_workflow(FlowAg())
             await self.start_autogen_host()
             await self.start_reveiver_agent()
             await self.worker.async_start()
-
-            logger.info("start worker finished")
-
-
         except Exception as e:
             logger.exception(f"failed to deploy workers: {e}")
-
             raise e
 
     async def start_autogen_host(self):

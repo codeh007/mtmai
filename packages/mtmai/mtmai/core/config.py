@@ -234,6 +234,8 @@ class Settings(BaseSettings):
 
     WORKER_ENABLED: bool = True
     WORKER_NAME: str = "pyworker"
+    WORKER_INTERVAL: int = 3
+    WORKER_MAX_RETRY: int = 1000
     GOMTM_URL: str = "http://localhost:8383"
     HATCHET_CLIENT_TOKEN: str | None = None
 

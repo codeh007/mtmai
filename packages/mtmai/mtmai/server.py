@@ -20,10 +20,10 @@ from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        from mtmai.worker import WorkerAppAgent
+        from mtmai.worker import WorkerAgent
         try:
-            worker_app = WorkerAppAgent()
-            worker_task = asyncio.create_task(worker_app.deploy_mtmai_workers())
+            worker_app = WorkerAgent()
+            worker_task = asyncio.create_task(worker_app.deploy_workers())
 
             yield
         finally:
