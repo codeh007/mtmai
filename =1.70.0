@@ -1,0 +1,6 @@
+Collecting grpcio
+  Downloading grpcio-1.70.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.9 kB)
+Downloading grpcio-1.70.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (5.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.9/5.9 MB 21.9 MB/s eta 0:00:00
+Installing collected packages: grpcio
+Successfully installed grpcio-1.70.0

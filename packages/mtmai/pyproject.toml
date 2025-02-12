@@ -19,8 +19,8 @@ classifiers = [
 ]
 requires-python = ">=3.12,<4.0"
 dependencies = [
-    "grpcio>=1.64.1",
-    "grpcio-tools>=1.64.1",
+    "grpcio>=1.70.0",
+    "grpcio-tools>=1.70.0",
     "pydantic-settings",
     "litellm>=1.56.5",
     "langchain>=0.3.0",
@@ -119,7 +119,7 @@ mtmai = "mtmai.cli:run"
 [dependency-groups]
 dev = [
     "aiofiles>=0.8.0",
-    # "grpcio>=1.68.1",
+    "grpcio>=1.70.0",
     "aiofiles>=0.8.0",
     "tokencost~=0.1.16",
     "build~=1.2.2",
