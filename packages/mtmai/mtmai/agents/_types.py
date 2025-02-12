@@ -21,6 +21,19 @@ class RequestToSpeak(BaseModel):
 
 
 @dataclass
+class AskToGreet:
+    content: str
+
+
+@dataclass
+class Greeting:
+    content: str
+
+
+@dataclass
+class Feedback:
+    content: str
+@dataclass
 class MessageChunk:
     message_id: str
     text: str

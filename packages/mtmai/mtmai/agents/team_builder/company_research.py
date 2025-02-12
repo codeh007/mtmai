@@ -5,9 +5,8 @@ from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermi
 from autogen_core.tools import FunctionTool
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
-from ..base.MtWebUserProxyAgent import MtWebUserProxyAgent
-from ..base.RoundRobinGroupChat import MtRoundRobinGroupChat
-from ..model_client import MtmOpenAIChatCompletionClient
+from mtmai.agents._agents import MtRoundRobinGroupChat
+from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 
 logger = logging.getLogger(__name__)
 

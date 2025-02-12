@@ -18,23 +18,7 @@ from autogen_core import (
 )
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 
-from ._types import CascadingMessage, ReceiveMessageEvent
-
-
-@dataclass
-class AskToGreet:
-    content: str
-
-
-@dataclass
-class Greeting:
-    content: str
-
-
-@dataclass
-class Feedback:
-    content: str
-
+from ._types import AskToGreet, CascadingMessage, Feedback, Greeting, ReceiveMessageEvent
 
 class ReceiveAgent(RoutedAgent):
     def __init__(self) -> None:
