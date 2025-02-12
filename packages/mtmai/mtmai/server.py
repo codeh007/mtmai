@@ -23,9 +23,6 @@ def build_app():
         from mtmai.worker import WorkerApp
         try:
             worker_app = WorkerApp()
-
-            # threading.Thread(target=worker_app.start_autogen_host).start()
-            worker_app.start_autogen_host()
             worker_task = asyncio.create_task(worker_app.deploy_mtmai_workers())
 
             yield

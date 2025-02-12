@@ -20,8 +20,8 @@ class WorkerApp:
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
             raise ValueError("backend_url is not set")
-        # self.log = structlog.get_logger()
-        self.worker = None  # 添加 worker 属性以便后续停止
+        self.worker = None
+        self.autogen_host = None
 
     async def setup(self):
         global wfapp
@@ -32,8 +32,8 @@ class WorkerApp:
             )
         )
 
-        maxRetry = 50
-        interval = 5
+        maxRetry = 1000
+        interval = 1
         for i in range(maxRetry):
             try:
                 logger.info("connectting...")
@@ -64,27 +64,15 @@ class WorkerApp:
                 )
                 return wfapp
             except Exception as e:
-                # self.log.error(f"failed to create hatchet: {e}")
-                logger.error(f"failed to create hatchet: {e}")
                 if i == maxRetry - 1:
                     sys.exit(1)
                 sleep(interval)
         raise ValueError("failed to connect gomtm server")
 
-    def get_worker_name(self):
-        return "pyworker"
-
     async def deploy_mtmai_workers(self):
         try:
-            logger.info("worker setup")
             await self.setup()
-            logger.info("start worker")
-            self.worker = wfapp.worker(self.get_worker_name())
-
-            # from mtmai.workflows.flow_crewai import FlowCrewAIAgent
-
-            # worker.register_workflow(FlowCrewAIAgent())
-
+            self.worker = wfapp.worker(settings.WORKER_NAME)
             logger.info("register flow_browser")
             from mtmai.workflows.flow_browser import FlowBrowser
 
@@ -103,31 +91,23 @@ class WorkerApp:
             await self.worker.async_start()
 
             logger.info("start worker finished")
+
+            await self.start_autogen_host()
         except Exception as e:
             logger.exception(f"failed to deploy workers: {e}")
 
             raise e
 
     async def start_autogen_host(self):
-        # from _types import HostConfig
-        # from _utils import load_config
         from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
-        from rich.console import Console
-        from rich.markdown import Markdown
-        autogenGrpcHostAddress = "0.0.0.0:7777"
-        autogenGrpcHost = GrpcWorkerAgentRuntimeHost(address=autogenGrpcHostAddress)
-        autogenGrpcHost.start()
-
-        console = Console()
-        console.print(
-            Markdown(f"**`Distributed Host`** is now running and listening for connection at **`{autogenGrpcHostAddress}`**")
-        )
-        # await autogenGrpcHost.stop_when_signal()
-
+        self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
+        self.autogen_host.start()
+        logger.info(f"🟢 AG host at: {settings.AG_HOST_ADDRESS}")
 
     async def stop(self):
-        """停止 worker"""
         if self.worker:
-            logger.info("stopping worker")
             await self.worker.async_stop()
-            logger.info("worker stopped")
+            if self.autogen_host:
+                await self.autogen_host.stop()
+            logger.warning("worker and autogen host stopped")
+

@@ -233,9 +233,11 @@ class Settings(BaseSettings):
     PREFECT_API_URL: str | None = None
 
     WORKER_ENABLED: bool = True
-
+    WORKER_NAME: str = "pyworker"
     GOMTM_URL: str = "http://localhost:8383"
     HATCHET_CLIENT_TOKEN: str | None = None
+
+    AG_HOST_ADDRESS: str = "0.0.0.0:7777"
 
 
 settings = Settings()  # type: ignore
