@@ -22,6 +22,7 @@ from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.accept_invite_request import AcceptInviteRequest
 from mtmaisdk.clients.rest.models.blog import Blog
 from mtmaisdk.clients.rest.models.blog_list import BlogList
+from mtmaisdk.clients.rest.models.common_result import CommonResult
 from mtmaisdk.clients.rest.models.create_tenant_alert_email_group_request import CreateTenantAlertEmailGroupRequest
 from mtmaisdk.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
 from mtmaisdk.clients.rest.models.create_tenant_request import CreateTenantRequest
@@ -5161,7 +5162,7 @@ class TenantApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> TenantSeedReq:
+    ) -> CommonResult:
         """初始化租户
 
         初始化租户
@@ -5199,7 +5200,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TenantSeedReq",
+            '200': "CommonResult",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -5231,7 +5232,7 @@ class TenantApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[TenantSeedReq]:
+    ) -> ApiResponse[CommonResult]:
         """初始化租户
 
         初始化租户
@@ -5269,7 +5270,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TenantSeedReq",
+            '200': "CommonResult",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -5339,7 +5340,7 @@ class TenantApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "TenantSeedReq",
+            '200': "CommonResult",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
