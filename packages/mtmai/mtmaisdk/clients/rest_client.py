@@ -6,7 +6,7 @@ from typing import Any
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
-from mtmaisdk.clients.rest.api.llm_api import LlmApi
+# from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.log_api import LogApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.step_run_api import StepRunApi
@@ -72,7 +72,7 @@ class AsyncRestApi:
         self._event_api = None
         self._log_api = None
         self._default_api = None
-        self._llm_api = None
+        # self._llm_api = None
         self._ag_events_api = None
         self._teams_api = None
         self._team_api = None
@@ -129,11 +129,11 @@ class AsyncRestApi:
 
         return self._mtmai_api
 
-    @property
-    def llm_api(self):
-        if self._llm_api is None:
-            self._llm_api = LlmApi(self.api_client)
-        return self._llm_api
+    # @property
+    # def llm_api(self):
+    #     if self._llm_api is None:
+    #         self._llm_api = LlmApi(self.api_client)
+    #     return self._llm_api
 
     @property
     def ag_events_api(self):

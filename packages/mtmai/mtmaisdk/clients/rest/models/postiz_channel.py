@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.items import Items
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +27,7 @@ class PostizChannel(BaseModel):
     """
     PostizChannel
     """ # noqa: E501
-    messages: Optional[List[ChatMessage]] = Field(default=None, description="聊天消息")
+    messages: Optional[List[Items]] = Field(default=None, description="聊天消息")
     fresearch: Optional[StrictStr] = None
     org_id: Optional[StrictStr] = Field(default=None, alias="orgId")
     hook: Optional[StrictStr] = None
@@ -100,7 +100,7 @@ class PostizChannel(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
+            "messages": [Items.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
             "fresearch": obj.get("fresearch"),
             "orgId": obj.get("orgId"),
             "hook": obj.get("hook"),

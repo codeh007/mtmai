@@ -30,7 +30,7 @@ class AgentNodeUpdateRequest(BaseModel):
     prompt: StrictStr = Field(description="agent 节点提示词")
     type: Optional[StrictStr] = Field(default=None, description="agent 节点类型")
     description: Optional[StrictStr] = Field(default=None, description="agent 节点描述")
-    state: Optional[Dict[str, Any]] = Field(default=None, description="agent 节点状态")
+    state: Optional[Any] = None
     __properties: ClassVar[List[str]] = ["title", "prompt", "type", "description", "state"]
 
     model_config = ConfigDict(
@@ -72,6 +72,11 @@ class AgentNodeUpdateRequest(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if state (nullable) is None
+        # and model_fields_set contains the field
+        if self.state is None and "state" in self.model_fields_set:
+            _dict['state'] = None
+
         return _dict
 
     @classmethod

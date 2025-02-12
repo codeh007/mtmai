@@ -19,12 +19,11 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
-from mtmaisdk.clients.rest.models.postiz_state import PostizState
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTSTATE_ONE_OF_SCHEMAS = ["AssisantState", "GenArticleState", "PostizState"]
+AGENTSTATE_ONE_OF_SCHEMAS = ["AssisantState", "GenArticleState"]
 
 class AgentState(BaseModel):
     """
@@ -34,10 +33,8 @@ class AgentState(BaseModel):
     oneof_schema_1_validator: Optional[AssisantState] = None
     # data type: GenArticleState
     oneof_schema_2_validator: Optional[GenArticleState] = None
-    # data type: PostizState
-    oneof_schema_3_validator: Optional[PostizState] = None
-    actual_instance: Optional[Union[AssisantState, GenArticleState, PostizState]] = None
-    one_of_schemas: Set[str] = { "AssisantState", "GenArticleState", "PostizState" }
+    actual_instance: Optional[Union[AssisantState, GenArticleState]] = None
+    one_of_schemas: Set[str] = { "AssisantState", "GenArticleState" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -70,17 +67,12 @@ class AgentState(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `GenArticleState`")
         else:
             match += 1
-        # validate data type: PostizState
-        if not isinstance(v, PostizState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `PostizState`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentState with oneOf schemas: AssisantState, GenArticleState, PostizState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentState with oneOf schemas: AssisantState, GenArticleState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentState with oneOf schemas: AssisantState, GenArticleState, PostizState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentState with oneOf schemas: AssisantState, GenArticleState. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -107,19 +99,13 @@ class AgentState(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into PostizState
-        try:
-            instance.actual_instance = PostizState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentState with oneOf schemas: AssisantState, GenArticleState, PostizState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentState with oneOf schemas: AssisantState, GenArticleState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentState with oneOf schemas: AssisantState, GenArticleState, PostizState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentState with oneOf schemas: AssisantState, GenArticleState. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -133,7 +119,7 @@ class AgentState(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssisantState, GenArticleState, PostizState]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssisantState, GenArticleState]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

@@ -1309,7 +1309,7 @@ class WorkflowApi:
         :param tenant: The tenant id (required)
         :type tenant: str
         :param name: The workflow name (required)
-        :type name: str
+        :type name: FlowNames
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1383,7 +1383,7 @@ class WorkflowApi:
         :param tenant: The tenant id (required)
         :type tenant: str
         :param name: The workflow name (required)
-        :type name: str
+        :type name: FlowNames
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1457,7 +1457,7 @@ class WorkflowApi:
         :param tenant: The tenant id (required)
         :type tenant: str
         :param name: The workflow name (required)
-        :type name: str
+        :type name: FlowNames
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1530,7 +1530,7 @@ class WorkflowApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         if name is not None:
-            _path_params['name'] = name
+            _path_params['name'] = name.value
         # process the query parameters
         # process the header parameters
         # process the form parameters

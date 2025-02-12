@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,8 @@ class TenantSeedReq(BaseModel):
     """
     TenantSeedReq
     """ # noqa: E501
-    content: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["content"]
+    tenant_id: StrictStr = Field(alias="tenantId")
+    __properties: ClassVar[List[str]] = ["tenantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +80,7 @@ class TenantSeedReq(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "content": obj.get("content")
+            "tenantId": obj.get("tenantId")
         })
         return _obj
 

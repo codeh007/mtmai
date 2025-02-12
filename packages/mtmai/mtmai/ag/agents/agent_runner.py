@@ -10,14 +10,14 @@ from autogen_core import RoutedAgent, message_handler, type_subscription, defaul
 
 
 # @default_subscription
-@type_subscription(topic_type="tenant")
-class TenantAgent(RoutedAgent):
+@type_subscription(topic_type="agent_runner")
+class AgentRunner(RoutedAgent):
     def __init__(self, ctx: AgentContext) -> None:
-        super().__init__("TenantAgent")
+        super().__init__("AgentRunner")
         self.apictx = ctx
 
     @message_handler
-    async def handle_tenant_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:
+    async def handle_agent_runner_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:
         self.apictx.log(f"{self.id.type} received message: {message.content}")
         # tenant_id = self.apictx.getTenantId()
         if not message.tenant_id or len(message.tenant_id) == 0:
@@ -54,11 +54,3 @@ class TenantAgent(RoutedAgent):
                 ),
             )
             self.apictx.log(defaultModel)
-
-    # @message_handler
-    # async def on_text_message(self, message: MyTextMessage, ctx: MessageContext) -> None:
-    #     logger.info(f"Hello, {message.source}, you said {message.content}!")
-
-    # @message_handler
-    # async def on_image_message(self, message: MyImageMessage, ctx: MessageContext) -> None:
-    #     logger.info(f"Hello, {message.source}, you sent me {message.url}!")

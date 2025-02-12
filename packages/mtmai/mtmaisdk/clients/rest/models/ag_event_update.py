@@ -32,7 +32,7 @@ class AgEventUpdate(BaseModel):
     data: Dict[str, Any]
     framework: StrictStr
     step_run_id: StrictStr = Field(alias="stepRunId")
-    meta: Optional[Dict[str, Any]] = None
+    meta: Optional[Any] = None
     __properties: ClassVar[List[str]] = ["metadata", "userId", "data", "framework", "stepRunId", "meta"]
 
     model_config = ConfigDict(
@@ -77,6 +77,11 @@ class AgEventUpdate(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # set to None if meta (nullable) is None
+        # and model_fields_set contains the field
+        if self.meta is None and "meta" in self.model_fields_set:
+            _dict['meta'] = None
+
         return _dict
 
     @classmethod

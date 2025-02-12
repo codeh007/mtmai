@@ -5149,6 +5149,7 @@ class TenantApi:
     @validate_call
     async def tenant_seed(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_seed_req: Annotated[TenantSeedReq, Field(description="租户种子消息")],
         _request_timeout: Union[
             None,
@@ -5167,6 +5168,8 @@ class TenantApi:
 
         初始化租户
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param tenant_seed_req: 租户种子消息 (required)
         :type tenant_seed_req: TenantSeedReq
         :param _request_timeout: timeout setting for this request. If one
@@ -5192,6 +5195,7 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_seed_serialize(
+            tenant=tenant,
             tenant_seed_req=tenant_seed_req,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -5219,6 +5223,7 @@ class TenantApi:
     @validate_call
     async def tenant_seed_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_seed_req: Annotated[TenantSeedReq, Field(description="租户种子消息")],
         _request_timeout: Union[
             None,
@@ -5237,6 +5242,8 @@ class TenantApi:
 
         初始化租户
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param tenant_seed_req: 租户种子消息 (required)
         :type tenant_seed_req: TenantSeedReq
         :param _request_timeout: timeout setting for this request. If one
@@ -5262,6 +5269,7 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_seed_serialize(
+            tenant=tenant,
             tenant_seed_req=tenant_seed_req,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -5289,6 +5297,7 @@ class TenantApi:
     @validate_call
     async def tenant_seed_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_seed_req: Annotated[TenantSeedReq, Field(description="租户种子消息")],
         _request_timeout: Union[
             None,
@@ -5307,6 +5316,8 @@ class TenantApi:
 
         初始化租户
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param tenant_seed_req: 租户种子消息 (required)
         :type tenant_seed_req: TenantSeedReq
         :param _request_timeout: timeout setting for this request. If one
@@ -5332,6 +5343,7 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_seed_serialize(
+            tenant=tenant,
             tenant_seed_req=tenant_seed_req,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -5354,6 +5366,7 @@ class TenantApi:
 
     def _tenant_seed_serialize(
         self,
+        tenant,
         tenant_seed_req,
         _request_auth,
         _content_type,
@@ -5376,6 +5389,8 @@ class TenantApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -5415,7 +5430,7 @@ class TenantApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenant/seed',
+            resource_path='/api/v1/tenants/{tenant}/seed',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

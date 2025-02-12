@@ -18,7 +18,6 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmaisdk.clients.rest.models.handoff_message_config import HandoffMessageConfig
-from mtmaisdk.clients.rest.models.multi_modal_message_config import MultiModalMessageConfig
 from mtmaisdk.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmaisdk.clients.rest.models.text_message_config import TextMessageConfig
 from mtmaisdk.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
@@ -27,7 +26,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTMESSAGECONFIG_ONE_OF_SCHEMAS = ["HandoffMessageConfig", "MultiModalMessageConfig", "StopMessageConfig", "TextMessageConfig", "ToolCallMessageConfig", "ToolCallResultMessageConfig"]
+AGENTMESSAGECONFIG_ONE_OF_SCHEMAS = ["HandoffMessageConfig", "StopMessageConfig", "TextMessageConfig", "ToolCallMessageConfig", "ToolCallResultMessageConfig"]
 
 class AgentMessageConfig(BaseModel):
     """
@@ -35,18 +34,16 @@ class AgentMessageConfig(BaseModel):
     """
     # data type: TextMessageConfig
     oneof_schema_1_validator: Optional[TextMessageConfig] = None
-    # data type: MultiModalMessageConfig
-    oneof_schema_2_validator: Optional[MultiModalMessageConfig] = None
     # data type: StopMessageConfig
-    oneof_schema_3_validator: Optional[StopMessageConfig] = None
+    oneof_schema_2_validator: Optional[StopMessageConfig] = None
     # data type: HandoffMessageConfig
-    oneof_schema_4_validator: Optional[HandoffMessageConfig] = None
+    oneof_schema_3_validator: Optional[HandoffMessageConfig] = None
     # data type: ToolCallMessageConfig
-    oneof_schema_5_validator: Optional[ToolCallMessageConfig] = None
+    oneof_schema_4_validator: Optional[ToolCallMessageConfig] = None
     # data type: ToolCallResultMessageConfig
-    oneof_schema_6_validator: Optional[ToolCallResultMessageConfig] = None
-    actual_instance: Optional[Union[HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig]] = None
-    one_of_schemas: Set[str] = { "HandoffMessageConfig", "MultiModalMessageConfig", "StopMessageConfig", "TextMessageConfig", "ToolCallMessageConfig", "ToolCallResultMessageConfig" }
+    oneof_schema_5_validator: Optional[ToolCallResultMessageConfig] = None
+    actual_instance: Optional[Union[HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig]] = None
+    one_of_schemas: Set[str] = { "HandoffMessageConfig", "StopMessageConfig", "TextMessageConfig", "ToolCallMessageConfig", "ToolCallResultMessageConfig" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -74,11 +71,6 @@ class AgentMessageConfig(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TextMessageConfig`")
         else:
             match += 1
-        # validate data type: MultiModalMessageConfig
-        if not isinstance(v, MultiModalMessageConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MultiModalMessageConfig`")
-        else:
-            match += 1
         # validate data type: StopMessageConfig
         if not isinstance(v, StopMessageConfig):
             error_messages.append(f"Error! Input type `{type(v)}` is not `StopMessageConfig`")
@@ -101,10 +93,10 @@ class AgentMessageConfig(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentMessageConfig with oneOf schemas: HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentMessageConfig with oneOf schemas: HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -122,12 +114,6 @@ class AgentMessageConfig(BaseModel):
         # deserialize data into TextMessageConfig
         try:
             instance.actual_instance = TextMessageConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into MultiModalMessageConfig
-        try:
-            instance.actual_instance = MultiModalMessageConfig.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -158,10 +144,10 @@ class AgentMessageConfig(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentMessageConfig with oneOf schemas: HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentMessageConfig with oneOf schemas: HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentMessageConfig with oneOf schemas: HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +161,7 @@ class AgentMessageConfig(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], HandoffMessageConfig, MultiModalMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], HandoffMessageConfig, StopMessageConfig, TextMessageConfig, ToolCallMessageConfig, ToolCallResultMessageConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

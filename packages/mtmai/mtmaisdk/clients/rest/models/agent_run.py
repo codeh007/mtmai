@@ -17,21 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_step import AgentStep
 from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentNodeInput(BaseModel):
+class AgentRun(BaseModel):
     """
-    agent 节点输入
+    agent run response
     """ # noqa: E501
     metadata: APIResourceMeta
-    inputs: Dict[str, Any] = Field(description="输入")
-    intermediate_steps: Optional[List[AgentStep]] = Field(default=None, description="中间步骤", alias="intermediateSteps")
-    __properties: ClassVar[List[str]] = ["metadata", "inputs", "intermediateSteps"]
+    title: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
+    state: Optional[Dict[str, Any]] = None
+    workflow_run_id: StrictStr = Field(alias="workflowRunId")
+    node_id: StrictStr = Field(alias="nodeId")
+    input: Optional[Dict[str, Any]] = None
+    output: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "state", "workflowRunId", "nodeId", "input", "output"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +55,7 @@ class AgentNodeInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentNodeInput from a JSON string"""
+        """Create an instance of AgentRun from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,18 +79,11 @@ class AgentNodeInput(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in intermediate_steps (list)
-        _items = []
-        if self.intermediate_steps:
-            for _item_intermediate_steps in self.intermediate_steps:
-                if _item_intermediate_steps:
-                    _items.append(_item_intermediate_steps.to_dict())
-            _dict['intermediateSteps'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentNodeInput from a dict"""
+        """Create an instance of AgentRun from a dict"""
         if obj is None:
             return None
 
@@ -95,8 +92,13 @@ class AgentNodeInput(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "inputs": obj.get("inputs"),
-            "intermediateSteps": [AgentStep.from_dict(_item) for _item in obj["intermediateSteps"]] if obj.get("intermediateSteps") is not None else None
+            "title": obj.get("title"),
+            "description": obj.get("description"),
+            "state": obj.get("state"),
+            "workflowRunId": obj.get("workflowRunId"),
+            "nodeId": obj.get("nodeId"),
+            "input": obj.get("input"),
+            "output": obj.get("output")
         })
         return _obj
 

@@ -34,7 +34,7 @@ class SelectorGroupChatConfig(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
+    config: Optional[Any]
     team_type: Optional[StrictStr] = None
     selector_prompt: Optional[StrictStr] = None
     model_client: Optional[ModelConfig] = None
@@ -92,6 +92,11 @@ class SelectorGroupChatConfig(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
+        # set to None if config (nullable) is None
+        # and model_fields_set contains the field
+        if self.config is None and "config" in self.model_fields_set:
+            _dict['config'] = None
+
         return _dict
 
     @classmethod

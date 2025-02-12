@@ -235,11 +235,6 @@ async def serve():
         logger.error("Error in uvicorn server:", exc_info=e)
         raise
 
-
-# except Exception as e:
-#     LOG.error("server error: %s", e)
-
-
 def start_deamon_serve():
     """
     启动后台独立服务

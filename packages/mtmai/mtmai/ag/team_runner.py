@@ -6,17 +6,12 @@ from typing import Callable, Optional, Union
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
-from mtmaisdk.clients.rest.models.ag_event_types import EventNewAgentState
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
 from mtmai.agents.ctx import get_mtmai_context
 from mtmai.models.ag import TeamResult
-
-# from cloudevents.conversion import to_structured
-# from cloudevents.http import CloudEvent
-
 logger = logging.getLogger(__name__)
 
 
@@ -103,7 +98,7 @@ class TeamRunner:
         if team_data is None:
             raise ValueError("team not found")
 
-        yield EventNewAgentState(stateId=team_id)
+        # yield EventNewAgentState(stateId=team_id)
         team = await self._create_team(team_data.component)
         try:
             async for event in team.run_stream(

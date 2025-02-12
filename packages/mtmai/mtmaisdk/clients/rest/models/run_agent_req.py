@@ -17,17 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TenantSeedMessage(BaseModel):
+class RunAgentReq(BaseModel):
     """
-    TenantSeedMessage
+    RunAgentReq
     """ # noqa: E501
-    content: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["content"]
+    tenant_id: StrictStr = Field(alias="tenantId")
+    task: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["tenantId", "task"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -47,7 +48,7 @@ class TenantSeedMessage(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TenantSeedMessage from a JSON string"""
+        """Create an instance of RunAgentReq from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,7 +73,7 @@ class TenantSeedMessage(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TenantSeedMessage from a dict"""
+        """Create an instance of RunAgentReq from a dict"""
         if obj is None:
             return None
 
@@ -80,7 +81,8 @@ class TenantSeedMessage(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "content": obj.get("content")
+            "tenantId": obj.get("tenantId"),
+            "task": obj.get("task")
         })
         return _obj
 

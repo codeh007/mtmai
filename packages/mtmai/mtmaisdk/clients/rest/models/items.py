@@ -19,17 +19,22 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatCompletionsReq(BaseModel):
+class Items(BaseModel):
     """
-    ChatCompletionsReq
+    单个聊天消息
     """ # noqa: E501
-    model: Optional[StrictStr] = None
-    messages: Optional[List[ChatMessage]] = None
-    __properties: ClassVar[List[str]] = ["model", "messages"]
+    metadata: APIResourceMeta
+    role: ChatMessageRole
+    content: StrictStr
+    source: Optional[StrictStr] = None
+    config: Optional[ChatMessageConfig] = None
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +54,7 @@ class ChatCompletionsReq(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatCompletionsReq from a JSON string"""
+        """Create an instance of Items from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,18 +75,17 @@ class ChatCompletionsReq(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
-        _items = []
-        if self.messages:
-            for _item_messages in self.messages:
-                if _item_messages:
-                    _items.append(_item_messages.to_dict())
-            _dict['messages'] = _items
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatCompletionsReq from a dict"""
+        """Create an instance of Items from a dict"""
         if obj is None:
             return None
 
@@ -89,8 +93,11 @@ class ChatCompletionsReq(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "model": obj.get("model"),
-            "messages": [ChatMessage.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "role": obj.get("role"),
+            "content": obj.get("content"),
+            "source": obj.get("source"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 
