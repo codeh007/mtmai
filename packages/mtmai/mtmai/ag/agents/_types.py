@@ -76,3 +76,19 @@ class AppConfig(BaseModel):
     editor_agent: ChatAgentConfig
     ui_agent: UIAgentConfig
     client_config: AzureOpenAIClientConfiguration = None  # type: ignore[assignment] # This was required to do custom instantiation in `load_config`
+
+
+@dataclass
+class CascadingMessage:
+    round: int
+
+@dataclass
+class CascadingMessage:
+    round: int
+
+
+@dataclass
+class ReceiveMessageEvent:
+    round: int
+    sender: str
+    recipient: str
