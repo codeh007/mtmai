@@ -1,0 +1,60 @@
+from autogen_core import AgentId, MessageContext, RoutedAgent, message_handler
+from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
+from ...agents.ctx import AgentContext
+from agents.ctx import AgentContext
+from mtmaisdk.clients.rest.models.team import Team
+from mtmaisdk.clients.rest.models.team_component import TeamComponent
+from mtmai.ag.team_builder.company_research import CompanyResearchTeamBuilder
+from mtmai.ag.team_builder.travel_builder import TravelTeamBuilder
+
+class TenantAgent(RoutedAgent):
+    def __init__(self, ctx: AgentContext) -> None:
+        super().__init__("TenantAgent")
+        self.apictx = ctx
+
+    @message_handler
+    async def handle_tenant_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:
+        self.apictx.log(f"{self.id.type} received message: {message.content}")
+        tenant_id = self.apictx.getTenantId()
+        if not tenant_id:
+            raise ValueError("tenantId 不能为空")
+        user_id = self.apictx.getUserId()
+        if not user_id:
+            raise ValueError("userId 不能为空")
+        self.apictx.log("当前租户: %s, 当前用户: %s", tenant_id, user_id)
+        # 获取模型配置
+        self.apictx.log("获取模型配置")
+        defaultModel = await self.apictx.aio.model_api.model_get(
+            tenant=tenant_id, model="default"
+        )
+        self.apictx.log(defaultModel)
+
+        model_config = defaultModel.config
+        team_builder = TravelTeamBuilder()
+        team1 = await team_builder.create_travel_agent(model_config)
+        team2 = await CompanyResearchTeamBuilder().create_company_research_team(
+            model_config
+        )
+
+        all_teams = [team1, team2]
+        for team in all_teams:
+            # 保存 team
+            team_comp = team.dump_component()
+            defaultModel = await self.apictx.rest_client.aio.team_api.team_upsert(
+                tenant=tenant_id,
+                team=team._team_id,
+                team2=Team(
+                    label=team_comp.label,
+                    description=team_comp.description or "",
+                    component=TeamComponent(**team_comp.model_dump()),
+                ),
+            )
+            self.apictx.log(defaultModel)
+
+    # @message_handler
+    # async def on_text_message(self, message: MyTextMessage, ctx: MessageContext) -> None:
+    #     logger.info(f"Hello, {message.source}, you said {message.content}!")
+
+    # @message_handler
+    # async def on_image_message(self, message: MyImageMessage, ctx: MessageContext) -> None:
+    #     logger.info(f"Hello, {message.source}, you sent me {message.url}!")

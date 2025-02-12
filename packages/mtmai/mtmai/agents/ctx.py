@@ -10,9 +10,6 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.tools import StructuredTool
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_openai import ChatOpenAI
-
-# from langgraph.checkpoint.postgres.aio import (AsyncPostgresSaver,
-#                                                BasePostgresSaver)
 from lazify import LazyProxy
 from loguru import logger
 from mtmaisdk import Context as HatchetContext
@@ -45,10 +42,11 @@ class AgentContext:
         self.thread_id = thread_id
         self._mq = None
         self._thread_id = thread_id
+        self.aio = None
 
     def set_hatch_context(self, ctx: HatchetContext):
         self.hatchet_ctx = ctx
-
+        self.aio = ctx.rest_client.aio
     def log(self, lineformat, **kw_args):
         if self.hatchet_ctx:
             self.hatchet_ctx.log(
