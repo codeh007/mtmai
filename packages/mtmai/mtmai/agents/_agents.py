@@ -1,5 +1,13 @@
 from dataclasses import dataclass
-from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, default_subscription, message_handler
+from typing import List
+from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, default_subscription, message_handler
+from autogen_agentchat.agents._user_proxy_agent import UserProxyAgentConfig
+from autogen_agentchat.agents import UserProxyAgent
+from autogen_agentchat.base import ChatAgent, TerminationCondition
+from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
+    RoundRobinGroupChatConfig,
+)
 from autogen_core import (
     AgentId,
     DefaultSubscription,
@@ -95,3 +103,55 @@ async def main() -> None:
 #     logger = logging.getLogger("autogen_core")
 #     logger.setLevel(logging.DEBUG)
 #     asyncio.run(main())
+
+
+class MtWebUserProxyAgent(UserProxyAgent):
+    """扩展 UserProxyAgent"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+    def _to_config(self) -> UserProxyAgentConfig:
+        # TODO: Add ability to serialie input_func
+        return UserProxyAgentConfig(name=self.name, description=self.description, input_func=None)
+
+
+
+
+class MtRoundRobinGroupChatConfig(RoundRobinGroupChatConfig):
+    """扩展 RoundRobinGroupChatConfig"""
+
+    # user_proxy_agent_name: str = "user_proxy_agent"
+    pass
+
+
+class MtRoundRobinGroupChat(
+    RoundRobinGroupChat, Component[MtRoundRobinGroupChatConfig]
+):
+    """扩展 RoundRobinGroupChat"""
+
+    component_provider_override = (
+        "mtmai.ag.base.RoundRobinGroupChat.MtRoundRobinGroupChat"
+    )
+
+    def __init__(
+        self,
+        participants: List[ChatAgent],
+        termination_condition: TerminationCondition | None = None,
+        max_turns: int | None = None,
+    ):
+        # 检查是否已经包含 user_proxy_agent
+        # has_user_proxy = False
+        # for participant in participants:
+        #     if isinstance(participant, MtWebUserProxyAgent):
+        #         has_user_proxy = True
+        #         break
+
+        # if not has_user_proxy:
+        #     participants = [
+        #         MtWebUserProxyAgent(
+        #             name="user_proxy_agent",
+        #         )
+        #     ] + participants
+        super().__init__(participants, termination_condition, max_turns)

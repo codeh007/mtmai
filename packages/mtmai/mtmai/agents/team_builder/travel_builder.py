@@ -8,7 +8,7 @@ from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
 from mtmai.tools.calculator import web_search
 
-from ..base.RoundRobinGroupChat import MtRoundRobinGroupChat
+from mtmai.agents._agents import MtRoundRobinGroupChat
 from ..model_client import MtmOpenAIChatCompletionClient, get_oai_Model
 
 logger = logging.getLogger(__name__)

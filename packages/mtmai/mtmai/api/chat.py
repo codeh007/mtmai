@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
-from mtmai.ag.team_builder.travel_builder import TravelTeamBuilder
-from mtmai.ag.team_runner import TeamRunner
+from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
+from mtmai.agents.team_runner import TeamRunner
 
 router = APIRouter()
 

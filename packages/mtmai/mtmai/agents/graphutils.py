@@ -4,10 +4,6 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.runnables import Runnable, RunnableLambda
 from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel
-
-# from mtmai.models.graph_config import HomeChatState
-
-
 def handle_tool_error(state) -> dict:
     error = state.get("error")
     tool_calls = state.messages[-1].tool_calls

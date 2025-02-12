@@ -117,8 +117,8 @@ class WorkerAppAgent(RoutedAgent):
                 作为分布式,其他 agents 运行的过程不直接处理消息的日志, 前端界面的消息处理等数据.
                 这里,通过 grpc 的方式,接收其他 agents 的日志, 前端界面的消息处理等数据.
         """
-        from ag.agents._agents import ReceiveAgent
-        from mtmai.ag.agents._types import CascadingMessage
+        from mtmai.agents._agents import ReceiveAgent
+        from mtmai.agents._types import CascadingMessage
         self.autogen_worker_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
         self.autogen_worker_runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         self.autogen_worker_runtime.start()

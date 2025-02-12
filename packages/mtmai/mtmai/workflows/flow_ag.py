@@ -1,9 +1,9 @@
 import logging
 from typing import cast
 
-from mtmai.ag.agents._types import MessageChunk
+from mtmai.agents._types import MessageChunk
 
-from mtmai.ag.agents.webui_agent import UIAgent
+from mtmai.agents.webui_agent import UIAgent
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
@@ -16,7 +16,7 @@ from mtmai.worker import wfapp
 
 from typing import cast
 
-from mtmai.ag.agents.tenant_agent import TenantAgent
+from mtmai.agents.tenant_agent import TenantAgent
 from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 from agents.ctx import AgentContext
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
