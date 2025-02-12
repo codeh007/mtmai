@@ -189,9 +189,6 @@ class CompanyResearchTeamBuilder:
             analyze_stock, description="Analyze stock data and generate a plot"
         )
 
-        user_proxy_agent = MtWebUserProxyAgent(
-            name="web_user",
-        )
         search_agent = AssistantAgent(
             name="Google_Search_Agent",
             model_client=model_client,
@@ -220,7 +217,7 @@ class CompanyResearchTeamBuilder:
         combined_termination = max_msg_termination & termination
         team = MtRoundRobinGroupChat(
             participants=[
-                user_proxy_agent,
+                # user_proxy_agent,
                 search_agent,
                 stock_analysis_agent,
                 report_agent,

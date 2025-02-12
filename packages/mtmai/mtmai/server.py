@@ -25,6 +25,8 @@ def build_app():
 
             worker_app = WorkerApp()
             worker_task = asyncio.create_task(worker_app.deploy_mtmai_workers())
+
+            threading.Thread(target=worker_app.start_autogen_host).start()
             yield
         finally:
             await worker_app.stop()

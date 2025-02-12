@@ -7,6 +7,7 @@ from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.context.context import Context
 from pydantic import BaseModel
 
@@ -42,68 +43,24 @@ class TeamRunner:
         # TBD - set input function
         return team
 
-    # async def run_stream(
-    #     self,
-    #     task: str,
-    #     team_config: Union[str, Path, dict, ComponentModel],
-    #     input_func: Optional[Callable] = None,
-    #     cancellation_token: Optional[CancellationToken] = None,
-    # ) -> AsyncGenerator[Union[AgentEvent | ChatMessage, ChatMessage, TaskResult], None]:
-    #     """Stream team execution results"""
-    #     start_time = time.time()
-    #     team = None
-
-    #     try:
-    #         team = await self._create_team(team_config, input_func)
-
-    #         async for message in team.run_stream(
-    #             task=task, cancellation_token=cancellation_token
-    #         ):
-    #             if cancellation_token and cancellation_token.is_cancelled():
-    #                 break
-
-    #             if isinstance(message, TaskResult):
-    #                 yield TeamResult(
-    #                     task_result=message, usage="", duration=time.time() - start_time
-    #                 )
-    #             else:
-    #                 yield message
-
-    #     except Exception as e:
-    #         logger.error(f"Error running team: {e}")
-    #         raise e
-
-    #     finally:
-    #         # Ensure cleanup happens
-    #         if team and hasattr(team, "_participants"):
-    #             for agent in team._participants:
-    #                 if hasattr(agent, "close"):
-    #                     await agent.close()
-
     async def run_stream(
         self,
-        hatctx: Context,
-        task: str,
-        team_id: str,
-        # team_config: Union[str, Path, dict, ComponentModel],
+        input: AgentRunInput,
         input_func: Optional[Callable] = None,
         cancellation_token: Optional[CancellationToken] = None,
     ):
         ctx = get_mtmai_context()
         start_time = time.time()
-        tenant_id = ctx.getTenantId()
         team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
-            tenant=tenant_id, team=team_id
+            tenant=input.tenant_id, team=input.team_id
         )
         if team_data is None:
             raise ValueError("team not found")
 
-        # yield EventNewAgentState(stateId=team_id)
         team = await self._create_team(team_data.component)
         try:
             async for event in team.run_stream(
-                task=task,
-                # team_config=agent.dump_component()
+                task=input.task,
             ):
                 if cancellation_token and cancellation_token.is_cancelled():
                     break
@@ -121,8 +78,8 @@ class TeamRunner:
             # 保存状态
             saveed_response = (
                 await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
-                    tenant=tenant_id,
-                    state=team_id,
+                    tenant=input.tenant_id,
+                    state=input.team_id,
                     ag_state_upsert=AgStateUpsert(
                         # id=team_id,
                         # version=state_to_save.get("version"),

@@ -1,5 +1,4 @@
 import logging
-import sre_compile
 from typing import cast
 
 from mtmai.ag.agents.tenant_agent import TenantAgent
@@ -39,19 +38,20 @@ class FlowTenant:
         init_mtmai_context(hatctx)
         ctx: AgentContext = get_mtmai_context()
         ctx.set_hatch_context(hatctx)
+        input = cast(TenantSeedReq, hatctx.workflow_input())
         # 新版功能
         runtime = SingleThreadedAgentRuntime()
         await TenantAgent.register(runtime, "tenant_agent", lambda: TenantAgent(ctx))
         # await runtime.add_subscription(TypeSubscription(topic_type="tenant", agent_type="broadcasting_agent"))
 
-        runtime.start()  # Start processing messages in the background.
+        runtime.start()
         # await runtime.send_message(
         #     message=input,
         #     recipient=AgentId(type="tenant_agent", key="default"),
         # )
         # 广播方从而避免工作流中消息类型的相关转换问题.
         await runtime.publish_message(
-            TextMessage(source="workflow", content="Hello, World! From the runtime!"),
+            input,
             topic_id=TopicId(type="tenant", source="tenant"),
         )
 

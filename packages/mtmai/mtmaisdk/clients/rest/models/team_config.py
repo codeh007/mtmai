@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_component import AgentComponent
 from mtmaisdk.clients.rest.models.component_model import ComponentModel
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,7 +28,7 @@ class TeamConfig(BaseModel):
     TeamConfig
     """ # noqa: E501
     max_turns: Optional[StrictInt] = None
-    participants: Optional[List[AgentComponent]] = None
+    participants: Optional[List[Dict[str, Any]]] = None
     termination_condition: Optional[ComponentModel] = None
     __properties: ClassVar[List[str]] = ["max_turns", "participants", "termination_condition"]
 
@@ -72,13 +71,6 @@ class TeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
         # override the default output from pydantic by calling `to_dict()` of termination_condition
         if self.termination_condition:
             _dict['termination_condition'] = self.termination_condition.to_dict()
@@ -95,7 +87,7 @@ class TeamConfig(BaseModel):
 
         _obj = cls.model_validate({
             "max_turns": obj.get("max_turns"),
-            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "participants": obj.get("participants"),
             "termination_condition": ComponentModel.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj

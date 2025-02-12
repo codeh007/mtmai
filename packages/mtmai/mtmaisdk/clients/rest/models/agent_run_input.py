@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmaisdk.clients.rest.models.agent_run_input_params import AgentRunInputParams
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,10 +26,11 @@ class AgentRunInput(BaseModel):
     """
     AgentRunInput
     """ # noqa: E501
-    name: StrictStr
-    is_stream: Optional[StrictBool] = Field(default=False, alias="isStream")
-    params: Optional[AgentRunInputParams] = None
-    __properties: ClassVar[List[str]] = ["name", "isStream", "params"]
+    team_id: StrictStr = Field(description="团队ID", alias="teamId")
+    thread_id: Optional[StrictStr] = Field(default=None, description="线程ID", alias="threadId")
+    task: StrictStr
+    tenant_id: Optional[StrictStr] = Field(default=None, description="租户ID", alias="tenantId")
+    __properties: ClassVar[List[str]] = ["teamId", "threadId", "task", "tenantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -71,9 +71,6 @@ class AgentRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of params
-        if self.params:
-            _dict['params'] = self.params.to_dict()
         return _dict
 
     @classmethod
@@ -86,9 +83,10 @@ class AgentRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "name": obj.get("name") if obj.get("name") is not None else FlowNames[str, object].AG,
-            "isStream": obj.get("isStream") if obj.get("isStream") is not None else False,
-            "params": AgentRunInputParams.from_dict(obj["params"]) if obj.get("params") is not None else None
+            "teamId": obj.get("teamId"),
+            "threadId": obj.get("threadId"),
+            "task": obj.get("task"),
+            "tenantId": obj.get("tenantId")
         })
         return _obj
 

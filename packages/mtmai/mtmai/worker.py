@@ -108,6 +108,24 @@ class WorkerApp:
 
             raise e
 
+    async def start_autogen_host(self):
+        # from _types import HostConfig
+        # from _utils import load_config
+        from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
+        from rich.console import Console
+        from rich.markdown import Markdown
+        autogenGrpcHostAddress = "0.0.0.0:7777"
+        autogenGrpcHost = GrpcWorkerAgentRuntimeHost(address=autogenGrpcHostAddress)
+        autogenGrpcHost.start()
+
+        console = Console()
+        console.print(
+            Markdown(f"**`Distributed Host`** is now running and listening for connection at **`{autogenGrpcHostAddress}`**")
+        )
+        await autogenGrpcHost.stop_when_signal()
+
+        # runtime.start()
+
     async def stop(self):
         """停止 worker"""
         if self.worker:

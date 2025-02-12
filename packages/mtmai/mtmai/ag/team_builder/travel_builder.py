@@ -1,6 +1,5 @@
 import logging
 
-from ag.base.MtWebUserProxyAgent import MtWebUserProxyAgent
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -74,10 +73,13 @@ class TravelTeamBuilder:
         model_dict.pop("n", None)
         model_client = MtmOpenAIChatCompletionClient(
             **model_dict,
+
         )
-        user_proxy_agent = MtWebUserProxyAgent(
-            name="web_user",
-        )
+
+        # 提示: participants 中,不能也不应添加 UserProxyAgent
+        # user_proxy_agent = MtWebUserProxyAgent(
+        #     name="web_user",
+        # )
         planner_agent = AssistantAgent(
             name="planner_agent",
             model_client=model_client,
@@ -111,7 +113,7 @@ class TravelTeamBuilder:
         combined_termination = max_msg_termination & termination
         team = MtRoundRobinGroupChat(
             participants=[
-                user_proxy_agent,
+                # user_proxy_agent,
                 planner_agent,
                 local_agent,
                 language_agent,
