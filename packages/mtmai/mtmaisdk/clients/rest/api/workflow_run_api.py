@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictStr
 from typing import Any, Dict, Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
@@ -344,9 +344,9 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
-        version: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
+        version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -423,9 +423,9 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create_with_http_info(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
-        version: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
+        version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -502,9 +502,9 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create_without_preload_content(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
-        version: Annotated[Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
+        version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
