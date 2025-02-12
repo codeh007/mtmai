@@ -122,9 +122,8 @@ class WorkerApp:
         console.print(
             Markdown(f"**`Distributed Host`** is now running and listening for connection at **`{autogenGrpcHostAddress}`**")
         )
-        await autogenGrpcHost.stop_when_signal()
+        # await autogenGrpcHost.stop_when_signal()
 
-        # runtime.start()
 
     async def stop(self):
         """停止 worker"""

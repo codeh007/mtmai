@@ -20,13 +20,14 @@ from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        from mtmai.worker import WorkerApp
         try:
-            from mtmai.worker import WorkerApp
-
             worker_app = WorkerApp()
+
+            # threading.Thread(target=worker_app.start_autogen_host).start()
+            worker_app.start_autogen_host()
             worker_task = asyncio.create_task(worker_app.deploy_mtmai_workers())
 
-            threading.Thread(target=worker_app.start_autogen_host).start()
             yield
         finally:
             await worker_app.stop()
