@@ -48,28 +48,6 @@ def agent_node(state, agent, name):
     }
 
 
-# This node will be shared for exiting all specialized assistants
-# def pop_dialog_state(state: HomeChatState) -> dict:
-#     """Pop the dialog stack and return to the main assistant.
-
-#     This lets the full graph explicitly track the dialog flow and delegate control
-#     to specific sub-graphs.
-#     """
-#     messages = []
-#     if state.messages[-1].tool_calls:
-#         # Note: Doesn't currently handle the edge case where the llm performs parallel tool calls
-#         messages.append(
-#             ToolMessage(
-#                 content="Resuming dialog with the host assistant. Please reflect on the past conversation and assist the user as needed.",
-#                 tool_call_id=state.messages[-1].tool_calls[0]["id"],
-#             )
-#         )
-#     return {
-#         "dialog_state": "pop",
-#         "messages": messages,
-#     }
-
-
 class CompleteOrEscalate(BaseModel):
     """A tool to mark the current task as completed and/or to escalate control of the dialog to the main assistant,
     who can re-route the dialog based on the user's needs."""
@@ -124,31 +102,6 @@ async def ensure_valid_llm_response_v2(runnable: Runnable, messages: list):
             break
     return ai_msg
 
-
-# def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
-#     """
-#     Create a function to make an "entry" node for each workflow, stating "the current assistant ix assistant_name".
-#     """
-
-#     def entry_node(state: HomeChatState) -> dict:
-#         tool_call_id = state.messages[-1].tool_calls[0]["id"]
-#         return {
-#             "messages": [
-#                 ToolMessage(
-#                     content=f"The assistant is now the {assistant_name}. Reflect on the above conversation between the host assistant and the user."
-#                     f" The user's intent is unsatisfied. Use the provided tools to assist the user. Remember, you are {assistant_name},"
-#                     " and the booking, update, other other action is not complete until after you have successfully invoked the appropriate tool."
-#                     " If the user changes their mind or needs help for other tasks, call the CompleteOrEscalate function to let the primary host assistant take control."
-#                     " Do not mention who you are - just act as the proxy for the assistant.",
-#                     tool_call_id=tool_call_id,
-#                 )
-#             ],
-#             "dialog_state": new_dialog_state,
-#         }
-
-#     return entry_node
-
-
 internal_node_types = set(
     [
         "RunnableSequence",
@@ -167,7 +120,6 @@ skip_kinds = set(
         "on_chat_model_stream",
     ]
 )
-
 
 def is_internal_node(node_name: str):
     """
