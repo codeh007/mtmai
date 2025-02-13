@@ -45,6 +45,17 @@ class UIAgent(RoutedAgent):
         logger.info(f"UI Agent 保存状态: {state}")
 
 
+        # 保存 跟用户的聊天信息
+        try:
+            chatSession=self.gomtmapi.chat_api.chat_session_get(
+                tenant_id=message.tenant_id,
+                session_id=message.session_id,
+            )
+        except Exception as e:
+            logger.error(f"UI Agent 获取聊天 Session 失败: {e}")
+
+
+
 
     async def save_state(self) -> Mapping[str, Any]:
         """Save the state of the group chat team."""

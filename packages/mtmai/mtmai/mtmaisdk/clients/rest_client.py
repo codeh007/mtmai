@@ -164,6 +164,7 @@ class AsyncRestApi:
     def chat_api(self):
         if self._chat_api is None:
             self._chat_api = ChatApi(self.api_client)
+
         return self._chat_api
 
     @property
