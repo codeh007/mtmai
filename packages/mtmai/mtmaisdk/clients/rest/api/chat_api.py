@@ -58,7 +58,7 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ChatMessage:
-        """发送聊天消息
+        """chat_create_message
 
         发送聊天消息
 
@@ -131,7 +131,7 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[ChatMessage]:
-        """发送聊天消息
+        """chat_create_message
 
         发送聊天消息
 
@@ -204,7 +204,7 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """发送聊天消息
+        """chat_create_message
 
         发送聊天消息
 
