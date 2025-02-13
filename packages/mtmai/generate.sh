@@ -4,7 +4,9 @@ set -e
 
 ROOT_DIR=$(pwd)
 PROJECT_DIR=$(realpath ../../../gomtm)
-GEN_DIR=$(realpath ./mtmaisdk)
+GEN_DIR=$(realpath ./mtmai/mtmaisdk)
+dst_dir=./mtmai/mtmaisdk/clients/rest
+
 
 ROOT_DIR=$(pwd)
 
@@ -15,7 +17,6 @@ version=7.3.0
 
 command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
 
-dst_dir=./mtmaisdk/clients/rest
 
 mkdir -p $dst_dir
 
@@ -55,11 +56,13 @@ rm -rf $tmp_dir
 # 暂时 跳过 grpc 相关的代码生成 （因为当前环境报错）
 # 使用python 的方式
 # uv pip install grpc_tools
-
-python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts dispatcher.proto
-python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/events --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts events.proto
-python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/workflows --python_out=${GEN_DIR}/contracts --pyi_out=${GEN_DIR}/contracts --grpc_python_out=${GEN_DIR}/contracts workflows.proto
-
+# GRPC_OUT="${PROJECT_DIR}/mtmai/mtmaisdk/contracts"
+GRPC_OUT=${GEN_DIR}/contracts
+echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
+python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
+python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/events --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
+python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/workflows --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} workflows.proto
+echo "阶段2: 修正grpc相对导入: ${GRPC_OUT}"
 OSTYPE=${OSTYPE:-"linux"}
 # Fix relative imports in _grpc.py files
 if [[ "$OSTYPE" == "darwin"* ]]; then
