@@ -6,14 +6,13 @@ ROOT_DIR=$(pwd)
 PROJECT_DIR=$(realpath ../../../gomtm)
 GEN_DIR=$(realpath ./mtmai/mtmaisdk)
 dst_dir=./mtmai/mtmaisdk/clients/rest
-
+version=7.3.0
 
 ROOT_DIR=$(pwd)
 
 echo "生成 mtm python sdk PROJECT_DIR:${PROJECT_DIR}, GEN_DIR:${GEN_DIR}"
 
 # deps
-version=7.3.0
 
 command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
 

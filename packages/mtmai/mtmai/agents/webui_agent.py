@@ -27,7 +27,13 @@ class UIAgent(RoutedAgent):
     async def handle_message_chunk(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
         logger.info(f"UI Agent 收到消息: {message}")
 
-        await self.gomtmapi.chat_api.chat_create_message(
-            tenant=message.tenant_id,
-            chat_message_create=message,
-            )
+        # 聊天消息入库功能暂时取消,因后端没完全实现()
+        # await self.gomtmapi.chat_api.chat_create_message(
+        #     tenant=message.tenant_id,
+        #     chat_message_create=message,
+        #     )
+
+        # 保存状态
+        state = await self._runtime.save_state()
+        logger.info(f"UI Agent 保存状态: {state}")
+
