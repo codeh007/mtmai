@@ -21,6 +21,7 @@ from autogen_core import (
     default_subscription,
 )
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from mtmaisdk.worker.worker import Worker
 
@@ -72,6 +73,7 @@ class WorkerApp(Component[WorkerAppConfig]):
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessage))
+        self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessageCreate))
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY

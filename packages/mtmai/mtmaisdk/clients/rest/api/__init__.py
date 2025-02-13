@@ -24,6 +24,7 @@ from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
 from mtmaisdk.clients.rest.api.browser_api import BrowserApi
+from mtmaisdk.clients.rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.endpoint_api import EndpointApi
 from mtmaisdk.clients.rest.api.env_api import EnvApi

@@ -9,6 +9,7 @@ from autogen_core.models import (
     UserMessage,
 )
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from rich.console import Console
 from rich.markdown import Markdown
@@ -23,7 +24,7 @@ class UIAgent(RoutedAgent):
         self.gomtmapi = gomtmapi
 
     @message_handler
-    async def handle_message_chunk(self, message: ChatMessage, ctx: MessageContext) -> None:
+    async def handle_message_chunk(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
         logger.info(f"UI Agent 收到消息: {message}")
 
         await self.gomtmapi.teams_api.team_get(tenant=message.tenant_id, team=message.team_id)

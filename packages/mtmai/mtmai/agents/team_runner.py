@@ -50,7 +50,6 @@ class TeamRunner:
         input_func: Optional[Callable] = None,
         cancellation_token: Optional[CancellationToken] = None,
     ):
-        # ctx = get_mtmai_context()
         start_time = time.time()
         team_data = await self.gomtmapi.teams_api.team_get(
             tenant=input.tenant_id, team=input.team_id

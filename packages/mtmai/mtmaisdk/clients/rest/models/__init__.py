@@ -74,6 +74,7 @@ from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
 from mtmaisdk.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
 from mtmaisdk.clients.rest.models.chat_session import ChatSession

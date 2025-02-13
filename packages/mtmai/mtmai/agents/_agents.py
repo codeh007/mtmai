@@ -12,6 +12,7 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
 from autogen_core import (
@@ -81,11 +82,11 @@ class WorkerMainAgent(RoutedAgent):
             if isinstance(event, BaseModel):
                 _event = event.model_dump()
             await self.publish_message(
-                ChatMessage(content=_event),
+                ChatMessageCreate(content=_event, tenant_id=message.tenant_id, team_id=message.team_id),
                 topic_id=DefaultTopicId(),
             )
             result = await self.gomtmapi.ag_events_api.ag_event_create(
-                tenant=input.tenant_id,
+                tenant=message.tenant_id,
                 ag_event_create=AgEventCreate(
                     data=_event,
                     framework="autogen",
@@ -93,6 +94,7 @@ class WorkerMainAgent(RoutedAgent):
                     meta={},
                 ),
             )
+
             # hatctx.log(result)
             # hatctx.put_stream(event)
 

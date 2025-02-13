@@ -40,6 +40,7 @@ from mtmaisdk.clients.rest.api.agent_api import AgentApi
 from mtmaisdk.clients.rest.api.artifact_api import ArtifactApi
 from mtmaisdk.clients.rest.api.blog_api import BlogApi
 from mtmaisdk.clients.rest.api.browser_api import BrowserApi
+from mtmaisdk.clients.rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.endpoint_api import EndpointApi
 from mtmaisdk.clients.rest.api.env_api import EnvApi
@@ -133,6 +134,7 @@ from mtmaisdk.clients.rest.models.canvas_graph_params import CanvasGraphParams
 from mtmaisdk.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
 from mtmaisdk.clients.rest.models.chat_session import ChatSession

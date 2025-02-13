@@ -18,10 +18,9 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
-from mtmaisdk.clients.rest.models.chat_session import ChatSession
-from mtmaisdk.clients.rest.models.chat_session_list import ChatSessionList
-from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -42,10 +41,11 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_chat_session(
+    async def chat_create_message(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_session_update: ChatSessionUpdate,
+        thread: Annotated[StrictStr, Field(description="thread ID")],
+        chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -58,15 +58,17 @@ class ChatApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatSession:
-        """创建聊天 Session
+    ) -> ChatMessage:
+        """发送聊天消息
 
-        创建聊天 Session
+        发送聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
+        :param thread: thread ID (required)
+        :type thread: str
+        :param chat_message_create: (required)
+        :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -89,9 +91,10 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_chat_session_serialize(
+        _param = self._chat_create_message_serialize(
             tenant=tenant,
-            chat_session_update=chat_session_update,
+            thread=thread,
+            chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -99,7 +102,7 @@ class ChatApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "ChatMessage",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -115,10 +118,11 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_chat_session_with_http_info(
+    async def chat_create_message_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_session_update: ChatSessionUpdate,
+        thread: Annotated[StrictStr, Field(description="thread ID")],
+        chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -131,15 +135,17 @@ class ChatApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatSession]:
-        """创建聊天 Session
+    ) -> ApiResponse[ChatMessage]:
+        """发送聊天消息
 
-        创建聊天 Session
+        发送聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
+        :param thread: thread ID (required)
+        :type thread: str
+        :param chat_message_create: (required)
+        :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -162,9 +168,10 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_chat_session_serialize(
+        _param = self._chat_create_message_serialize(
             tenant=tenant,
-            chat_session_update=chat_session_update,
+            thread=thread,
+            chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -172,7 +179,7 @@ class ChatApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "ChatMessage",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -188,10 +195,11 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_chat_session_without_preload_content(
+    async def chat_create_message_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_session_update: ChatSessionUpdate,
+        thread: Annotated[StrictStr, Field(description="thread ID")],
+        chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -205,14 +213,16 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """创建聊天 Session
+        """发送聊天消息
 
-        创建聊天 Session
+        发送聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
+        :param thread: thread ID (required)
+        :type thread: str
+        :param chat_message_create: (required)
+        :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -235,9 +245,10 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_chat_session_serialize(
+        _param = self._chat_create_message_serialize(
             tenant=tenant,
-            chat_session_update=chat_session_update,
+            thread=thread,
+            chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -245,7 +256,7 @@ class ChatApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "ChatMessage",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -256,10 +267,11 @@ class ChatApi:
         return response_data.response
 
 
-    def _chat_create_chat_session_serialize(
+    def _chat_create_message_serialize(
         self,
         tenant,
-        chat_session_update,
+        thread,
+        chat_message_create,
         _request_auth,
         _content_type,
         _headers,
@@ -283,12 +295,14 @@ class ChatApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if thread is not None:
+            _path_params['thread'] = thread
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if chat_session_update is not None:
-            _body_params = chat_session_update
+        if chat_message_create is not None:
+            _body_params = chat_message_create
 
 
         # set the HTTP header `Accept`
@@ -322,7 +336,7 @@ class ChatApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/chats',
+            resource_path='/api/v1/tenants/{tenant}/chat/{thread}/messages',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -339,551 +353,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_get(
+    async def chat_messages_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatSession:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_get_serialize(
-            tenant=tenant,
-            chat=chat,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    async def chat_get_with_http_info(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatSession]:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_get_serialize(
-            tenant=tenant,
-            chat=chat,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    async def chat_get_without_preload_content(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_get_serialize(
-            tenant=tenant,
-            chat=chat,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _chat_get_serialize(
-        self,
-        tenant,
-        chat,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if tenant is not None:
-            _path_params['tenant'] = tenant
-        if chat is not None:
-            _path_params['chat'] = chat
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-            'basicAuth', 
-            'cookieAuth', 
-            'bearerAuth'
-        ]
-
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/api/v1/tenants/{tenant}/chats/{chat}',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    async def chat_list(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatSessionList:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_list_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSessionList",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    async def chat_list_with_http_info(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatSessionList]:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_list_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSessionList",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    async def chat_list_without_preload_content(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """获取租户下的聊天列表
-
-        获取聊天列表
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_list_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSessionList",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _chat_list_serialize(
-        self,
-        tenant,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if tenant is not None:
-            _path_params['tenant'] = tenant
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-            'basicAuth', 
-            'cookieAuth', 
-            'bearerAuth'
-        ]
-
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/api/v1/tenants/{tenant}/chats',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    async def chat_messages(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_id: Annotated[StrictStr, Field(description="聊天 ID")],
+        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -903,8 +376,8 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_id: 聊天 ID (required)
-        :type chat_id: str
+        :param thread: thread ID (required)
+        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -927,9 +400,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_messages_serialize(
+        _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            chat_id=chat_id,
+            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -951,10 +424,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_messages_with_http_info(
+    async def chat_messages_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_id: Annotated[StrictStr, Field(description="聊天 ID")],
+        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -974,8 +447,8 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_id: 聊天 ID (required)
-        :type chat_id: str
+        :param thread: thread ID (required)
+        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -998,9 +471,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_messages_serialize(
+        _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            chat_id=chat_id,
+            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1022,10 +495,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_messages_without_preload_content(
+    async def chat_messages_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_id: Annotated[StrictStr, Field(description="聊天 ID")],
+        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1045,8 +518,8 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_id: 聊天 ID (required)
-        :type chat_id: str
+        :param thread: thread ID (required)
+        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1069,9 +542,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_messages_serialize(
+        _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            chat_id=chat_id,
+            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1088,10 +561,10 @@ class ChatApi:
         return response_data.response
 
 
-    def _chat_messages_serialize(
+    def _chat_messages_list_serialize(
         self,
         tenant,
-        chat_id,
+        thread,
         _request_auth,
         _content_type,
         _headers,
@@ -1115,8 +588,8 @@ class ChatApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if chat_id is not None:
-            _path_params['chatId'] = chat_id
+        if thread is not None:
+            _path_params['thread'] = thread
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -1141,319 +614,7 @@ class ChatApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/chats/{chatId}/messages',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    async def chat_update_chat_session(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The session id")],
-        chat_session_update: ChatSessionUpdate,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatSession:
-        """更新会话
-
-        更新会话
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The session id (required)
-        :type chat: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_update_chat_session_serialize(
-            tenant=tenant,
-            chat=chat,
-            chat_session_update=chat_session_update,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    async def chat_update_chat_session_with_http_info(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The session id")],
-        chat_session_update: ChatSessionUpdate,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatSession]:
-        """更新会话
-
-        更新会话
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The session id (required)
-        :type chat: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_update_chat_session_serialize(
-            tenant=tenant,
-            chat=chat,
-            chat_session_update=chat_session_update,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    async def chat_update_chat_session_without_preload_content(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The session id")],
-        chat_session_update: ChatSessionUpdate,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """更新会话
-
-        更新会话
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param chat: The session id (required)
-        :type chat: str
-        :param chat_session_update: (required)
-        :type chat_session_update: ChatSessionUpdate
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._chat_update_chat_session_serialize(
-            tenant=tenant,
-            chat=chat,
-            chat_session_update=chat_session_update,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _chat_update_chat_session_serialize(
-        self,
-        tenant,
-        chat,
-        chat_session_update,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if tenant is not None:
-            _path_params['tenant'] = tenant
-        if chat is not None:
-            _path_params['chat'] = chat
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-        if chat_session_update is not None:
-            _body_params = chat_session_update
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-        # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params['Content-Type'] = _content_type
-        else:
-            _default_content_type = (
-                self.api_client.select_header_content_type(
-                    [
-                        'application/json'
-                    ]
-                )
-            )
-            if _default_content_type is not None:
-                _header_params['Content-Type'] = _default_content_type
-
-        # authentication setting
-        _auth_settings: List[str] = [
-            'basicAuth', 
-            'cookieAuth', 
-            'bearerAuth'
-        ]
-
-        return self.api_client.param_serialize(
-            method='PUT',
-            resource_path='/api/v1/tenants/{tenant}/chats/{chat}',
+            resource_path='/api/v1/tenants/{tenant}/chat/{thread}/messages',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
