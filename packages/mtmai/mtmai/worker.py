@@ -9,7 +9,7 @@ from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.configuration import Configuration
-from autogen_core import DefaultTopicId, SingleThreadedAgentRuntime, TopicId, TypeSubscription, try_get_known_serializers_for_type
+from autogen_core import Component, DefaultTopicId, SingleThreadedAgentRuntime, TopicId, TypeSubscription, try_get_known_serializers_for_type
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 from mtmai.core.config import settings
 from autogen_core import (
@@ -37,14 +37,15 @@ from mtmai.agents._agents import ReceiveAgent
 from mtmai.agents._types import CascadingMessage
 from rich.console import Console
 from rich.markdown import Markdown
+from pydantic import BaseModel
 
 
 logger = logging.getLogger()
-
-# @default_subscription
-class WorkerAgent(RoutedAgent):
+class WorkerAppConfig(BaseModel):
+    backend_url: str
+class WorkerApp(Component[WorkerAppConfig]):
     def __init__(self):
-        super().__init__("worker_agent")
+        # super().__init__("worker_agent")
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
             raise ValueError("backend_url is not set")
@@ -56,8 +57,36 @@ class WorkerAgent(RoutedAgent):
                 host=self.backend_url,
             )
         )
+        # Flag to track if the group chat has been initialized.
+        self._initialized = False
 
-    async def setup(self):
+        # Flag to track if the group chat is running.
+        self._is_running = False
+        self.setup_runtime()
+
+    def setup_runtime(self):
+        # runtime = SingleThreadedAgentRuntime()
+        # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
+
+        # grpc_runtime.start()
+        # ui_agent_type = await UIAgent.register(
+        #     grpc_runtime,
+        #     "ui_agent",
+        #     lambda: UIAgent(
+        #         on_message_chunk_func=send_cl_stream,
+        #     ),
+        # )
+        # await grpc_runtime.add_subscription(
+        #     TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
+        # )  # TODO: This could be a great example of using agent_id to route to sepecific element in the ui. Can replace MessageChunk.message_id
+
+        # grpc_runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
+
+        # await grpc_runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
+
+        # # await grpc_runtime.stop_when_idle()
+        self._runtime = SingleThreadedAgentRuntime()
+    async def run(self):
         # self.runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         # self.runtime.start()
 
@@ -103,12 +132,17 @@ class WorkerAgent(RoutedAgent):
                 await asyncio.sleep(settings.WORKER_INTERVAL)
 
         await self.start_autogen_host()
-        # await asyncio.sleep(3)
         # self.runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
         # self.runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         # await self.runtime.start()
-        # self.runtime.start()
-        await self.worker.async_start()
+        self._runtime.start()
+        self._is_running=True
+
+        # Create a new event loop but don't block on it
+        loop = asyncio.new_event_loop()
+        self.worker.setup_loop(loop)
+        asyncio.create_task(self.worker.async_start())
+        logger.info("worker started")
 
     @message_handler
     async def on_new_message(self, message: CascadingMessage, ctx: MessageContext) -> None:
@@ -140,8 +174,9 @@ class WorkerAgent(RoutedAgent):
 
     async def setup_hatchet_workflows(self):
         logger.info("Setting up hatchet workflows...")
-
-        @self.wfapp.workflow(
+        wfapp = self.wfapp
+        worker_app = self
+        @wfapp.workflow(
             name="ag",
             on_events=["ag:run"],
             input_validator=AgentRunInput,
@@ -173,35 +208,16 @@ class WorkerAgent(RoutedAgent):
                 #     hatctx.put_stream(event)
 
                 # 新版功能
-                # runtime = SingleThreadedAgentRuntime()
-                # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
 
-                # grpc_runtime.start()
-                # ui_agent_type = await UIAgent.register(
-                #     grpc_runtime,
-                #     "ui_agent",
-                #     lambda: UIAgent(
-                #         on_message_chunk_func=send_cl_stream,
-                #     ),
-                # )
-                # await grpc_runtime.add_subscription(
-                #     TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
-                # )  # TODO: This could be a great example of using agent_id to route to sepecific element in the ui. Can replace MessageChunk.message_id
-
-                # grpc_runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
-
-                # await grpc_runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
-
-                # # await grpc_runtime.stop_when_idle()
                 # await grpc_runtime.stop()
 
-                self.runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
+                worker_app._runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
                 return {"result": "success"}
 
         self.worker.register_workflow(FlowAg())
 
 
-        @self.worker_agent.wfapp.workflow(
+        @wfapp.workflow(
             name="tenant",
             on_events=["tenant:run"],
             input_validator=TenantSeedReq,
@@ -211,7 +227,7 @@ class WorkerAgent(RoutedAgent):
             租户工作流
             """
 
-            @self.worker_agent.wfapp.step(
+            @self.wfapp.step(
                 timeout="30m",
                 # retries=1
             )

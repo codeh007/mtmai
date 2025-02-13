@@ -1,6 +1,7 @@
 import asyncio
 import threading
 
+from autogen_core import SingleThreadedAgentRuntime
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -13,7 +14,7 @@ from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
 from mtmai.middleware import AuthMiddleware
 
-from .worker import WorkerAgent
+from .worker import WorkerApp
 
 from .api import mount_api_routes
 from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
@@ -202,11 +203,9 @@ def build_app():
     #     forge_app.setup_api_app(app)
     return app
 
-worker_app = WorkerAgent()
 
 async def serve():
-    worker_app.setup()
-    # worker_task = asyncio.create_task(worker_app.setup())
+    await WorkerApp().run()
     app = build_app()
     config = uvicorn.Config(
         app,

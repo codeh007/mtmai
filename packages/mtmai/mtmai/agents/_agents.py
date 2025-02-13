@@ -61,32 +61,6 @@ class CascadingAgent(RoutedAgent):
             return
         await self.publish_message(CascadingMessage(round=message.round + 1), topic_id=DefaultTopicId())
 
-async def main() -> None:
-    runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
-    runtime.start()
-
-    await ReceiveAgent.register(
-        runtime,
-        "receiver",
-        lambda: ReceiveAgent(),
-    )
-    await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
-    await GreeterAgent.register(
-        runtime,
-        "greeter",
-        lambda: GreeterAgent("receiver"),
-    )
-    await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
-    await runtime.publish_message(AskToGreet("Hello World!"), topic_id=DefaultTopicId())
-
-    await runtime.stop_when_signal()
-
-
-# if __name__ == "__main__":
-#     logging.basicConfig(level=logging.DEBUG)
-#     logger = logging.getLogger("autogen_core")
-#     logger.setLevel(logging.DEBUG)
-#     asyncio.run(main())
 
 
 class MtWebUserProxyAgent(UserProxyAgent):
@@ -99,9 +73,6 @@ class MtWebUserProxyAgent(UserProxyAgent):
     def _to_config(self) -> UserProxyAgentConfig:
         # TODO: Add ability to serialie input_func
         return UserProxyAgentConfig(name=self.name, description=self.description, input_func=None)
-
-
-
 
 class MtRoundRobinGroupChatConfig(RoundRobinGroupChatConfig):
     """扩展 RoundRobinGroupChatConfig"""
@@ -139,3 +110,24 @@ class MtRoundRobinGroupChat(
         #         )
         #     ] + participants
         super().__init__(participants, termination_condition, max_turns)
+
+
+async def main() -> None:
+    runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
+    runtime.start()
+
+    await ReceiveAgent.register(
+        runtime,
+        "receiver",
+        lambda: ReceiveAgent(),
+    )
+    await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
+    await GreeterAgent.register(
+        runtime,
+        "greeter",
+        lambda: GreeterAgent("receiver"),
+    )
+    await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
+    await runtime.publish_message(AskToGreet("Hello World!"), topic_id=DefaultTopicId())
+
+    await runtime.stop_when_signal()
