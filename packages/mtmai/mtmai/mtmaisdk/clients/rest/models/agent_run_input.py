@@ -26,11 +26,12 @@ class AgentRunInput(BaseModel):
     """
     AgentRunInput
     """ # noqa: E501
-    team_id: StrictStr = Field(description="团队ID", alias="teamId")
-    thread_id: Optional[StrictStr] = Field(default=None, description="线程ID", alias="threadId")
+    team_id: StrictStr = Field(alias="teamId")
+    session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
     task: StrictStr
-    tenant_id: Optional[StrictStr] = Field(default=None, description="租户ID", alias="tenantId")
-    __properties: ClassVar[List[str]] = ["teamId", "threadId", "task", "tenantId"]
+    tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
+    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
+    __properties: ClassVar[List[str]] = ["teamId", "sessionId", "task", "tenantId", "runId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,9 +85,10 @@ class AgentRunInput(BaseModel):
 
         _obj = cls.model_validate({
             "teamId": obj.get("teamId"),
-            "threadId": obj.get("threadId"),
+            "sessionId": obj.get("sessionId"),
             "task": obj.get("task"),
-            "tenantId": obj.get("tenantId")
+            "tenantId": obj.get("tenantId"),
+            "runId": obj.get("runId")
         })
         return _obj
 
