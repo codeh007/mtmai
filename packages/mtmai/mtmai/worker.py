@@ -45,7 +45,7 @@ from pydantic import BaseModel
 logger = logging.getLogger()
 class WorkerAppConfig(BaseModel):
     backend_url: str
-class WorkerApp(Component[WorkerAppConfig]):
+class WorkerApp():
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
