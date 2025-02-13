@@ -123,18 +123,5 @@ class MtRoundRobinGroupChat(
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
     ):
-        # 检查是否已经包含 user_proxy_agent
-        # has_user_proxy = False
-        # for participant in participants:
-        #     if isinstance(participant, MtWebUserProxyAgent):
-        #         has_user_proxy = True
-        #         break
-
-        # if not has_user_proxy:
-        #     participants = [
-        #         MtWebUserProxyAgent(
-        #             name="user_proxy_agent",
-        #         )
-        #     ] + participants
         super().__init__(participants, termination_condition, max_turns)
 

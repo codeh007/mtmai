@@ -67,21 +67,13 @@ class WorkerApp(Component[WorkerAppConfig]):
     def setup_runtime(self):
         # runtime = SingleThreadedAgentRuntime()
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
-        # grpc_runtime.start()
-        # ui_agent_type = await UIAgent.register(
-        #     grpc_runtime,
-        #     "ui_agent",
-        #     lambda: UIAgent(
-        #         on_message_chunk_func=send_cl_stream,
-        #     ),
-        # )
-        # await grpc_runtime.add_subscription(
-        #     TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
-        # )  # TODO: This could be a great example of using agent_id to route to sepecific element in the ui. Can replace MessageChunk.message_id
+
+
         self._runtime = SingleThreadedAgentRuntime()
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
+
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY
@@ -132,6 +124,16 @@ class WorkerApp(Component[WorkerAppConfig]):
 
         await WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(self.gomtmapi))
         await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi))
+        ui_agent_type = await UIAgent.register(
+            self._runtime,
+            "ui_agent",
+            lambda: UIAgent(
+                on_message_chunk_func=send_cl_stream,
+            ),
+        )
+        await self._runtime.add_subscription(
+            TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
+        )
         self._is_running=True
 
         # Create a new event loop but don't block on it
