@@ -1,5 +1,5 @@
 import logging
-from typing import Awaitable, Callable, List
+from typing import Any, Awaitable, Callable, List, Mapping
 from autogen_core import  MessageContext, RoutedAgent, default_subscription, message_handler
 from autogen_core.models import (
     AssistantMessage,
@@ -13,6 +13,13 @@ from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from rich.console import Console
 from rich.markdown import Markdown
+from pydantic import BaseModel
+
+
+class UIAgentState(BaseModel):
+    """UI Agent 状态"""
+    last_message: str = ""
+
 
 logger = logging.getLogger(__name__)
 @default_subscription
@@ -34,6 +41,24 @@ class UIAgent(RoutedAgent):
         #     )
 
         # 保存状态
-        state = await self._runtime.save_state()
+        state = await self.runtime.save_state()
         logger.info(f"UI Agent 保存状态: {state}")
 
+
+
+    async def save_state(self) -> Mapping[str, Any]:
+        """Save the state of the group chat team."""
+        try:
+            # Save the state of the runtime. This will save the state of the participants and the group chat manager.
+            # agent_states = await self._runtime.save_state()
+            # return TeamState(agent_states=agent_states, team_id=self._team_id).model_dump()
+
+            return UIAgentState(last_message="last_message:todo").model_dump()
+        finally:
+            # Indicate that the team is no longer running.
+            # self._is_running = False
+            pass
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        """Load the state of the group chat team."""
+        self.last_message = state["last_message"]

@@ -169,6 +169,12 @@ class WorkerApp():
             async def step_entry(self, hatctx: Context):
                 init_mtmai_context(hatctx)
                 input = cast(AgentRunInput, hatctx.workflow_input())
+
+                # 解释: 参考 autogen studio, 在同一个 session 中, 用户的每一个动作,都是一个新的run id, 例如,用户的一个提问.
+                # 这里, 暂时使用 workflow_run_id 作为 run id.
+                run_id = hatctx.workflow_run_id()
+
+
                 await worker_app._runtime.publish_message(input,DefaultTopicId())
                 # await worker_app._runtime.send_message(msg)
                 return {"result": "success"}
