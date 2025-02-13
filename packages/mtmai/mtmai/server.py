@@ -13,6 +13,8 @@ from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
 from mtmai.middleware import AuthMiddleware
 
+from .worker import WorkerAgent
+
 from .api import mount_api_routes
 from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 
@@ -20,19 +22,22 @@ from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
 def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        from mtmai.worker import WorkerAgent
+        # from mtmai.worker import WorkerAgent
+        # worker_app = WorkerAgent()
         try:
-            worker_app = WorkerAgent()
-            worker_task = asyncio.create_task(worker_app.setup())
+
+            # worker_task = asyncio.create_task(worker_app.setup())
 
             yield
+        except Exception as e:
+            logger.exception(f"failed to setup worker: {e}")
         finally:
-            await worker_app.stop()
-            worker_task.cancel()
-            try:
-                await worker_task
-            except asyncio.CancelledError:
-                pass
+            # await worker_app.stop()
+            # worker_task.cancel()
+            # try:
+            #     await worker_task
+            # except asyncio.CancelledError:
+            pass
 
     def custom_generate_unique_id(route: APIRoute) -> str:
         if len(route.tags) > 0:
@@ -197,12 +202,11 @@ def build_app():
     #     forge_app.setup_api_app(app)
     return app
 
+worker_app = WorkerAgent()
 
 async def serve():
-    # analytics.capture("skyvern-oss-run-server")
-    # if os.path.exists("../gomtm/env/mtmai.env"):
-    #     load_dotenv(dotenv_path=os.path.join("../gomtm/env/mtmai.env"))
-
+    worker_app.setup()
+    # worker_task = asyncio.create_task(worker_app.setup())
     app = build_app()
     config = uvicorn.Config(
         app,
