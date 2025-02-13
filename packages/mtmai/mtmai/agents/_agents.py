@@ -114,7 +114,7 @@ class MtRoundRobinGroupChat(
     """扩展 RoundRobinGroupChat"""
 
     component_provider_override = (
-        "mtmai.ag.base.RoundRobinGroupChat.MtRoundRobinGroupChat"
+        "mtmai.agents._agents.RoundRobinGroupChat"
     )
 
     def __init__(
@@ -138,23 +138,3 @@ class MtRoundRobinGroupChat(
         #     ] + participants
         super().__init__(participants, termination_condition, max_turns)
 
-
-# async def main() -> None:
-#     runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
-#     runtime.start()
-
-#     await ReceiveAgent.register(
-#         runtime,
-#         "receiver",
-#         lambda: ReceiveAgent(),
-#     )
-#     await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
-#     await GreeterAgent.register(
-#         runtime,
-#         "greeter",
-#         lambda: GreeterAgent("receiver"),
-#     )
-#     await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
-#     await runtime.publish_message(AskToGreet("Hello World!"), topic_id=DefaultTopicId())
-
-#     await runtime.stop_when_signal()

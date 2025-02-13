@@ -67,7 +67,6 @@ class WorkerApp(Component[WorkerAppConfig]):
     def setup_runtime(self):
         # runtime = SingleThreadedAgentRuntime()
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
-
         # grpc_runtime.start()
         # ui_agent_type = await UIAgent.register(
         #     grpc_runtime,
@@ -82,6 +81,7 @@ class WorkerApp(Component[WorkerAppConfig]):
         self._runtime = SingleThreadedAgentRuntime()
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
+        self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY
@@ -128,13 +128,10 @@ class WorkerApp(Component[WorkerAppConfig]):
                 await asyncio.sleep(settings.WORKER_INTERVAL)
 
         await self.start_autogen_host()
-        # self.runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
-        # self.runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
-        # await self.runtime.start()
         self._runtime.start()
 
         await WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(self.gomtmapi))
-        await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent())
+        await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi))
         self._is_running=True
 
         # Create a new event loop but don't block on it
@@ -143,23 +140,11 @@ class WorkerApp(Component[WorkerAppConfig]):
         asyncio.create_task(self.worker.async_start())
         logger.info("worker started")
 
-    @message_handler
-    async def on_new_message(self, message: CascadingMessage, ctx: MessageContext) -> None:
-        print(message)
-        # await self.publish_message(
-        #     ReceiveMessageEvent(round=message.round, sender=str(ctx.sender), recipient=str(self.id)),
-        #     topic_id=DefaultTopicId(),
-        # )
-        # if message.round == self.max_rounds:
-        #     return
-        # await self.publish_message(CascadingMessage(round=message.round + 1), topic_id=DefaultTopicId())
-
     async def start_autogen_host(self):
         from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
         self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
         self.autogen_host.start()
         logger.info(f"🟢 AG host at: {settings.AG_HOST_ADDRESS}")
-
 
     async def stop(self):
         if self.worker:
