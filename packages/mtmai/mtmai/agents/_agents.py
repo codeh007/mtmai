@@ -46,7 +46,7 @@ class GreeterAgent(RoutedAgent):
 
 
 @default_subscription
-class CascadingAgent(RoutedAgent):
+class WorkerMainAgent(RoutedAgent):
     def __init__(self, max_rounds: int) -> None:
         super().__init__("A cascading agent.")
         self.max_rounds = max_rounds

@@ -33,7 +33,7 @@ from mtmaisdk.context.context import Context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 
 from .agents._types import CascadingMessage, MessageChunk
-from mtmai.agents._agents import ReceiveAgent
+from mtmai.agents._agents import ReceiveAgent, WorkerMainAgent
 from mtmai.agents._types import CascadingMessage
 from rich.console import Console
 from rich.markdown import Markdown
@@ -63,7 +63,7 @@ class WorkerApp(Component[WorkerAppConfig]):
         # Flag to track if the group chat is running.
         self._is_running = False
         self.setup_runtime()
-
+        self.setup_agents()
     def setup_runtime(self):
         # runtime = SingleThreadedAgentRuntime()
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
@@ -86,10 +86,9 @@ class WorkerApp(Component[WorkerAppConfig]):
 
         # # await grpc_runtime.stop_when_idle()
         self._runtime = SingleThreadedAgentRuntime()
+    def setup_agents(self):
+        WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(max_rounds=10))
     async def run(self):
-        # self.runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
-        # self.runtime.start()
-
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
