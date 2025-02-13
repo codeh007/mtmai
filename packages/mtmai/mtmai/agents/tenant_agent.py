@@ -6,14 +6,15 @@ from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmai.agents.team_builder.company_research import CompanyResearchTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
 from autogen_core import RoutedAgent, message_handler, type_subscription, default_subscription
+from mtmaisdk.clients.rest_client import AsyncRestApi
 
 
 # @default_subscription
 @type_subscription(topic_type="tenant")
 class TenantAgent(RoutedAgent):
-    def __init__(self, ctx: AgentContext) -> None:
+    def __init__(self, gomtmapi: AsyncRestApi) -> None:
         super().__init__("TenantAgent")
-        self.apictx = ctx
+        self.gomtmapi=gomtmapi
 
     @message_handler
     async def handle_tenant_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:
@@ -23,7 +24,7 @@ class TenantAgent(RoutedAgent):
         self.apictx.log(f"当前租户: {message.tenant_id}")
         # 获取模型配置
         self.apictx.log("获取模型配置")
-        defaultModel = await self.apictx.aio.model_api.model_get(
+        defaultModel = await self.gomtmapi.model_api.model_get(
             tenant=message.tenant_id, model="default"
         )
         self.apictx.log(defaultModel)
@@ -45,17 +46,9 @@ class TenantAgent(RoutedAgent):
                     description=team_comp.description or "",
                     component=comp,
                 )
-            defaultModel = await self.apictx.aio.team_api.team_upsert(
+            defaultModel = await self.gomtmapi.team_api.team_upsert(
                 tenant=message.tenant_id,
                 team=team._team_id,
                 team2=team2,
             )
             self.apictx.log(defaultModel)
-
-    # @message_handler
-    # async def on_text_message(self, message: MyTextMessage, ctx: MessageContext) -> None:
-    #     logger.info(f"Hello, {message.source}, you said {message.content}!")
-
-    # @message_handler
-    # async def on_image_message(self, message: MyImageMessage, ctx: MessageContext) -> None:
-    #     logger.info(f"Hello, {message.source}, you sent me {message.url}!")

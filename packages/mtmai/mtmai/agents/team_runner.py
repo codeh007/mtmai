@@ -8,16 +8,17 @@ from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken, Component, ComponentModel
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-from mtmaisdk.context.context import Context
+from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
 
-from mtmai.agents.ctx import get_mtmai_context
 from mtmai.models.ag import TeamResult
 logger = logging.getLogger(__name__)
 
 
 class TeamRunner:
     """Team Runner"""
+    def __init__(self, gomtmapi: AsyncRestApi) -> None:
+        self.gomtmapi=gomtmapi
 
     async def _create_team(
         self,
@@ -49,9 +50,9 @@ class TeamRunner:
         input_func: Optional[Callable] = None,
         cancellation_token: Optional[CancellationToken] = None,
     ):
-        ctx = get_mtmai_context()
+        # ctx = get_mtmai_context()
         start_time = time.time()
-        team_data = await ctx.hatchet_ctx.rest_client.aio.teams_api.team_get(
+        team_data = await self.gomtmapi.teams_api.team_get(
             tenant=input.tenant_id, team=input.team_id
         )
         if team_data is None:
@@ -77,7 +78,7 @@ class TeamRunner:
             state_to_save = await team.save_state()
             # 保存状态
             saveed_response = (
-                await ctx.hatchet_ctx.rest_client.aio.ag_state_api.ag_state_upsert(
+                await self.gomtmapi.ag_state_api.ag_state_upsert(
                     tenant=input.tenant_id,
                     state=input.team_id,
                     ag_state_upsert=AgStateUpsert(

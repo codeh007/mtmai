@@ -21,6 +21,7 @@ from autogen_core import (
     message_handler,
     default_subscription,
 )
+from mtmaisdk.clients.rest_client import AsyncRestApi
 from mtmaisdk.worker.worker import Worker
 
 from .agents.tenant_agent import TenantAgent
@@ -45,7 +46,6 @@ class WorkerAppConfig(BaseModel):
     backend_url: str
 class WorkerApp(Component[WorkerAppConfig]):
     def __init__(self):
-        # super().__init__("worker_agent")
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
             raise ValueError("backend_url is not set")
@@ -63,7 +63,7 @@ class WorkerApp(Component[WorkerAppConfig]):
         # Flag to track if the group chat is running.
         self._is_running = False
         self.setup_runtime()
-        self.setup_agents()
+
     def setup_runtime(self):
         # runtime = SingleThreadedAgentRuntime()
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
@@ -79,15 +79,10 @@ class WorkerApp(Component[WorkerAppConfig]):
         # await grpc_runtime.add_subscription(
         #     TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
         # )  # TODO: This could be a great example of using agent_id to route to sepecific element in the ui. Can replace MessageChunk.message_id
-
-        # grpc_runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
-
-        # await grpc_runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
-
-        # # await grpc_runtime.stop_when_idle()
         self._runtime = SingleThreadedAgentRuntime()
-    def setup_agents(self):
-        WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(max_rounds=10))
+        self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
+        self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
+
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
@@ -113,6 +108,8 @@ class WorkerApp(Component[WorkerAppConfig]):
                         logger=logger,
                     )
                 )
+                self.gomtmapi= AsyncRestApi(host=settings.GOMTM_URL,api_key=workerConfig.token,tenant_id=clientConfig.tenant_id)
+
                 self.wfapp = Hatchet.from_config(
                     clientConfig,
                     debug=True,
@@ -135,6 +132,9 @@ class WorkerApp(Component[WorkerAppConfig]):
         # self.runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         # await self.runtime.start()
         self._runtime.start()
+
+        await WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(self.gomtmapi))
+        await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent())
         self._is_running=True
 
         # Create a new event loop but don't block on it
@@ -181,36 +181,12 @@ class WorkerApp(Component[WorkerAppConfig]):
             input_validator=AgentRunInput,
         )
         class FlowAg:
-            @self.wfapp.step(
-                timeout="30m",
-                # retries=1
-            )
+            @self.wfapp.step(timeout="30m")
             async def step_entry(self, hatctx: Context):
                 init_mtmai_context(hatctx)
                 input = cast(AgentRunInput, hatctx.workflow_input())
-                # 旧版功能
-                # team_runner = TeamRunner()
-                # async for event in team_runner.run_stream(input):
-                #     _event = event
-                #     if isinstance(event, BaseModel):
-                #         _event = event.model_dump()
-                #     result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
-                #         tenant=input.tenant_id,
-                #         ag_event_create=AgEventCreate(
-                #             data=_event,
-                #             framework="autogen",
-                #             stepRunId=hatctx.step_run_id,
-                #             meta={},
-                #         ),
-                #     )
-                #     # hatctx.log(result)
-                #     hatctx.put_stream(event)
-
-                # 新版功能
-
-                # await grpc_runtime.stop()
-
-                worker_app._runtime.publish_message(CascadingMessage(round=1), topic_id=DefaultTopicId())
+                await worker_app._runtime.publish_message(input,DefaultTopicId())
+                # await worker_app._runtime.send_message(msg)
                 return {"result": "success"}
 
         self.worker.register_workflow(FlowAg())
@@ -236,23 +212,23 @@ class WorkerApp(Component[WorkerAppConfig]):
                 ctx.set_hatch_context(hatctx)
                 input = cast(TenantSeedReq, hatctx.workflow_input())
                 # 新版功能
-                runtime = SingleThreadedAgentRuntime()
-                await TenantAgent.register(runtime, "tenant_agent", lambda: TenantAgent(ctx))
+                # runtime = SingleThreadedAgentRuntime()
+                # await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(ctx))
                 # await runtime.add_subscription(TypeSubscription(topic_type="tenant", agent_type="broadcasting_agent"))
 
-                runtime.start()
+                # runtime.start()
                 # await runtime.send_message(
                 #     message=input,
                 #     recipient=AgentId(type="tenant_agent", key="default"),
                 # )
                 # 广播方从而避免工作流中消息类型的相关转换问题.
-                await runtime.publish_message(
+                await worker_app._runtime.publish_message(
                     input,
                     topic_id=TopicId(type="tenant", source="tenant"),
                 )
 
-                await runtime.stop_when_idle()  # This will block until the runtime is idle.
-                await runtime.close()
+                # await runtime.stop_when_idle()  # This will block until the runtime is idle.
+                # await runtime.close()
                 return {"result": "success"}
         self.worker.register_workflow(FlowTenant())
 

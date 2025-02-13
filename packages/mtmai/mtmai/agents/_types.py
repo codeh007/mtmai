@@ -91,12 +91,10 @@ class AppConfig(BaseModel):
     client_config: AzureOpenAIClientConfiguration = None  # type: ignore[assignment] # This was required to do custom instantiation in `load_config`
 
 
-@dataclass
-class CascadingMessage:
-    round: int
+class CascadingMessage(BaseModel):
+    content: str |None= None
 
-@dataclass
-class ReceiveMessageEvent:
+class ReceiveMessageEvent(BaseModel):
     round: int
     sender: str
     recipient: str

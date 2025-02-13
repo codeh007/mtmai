@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import logging
 from typing import List
 from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, default_subscription, message_handler
 from autogen_agentchat.agents._user_proxy_agent import UserProxyAgentConfig
@@ -8,6 +9,9 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
+from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest_client import AsyncRestApi
+from pydantic import BaseModel
 from autogen_core import (
     AgentId,
     DefaultSubscription,
@@ -18,7 +22,11 @@ from autogen_core import (
 )
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 
+from .team_runner import TeamRunner
+
 from ._types import AskToGreet, CascadingMessage, Feedback, Greeting, ReceiveMessageEvent
+
+logger = logging.getLogger(__name__)
 
 class ReceiveAgent(RoutedAgent):
     def __init__(self) -> None:
@@ -47,21 +55,40 @@ class GreeterAgent(RoutedAgent):
 
 @default_subscription
 class WorkerMainAgent(RoutedAgent):
-    def __init__(self, max_rounds: int) -> None:
-        super().__init__("A cascading agent.")
-        self.max_rounds = max_rounds
+    def __init__(self, gomtmapi: AsyncRestApi) -> None:
+        super().__init__("WorkerMainAgent")
+        self.gomtmapi=gomtmapi
 
     @message_handler
     async def on_new_message(self, message: CascadingMessage, ctx: MessageContext) -> None:
+        """仅作练习"""
+        logger.info(f"WorkerMainAgent 收到消息: {message}")
         await self.publish_message(
             ReceiveMessageEvent(round=message.round, sender=str(ctx.sender), recipient=str(self.id)),
             topic_id=DefaultTopicId(),
         )
-        if message.round == self.max_rounds:
-            return
         await self.publish_message(CascadingMessage(round=message.round + 1), topic_id=DefaultTopicId())
 
 
+    @message_handler
+    async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
+        logger.info(f"WorkerMainAgent 收到消息: {message}")
+        team_runner = TeamRunner(self.gomtmapi)
+        async for event in team_runner.run_stream(input=message):
+            _event = event
+            if isinstance(event, BaseModel):
+                _event = event.model_dump()
+            # result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
+            #     tenant=input.tenant_id,
+            #     ag_event_create=AgEventCreate(
+            #         data=_event,
+            #         framework="autogen",
+            #         stepRunId=hatctx.step_run_id,
+            #         meta={},
+            #     ),
+            # )
+            # hatctx.log(result)
+            # hatctx.put_stream(event)
 
 class MtWebUserProxyAgent(UserProxyAgent):
     """扩展 UserProxyAgent"""
@@ -112,22 +139,22 @@ class MtRoundRobinGroupChat(
         super().__init__(participants, termination_condition, max_turns)
 
 
-async def main() -> None:
-    runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
-    runtime.start()
+# async def main() -> None:
+#     runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
+#     runtime.start()
 
-    await ReceiveAgent.register(
-        runtime,
-        "receiver",
-        lambda: ReceiveAgent(),
-    )
-    await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
-    await GreeterAgent.register(
-        runtime,
-        "greeter",
-        lambda: GreeterAgent("receiver"),
-    )
-    await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
-    await runtime.publish_message(AskToGreet("Hello World!"), topic_id=DefaultTopicId())
+#     await ReceiveAgent.register(
+#         runtime,
+#         "receiver",
+#         lambda: ReceiveAgent(),
+#     )
+#     await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
+#     await GreeterAgent.register(
+#         runtime,
+#         "greeter",
+#         lambda: GreeterAgent("receiver"),
+#     )
+#     await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
+#     await runtime.publish_message(AskToGreet("Hello World!"), topic_id=DefaultTopicId())
 
-    await runtime.stop_when_signal()
+#     await runtime.stop_when_signal()
