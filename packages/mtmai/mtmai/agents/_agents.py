@@ -9,7 +9,9 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
+from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
 from autogen_core import (
@@ -78,15 +80,19 @@ class WorkerMainAgent(RoutedAgent):
             _event = event
             if isinstance(event, BaseModel):
                 _event = event.model_dump()
-            # result = await hatctx.rest_client.aio.ag_events_api.ag_event_create(
-            #     tenant=input.tenant_id,
-            #     ag_event_create=AgEventCreate(
-            #         data=_event,
-            #         framework="autogen",
-            #         stepRunId=hatctx.step_run_id,
-            #         meta={},
-            #     ),
-            # )
+            await self.publish_message(
+                ChatMessage(content=_event),
+                topic_id=DefaultTopicId(),
+            )
+            result = await self.gomtmapi.ag_events_api.ag_event_create(
+                tenant=input.tenant_id,
+                ag_event_create=AgEventCreate(
+                    data=_event,
+                    framework="autogen",
+                    # stepRunId=hatctx.step_run_id,
+                    meta={},
+                ),
+            )
             # hatctx.log(result)
             # hatctx.put_stream(event)
 

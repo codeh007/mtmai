@@ -9,8 +9,7 @@ from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.configuration import Configuration
-from autogen_core import Component, DefaultTopicId, SingleThreadedAgentRuntime, TopicId, TypeSubscription, try_get_known_serializers_for_type
-from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
+from autogen_core import Component, DefaultTopicId, SingleThreadedAgentRuntime, TopicId, try_get_known_serializers_for_type
 from mtmai.core.config import settings
 from autogen_core import (
     AgentId,
@@ -21,6 +20,7 @@ from autogen_core import (
     message_handler,
     default_subscription,
 )
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from mtmaisdk.worker.worker import Worker
 
@@ -33,7 +33,7 @@ from .agents.ctx import AgentContext, get_mtmai_context, init_mtmai_context
 from mtmaisdk.context.context import Context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 
-from .agents._types import CascadingMessage, MessageChunk
+from .agents._types import CascadingMessage
 from mtmai.agents._agents import ReceiveAgent, WorkerMainAgent
 from mtmai.agents._types import CascadingMessage
 from rich.console import Console
@@ -65,15 +65,13 @@ class WorkerApp(Component[WorkerAppConfig]):
         self.setup_runtime()
 
     def setup_runtime(self):
-        # runtime = SingleThreadedAgentRuntime()
+        # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
-
-
         self._runtime = SingleThreadedAgentRuntime()
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
-
+        self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessage))
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY
@@ -128,11 +126,8 @@ class WorkerApp(Component[WorkerAppConfig]):
             self._runtime,
             "ui_agent",
             lambda: UIAgent(
-                on_message_chunk_func=send_cl_stream,
+                gomtmapi=self.gomtmapi
             ),
-        )
-        await self._runtime.add_subscription(
-            TypeSubscription(topic_type="uiagent", agent_type=ui_agent_type.type)
         )
         self._is_running=True
 
@@ -317,17 +312,3 @@ class WorkerApp(Component[WorkerAppConfig]):
                 await agent.run()
         self.worker.register_workflow(FlowBrowser())
 
-
-async def send_cl_stream(msg: MessageChunk) -> None:
-    print(msg)
-    # if msg.message_id not in message_chunks:
-    #     message_chunks[msg.message_id] = Message(content="", author=msg.author)
-
-    # if not msg.finished:
-    #     await message_chunks[msg.message_id].stream_token(msg.text)  # type: ignore [reportUnknownVariableType]
-    # else:
-    #     await message_chunks[msg.message_id].stream_token(msg.text)  # type: ignore [reportUnknownVariableType]
-    #     await message_chunks[msg.message_id].update()  # type: ignore [reportUnknownMemberType]
-    #     await asyncio.sleep(3)
-    #     cl_msg = message_chunks[msg.message_id]  # type: ignore [reportUnknownVariableType]
-    #     await cl_msg.send()  # type: ignore [reportUnknownMemberType]

@@ -1,7 +1,6 @@
+import logging
 from typing import Awaitable, Callable, List
-from uuid import uuid4
-from dataclasses import dataclass
-from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, message_handler
+from autogen_core import  MessageContext, RoutedAgent, default_subscription, message_handler
 from autogen_core.models import (
     AssistantMessage,
     ChatCompletionClient,
@@ -9,21 +8,22 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
-from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest_client import AsyncRestApi
 from rich.console import Console
 from rich.markdown import Markdown
 
-from ._types import MessageChunk
-
-
-
+logger = logging.getLogger(__name__)
+@default_subscription
 class UIAgent(RoutedAgent):
     """Handles UI-related tasks and message processing for the distributed group chat system."""
 
-    def __init__(self, on_message_chunk_func: Callable[[MessageChunk], Awaitable[None]]) -> None:
+    def __init__(self, gomtmapi: AsyncRestApi) -> None:
         super().__init__("UI Agent")
-        self._on_message_chunk_func = on_message_chunk_func
+        self.gomtmapi = gomtmapi
 
     @message_handler
-    async def handle_message_chunk(self, message: MessageChunk, ctx: MessageContext) -> None:
-        await self._on_message_chunk_func(message)
+    async def handle_message_chunk(self, message: ChatMessage, ctx: MessageContext) -> None:
+        logger.info(f"UI Agent 收到消息: {message}")
+
+        await self.gomtmapi.teams_api.team_get(tenant=message.tenant_id, team=message.team_id)

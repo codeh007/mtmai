@@ -33,15 +33,6 @@ class Greeting:
 @dataclass
 class Feedback:
     content: str
-@dataclass
-class MessageChunk:
-    message_id: str
-    text: str
-    author: str
-    finished: bool
-
-    def __str__(self) -> str:
-        return f"{self.author}({self.message_id}): {self.text}"
 
 
 # Define Host configuration model
