@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+# from dataclasses import dataclass
 from typing import Dict
 
 from autogen_core.models import (
@@ -8,47 +8,47 @@ from autogen_ext.models.openai.config import AzureOpenAIClientConfiguration
 from pydantic import BaseModel
 
 
-class GroupChatMessage(BaseModel):
-    """Implements a sample message sent by an LLM agent"""
+# class GroupChatMessage(BaseModel):
+#     """Implements a sample message sent by an LLM agent"""
 
-    body: LLMMessage
-
-
-class RequestToSpeak(BaseModel):
-    """Message type for agents to speak"""
-
-    pass
+#     body: LLMMessage
 
 
-@dataclass
-class AskToGreet:
-    content: str
+# class RequestToSpeak(BaseModel):
+#     """Message type for agents to speak"""
+
+#     pass
 
 
-@dataclass
-class Greeting:
-    content: str
+# @dataclass
+# class AskToGreet:
+#     content: str
 
 
-@dataclass
-class Feedback:
-    content: str
+# @dataclass
+# class Greeting:
+#     content: str
+
+
+# @dataclass
+# class Feedback:
+#     content: str
 
 
 # Define Host configuration model
-class HostConfig(BaseModel):
-    hostname: str
-    port: int
+# class HostConfig(BaseModel):
+#     hostname: str
+#     port: int
 
-    @property
-    def address(self) -> str:
-        return f"{self.hostname}:{self.port}"
+#     @property
+#     def address(self) -> str:
+#         return f"{self.hostname}:{self.port}"
 
 
 # Define GroupChatManager configuration model
-class GroupChatManagerConfig(BaseModel):
-    topic_type: str
-    max_rounds: int
+# class GroupChatManagerConfig(BaseModel):
+#     topic_type: str
+#     max_rounds: int
 
 
 # Define WriterAgent configuration model
@@ -73,19 +73,18 @@ class UIAgentConfig(BaseModel):
 
 
 # Define the overall AppConfig model
-class AppConfig(BaseModel):
-    host: HostConfig
-    group_chat_manager: GroupChatManagerConfig
-    writer_agent: ChatAgentConfig
-    editor_agent: ChatAgentConfig
-    ui_agent: UIAgentConfig
-    client_config: AzureOpenAIClientConfiguration = None  # type: ignore[assignment] # This was required to do custom instantiation in `load_config`
+# class AppConfig(BaseModel):
+#     host: HostConfig
+#     group_chat_manager: GroupChatManagerConfig
+#     writer_agent: ChatAgentConfig
+#     editor_agent: ChatAgentConfig
+#     ui_agent: UIAgentConfig
+#     client_config: AzureOpenAIClientConfiguration = None  # type: ignore[assignment] # This was required to do custom instantiation in `load_config`
 
+# class CascadingMessage(BaseModel):
+#     content: str |None= None
 
-class CascadingMessage(BaseModel):
-    content: str |None= None
-
-class ReceiveMessageEvent(BaseModel):
-    round: int
-    sender: str
-    recipient: str
+# class ReceiveMessageEvent(BaseModel):
+#     round: int
+#     sender: str
+#     recipient: str

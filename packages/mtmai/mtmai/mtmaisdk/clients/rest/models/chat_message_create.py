@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,13 +26,14 @@ class ChatMessageCreate(BaseModel):
     """
     ChatMessageCreate
     """ # noqa: E501
-    tenant_id: StrictStr
+    tenant_id: StrictStr = Field(alias="tenantId")
     content: StrictStr
-    team_id: StrictStr
-    thread_id: Optional[StrictStr] = None
+    team_id: StrictStr = Field(alias="teamId")
+    thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
+    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
     role: Optional[StrictStr] = None
-    message_type: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["tenant_id", "content", "team_id", "thread_id", "role", "message_type"]
+    message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
+    __properties: ClassVar[List[str]] = ["tenantId", "content", "teamId", "threadId", "runId", "role", "messageType"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,12 +86,13 @@ class ChatMessageCreate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "tenant_id": obj.get("tenant_id"),
+            "tenantId": obj.get("tenantId"),
             "content": obj.get("content"),
-            "team_id": obj.get("team_id"),
-            "thread_id": obj.get("thread_id"),
+            "teamId": obj.get("teamId"),
+            "threadId": obj.get("threadId"),
+            "runId": obj.get("runId"),
             "role": obj.get("role"),
-            "message_type": obj.get("message_type")
+            "messageType": obj.get("messageType")
         })
         return _obj
 

@@ -5,6 +5,7 @@ import os
 import sys
 from typing import cast
 import httpx
+from .agents.worker_agent import WorkerMainAgent
 from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
@@ -35,7 +36,6 @@ from mtmaisdk.context.context import Context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 
 from .agents._types import CascadingMessage
-from mtmai.agents._agents import ReceiveAgent, WorkerMainAgent
 from mtmai.agents._types import CascadingMessage
 from rich.console import Console
 from rich.markdown import Markdown
@@ -172,8 +172,8 @@ class WorkerApp():
 
                 # 解释: 参考 autogen studio, 在同一个 session 中, 用户的每一个动作,都是一个新的run id, 例如,用户的一个提问.
                 # 这里, 暂时使用 workflow_run_id 作为 run id.
-                run_id = hatctx.workflow_run_id()
-
+                if not input.run_id:
+                    input.run_id = hatctx.workflow_run_id()
 
                 await worker_app._runtime.publish_message(input,DefaultTopicId())
                 # await worker_app._runtime.send_message(msg)
@@ -222,52 +222,51 @@ class WorkerApp():
                 return {"result": "success"}
         self.worker.register_workflow(FlowTenant())
 
-    async def _setup_scrape_workflows(self):
+    # async def _setup_scrape_workflows(self):
+    #     @self.wfapp.workflow(
+    #         name="scrape", on_events=["scrape:run"], input_validator=ScrapeGraphParams
+    #     )
+    #     class ScrapFlow:
+    #         @self.wfapp.step(timeout="20m", retries=2)
+    #         async def graph_entry(self, hatctx: Context):
+    #             # from scrapegraphai.graphs import SmartScraperGraph
+    #             # from mtmaisdk.clients.rest.api.llm_api import LlmApi
 
-        @self.wfapp.workflow(
-            name="scrape", on_events=["scrape:run"], input_validator=ScrapeGraphParams
-        )
-        class ScrapFlow:
-            @self.wfapp.step(timeout="20m", retries=2)
-            async def graph_entry(self, hatctx: Context):
-                # from scrapegraphai.graphs import SmartScraperGraph
-                # from mtmaisdk.clients.rest.api.llm_api import LlmApi
+    #             # 获取 llm 配置
+    #             llm_config = hatctx.rest_client.aio._api_client
+    #             log_api = LogApi(hatctx.rest_client.aio._api_client)
+    #             result = await log_api.log_line_list(step_run=hatctx.step_run_id)
+    #             print(result)
+    #             llm_api = LlmApi(hatctx.rest_client.aio._api_client)
+    #             llm_config = await llm_api.llm_get(
+    #                 # tenant=hatctx.tenant_id,
+    #                 # slug=hatctx.node_id,
+    #                 # agent_node_run_request=hatctx.agent_node_run_request,
+    #             )
+    #             print(llm_config)
+    #             # Define the configuration for the scraping pipeline
+    #             graph_config = {
+    #                 "llm": {
+    #                     "api_key": "YOUR_OPENAI_APIKEY",
+    #                     "model": "openai/gpt-4o-mini",
+    #                 },
+    #                 "verbose": True,
+    #                 "headless": False,
+    #             }
 
-                # 获取 llm 配置
-                llm_config = hatctx.rest_client.aio._api_client
-                log_api = LogApi(hatctx.rest_client.aio._api_client)
-                result = await log_api.log_line_list(step_run=hatctx.step_run_id)
-                print(result)
-                llm_api = LlmApi(hatctx.rest_client.aio._api_client)
-                llm_config = await llm_api.llm_get(
-                    # tenant=hatctx.tenant_id,
-                    # slug=hatctx.node_id,
-                    # agent_node_run_request=hatctx.agent_node_run_request,
-                )
-                print(llm_config)
-                # Define the configuration for the scraping pipeline
-                graph_config = {
-                    "llm": {
-                        "api_key": "YOUR_OPENAI_APIKEY",
-                        "model": "openai/gpt-4o-mini",
-                    },
-                    "verbose": True,
-                    "headless": False,
-                }
+    #             # Create the SmartScraperGraph instance
+    #             smart_scraper_graph = SmartScraperGraph(
+    #                 prompt="Extract me all the news from the website",
+    #                 source="https://www.wired.com",
+    #                 config=graph_config,
+    #             )
 
-                # Create the SmartScraperGraph instance
-                smart_scraper_graph = SmartScraperGraph(
-                    prompt="Extract me all the news from the website",
-                    source="https://www.wired.com",
-                    config=graph_config,
-                )
+    #             # Run the pipeline
+    #             # result = smart_scraper_graph.run()
+    #             result = await asyncio.to_thread(smart_scraper_graph.run)
 
-                # Run the pipeline
-                # result = smart_scraper_graph.run()
-                result = await asyncio.to_thread(smart_scraper_graph.run)
-
-                print(json.dumps(result, indent=4))
-        self.worker.register_workflow(ScrapFlow())
+    #             print(json.dumps(result, indent=4))
+    #     self.worker.register_workflow(ScrapFlow())
 
     async def setup_browser_workflows(self):
 
