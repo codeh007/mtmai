@@ -64,16 +64,16 @@ class TeamRunner:
             ):
                 if cancellation_token and cancellation_token.is_cancelled():
                     break
-                if isinstance(event, TextMessage):
-                    yield event.model_dump()
-                elif isinstance(event, BaseModel):
-                    yield event.model_dump()
-                elif isinstance(event, TaskResult):
-                    yield TeamResult(
-                        task_result=event, usage="", duration=time.time() - start_time
-                    )
+                # if isinstance(event, TextMessage):
+                #     yield event.model_dump()
+                # elif isinstance(event, BaseModel):
+                #     yield event.model_dump()
+                # elif isinstance(event, TaskResult):
+                #     yield TeamResult(
+                #         task_result=event, usage="", duration=time.time() - start_time
+                #     )
                 else:
-                    yield event.model_dump()
+                    yield event
             state_to_save = await team.save_state()
             # 保存状态
             saveed_response = (

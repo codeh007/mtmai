@@ -26,12 +26,13 @@ class ChatMessageCreate(BaseModel):
     """
     ChatMessageCreate
     """ # noqa: E501
+    tenant_id: StrictStr
     content: StrictStr
     team_id: StrictStr
     thread_id: Optional[StrictStr] = None
     role: Optional[StrictStr] = None
     message_type: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["content", "team_id", "thread_id", "role", "message_type"]
+    __properties: ClassVar[List[str]] = ["tenant_id", "content", "team_id", "thread_id", "role", "message_type"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,6 +85,7 @@ class ChatMessageCreate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "tenant_id": obj.get("tenant_id"),
             "content": obj.get("content"),
             "team_id": obj.get("team_id"),
             "thread_id": obj.get("thread_id"),

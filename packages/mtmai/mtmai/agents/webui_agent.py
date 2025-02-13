@@ -27,4 +27,7 @@ class UIAgent(RoutedAgent):
     async def handle_message_chunk(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
         logger.info(f"UI Agent 收到消息: {message}")
 
-        await self.gomtmapi.teams_api.team_get(tenant=message.tenant_id, team=message.team_id)
+        await self.gomtmapi.chat_api.chat_create_message(
+            tenant=message.tenant_id,
+            chat_message_create=message,
+            )

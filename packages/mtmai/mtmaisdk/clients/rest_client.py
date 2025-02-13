@@ -4,9 +4,9 @@ import threading
 from typing import Any
 
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
+from .rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
-# from mtmaisdk.clients.rest.api.llm_api import LlmApi
 from mtmaisdk.clients.rest.api.log_api import LogApi
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.api.step_run_api import StepRunApi
@@ -36,7 +36,7 @@ from mtmaisdk.clients.rest.models.workflow_kind import WorkflowKind
 from mtmaisdk.clients.rest.models.workflow_list import WorkflowList
 from mtmaisdk.clients.rest.models.workflow_run import (
     WorkflowRun,
-)  # WorkflowRunCancel200Response,
+)
 from mtmaisdk.clients.rest.models.workflow_run_list import WorkflowRunList
 from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
     WorkflowRunOrderByDirection,
@@ -78,6 +78,7 @@ class AsyncRestApi:
         self._team_api = None
         self._model_api = None
         self._ag_state_api = None
+        self._chat_api = None
 
     @property
     def api_client(self):
@@ -158,6 +159,12 @@ class AsyncRestApi:
         if self._model_api is None:
             self._model_api = ModelApi(self.api_client)
         return self._model_api
+
+    @property
+    def chat_api(self):
+        if self._chat_api is None:
+            self._chat_api = ChatApi(self.api_client)
+        return self._chat_api
 
     @property
     def ag_state_api(self):

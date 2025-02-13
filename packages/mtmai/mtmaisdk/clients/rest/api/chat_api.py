@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictStr
+from pydantic import Field
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
@@ -44,7 +44,6 @@ class ChatApi:
     async def chat_create_message(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
@@ -65,8 +64,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param chat_message_create: (required)
         :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
@@ -93,7 +90,6 @@ class ChatApi:
 
         _param = self._chat_create_message_serialize(
             tenant=tenant,
-            thread=thread,
             chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -121,7 +117,6 @@ class ChatApi:
     async def chat_create_message_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
@@ -142,8 +137,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param chat_message_create: (required)
         :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
@@ -170,7 +163,6 @@ class ChatApi:
 
         _param = self._chat_create_message_serialize(
             tenant=tenant,
-            thread=thread,
             chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -198,7 +190,6 @@ class ChatApi:
     async def chat_create_message_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         chat_message_create: ChatMessageCreate,
         _request_timeout: Union[
             None,
@@ -219,8 +210,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param chat_message_create: (required)
         :type chat_message_create: ChatMessageCreate
         :param _request_timeout: timeout setting for this request. If one
@@ -247,7 +236,6 @@ class ChatApi:
 
         _param = self._chat_create_message_serialize(
             tenant=tenant,
-            thread=thread,
             chat_message_create=chat_message_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -270,7 +258,6 @@ class ChatApi:
     def _chat_create_message_serialize(
         self,
         tenant,
-        thread,
         chat_message_create,
         _request_auth,
         _content_type,
@@ -295,8 +282,6 @@ class ChatApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if thread is not None:
-            _path_params['thread'] = thread
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -336,7 +321,7 @@ class ChatApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/chat/{thread}/messages',
+            resource_path='/api/v1/tenants/{tenant}/chat/messages',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -356,7 +341,6 @@ class ChatApi:
     async def chat_messages_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -376,8 +360,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -402,7 +384,6 @@ class ChatApi:
 
         _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -427,7 +408,6 @@ class ChatApi:
     async def chat_messages_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -447,8 +427,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -473,7 +451,6 @@ class ChatApi:
 
         _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -498,7 +475,6 @@ class ChatApi:
     async def chat_messages_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        thread: Annotated[StrictStr, Field(description="thread ID")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -518,8 +494,6 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param thread: thread ID (required)
-        :type thread: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -544,7 +518,6 @@ class ChatApi:
 
         _param = self._chat_messages_list_serialize(
             tenant=tenant,
-            thread=thread,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -564,7 +537,6 @@ class ChatApi:
     def _chat_messages_list_serialize(
         self,
         tenant,
-        thread,
         _request_auth,
         _content_type,
         _headers,
@@ -588,8 +560,6 @@ class ChatApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if thread is not None:
-            _path_params['thread'] = thread
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -614,7 +584,7 @@ class ChatApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/chat/{thread}/messages',
+            resource_path='/api/v1/tenants/{tenant}/chat/messages',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

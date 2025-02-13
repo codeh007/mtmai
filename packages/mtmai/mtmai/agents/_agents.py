@@ -15,6 +15,9 @@ from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
+from autogen_agentchat.messages import TextMessage
+from autogen_agentchat.base import TaskResult, Team
+
 from autogen_core import (
     AgentId,
     DefaultSubscription,
@@ -79,24 +82,34 @@ class WorkerMainAgent(RoutedAgent):
         team_runner = TeamRunner(self.gomtmapi)
         async for event in team_runner.run_stream(input=message):
             _event = event
-            if isinstance(event, BaseModel):
-                _event = event.model_dump()
-            await self.publish_message(
-                ChatMessageCreate(content=_event, tenant_id=message.tenant_id, team_id=message.team_id),
-                topic_id=DefaultTopicId(),
-            )
-            result = await self.gomtmapi.ag_events_api.ag_event_create(
-                tenant=message.tenant_id,
-                ag_event_create=AgEventCreate(
-                    data=_event,
-                    framework="autogen",
-                    # stepRunId=hatctx.step_run_id,
-                    meta={},
-                ),
-            )
+            if isinstance( event, TextMessage) or isinstance(event, TaskResult):
+                await self.publish_message(
+                    topic_id=DefaultTopicId(),
+                    message=ChatMessageCreate(
+                        content=event.content,
+                        tenant_id=message.tenant_id,
+                        team_id=message.team_id,
+                        thread_id=message.thread_id,
+                    ),
+                )
+            elif isinstance(event, BaseModel):
+                await self.publish_message(
+                    # todo 消息content 需要正确处理
+                    message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
+                    topic_id=DefaultTopicId(),
+                )
+                await self.gomtmapi.ag_events_api.ag_event_create(
+                    tenant=message.tenant_id,
+                    ag_event_create=AgEventCreate(
+                        data=_event,
+                        framework="autogen",
+                        # stepRunId=hatctx.step_run_id,
+                        meta={},
+                    ),
+                )
+            else:
+                logger.info(f"WorkerMainAgent 收到消息: {event}")
 
-            # hatctx.log(result)
-            # hatctx.put_stream(event)
 
 class MtWebUserProxyAgent(UserProxyAgent):
     """扩展 UserProxyAgent"""
