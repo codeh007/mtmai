@@ -1,7 +1,6 @@
 import logging
 
-from mtmlib import mtutils
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.utils import bash
 
 logger = logging.getLogger()
 

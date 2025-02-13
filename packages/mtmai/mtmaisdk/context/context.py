@@ -15,7 +15,7 @@ from mtmaisdk.contracts.dispatcher_pb2 import OverridesData
 from mtmaisdk.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
-from mtmai.utils.types import WorkflowValidator
+from mtlibs.types import WorkflowValidator
 
 from ..clients.admin import (
     AdminClient,

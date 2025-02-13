@@ -12,7 +12,7 @@ from mtmaisdk.logger import logger
 from mtmaisdk.worker.runner.runner import Runner
 from mtmaisdk.worker.runner.utils.capture_logs import capture_logs
 
-from mtmai.utils.types import WorkflowValidator
+from mtlibs.types import WorkflowValidator
 
 STOP_LOOP = "STOP_LOOP"
 

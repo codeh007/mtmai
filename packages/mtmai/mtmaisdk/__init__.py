@@ -103,7 +103,7 @@ from mtmaisdk.contracts.workflows_pb2 import (
     WorkerLabelComparator,
 )
 
-from mtmai.utils.aio_utils import sync_to_async
+from mtmai.mtlibs.aio_utils import sync_to_async
 
 from .client import new_client
 from .clients.admin import (

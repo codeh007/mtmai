@@ -21,7 +21,9 @@ from mtmaisdk.contracts.dispatcher_pb2 import (
 from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
 
-from mtmai.utils.backoff import exp_backoff_sleep
+from mtmai.mtlibs.backoff import exp_backoff_sleep
+
+# from mtmai.utils.backoff import exp_backoff_sleep
 
 ACTION_EVENT_RETRY_COUNT = 5
 

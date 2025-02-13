@@ -35,8 +35,8 @@ from mtmaisdk.worker.runner.utils.capture_logs import copy_context_vars, sr, wr
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
 
-from mtmai.utils.tracing import create_tracer, parse_carrier_from_metadata
-from mtmai.utils.types import WorkflowValidator
+from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
+from mtlibs.types import WorkflowValidator
 
 
 class WorkerStatus(Enum):

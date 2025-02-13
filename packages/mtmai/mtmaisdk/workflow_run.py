@@ -4,7 +4,7 @@ from typing import Coroutine, Generic, TypeVar
 from mtmaisdk.clients.run_event_listener import RunEventListener, RunEventListenerClient
 from mtmaisdk.clients.workflow_listener import PooledWorkflowRunListener
 
-from mtmai.utils.aio_utils import EventLoopThread, get_active_event_loop
+from mtmai.mtlibs.aio_utils import EventLoopThread, get_active_event_loop
 
 
 class WorkflowRunRef:

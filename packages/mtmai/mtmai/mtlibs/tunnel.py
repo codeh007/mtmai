@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from mtmai.core.config import settings
 from mtmai.mtlibs.mtutils import command_exists
 
-from mtmlib.httpUtils import download_file
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.httpUtils import download_file
+from mtmai.mtlibs.mtutils import bash
 
 router = APIRouter()
 logger = logging.getLogger()

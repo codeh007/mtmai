@@ -22,8 +22,8 @@ from mtmaisdk.worker.action_listener_process import worker_action_listener_proce
 from mtmaisdk.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmaisdk.workflow import WorkflowInterface
 
-from mtmai.utils.types import WorkflowValidator
-from mtmai.utils.typing import is_basemodel_subclass
+from mtlibs.types import WorkflowValidator
+from mtlibs.typing import is_basemodel_subclass
 
 T = TypeVar("T")
 

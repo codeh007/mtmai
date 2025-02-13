@@ -17,7 +17,7 @@ from mtmai.middleware import AuthMiddleware
 from .worker import WorkerApp
 
 from .api import mount_api_routes
-from .utils.env import is_in_docker, is_in_huggingface, is_in_windows
+from .mtlibs.env import is_in_docker, is_in_huggingface, is_in_windows
 
 
 def build_app():

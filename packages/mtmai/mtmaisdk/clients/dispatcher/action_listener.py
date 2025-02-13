@@ -20,8 +20,12 @@ from mtmaisdk.contracts.dispatcher_pb2 import (
 from mtmaisdk.contracts.dispatcher_pb2_grpc import DispatcherStub
 from mtmaisdk.logger import logger
 
-from mtmai.utils.backoff import exp_backoff_sleep
-from mtmai.utils.serialization import flatten
+from mtmai.mtlibs.serialization import flatten
+
+# from mtmai.mtlibs.utils.backoff import exp_backoff_sleep
+# from mtmai.utils.serialization import flatten
+
+from mtmai.mtlibs.backoff import exp_backoff_sleep
 
 from ...loader import ClientConfig
 from ...metadata import get_metadata
