@@ -6,15 +6,11 @@ import os
 import random
 import shlex
 import subprocess
-
-# import pwd
 import tempfile
 import threading
 import time
 import traceback
 from pathlib import Path
-
-# from stem.util import term
 from urllib.parse import urlparse
 
 import requests

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.mtutils import bash
 
 searxng_dir_base = "/app/searxng"
 searxng_setting_file = Path(searxng_dir_base) / "settings.yml"

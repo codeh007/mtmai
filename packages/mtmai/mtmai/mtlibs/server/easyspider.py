@@ -2,7 +2,7 @@ from pathlib import Path
 
 from mtmai.core.config import settings
 from mtmai.core.logging import get_logger
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.mtutils import bash
 
 logger = get_logger()
 easy_spider_repo = "https://github.com/NaiboWang/EasySpider"

@@ -65,8 +65,6 @@ async def get_db() -> DatabaseManager:
 
 
 # Authentication dependency
-
-
 async def get_current_user(
     # Add your authentication logic here
     # For example: token: str = Depends(oauth2_scheme)
@@ -80,8 +78,6 @@ async def get_current_user(
 
 
 # Manager initialization and cleanup
-
-
 async def init_managers(database_uri: str, config_dir: str, app_root: str) -> None:
     """Initialize all manager instances"""
     global _db_manager, _websocket_manager, _team_manager
@@ -103,8 +99,8 @@ async def init_managers(database_uri: str, config_dir: str, app_root: str) -> No
         # logger.info("Connection manager initialized")
 
         # Initialize team manager
-        _team_manager = TeamManager()
-        logger.info("Team manager initialized")
+        # _team_manager = TeamManager()
+        # logger.info("Team manager initialized")
 
     except Exception as e:
         logger.error(f"Failed to initialize managers: {str(e)}")
@@ -143,8 +139,6 @@ async def cleanup_managers() -> None:
 
 
 # Utility functions for dependency management
-
-
 def get_manager_status() -> dict:
     """Get the initialization status of all managers"""
     return {
@@ -155,8 +149,6 @@ def get_manager_status() -> dict:
 
 
 # Combined dependencies
-
-
 async def get_managers():
     """Get all managers in one dependency"""
     return {
@@ -165,10 +157,7 @@ async def get_managers():
         # "team": await get_team_manager(),
     }
 
-
 # Error handling for manager operations
-
-
 class ManagerOperationError(Exception):
     """Custom exception for manager operation errors"""
 
@@ -180,8 +169,6 @@ class ManagerOperationError(Exception):
 
 
 # Dependency for requiring specific managers
-
-
 def require_managers(*manager_names: str):
     """Decorator to require specific managers for a route"""
 
@@ -204,17 +191,11 @@ async def get_asession() -> AsyncGenerator[AsyncSession, None]:
 
 
 SessionDep = Annotated[Session, Depends(get_db)]
-
 AsyncSessionDep = Annotated[AsyncSession, Depends(get_asession)]
-
-
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
-
-
 def get_host_from_request(request: Request):
     host = request.headers.get("Host")
     return host
-
 
 HostDep = Annotated[str, Depends(get_host_from_request)]
 
@@ -240,8 +221,6 @@ HostDep = Annotated[str, Depends(get_host_from_request)]
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
-
-
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
         raise HTTPException(
@@ -263,10 +242,7 @@ def get_optional_current_user(
 
 
 OptionalUserDep = Annotated[User | None, Depends(get_optional_current_user)]
-
-
 CheckPointerDep = Annotated[AsyncPostgresSaver, Depends(get_checkpointer)]
-
 
 async def get_site(session: AsyncSessionDep, request: Request) -> Site:
     """
@@ -301,6 +277,4 @@ async def get_site(session: AsyncSessionDep, request: Request) -> Site:
         raise HTTPException(status_code=400, detail="Unable to determine site domain")
 
 
-SiteDep = Annotated[Site, Depends(get_site)]
-SiteDep = Annotated[Site, Depends(get_site)]
 SiteDep = Annotated[Site, Depends(get_site)]

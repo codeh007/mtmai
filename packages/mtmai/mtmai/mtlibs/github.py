@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 import httpx
 import requests
 
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.mtutils import bash
 
 logger = logging.getLogger()
 

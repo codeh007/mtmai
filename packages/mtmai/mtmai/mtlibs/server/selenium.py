@@ -12,8 +12,8 @@ import os
 
 from mtmai.core.config import settings
 from mtmai.core.logging import get_logger
-from mtmlib.httpUtils import download_file
-from mtmlib.mtutils import is_in_gitpod
+from mtmai.mtlibs.httpUtils import download_file
+from mtmai.mtlibs.mtutils import is_in_gitpod
 
 logger = get_logger()
 

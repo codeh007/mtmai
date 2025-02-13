@@ -7,9 +7,8 @@ from mtmai.core import coreutils
 from mtmai.core.config import settings
 from mtmai.mtlibs import mtutils
 from mtmai.mtlibs.mtutils import command_exists, is_in_gitpod, npm_patch_version
-from mtmai.mtlibs.temboio import run_tmpbo_instance1
-from mtmlib.github import git_commit_push
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.github import git_commit_push
+from mtmai.mtlibs.mtutils import bash
 
 logger = logging.getLogger()
 

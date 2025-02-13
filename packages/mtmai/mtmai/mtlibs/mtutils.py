@@ -1,23 +1,12 @@
 import gzip
 import json
 import os
-import random
-import re
 import shutil
 import subprocess
-import sys
-import urllib
-from io import BytesIO
-from pathlib import Path
-
-# import httpx
 from nanoid import generate
-import gzip
 import importlib
-import os
 import random
 import re
-import shutil
 import subprocess
 import sys
 import urllib
@@ -25,10 +14,6 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
-# from nanoid import generate
-
-
-
 
 def gen_orm_id_key():
     return generate("1234567890abcdef", 16)

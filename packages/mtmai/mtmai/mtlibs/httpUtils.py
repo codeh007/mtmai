@@ -2,15 +2,6 @@ from pathlib import Path
 
 import httpx
 
-
-# def download_file(url: str, dest: Path):
-#     response = httpx.get(url, stream=True)
-#     response.raise_for_status()
-#     dest.parent.mkdir(parents=True, exist_ok=True)
-#     with Path.open(dest, "wb") as f:
-#         for chunk in response.iter_content(chunk_size=8192):
-#             f.write(chunk)
-#     dest.chmod(0o755)
 async def download_file(url: str, dest: str | Path):
     dest = Path(dest)
     with httpx.Client(follow_redirects=True) as client:

@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 
 from mtmai.core.config import settings
-from mtmlib.env import is_ubuntu
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.env import is_ubuntu
+from mtmai.mtlibs.mtutils import bash
 
 logger = logging.getLogger()
 

@@ -5,9 +5,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
-
-# from mtmai.chainlit.config import config
-# from mtmai.chainlit.oauth_providers import get_configured_oauth_providers
 from mtmai.core import security
 from mtmai.core.config import settings
 from mtmai.core.logging import get_logger

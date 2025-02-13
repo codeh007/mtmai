@@ -3,7 +3,7 @@ from datetime import time
 import logging
 from pathlib import Path
 
-from mtmlib.mtutils import bash
+from mtmai.mtlibs.mtutils import bash
 
 
 logger = logging.getLogger()
