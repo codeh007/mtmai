@@ -959,6 +959,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSession",
+            '400': "APIErrors",
+            '403': "APIError",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1030,6 +1033,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSession",
+            '400': "APIErrors",
+            '403': "APIError",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1101,6 +1107,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSession",
+            '400': "APIErrors",
+            '403': "APIError",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1233,6 +1242,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSessionList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1300,6 +1312,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSessionList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1367,6 +1382,9 @@ class ChatApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ChatSessionList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,

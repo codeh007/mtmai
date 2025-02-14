@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import os
 import sys
@@ -13,13 +12,7 @@ from mtmaisdk.clients.rest.configuration import Configuration
 from autogen_core import Component, DefaultTopicId, SingleThreadedAgentRuntime, TopicId, try_get_known_serializers_for_type
 from mtmai.core.config import settings
 from autogen_core import (
-    AgentId,
-    DefaultSubscription,
     DefaultTopicId,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
-    default_subscription,
 )
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
@@ -30,13 +23,9 @@ from .agents.tenant_agent import TenantAgent
 from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 
 from .agents.webui_agent import UIAgent
-
-from .agents.ctx import AgentContext, get_mtmai_context, init_mtmai_context
+from mtmai.context import AgentContext, get_mtmai_context, init_mtmai_context
 from mtmaisdk.context.context import Context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-
-from .agents._types import CascadingMessage
-from mtmai.agents._types import CascadingMessage
 from rich.console import Console
 from rich.markdown import Markdown
 from pydantic import BaseModel
@@ -58,10 +47,7 @@ class WorkerApp():
                 host=self.backend_url,
             )
         )
-        # Flag to track if the group chat has been initialized.
         self._initialized = False
-
-        # Flag to track if the group chat is running.
         self._is_running = False
         self.setup_runtime()
 
@@ -69,7 +55,7 @@ class WorkerApp():
         # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
         self._runtime = SingleThreadedAgentRuntime()
-        self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
+        # self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessage))
@@ -176,51 +162,9 @@ class WorkerApp():
                     input.run_id = hatctx.workflow_run_id()
 
                 await worker_app._runtime.publish_message(input,DefaultTopicId())
-                # await worker_app._runtime.send_message(msg)
                 return {"result": "success"}
 
         self.worker.register_workflow(FlowAg())
-
-
-        @wfapp.workflow(
-            name="tenant",
-            on_events=["tenant:run"],
-            input_validator=TenantSeedReq,
-        )
-        class FlowTenant:
-            """
-            租户工作流
-            """
-
-            @self.wfapp.step(
-                timeout="30m",
-                # retries=1
-            )
-            async def step_reset_tenant(self, hatctx: Context):
-                init_mtmai_context(hatctx)
-                ctx: AgentContext = get_mtmai_context()
-                ctx.set_hatch_context(hatctx)
-                input = cast(TenantSeedReq, hatctx.workflow_input())
-                # 新版功能
-                # runtime = SingleThreadedAgentRuntime()
-                # await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(ctx))
-                # await runtime.add_subscription(TypeSubscription(topic_type="tenant", agent_type="broadcasting_agent"))
-
-                # runtime.start()
-                # await runtime.send_message(
-                #     message=input,
-                #     recipient=AgentId(type="tenant_agent", key="default"),
-                # )
-                # 广播方从而避免工作流中消息类型的相关转换问题.
-                await worker_app._runtime.publish_message(
-                    input,
-                    topic_id=TopicId(type="tenant", source="tenant"),
-                )
-
-                # await runtime.stop_when_idle()  # This will block until the runtime is idle.
-                # await runtime.close()
-                return {"result": "success"}
-        self.worker.register_workflow(FlowTenant())
 
     # async def _setup_scrape_workflows(self):
     #     @self.wfapp.workflow(

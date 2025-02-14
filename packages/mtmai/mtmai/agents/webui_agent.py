@@ -8,6 +8,9 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
+
+from ..mtlibs.id import generate_uuid
+from ..mtmaisdk.clients.rest.exceptions import ApiException, BadRequestException
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
@@ -46,11 +49,16 @@ class UIAgent(RoutedAgent):
 
 
         # 保存 跟用户的聊天信息
+
         try:
-            chatSession=self.gomtmapi.chat_api.chat_session_get(
-                tenant_id=message.tenant_id,
-                session_id=message.session_id,
+            if not message.thread_id:
+                message.thread_id=generate_uuid()
+            chatSession=await self.gomtmapi.chat_api.chat_session_get(
+                tenant=message.tenant_id,
+                session=message.thread_id ,
             )
+        except ApiException as e:
+            logger.error(f"UI Agent 获取聊天 Session 失败: {e}")
         except Exception as e:
             logger.error(f"UI Agent 获取聊天 Session 失败: {e}")
 
@@ -60,10 +68,6 @@ class UIAgent(RoutedAgent):
     async def save_state(self) -> Mapping[str, Any]:
         """Save the state of the group chat team."""
         try:
-            # Save the state of the runtime. This will save the state of the participants and the group chat manager.
-            # agent_states = await self._runtime.save_state()
-            # return TeamState(agent_states=agent_states, team_id=self._team_id).model_dump()
-
             return UIAgentState(last_message="last_message:todo").model_dump()
         finally:
             # Indicate that the team is no longer running.

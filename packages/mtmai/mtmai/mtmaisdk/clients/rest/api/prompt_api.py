@@ -378,6 +378,9 @@ class PromptApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PromptList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -445,6 +448,9 @@ class PromptApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PromptList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -512,6 +518,9 @@ class PromptApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PromptList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
