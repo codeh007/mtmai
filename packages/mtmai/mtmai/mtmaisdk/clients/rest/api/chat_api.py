@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
+from typing import Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
@@ -904,7 +905,7 @@ class ChatApi:
     async def chat_session_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        session: Annotated[StrictStr, Field(description="The session id")],
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -924,7 +925,7 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param session: The session id (required)
+        :param session: The session id
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -978,7 +979,7 @@ class ChatApi:
     async def chat_session_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        session: Annotated[StrictStr, Field(description="The session id")],
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -998,7 +999,7 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param session: The session id (required)
+        :param session: The session id
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1052,7 +1053,7 @@ class ChatApi:
     async def chat_session_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        session: Annotated[StrictStr, Field(description="The session id")],
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1072,7 +1073,7 @@ class ChatApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param session: The session id (required)
+        :param session: The session id
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
