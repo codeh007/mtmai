@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,7 +29,9 @@ class AgStateUpsert(BaseModel):
     version: Optional[StrictStr] = '1.0.0'
     type: Optional[StrictStr] = 'TeamState'
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["version", "type", "state"]
+    component_id: StrictStr = Field(description="组件id", alias="componentId")
+    run_id: StrictStr = Field(description="运行id", alias="runId")
+    __properties: ClassVar[List[str]] = ["version", "type", "state", "componentId", "runId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +86,9 @@ class AgStateUpsert(BaseModel):
         _obj = cls.model_validate({
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "state": obj.get("state")
+            "state": obj.get("state"),
+            "componentId": obj.get("componentId"),
+            "runId": obj.get("runId")
         })
         return _obj
 

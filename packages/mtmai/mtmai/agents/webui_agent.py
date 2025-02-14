@@ -65,7 +65,7 @@ class UIAgent(RoutedAgent):
                     role=role,
                 ) ,
             )
-            logger.info(f"UI Agent 保存聊天成功: {chatSession}")
+            # logger.info(f"UI Agent 保存聊天成功: {chatSession}")
             # TODO: api 操作失败时, 自动停止 agent
         except ApiException as e:
             logger.error(f"UI Agent 保存消息失败: {e}")

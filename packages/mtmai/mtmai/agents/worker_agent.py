@@ -120,37 +120,48 @@ class WorkerMainAgent(RoutedAgent):
             async for event in component.run_stream(
                 task=message.content,
                 cancellation_token=ctx.cancellation_token,
-                ):
+            ):
                 if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
                     break
                 try:
-                    if isinstance( event, TextMessage) or isinstance(event, TaskResult):
+                    if isinstance(event, TaskResult):
                         # await self.publish_message(
                         #     topic_id=DefaultTopicId(),
                         #     message=ChatMessageCreate(
-                        #         content=event.content,
+                        #         content=event.messages[],
                         #         tenant_id=message.tenant_id,
                         #         team_id=message.team_id,
                         #         threadId=thread_id,
                         #         runId=message.run_id,
                         #     ),
                         # )
-                        pass
+                        logger.info(f"WorkerMainAgent TaskResult: {event}")
+                    elif isinstance( event, TextMessage):
+                        await self.publish_message(
+                            topic_id=DefaultTopicId(),
+                            message=ChatMessageCreate(
+                                content=event.content,
+                                tenant_id=message.tenant_id,
+                                team_id=message.team_id,
+                                threadId=thread_id,
+                                runId=message.run_id,
+                            ),
+                        )
                     elif isinstance(event, BaseModel):
                         await self.publish_message(
                             # todo 消息content 需要正确处理
                             message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
                             topic_id=DefaultTopicId(),
                         )
-                        # await self.gomtmapi.ag_events_api.ag_event_create(
-                        #     tenant=message.tenant_id,
-                        #     ag_event_create=AgEventCreate(
-                        #         data=event,
-                        #         framework="autogen",
-                        #         # stepRunId=hatctx.step_run_id,
-                        #         meta={},
-                        #     ),
-                        # )
+                        await self.gomtmapi.ag_events_api.ag_event_create(
+                            tenant=message.tenant_id,
+                            ag_event_create=AgEventCreate(
+                                data=event,
+                                framework="autogen",
+                                # stepRunId=hatctx.step_run_id,
+                                meta={},
+                            ),
+                        )
                     else:
                         logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
                 except Exception as e:
@@ -159,28 +170,28 @@ class WorkerMainAgent(RoutedAgent):
         except Exception as e:
             logger.error(f"WorkerMainAgent 运行出错: {e}")
         finally:
-            # state_to_save = await team.save_state()
             # 保存状态
             if team and hasattr(team, "_participants"):
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
-
-
-        # saveed_response: AgState = (
-        #     await self.gomtmapi.ag_state_api.ag_state_upsert(
-        #         tenant=message.tenant_id,
-        #         state=message.team_id,
-        #         ag_state_upsert=AgStateUpsert(
-        #             # id=team_id,
-        #             # version=state_to_save.get("version"),
-        #             state=state_to_save,
-        #             # type=state_to_save.get("type"),
-        #         ),
-        #     )
-        # )
-        # logger.info(f"WorkerMainAgent 保存状态: {saveed_response}")
+            try:
+                state_to_save = await team.save_state()
+                saveed_response: AgState = (
+                    await self.gomtmapi.ag_state_api.ag_state_upsert(
+                        tenant=message.tenant_id,
+                        state=thread_id,
+                        ag_state_upsert=AgStateUpsert(
+                            id=thread_id,
+                            componentId=team_id,
+                            runId=message.run_id,
+                            state=state_to_save,
+                        ),
+                    )
+                )
+                # logger.info(f"WorkerMainAgent 保存状态: {saveed_response}")
+            except Exception as e:
+                logger.error(f"WorkerMainAgent 保存状态出错: {e}")
 
     async def action_seed_tenant(self, message: AgentRunInput):
         logger.info(f"WorkerMainAgent 收到消息: {message}")
-        pass
