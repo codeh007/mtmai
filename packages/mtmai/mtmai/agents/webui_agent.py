@@ -48,19 +48,24 @@ class UIAgent(RoutedAgent):
         logger.info(f"UI Agent 保存状态: {state}")
 
 
-        # 保存 跟用户的聊天信息
-
+        # 保存用户的聊天信息
         try:
             if not message.thread_id:
                 message.thread_id=generate_uuid()
-            chatSession=await self.gomtmapi.chat_api.chat_session_get(
+            # chat_create_message 实际是 upsert
+            chatSession=await self.gomtmapi.chat_api.chat_create_message(
                 tenant=message.tenant_id,
-                session=message.thread_id ,
+                chat_message_create=ChatMessageCreate(
+                    tenantId=message.tenant_id,
+                    teamId=message.team_id,
+                    content=message.content,
+                ) ,
             )
+            logger.info(f"UI Agent 保存聊天成功: {chatSession}")
         except ApiException as e:
-            logger.error(f"UI Agent 获取聊天 Session 失败: {e}")
+            logger.error(f"UI Agent 保存消息失败: {e}")
         except Exception as e:
-            logger.error(f"UI Agent 获取聊天 Session 失败: {e}")
+            logger.error(f"UI Agent 保存消息失败(unknown error): {e}")
 
 
 
