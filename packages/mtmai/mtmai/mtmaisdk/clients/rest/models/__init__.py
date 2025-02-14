@@ -75,8 +75,8 @@ from mtmaisdk.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
+from mtmaisdk.clients.rest.models.chat_message_list import ChatMessageList
 from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
-from mtmaisdk.clients.rest.models.chat_messages import ChatMessages
 from mtmaisdk.clients.rest.models.chat_session import ChatSession
 from mtmaisdk.clients.rest.models.chat_session_list import ChatSessionList
 from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
