@@ -8,6 +8,8 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
+
+from .team_builder.assisant_team_builder import AssistantTeamBuilder
 from ..mtlibs.id import generate_uuid
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
@@ -70,13 +72,25 @@ class WorkerMainAgent(RoutedAgent):
         cancellation_token: Optional[CancellationToken] = None,
     ):
         start_time = time.time()
-        team_data = await self.gomtmapi.teams_api.team_get(
-            tenant=input.tenant_id, team=input.team_id
-        )
-        if team_data is None:
-            raise ValueError("team not found")
 
-        team = await self._create_team(team_data.component)
+        team:Component = None
+        if not input.team_id:
+            # 获取模型配置
+            defaultModel = await self.gomtmapi.model_api.model_get(
+                tenant=input.tenant_id, model="default"
+            )
+            model_config = defaultModel.config
+            default_team_builder = AssistantTeamBuilder()
+            team_component = await default_team_builder.create_team(input.model_config)
+            team = await self._create_team(team_component)
+        else:
+            team_data = await self.gomtmapi.teams_api.team_get(
+                tenant=input.tenant_id, team=input.team_id
+            )
+            if team_data is None:
+                raise ValueError("team not found")
+
+            team = await self._create_team(team_data.component)
         try:
             async for event in team.run_stream(
                 task=input.content,

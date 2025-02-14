@@ -13,51 +13,9 @@ from ..model_client import MtmOpenAIChatCompletionClient, get_oai_Model
 
 logger = logging.getLogger(__name__)
 
-
-class TravelTeamBuilder:
-    """Manages team operations including loading configs and running teams"""
-    async def create_demo_team(self):
-        """创建默认测试团队"""
-        base_model = get_oai_Model()
-        calculator_fn_tool = FunctionTool(
-            name="calculator",
-            description="A simple calculator that performs basic arithmetic operations",
-            func=web_search,
-            global_imports=[],
-        )
-
-        calc_assistant = AssistantAgent(
-            name="assistant_agent",
-            system_message="You are a helpful assistant. Solve tasks carefully. When done, say TERMINATE.",
-            model_client=base_model,
-            tools=[calculator_fn_tool],
-        )
-        # Create termination conditions for calculator team
-        calc_text_term = TextMentionTermination(text="TERMINATE")
-        calc_max_term = MaxMessageTermination(max_messages=10)
-        calc_or_term = calc_text_term | calc_max_term
-        calc_or_term = calc_text_term | calc_max_term
-        calc_team = RoundRobinGroupChat(
-            participants=[calc_assistant], termination_condition=calc_or_term
-        )
-        return calc_team
-
-    async def create_demo_agent_stream1(self):
-        """试试流式token"""
-        assistant = AssistantAgent(
-            name="assistant",
-            # tools=[get_weather],
-            model_client=get_oai_Model(),
-            system_message="You are a helpful assistant",
-            # 提示: 流式token 需要设置 model_client_stream=True
-            #       设置后,可以使用 run_stream 中获取流式token
-            #       对应的事件类型是: ModelClientStreamingChunkEvent
-            model_client_stream=True,
-            reflect_on_tool_use=True,  # Reflect on tool use.
-        )
-        return assistant
-
-    async def create_travel_agent(self, model_config: ModelConfig):
+class AssistantTeamBuilder:
+    """默认聊天团队"""
+    async def create_team(self, model_config: ModelConfig):
         """创建旅行助理"""
 
         model_dict = model_config.model_dump()
@@ -67,11 +25,6 @@ class TravelTeamBuilder:
             **model_dict,
 
         )
-
-        # 提示: participants 中,不能也不应添加 UserProxyAgent
-        # user_proxy_agent = MtWebUserProxyAgent(
-        #     name="web_user",
-        # )
         planner_agent = AssistantAgent(
             name="planner_agent",
             model_client=model_client,
@@ -114,6 +67,6 @@ class TravelTeamBuilder:
             termination_condition=combined_termination,
         )
         team.component_version = 2
-        team.component_label = "travel_agent"
-        team.component_description = "行程规划团队"
+        team.component_label = "default_chat_team"
+        team.component_description = "默认聊天团队"
         return team
