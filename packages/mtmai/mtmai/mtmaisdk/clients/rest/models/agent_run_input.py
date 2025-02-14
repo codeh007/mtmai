@@ -26,7 +26,7 @@ class AgentRunInput(BaseModel):
     """
     AgentRunInput
     """ # noqa: E501
-    team_id: StrictStr = Field(alias="teamId")
+    team_id: Optional[StrictStr] = Field(default=None, alias="teamId")
     session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
     content: StrictStr
     tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")

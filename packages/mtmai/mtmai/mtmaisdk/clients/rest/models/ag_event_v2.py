@@ -17,18 +17,15 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.assisant_state import AssisantState
 from mtmaisdk.clients.rest.models.event_base import EventBase
 from mtmaisdk.clients.rest.models.event_new_agent_state import EventNewAgentState
 from mtmaisdk.clients.rest.models.event_types import EventTypes
-from mtmaisdk.clients.rest.models.gen_article_state import GenArticleState
 from mtmaisdk.clients.rest.models.start_workflow_run_event import StartWorkflowRunEvent
-from mtmaisdk.clients.rest.models.token_chunk import TokenChunk
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGEVENTV2_ONE_OF_SCHEMAS = ["AssisantState", "EventBase", "EventNewAgentState", "EventTypes", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk"]
+AGEVENTV2_ONE_OF_SCHEMAS = ["EventBase", "EventNewAgentState", "EventTypes", "StartWorkflowRunEvent"]
 
 class AgEventV2(BaseModel):
     """
@@ -42,14 +39,8 @@ class AgEventV2(BaseModel):
     oneof_schema_3_validator: Optional[EventBase] = None
     # data type: StartWorkflowRunEvent
     oneof_schema_4_validator: Optional[StartWorkflowRunEvent] = None
-    # data type: TokenChunk
-    oneof_schema_5_validator: Optional[TokenChunk] = None
-    # data type: AssisantState
-    oneof_schema_6_validator: Optional[AssisantState] = None
-    # data type: GenArticleState
-    oneof_schema_7_validator: Optional[GenArticleState] = None
-    actual_instance: Optional[Union[AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk]] = None
-    one_of_schemas: Set[str] = { "AssisantState", "EventBase", "EventNewAgentState", "EventTypes", "GenArticleState", "StartWorkflowRunEvent", "TokenChunk" }
+    actual_instance: Optional[Union[EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent]] = None
+    one_of_schemas: Set[str] = { "EventBase", "EventNewAgentState", "EventTypes", "StartWorkflowRunEvent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -92,27 +83,12 @@ class AgEventV2(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `StartWorkflowRunEvent`")
         else:
             match += 1
-        # validate data type: TokenChunk
-        if not isinstance(v, TokenChunk):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `TokenChunk`")
-        else:
-            match += 1
-        # validate data type: AssisantState
-        if not isinstance(v, AssisantState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AssisantState`")
-        else:
-            match += 1
-        # validate data type: GenArticleState
-        if not isinstance(v, GenArticleState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `GenArticleState`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgEventV2 with oneOf schemas: AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgEventV2 with oneOf schemas: AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -151,31 +127,13 @@ class AgEventV2(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into TokenChunk
-        try:
-            instance.actual_instance = TokenChunk.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into AssisantState
-        try:
-            instance.actual_instance = AssisantState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into GenArticleState
-        try:
-            instance.actual_instance = GenArticleState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgEventV2 with oneOf schemas: AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgEventV2 with oneOf schemas: AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -189,7 +147,7 @@ class AgEventV2(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssisantState, EventBase, EventNewAgentState, EventTypes, GenArticleState, StartWorkflowRunEvent, TokenChunk]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
