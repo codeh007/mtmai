@@ -48,17 +48,17 @@ class GalleryComponents(BaseModel):
     terminations: List[ComponentModel]
 
 
-class GalleryItems(BaseModel):
-    teams: List[ComponentModel]
-    components: GalleryComponents
+# class GalleryItems(BaseModel):
+#     teams: List[ComponentModel]
+#     components: GalleryComponents
 
 
-class Gallery(BaseModel):
-    id: str
-    name: str
-    url: Optional[str] = None
-    metadata: GalleryMetadata
-    items: GalleryItems
+# class Gallery(BaseModel):
+#     id: str
+#     name: str
+#     url: Optional[str] = None
+#     metadata: GalleryMetadata
+#     items: GalleryItems
 
 
 # web request/response data models
@@ -70,7 +70,7 @@ class Response(BaseModel):
     data: Optional[Any] = None
 
 
-class SocketMessage(BaseModel):
-    connection_id: str
-    data: Dict[str, Any]
-    type: str
+# class SocketMessage(BaseModel):
+#     connection_id: str
+#     data: Dict[str, Any]
+#     type: str

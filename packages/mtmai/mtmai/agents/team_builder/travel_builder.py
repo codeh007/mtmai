@@ -116,4 +116,5 @@ class TravelTeamBuilder:
         team.component_version = 2
         team.component_label = "travel_agent"
         team.component_description = "行程规划团队"
+
         return team

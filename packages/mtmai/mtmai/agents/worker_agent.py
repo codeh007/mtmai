@@ -9,6 +9,10 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
 
+from mtmaisdk.clients.rest.models.ag_state import AgState
+
+from ..aghelper import AgHelper
+
 from .team_builder.assisant_team_builder import AssistantTeamBuilder
 from ..mtlibs.id import generate_uuid
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
@@ -35,19 +39,20 @@ from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 
 logger = logging.getLogger(__name__)
 
+deault_team_label = "default"
+
 @default_subscription
 class WorkerMainAgent(RoutedAgent):
     def __init__(self, gomtmapi: AsyncRestApi) -> None:
         super().__init__("WorkerMainAgent")
         self.gomtmapi=gomtmapi
 
-    async def _create_team(
+    async def _create_team_component(
         self,
         team_config: Union[str, Path, dict, ComponentModel],
         input_func: Optional[Callable] = None,
     ) -> Component:
         """Create team instance from config"""
-        # Handle different input types
         if isinstance(team_config, (str, Path)):
             config = await self.load_from_file(team_config)
         elif isinstance(team_config, dict):
@@ -55,84 +60,31 @@ class WorkerMainAgent(RoutedAgent):
         else:
             config = team_config.model_dump()
 
-        # Use Component.load_component directly
         team = Team.load_component(config)
 
         for agent in team._participants:
             if hasattr(agent, "input_func"):
                 agent.input_func = input_func
 
-        # TBD - set input function
         return team
-
-    async def run_stream(
-        self,
-        input: AgentRunInput,
-        input_func: Optional[Callable] = None,
-        cancellation_token: Optional[CancellationToken] = None,
-    ):
-        start_time = time.time()
-
-        team:Component = None
-        if not input.team_id:
-            # 获取模型配置
-            defaultModel = await self.gomtmapi.model_api.model_get(
-                tenant=input.tenant_id, model="default"
-            )
-            model_config = defaultModel.config
-            default_team_builder = AssistantTeamBuilder()
-            team_component = await default_team_builder.create_team(input.model_config)
-            team = await self._create_team(team_component)
-        else:
-            team_data = await self.gomtmapi.teams_api.team_get(
-                tenant=input.tenant_id, team=input.team_id
-            )
-            if team_data is None:
-                raise ValueError("team not found")
-
-            team = await self._create_team(team_data.component)
-        try:
-            async for event in team.run_stream(
-                task=input.content,
-            ):
-                if cancellation_token and cancellation_token.is_cancelled():
-                    break
-                else:
-                    yield event
-            state_to_save = await team.save_state()
-            # 保存状态
-            saveed_response = (
-                await self.gomtmapi.ag_state_api.ag_state_upsert(
-                    tenant=input.tenant_id,
-                    state=input.team_id,
-                    ag_state_upsert=AgStateUpsert(
-                        # id=team_id,
-                        # version=state_to_save.get("version"),
-                        state=state_to_save,
-                        # type=state_to_save.get("type"),
-                    ),
-                )
-            )
-            logger.info(f"saveed_response: {saveed_response}")
-        except Exception as e:
-            logger.error(f"未知错误: {e}")
-            raise e
-        finally:
-            # Ensure cleanup happens
-            if team and hasattr(team, "_participants"):
-                for agent in team._participants:
-                    if hasattr(agent, "close"):
-                        await agent.close()
 
     @message_handler
     async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
+        start_time = time.time()
         logger.info(f"WorkerMainAgent 收到消息: {message}")
 
+        ag_helper = AgHelper(self.gomtmapi)
+        if not message.team_id:
+            team = await ag_helper.get_or_create_default_team(
+                tenant_id=message.tenant_id,
+                label=deault_team_label,
+            )
+            message.team_id = team.metadata.id
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
             await self.runtime.publish_message(
-                    input,
+                    message,
                     topic_id=TopicId(type="tenant", source="tenant"),
                 )
             return
@@ -140,36 +92,94 @@ class WorkerMainAgent(RoutedAgent):
         thread_id= message.session_id
         if not thread_id:
             thread_id=generate_uuid()
-        async for event in self.run_stream(input=message):
-            if isinstance( event, TextMessage) or isinstance(event, TaskResult):
-                await self.publish_message(
-                    topic_id=DefaultTopicId(),
-                    message=ChatMessageCreate(
-                        content=event.content,
-                        tenant_id=message.tenant_id,
-                        team_id=message.team_id,
-                        threadId=thread_id,
-                        runId=message.run_id,
-                    ),
-                )
-            elif isinstance(event, BaseModel):
-                await self.publish_message(
-                    # todo 消息content 需要正确处理
-                    message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
-                    topic_id=DefaultTopicId(),
-                )
-                await self.gomtmapi.ag_events_api.ag_event_create(
-                    tenant=message.tenant_id,
-                    ag_event_create=AgEventCreate(
-                        data=event,
-                        framework="autogen",
-                        # stepRunId=hatctx.step_run_id,
-                        meta={},
-                    ),
-                )
-            else:
-                logger.info(f"WorkerMainAgent 收到消息: {event}")
 
+        team_component_data:Component = None
+        if not message.team_id:
+            # 获取模型配置
+            defaultModel = await self.gomtmapi.model_api.model_get(
+                tenant=input.tenant_id, model="default"
+            )
+            model_config = defaultModel.config
+            default_team_builder = AssistantTeamBuilder()
+            team_component = await default_team_builder.create_team(model_config)
+            team_component_data=team_component.dump_component()
+        else:
+            team_data = await self.gomtmapi.teams_api.team_get(
+                tenant=message.tenant_id, team=message.team_id
+            )
+            if team_data is None:
+                raise ValueError("team not found")
+            team_component_data=team_data.component
+        team = await self._create_team_component(team_component_data)
+
+        component=team
+        team_id=message.team_id
+        if not team_id:
+            team_id=generate_uuid()
+        try:
+            async for event in component.run_stream(
+                task=message.content,
+                cancellation_token=ctx.cancellation_token,
+                ):
+                if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
+                    break
+                try:
+                    if isinstance( event, TextMessage) or isinstance(event, TaskResult):
+                        # await self.publish_message(
+                        #     topic_id=DefaultTopicId(),
+                        #     message=ChatMessageCreate(
+                        #         content=event.content,
+                        #         tenant_id=message.tenant_id,
+                        #         team_id=message.team_id,
+                        #         threadId=thread_id,
+                        #         runId=message.run_id,
+                        #     ),
+                        # )
+                        pass
+                    elif isinstance(event, BaseModel):
+                        await self.publish_message(
+                            # todo 消息content 需要正确处理
+                            message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
+                            topic_id=DefaultTopicId(),
+                        )
+                        # await self.gomtmapi.ag_events_api.ag_event_create(
+                        #     tenant=message.tenant_id,
+                        #     ag_event_create=AgEventCreate(
+                        #         data=event,
+                        #         framework="autogen",
+                        #         # stepRunId=hatctx.step_run_id,
+                        #         meta={},
+                        #     ),
+                        # )
+                    else:
+                        logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
+                except Exception as e:
+                    logger.error(f"WorkerMainAgent stream 运行出错: {e}")
+
+        except Exception as e:
+            logger.error(f"WorkerMainAgent 运行出错: {e}")
+        finally:
+            # state_to_save = await team.save_state()
+            # 保存状态
+            if team and hasattr(team, "_participants"):
+                for agent in team._participants:
+                    if hasattr(agent, "close"):
+                        await agent.close()
+
+
+        # saveed_response: AgState = (
+        #     await self.gomtmapi.ag_state_api.ag_state_upsert(
+        #         tenant=message.tenant_id,
+        #         state=message.team_id,
+        #         ag_state_upsert=AgStateUpsert(
+        #             # id=team_id,
+        #             # version=state_to_save.get("version"),
+        #             state=state_to_save,
+        #             # type=state_to_save.get("type"),
+        #         ),
+        #     )
+        # )
+        # logger.info(f"WorkerMainAgent 保存状态: {saveed_response}")
 
     async def action_seed_tenant(self, message: AgentRunInput):
         logger.info(f"WorkerMainAgent 收到消息: {message}")

@@ -236,12 +236,10 @@ from mtmaisdk.clients.rest.models.task_result import TaskResult
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.clients.rest.models.team_config import TeamConfig
-from mtmaisdk.clients.rest.models.team_create import TeamCreate
 from mtmaisdk.clients.rest.models.team_list import TeamList
 from mtmaisdk.clients.rest.models.team_properties import TeamProperties
 from mtmaisdk.clients.rest.models.team_result import TeamResult
 from mtmaisdk.clients.rest.models.team_types import TeamTypes
-from mtmaisdk.clients.rest.models.team_update import TeamUpdate
 from mtmaisdk.clients.rest.models.tenant import Tenant
 from mtmaisdk.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmaisdk.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList

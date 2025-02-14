@@ -332,7 +332,7 @@ class SiteApi:
     async def site_create(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        create_site_request: Annotated[CreateSiteRequest, Field(description="创建agentnode")],
+        create_site_request: CreateSiteRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -352,7 +352,7 @@ class SiteApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param create_site_request: 创建agentnode (required)
+        :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -405,7 +405,7 @@ class SiteApi:
     async def site_create_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        create_site_request: Annotated[CreateSiteRequest, Field(description="创建agentnode")],
+        create_site_request: CreateSiteRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -425,7 +425,7 @@ class SiteApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param create_site_request: 创建agentnode (required)
+        :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -478,7 +478,7 @@ class SiteApi:
     async def site_create_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        create_site_request: Annotated[CreateSiteRequest, Field(description="创建agentnode")],
+        create_site_request: CreateSiteRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -498,7 +498,7 @@ class SiteApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param create_site_request: 创建agentnode (required)
+        :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request

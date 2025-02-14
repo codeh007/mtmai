@@ -52,13 +52,17 @@ class UIAgent(RoutedAgent):
         try:
             if not message.thread_id:
                 message.thread_id=generate_uuid()
+
+            role = "assistant" if message.role == "user" else "user"
             # chat_create_message 实际是 upsert
             chatSession=await self.gomtmapi.chat_api.chat_create_message(
                 tenant=message.tenant_id,
+                chat=message.thread_id,
                 chat_message_create=ChatMessageCreate(
                     tenantId=message.tenant_id,
                     teamId=message.team_id,
                     content=message.content,
+                    role=role,
                 ) ,
             )
             logger.info(f"UI Agent 保存聊天成功: {chatSession}")

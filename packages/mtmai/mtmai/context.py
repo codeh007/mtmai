@@ -47,10 +47,6 @@ def get_user() -> User | None:
 def set_user(user: User):
     user_context.set(user)
 
-
-
-
-
 class AgentContext:
     tenant_id: str | None
     user_id: str | None
