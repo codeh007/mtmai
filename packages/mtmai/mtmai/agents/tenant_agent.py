@@ -5,7 +5,7 @@ from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmai.agents.team_builder.company_research import CompanyResearchTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
-from autogen_core import RoutedAgent, message_handler, type_subscription, default_subscription
+from autogen_core import RoutedAgent, message_handler, type_subscription
 from mtmaisdk.clients.rest_client import AsyncRestApi
 
 logger = logging.getLogger(__name__)
@@ -25,12 +25,10 @@ class TenantAgent(RoutedAgent):
         defaultModel = await self.gomtmapi.model_api.model_get(
             tenant=message.tenant_id, model="default"
         )
-        model_config = defaultModel.config
+        # model_config = defaultModel.config
         team_builder = TravelTeamBuilder()
-        team1 = await team_builder.create_travel_agent(model_config)
-        team2 = await CompanyResearchTeamBuilder().create_company_research_team(
-            model_config
-        )
+        team1 = await team_builder.create_team()
+        team2 = await CompanyResearchTeamBuilder().create_team()
 
         all_teams = [team1, team2]
         for team in all_teams:

@@ -25,9 +25,9 @@ class AgHelper:
             defaultModel = await self.gomtmapi.model_api.model_get(
                     tenant=tenant_id, model="default"
                 )
-            model_config = defaultModel.config
+            # model_config = defaultModel.config
             default_team_builder = AssistantTeamBuilder()
-            team_comp = await default_team_builder.create_team(model_config)
+            team_comp = await default_team_builder.create_team()
             component_model = team_comp.dump_component()
             comp = component_model.model_dump()
             team2 = Team(

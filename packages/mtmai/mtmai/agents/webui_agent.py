@@ -9,6 +9,8 @@ from autogen_core.models import (
     UserMessage,
 )
 
+from ..context import get_tenant_id
+
 from ..mtlibs.id import generate_uuid
 from ..mtmaisdk.clients.rest.exceptions import ApiException, BadRequestException
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
@@ -35,6 +37,9 @@ class UIAgent(RoutedAgent):
 
     @message_handler
     async def handle_message_chunk(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
+        tenant_id=get_tenant_id()
+        print(f": 测试tenantId_2: {tenant_id}")
+
         logger.info(f"UI Agent 收到消息: {message}")
 
         # 聊天消息入库功能暂时取消,因后端没完全实现()

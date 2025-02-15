@@ -1,14 +1,11 @@
 import time
 import logging
 from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, TopicId, default_subscription, message_handler
-from autogen_agentchat.agents._user_proxy_agent import UserProxyAgentConfig
-from autogen_agentchat.agents import UserProxyAgent
-from autogen_agentchat.base import ChatAgent, TerminationCondition
-from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
 
+from ..context import get_tenant_id, set_tenant_id
 from mtmaisdk.clients.rest.models.ag_state import AgState
 
 from ..aghelper import AgHelper
@@ -35,7 +32,6 @@ from autogen_core import (
     RoutedAgent,
     message_handler,
 )
-from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +68,12 @@ class WorkerMainAgent(RoutedAgent):
     async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
         start_time = time.time()
         logger.info(f"WorkerMainAgent 收到消息: {message}")
+        tenant_id: str | None=message.tenant_id
+        if not tenant_id:
+            tenant_id=get_tenant_id()
+        if not tenant_id:
+            raise ValueError("tenant_id is required")
+        set_tenant_id(tenant_id)
 
         ag_helper = AgHelper(self.gomtmapi)
         if not message.team_id:
@@ -99,17 +101,22 @@ class WorkerMainAgent(RoutedAgent):
             defaultModel = await self.gomtmapi.model_api.model_get(
                 tenant=input.tenant_id, model="default"
             )
-            model_config = defaultModel.config
-            default_team_builder = AssistantTeamBuilder()
-            team_component = await default_team_builder.create_team(model_config)
+            # model_config = defaultModel.config
+            default_team_builder = AssistantTeamBuilder(self.gomtmapi)
+            team_component = await default_team_builder.create_team()
             team_component_data=team_component.dump_component()
         else:
-            team_data = await self.gomtmapi.teams_api.team_get(
-                tenant=message.tenant_id, team=message.team_id
-            )
-            if team_data is None:
-                raise ValueError("team not found")
-            team_component_data=team_data.component
+            try:
+                team_data = await self.gomtmapi.teams_api.team_get(
+                    tenant=tenant_id,
+                    team=message.team_id,
+                )
+                if team_data is None:
+                    raise ValueError("team not found")
+                team_component_data=team_data.component
+            except Exception as e:
+                logger.error(f"WorkerMainAgent 获取团队组件数据出错: {e}")
+                team_component_data=None
         team = await self._create_team_component(team_component_data)
 
         component=team
@@ -189,7 +196,6 @@ class WorkerMainAgent(RoutedAgent):
                         ),
                     )
                 )
-                # logger.info(f"WorkerMainAgent 保存状态: {saveed_response}")
             except Exception as e:
                 logger.error(f"WorkerMainAgent 保存状态出错: {e}")
 

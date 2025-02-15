@@ -23,7 +23,7 @@ from .agents.tenant_agent import TenantAgent
 from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 
 from .agents.webui_agent import UIAgent
-from mtmai.context import AgentContext, get_mtmai_context, init_mtmai_context
+from mtmai.context import AgentContext, get_mtmai_context, init_mtmai_context, set_backend_url
 from mtmaisdk.context.context import Context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from rich.console import Console
@@ -47,6 +47,7 @@ class WorkerApp():
                 host=self.backend_url,
             )
         )
+        set_backend_url(self.backend_url)
         self._initialized = False
         self._is_running = False
         self.setup_runtime()
@@ -60,6 +61,7 @@ class WorkerApp():
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessage))
         self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessageCreate))
+
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY

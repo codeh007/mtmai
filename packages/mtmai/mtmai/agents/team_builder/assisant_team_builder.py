@@ -3,27 +3,22 @@ import logging
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_core.tools import FunctionTool
+from ...gomtm_client import get_gomtm_client
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
+from ...mtmaisdk.clients.rest_client import AsyncRestApi
 
-from mtmai.tools.calculator import web_search
-
-from mtmai.agents._agents import MtRoundRobinGroupChat
-from ..model_client import MtmOpenAIChatCompletionClient, get_oai_Model
+from ..model_client import MtmOpenAIChatCompletionClient
 
 logger = logging.getLogger(__name__)
 
 class AssistantTeamBuilder:
     """默认聊天团队"""
-    async def create_team(self, model_config: ModelConfig):
-        """创建旅行助理"""
+    def __init__(self):
+        self.gomtmapi = get_gomtm_client()
 
-        model_dict = model_config.model_dump()
-        model_dict["model_info"] = model_dict.pop("model_info", None)
-        model_dict.pop("n", None)
+    async def create_team(self):
         model_client = MtmOpenAIChatCompletionClient(
-            **model_dict,
-
+            model="tenant_default",
         )
         planner_agent = AssistantAgent(
             name="planner_agent",

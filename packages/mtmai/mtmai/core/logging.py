@@ -10,7 +10,7 @@ logs_dir = pathlib.Path(settings.storage_dir) / ".logs"
 
 def get_logger(name: str | None = "root"):
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)  # 默认设置为 INFO 级别
+    logger.setLevel(logging.DEBUG)  # 默认设置为 INFO 级别
 
     # 创建一个自定义的 StreamHandler
     handler = logging.StreamHandler()
@@ -121,24 +121,24 @@ def setup_sqlalchemy_logging():
 
 def setup_httpx_logging():
     httpx_logger = logging.getLogger("httpx")
-    httpx_logger.setLevel(logging.INFO)
+    httpx_logger.setLevel(logging.DEBUG)
     print(f"httpx logger level set to: {httpx_logger.level}")
 
-    if is_in_dev():
-        target_file = pathlib.Path(logs_dir) / "httpx.log"
+    # if is_in_dev():
+    target_file = pathlib.Path(logs_dir) / "httpx.log"
 
-        if not target_file.parent.exists():
-            target_file.parent.mkdir(parents=True, exist_ok=True)
+    if not target_file.parent.exists():
+        target_file.parent.mkdir(parents=True, exist_ok=True)
 
-        file_handler = RotatingFileHandler(
-            target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-        )
-        file_handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        file_handler.setFormatter(formatter)
-        httpx_logger.addHandler(file_handler)
+    file_handler = RotatingFileHandler(
+        target_file, maxBytes=10 * 1024 * 1024, backupCount=5
+    )
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    file_handler.setFormatter(formatter)
+    httpx_logger.addHandler(file_handler)
 
 
 def setup_openai_base_logging():
@@ -146,18 +146,18 @@ def setup_openai_base_logging():
     openai_base_client_logger.setLevel(logging.ERROR)
     print(f"openai._base_client logger level set to: {openai_base_client_logger.level}")
 
-    if is_in_dev():
-        target_file = pathlib.Path(logs_dir) / "openai._base_client.log"
+    # if is_in_dev():
+    target_file = pathlib.Path(logs_dir) / "openai._base_client.log"
 
-        if not target_file.parent.exists():
-            target_file.parent.mkdir(parents=True, exist_ok=True)
+    if not target_file.parent.exists():
+        target_file.parent.mkdir(parents=True, exist_ok=True)
 
-        file_handler = RotatingFileHandler(
-            target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-        )
-        file_handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        file_handler.setFormatter(formatter)
-        openai_base_client_logger.addHandler(file_handler)
+    file_handler = RotatingFileHandler(
+        target_file, maxBytes=10 * 1024 * 1024, backupCount=5
+    )
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    file_handler.setFormatter(formatter)
+    openai_base_client_logger.addHandler(file_handler)
