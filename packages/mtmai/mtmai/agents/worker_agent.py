@@ -37,7 +37,7 @@ deault_team_label = "default"
 @default_subscription
 class WorkerMainAgent(RoutedAgent):
     def __init__(self, gomtmapi: AsyncRestApi) -> None:
-        super().__init__("WorkerMainAgent")
+        super().__init__("WorkerAgent")
         self.gomtmapi=gomtmapi
 
     async def _create_team_component(
@@ -75,13 +75,6 @@ class WorkerMainAgent(RoutedAgent):
         if not run_id:
             raise ValueError("run_id is required")
 
-        ag_helper = AgHelper(self.gomtmapi)
-        if not message.team_id:
-            team = await ag_helper.get_or_create_default_team(
-                tenant_id=message.tenant_id,
-                label=deault_team_label,
-            )
-            message.team_id = team.metadata.id
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
@@ -90,6 +83,14 @@ class WorkerMainAgent(RoutedAgent):
                     topic_id=TopicId(type="tenant", source="tenant"),
                 )
             return
+
+        ag_helper = AgHelper(self.gomtmapi)
+        if not message.team_id:
+            team = await ag_helper.get_or_create_default_team(
+                tenant_id=message.tenant_id,
+                label=deault_team_label,
+            )
+            message.team_id = team.metadata.id
 
         thread_id= message.session_id
         if not thread_id:

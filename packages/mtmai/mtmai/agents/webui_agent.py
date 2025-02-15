@@ -8,12 +8,8 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
-
 from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-
 from ..mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
-
-
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from ..mtmaisdk.clients.rest.models.task_result import TaskResult
 from ..mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
@@ -26,9 +22,9 @@ from rich.markdown import Markdown
 from pydantic import BaseModel
 
 
-class UIAgentState(BaseModel):
-    """UI Agent 状态"""
-    last_message: str = ""
+# class UIAgentState(BaseModel):
+#     """UI Agent 状态"""
+#     last_message: str = ""
 
 
 logger = logging.getLogger(__name__)

@@ -9,9 +9,9 @@ from typing import Type
 import httpx
 import orjson
 from attr import make_class
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-from langchain_core.tools import StructuredTool
-from langchain_core.utils.function_calling import convert_to_openai_function
+# from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+# from langchain_core.tools import StructuredTool
+# # from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_openai import ChatOpenAI
 from lazify import LazyProxy
 from loguru import logger
@@ -19,7 +19,7 @@ from mtmaisdk import Context as HatchetContext
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel
 
-from mtmai.agents.graphutils import ensure_valid_llm_response_v2
+# from mtmai.agents.graphutils import ensure_valid_llm_response_v2
 from mtmai.core.config import settings
 from mtmai.mtlibs.httpx_transport import LoggingTransport
 from mtmai.mtlibs.llms import fix_tool_calls
@@ -123,198 +123,198 @@ class AgentContext:
             http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
         )
 
-    async def ainvoke_model(
-        self,
-        tpl: ChatPromptTemplate,
-        inputs: dict | BaseModel | None,
-        *,
-        tools: list[StructuredTool | dict] | None = None,
-        structured_output: BaseModel | None = None,
-        llm_config_name: str = "chat",
-        max_retries: int = 5,
-        sleep_time: int = 3,
-    ):
-        llm_inst = await self.get_llm_openai(llm_config_name)
+    # async def ainvoke_model(
+    #     self,
+    #     tpl: ChatPromptTemplate,
+    #     inputs: dict | BaseModel | None,
+    #     *,
+    #     tools: list[StructuredTool | dict] | None = None,
+    #     structured_output: BaseModel | None = None,
+    #     llm_config_name: str = "chat",
+    #     max_retries: int = 5,
+    #     sleep_time: int = 3,
+    # ):
+    #     llm_inst = await self.get_llm_openai(llm_config_name)
 
-        if tools is not None and len(tools) > 0:
-            formatted_tools = [
-                convert_to_openai_function(tool, strict=True) for tool in tools
-            ]
-            all_tool_names = [t["name"] for t in formatted_tools]
-            all_tool_names_str = ", ".join(all_tool_names)
-            if tools and llm_inst.llm_type == "llama3.1":
-                # for openai_fun in openai_functions:
-                #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
-                # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
-                toolPrompt = f"""
-    all tools: {all_tool_names_str}
-    [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
-    1. Use the exact OpenAI ChatGPT function calling format.
-    2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
-    3. Only call one function at a time.
-    4. Do not include any additional text with the function call.
-    5. If no function call is needed, respond normally without mentioning functions.
-    6. Only use functions from the provided list of tools.
-    7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
-    8. Ensure all required parameters for the function are included.
-    9. Double-check that the function name and all parameter names exactly match those provided in the function description.
+    #     if tools is not None and len(tools) > 0:
+    #         formatted_tools = [
+    #             convert_to_openai_function(tool, strict=True) for tool in tools
+    #         ]
+    #         all_tool_names = [t["name"] for t in formatted_tools]
+    #         all_tool_names_str = ", ".join(all_tool_names)
+    #         if tools and llm_inst.llm_type == "llama3.1":
+    #             # for openai_fun in openai_functions:
+    #             #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
+    #             # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
+    #             toolPrompt = f"""
+    # all tools: {all_tool_names_str}
+    # [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
+    # 1. Use the exact OpenAI ChatGPT function calling format.
+    # 2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
+    # 3. Only call one function at a time.
+    # 4. Do not include any additional text with the function call.
+    # 5. If no function call is needed, respond normally without mentioning functions.
+    # 6. Only use functions from the provided list of tools.
+    # 7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
+    # 8. Ensure all required parameters for the function are included.
+    # 9. Double-check that the function name and all parameter names exactly match those provided in the function description.
 
-    If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
-    """
-                if "additional_instructions" in tpl.partial_variables:
-                    tpl = tpl.partial(additional_instructions=toolPrompt)
-                else:
-                    tpl.messages.append(
-                        ChatPromptTemplate.from_messages([("system", toolPrompt)])
-                    )
+    # If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
+    # """
+    #             if "additional_instructions" in tpl.partial_variables:
+    #                 tpl = tpl.partial(additional_instructions=toolPrompt)
+    #             else:
+    #                 tpl.messages.append(
+    #                     ChatPromptTemplate.from_messages([("system", toolPrompt)])
+    #                 )
 
-        if isinstance(inputs, BaseModel):
-            inputs = inputs.model_dump()
-        messages = await tpl.ainvoke(inputs)
-        llm_chain = llm_inst
-        if structured_output:
-            llm_chain = llm_chain.with_structured_output(
-                structured_output, include_raw=True
-            )
-        if tools:
-            llm_chain = llm_chain.bind_tools(tools)
-        llm_chain = llm_chain.with_retry(stop_after_attempt=5)
+    #     if isinstance(inputs, BaseModel):
+    #         inputs = inputs.model_dump()
+    #     messages = await tpl.ainvoke(inputs)
+    #     llm_chain = llm_inst
+    #     if structured_output:
+    #         llm_chain = llm_chain.with_structured_output(
+    #             structured_output, include_raw=True
+    #         )
+    #     if tools:
+    #         llm_chain = llm_chain.bind_tools(tools)
+    #     llm_chain = llm_chain.with_retry(stop_after_attempt=5)
 
-        message_to_post = messages.to_messages()
+    #     message_to_post = messages.to_messages()
 
-        for attempt in range(max_retries):
-            try:
-                invoke_result = await ensure_valid_llm_response_v2(
-                    llm_chain, message_to_post
-                )
-                if isinstance(invoke_result, dict) and "raw" in invoke_result:
-                    ai_msg = invoke_result["raw"]
-                else:
-                    ai_msg = invoke_result
-                if tools:
-                    ai_msg = fix_tool_calls(ai_msg)
+    #     for attempt in range(max_retries):
+    #         try:
+    #             invoke_result = await ensure_valid_llm_response_v2(
+    #                 llm_chain, message_to_post
+    #             )
+    #             if isinstance(invoke_result, dict) and "raw" in invoke_result:
+    #                 ai_msg = invoke_result["raw"]
+    #             else:
+    #                 ai_msg = invoke_result
+    #             if tools:
+    #                 ai_msg = fix_tool_calls(ai_msg)
 
-                # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
-                tcs = ai_msg.tool_calls
-                if tcs:
-                    for tc in tcs:
-                        if tc["name"] not in all_tool_names:
-                            raise ValueError(
-                                f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
-                            )
-                return ai_msg
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    logger.warning(
-                        f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
-                    )
-                    await asyncio.sleep(sleep_time)
-                else:
-                    logger.error(f"All {max_retries} attempts failed.")
-                    raise e
+    #             # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
+    #             tcs = ai_msg.tool_calls
+    #             if tcs:
+    #                 for tc in tcs:
+    #                     if tc["name"] not in all_tool_names:
+    #                         raise ValueError(
+    #                             f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
+    #                         )
+    #             return ai_msg
+    #         except Exception as e:
+    #             if attempt < max_retries - 1:
+    #                 logger.warning(
+    #                     f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
+    #                 )
+    #                 await asyncio.sleep(sleep_time)
+    #             else:
+    #                 logger.error(f"All {max_retries} attempts failed.")
+    #                 raise e
 
-    async def ainvoke_model_with_structured_output(
-        self,
-        tpl: PromptTemplate,
-        inputs: dict | BaseModel | None,
-        *,
-        tools: list[StructuredTool | dict] = None,
-        structured_output: BaseModel,
-        llm_config_name: str = "chat",
-        max_retries: int = 5,
-        sleep_time: int = 3,
-    ):
-        # llm_item = await self.get_llm_config(llm_config_name)
-        llm_inst = await self.get_llm_openai(llm_config_name)
+    # async def ainvoke_model_with_structured_output(
+    #     self,
+    #     tpl: PromptTemplate,
+    #     inputs: dict | BaseModel | None,
+    #     *,
+    #     tools: list[StructuredTool | dict] = None,
+    #     structured_output: BaseModel,
+    #     llm_config_name: str = "chat",
+    #     max_retries: int = 5,
+    #     sleep_time: int = 3,
+    # ):
+    #     # llm_item = await self.get_llm_config(llm_config_name)
+    #     llm_inst = await self.get_llm_openai(llm_config_name)
 
-        if tools is not None and len(tools) > 0:
-            formatted_tools = [
-                convert_to_openai_function(tool, strict=True) for tool in tools
-            ]
-            all_tool_names = [t["name"] for t in formatted_tools]
-            all_tool_names_str = ", ".join(all_tool_names)
-            if tools and llm_inst.llm_type == "llama3.1":
-                # for openai_fun in openai_functions:
-                #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
-                # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
-                toolPrompt = f"""
-    all tools: {all_tool_names_str}
-    [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
-    1. Use the exact OpenAI ChatGPT function calling format.
-    2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
-    3. Only call one function at a time.
-    4. Do not include any additional text with the function call.
-    5. If no function call is needed, respond normally without mentioning functions.
-    6. Only use functions from the provided list of tools.
-    7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
-    8. Ensure all required parameters for the function are included.
-    9. Double-check that the function name and all parameter names exactly match those provided in the function description.
+    #     if tools is not None and len(tools) > 0:
+    #         formatted_tools = [
+    #             convert_to_openai_function(tool, strict=True) for tool in tools
+    #         ]
+    #         all_tool_names = [t["name"] for t in formatted_tools]
+    #         all_tool_names_str = ", ".join(all_tool_names)
+    #         if tools and llm_inst.llm_type == "llama3.1":
+    #             # for openai_fun in openai_functions:
+    #             #     tool_call_prompts.append(f"""\nUse the function '{openai_fun["name"]}' to '{openai_fun["description"]}':\n{json.dumps(openai_fun)}\n""")
+    #             # llama3.1 模型工具调用专用提示词，确保工具调用的准确性和一致性
+    #             toolPrompt = f"""
+    # all tools: {all_tool_names_str}
+    # [IMPORTANT] When calling a function, adhere strictly to the following guidelines:
+    # 1. Use the exact OpenAI ChatGPT function calling format.
+    # 2. Function calls must be in this format: {{\"name\": \"function_name\", \"arguments\": {{\"arg1\": \"value1\", \"arg2\": \"value2\"}}}}
+    # 3. Only call one function at a time.
+    # 4. Do not include any additional text with the function call.
+    # 5. If no function call is needed, respond normally without mentioning functions.
+    # 6. Only use functions from the provided list of tools.
+    # 7. Function names must consist solely of lowercase letters (a-z), numbers (0-9), and underscores (_).
+    # 8. Ensure all required parameters for the function are included.
+    # 9. Double-check that the function name and all parameter names exactly match those provided in the function description.
 
-    If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
-    """
-                if "additional_instructions" in tpl.input_variables:
-                    tpl = tpl.partial(additional_instructions=toolPrompt)
-                else:
-                    tpl.messages.append(
-                        ChatPromptTemplate.from_messages([("system", toolPrompt)])
-                    )
+    # If you're unsure about making a function call, respond to the user's query using your general knowledge instead.
+    # """
+    #             if "additional_instructions" in tpl.input_variables:
+    #                 tpl = tpl.partial(additional_instructions=toolPrompt)
+    #             else:
+    #                 tpl.messages.append(
+    #                     ChatPromptTemplate.from_messages([("system", toolPrompt)])
+    #                 )
 
-        if isinstance(inputs, BaseModel):
-            inputs = inputs.model_dump()
-        messages = await tpl.ainvoke(inputs)
-        llm_chain = llm_inst
-        if structured_output:
-            llm_chain = llm_chain.with_structured_output(
-                structured_output, include_raw=True
-            )
-        if tools:
-            llm_chain = llm_chain.bind_tools(tools)
-        llm_chain = llm_chain.with_retry(stop_after_attempt=5)
+    #     if isinstance(inputs, BaseModel):
+    #         inputs = inputs.model_dump()
+    #     messages = await tpl.ainvoke(inputs)
+    #     llm_chain = llm_inst
+    #     if structured_output:
+    #         llm_chain = llm_chain.with_structured_output(
+    #             structured_output, include_raw=True
+    #         )
+    #     if tools:
+    #         llm_chain = llm_chain.bind_tools(tools)
+    #     llm_chain = llm_chain.with_retry(stop_after_attempt=5)
 
-        message_to_post = messages.to_messages()
+    #     message_to_post = messages.to_messages()
 
-        for attempt in range(max_retries):
-            try:
-                invoke_result = await ensure_valid_llm_response_v2(
-                    llm_chain, message_to_post
-                )
-                if isinstance(invoke_result, dict) and "raw" in invoke_result:
-                    ai_msg = invoke_result["raw"]
-                else:
-                    ai_msg = invoke_result
-                if tools:
-                    ai_msg = fix_tool_calls(ai_msg)
+    #     for attempt in range(max_retries):
+    #         try:
+    #             invoke_result = await ensure_valid_llm_response_v2(
+    #                 llm_chain, message_to_post
+    #             )
+    #             if isinstance(invoke_result, dict) and "raw" in invoke_result:
+    #                 ai_msg = invoke_result["raw"]
+    #             else:
+    #                 ai_msg = invoke_result
+    #             if tools:
+    #                 ai_msg = fix_tool_calls(ai_msg)
 
-                # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
-                # tcs = ai_msg.tool_calls
-                # if tcs:
-                #     for tc in tcs:
-                #         if tc.name not in all_tool_names:
-                #             raise ValueError(
-                #                 f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
-                # )
-                return invoke_result
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    logger.warning(
-                        f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
-                    )
-                    await asyncio.sleep(sleep_time)
-                else:
-                    logger.error(f"All {max_retries} attempts failed.")
-                    raise e
+    #             # 函数名必须是 tools 内，否则必定是不正确的调用，自动重试
+    #             # tcs = ai_msg.tool_calls
+    #             # if tcs:
+    #             #     for tc in tcs:
+    #             #         if tc.name not in all_tool_names:
+    #             #             raise ValueError(
+    #             #                 f"函数名 {tc['name']} 必须是 tools 内，否则必定是错误"
+    #             # )
+    #             return invoke_result
+    #         except Exception as e:
+    #             if attempt < max_retries - 1:
+    #                 logger.warning(
+    #                     f"Attempt {attempt + 1} failed. Retrying in 5 seconds..."
+    #                 )
+    #                 await asyncio.sleep(sleep_time)
+    #             else:
+    #                 logger.error(f"All {max_retries} attempts failed.")
+    #                 raise e
 
-    async def stream_messages(self, tpl: ChatPromptTemplate, messages: list[any]):
-        messages2 = await tpl.ainvoke({"messages": messages})
-        # config = {"configurable": {"thread_id": "abc123"}}
-        logger.info(f"stream_messages: {messages2}")
-        llm_inst = await self.get_llm_openai("chat")
-        async for chunk in llm_inst.astream(
-            messages2,
-            # config,
-        ):
-            if chunk.content:
-                yield chunk.content
+    # async def stream_messages(self, tpl: ChatPromptTemplate, messages: list[any]):
+    #     messages2 = await tpl.ainvoke({"messages": messages})
+    #     # config = {"configurable": {"thread_id": "abc123"}}
+    #     logger.info(f"stream_messages: {messages2}")
+    #     llm_inst = await self.get_llm_openai("chat")
+    #     async for chunk in llm_inst.astream(
+    #         messages2,
+    #         # config,
+    #     ):
+    #         if chunk.content:
+    #             yield chunk.content
 
     def load_json_response(
         self, ai_json_resonse_text: str, model_class: Type[BaseModel]

@@ -183,6 +183,7 @@ from mtmaisdk.clients.rest.models.proxy_update import ProxyUpdate
 from mtmaisdk.clients.rest.models.pull_request import PullRequest
 from mtmaisdk.clients.rest.models.pull_request_state import PullRequestState
 from mtmaisdk.clients.rest.models.queue_metrics import QueueMetrics
+from mtmaisdk.clients.rest.models.quick_start import QuickStart
 from mtmaisdk.clients.rest.models.rate_limit import RateLimit
 from mtmaisdk.clients.rest.models.rate_limit_list import RateLimitList
 from mtmaisdk.clients.rest.models.rate_limit_order_by_direction import RateLimitOrderByDirection

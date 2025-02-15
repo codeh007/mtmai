@@ -17,8 +17,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field
+from typing import Any
 from typing_extensions import Annotated
-from mtmaisdk.clients.rest.models.chat_message_list import ChatMessageList
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -54,7 +54,7 @@ class UiAgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatMessageList:
+    ) -> object:
         """ui_agent_get
 
         发送聊天消息
@@ -92,7 +92,7 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessageList",
+            '200': "object",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -121,7 +121,7 @@ class UiAgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatMessageList]:
+    ) -> ApiResponse[object]:
         """ui_agent_get
 
         发送聊天消息
@@ -159,7 +159,7 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessageList",
+            '200': "object",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -226,7 +226,7 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessageList",
+            '200': "object",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -285,7 +285,7 @@ class UiAgentApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/ui_agent',
+            resource_path='/api/v1/tenants/{tenant}/ag_ui',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
