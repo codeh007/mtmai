@@ -22,16 +22,12 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class QuickStart(BaseModel):
+class UiAgentConfig(BaseModel):
     """
-    QuickStart
+    UiAgentConfig
     """ # noqa: E501
-    icon: Optional[StrictStr] = Field(default=None, description="图标")
-    com_id: Optional[StrictStr] = Field(default=None, description="组件ID (团队ID)")
-    title: Optional[StrictStr] = Field(default=None, description="摘要")
-    content: StrictStr = Field(description="提交跟 agent 的内容")
-    cn: Optional[StrictStr] = Field(default=None, description="html class name")
-    __properties: ClassVar[List[str]] = ["icon", "com_id", "title", "content", "cn"]
+    some_value: Optional[StrictStr] = Field(default=None, description="一些值", alias="someValue")
+    __properties: ClassVar[List[str]] = ["someValue"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +47,7 @@ class QuickStart(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of QuickStart from a JSON string"""
+        """Create an instance of UiAgentConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,7 +72,7 @@ class QuickStart(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of QuickStart from a dict"""
+        """Create an instance of UiAgentConfig from a dict"""
         if obj is None:
             return None
 
@@ -84,11 +80,7 @@ class QuickStart(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "icon": obj.get("icon"),
-            "com_id": obj.get("com_id"),
-            "title": obj.get("title"),
-            "content": obj.get("content"),
-            "cn": obj.get("cn")
+            "someValue": obj.get("someValue")
         })
         return _obj
 

@@ -17,8 +17,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field
-from typing import Any
 from typing_extensions import Annotated
+from mtmaisdk.clients.rest.models.ui_agent_state import UiAgentState
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -54,10 +54,10 @@ class UiAgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> object:
+    ) -> UiAgentState:
         """ui_agent_get
 
-        发送聊天消息
+        获取聊天界面状态
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -92,7 +92,9 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "object",
+            '200': "UiAgentState",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -121,10 +123,10 @@ class UiAgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[object]:
+    ) -> ApiResponse[UiAgentState]:
         """ui_agent_get
 
-        发送聊天消息
+        获取聊天界面状态
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -159,7 +161,9 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "object",
+            '200': "UiAgentState",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -191,7 +195,7 @@ class UiAgentApi:
     ) -> RESTResponseType:
         """ui_agent_get
 
-        发送聊天消息
+        获取聊天界面状态
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -226,7 +230,9 @@ class UiAgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "object",
+            '200': "UiAgentState",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,

@@ -19,19 +19,18 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.chat_welcome import ChatWelcome
 from typing import Optional, Set
 from typing_extensions import Self
 
-class QuickStart(BaseModel):
+class UiAgentState(BaseModel):
     """
-    QuickStart
+    UiAgentState
     """ # noqa: E501
-    icon: Optional[StrictStr] = Field(default=None, description="图标")
-    com_id: Optional[StrictStr] = Field(default=None, description="组件ID (团队ID)")
-    title: Optional[StrictStr] = Field(default=None, description="摘要")
-    content: StrictStr = Field(description="提交跟 agent 的内容")
-    cn: Optional[StrictStr] = Field(default=None, description="html class name")
-    __properties: ClassVar[List[str]] = ["icon", "com_id", "title", "content", "cn"]
+    welcome: Optional[ChatWelcome] = None
+    thread_id: Optional[StrictStr] = Field(default=None, description="线程ID(sessionId)")
+    team_id: Optional[StrictStr] = Field(default=None, description="当前选定的 team id")
+    __properties: ClassVar[List[str]] = ["welcome", "thread_id", "team_id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +50,7 @@ class QuickStart(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of QuickStart from a JSON string"""
+        """Create an instance of UiAgentState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,11 +71,14 @@ class QuickStart(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of welcome
+        if self.welcome:
+            _dict['welcome'] = self.welcome.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of QuickStart from a dict"""
+        """Create an instance of UiAgentState from a dict"""
         if obj is None:
             return None
 
@@ -84,11 +86,9 @@ class QuickStart(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "icon": obj.get("icon"),
-            "com_id": obj.get("com_id"),
-            "title": obj.get("title"),
-            "content": obj.get("content"),
-            "cn": obj.get("cn")
+            "welcome": ChatWelcome.from_dict(obj["welcome"]) if obj.get("welcome") is not None else None,
+            "thread_id": obj.get("thread_id"),
+            "team_id": obj.get("team_id")
         })
         return _obj
 

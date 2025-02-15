@@ -76,7 +76,7 @@ from mtmaisdk.clients.rest.models.chat_message_role import ChatMessageRole
 from mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmaisdk.clients.rest.models.chat_session import ChatSession
 from mtmaisdk.clients.rest.models.chat_session_list import ChatSessionList
-from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
+from mtmaisdk.clients.rest.models.chat_welcome import ChatWelcome
 from mtmaisdk.clients.rest.models.code_highlight import CodeHighlight
 from mtmaisdk.clients.rest.models.common_result import CommonResult
 from mtmaisdk.clients.rest.models.component_model import ComponentModel
@@ -266,6 +266,8 @@ from mtmaisdk.clients.rest.models.tool_component import ToolComponent
 from mtmaisdk.clients.rest.models.tool_config import ToolConfig
 from mtmaisdk.clients.rest.models.tool_types import ToolTypes
 from mtmaisdk.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
+from mtmaisdk.clients.rest.models.ui_agent_config import UiAgentConfig
+from mtmaisdk.clients.rest.models.ui_agent_state import UiAgentState
 from mtmaisdk.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmaisdk.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
 from mtmaisdk.clients.rest.models.update_model import UpdateModel

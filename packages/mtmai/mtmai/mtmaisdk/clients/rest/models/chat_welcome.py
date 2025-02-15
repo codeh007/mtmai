@@ -19,19 +19,19 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmaisdk.clients.rest.models.quick_start import QuickStart
 from typing import Optional, Set
 from typing_extensions import Self
 
-class QuickStart(BaseModel):
+class ChatWelcome(BaseModel):
     """
-    QuickStart
+    ChatWelcome
     """ # noqa: E501
-    icon: Optional[StrictStr] = Field(default=None, description="图标")
-    com_id: Optional[StrictStr] = Field(default=None, description="组件ID (团队ID)")
-    title: Optional[StrictStr] = Field(default=None, description="摘要")
-    content: StrictStr = Field(description="提交跟 agent 的内容")
-    cn: Optional[StrictStr] = Field(default=None, description="html class name")
-    __properties: ClassVar[List[str]] = ["icon", "com_id", "title", "content", "cn"]
+    title: Optional[StrictStr] = Field(default=None, description="欢迎语标题")
+    content: Optional[StrictStr] = Field(default=None, description="欢迎语内容")
+    sub_title: Optional[StrictStr] = Field(default=None, description="主标题", alias="subTitle")
+    quick_starts: Optional[List[QuickStart]] = None
+    __properties: ClassVar[List[str]] = ["title", "content", "subTitle", "quick_starts"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +51,7 @@ class QuickStart(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of QuickStart from a JSON string"""
+        """Create an instance of ChatWelcome from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,11 +72,18 @@ class QuickStart(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in quick_starts (list)
+        _items = []
+        if self.quick_starts:
+            for _item_quick_starts in self.quick_starts:
+                if _item_quick_starts:
+                    _items.append(_item_quick_starts.to_dict())
+            _dict['quick_starts'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of QuickStart from a dict"""
+        """Create an instance of ChatWelcome from a dict"""
         if obj is None:
             return None
 
@@ -84,11 +91,10 @@ class QuickStart(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "icon": obj.get("icon"),
-            "com_id": obj.get("com_id"),
             "title": obj.get("title"),
             "content": obj.get("content"),
-            "cn": obj.get("cn")
+            "subTitle": obj.get("subTitle"),
+            "quick_starts": [QuickStart.from_dict(_item) for _item in obj["quick_starts"]] if obj.get("quick_starts") is not None else None
         })
         return _obj
 
