@@ -255,7 +255,6 @@ from mtmaisdk.clients.rest.models.tenant_queue_metrics import TenantQueueMetrics
 from mtmaisdk.clients.rest.models.tenant_resource import TenantResource
 from mtmaisdk.clients.rest.models.tenant_resource_limit import TenantResourceLimit
 from mtmaisdk.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
-from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 from mtmaisdk.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmaisdk.clients.rest.models.termination_component import TerminationComponent
 from mtmaisdk.clients.rest.models.termination_conditions import TerminationConditions
