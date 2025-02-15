@@ -4,6 +4,12 @@ import os
 import sys
 from typing import cast
 import httpx
+
+from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+
+from .mtmaisdk.clients.rest.models.task_result import TaskResult
+
+from .mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from .agents.worker_agent import WorkerMainAgent
 from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
@@ -57,10 +63,20 @@ class WorkerApp():
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
         self._runtime = SingleThreadedAgentRuntime()
         # self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
-        self._runtime.add_message_serializer(try_get_known_serializers_for_type(AgentRunInput))
-        self._runtime.add_message_serializer(try_get_known_serializers_for_type(TenantSeedReq))
-        self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessage))
-        self._runtime.add_message_serializer(try_get_known_serializers_for_type(ChatMessageCreate))
+
+        message_serializer_types = [
+            AgentRunInput,
+            TenantSeedReq,
+            ChatMessage,
+            ChatMessageCreate,
+            AgEventCreate,
+            TaskResult,
+            ApiSaveTeamState,
+            ApiSaveTeamTaskResult,
+        ]
+        for message_serializer_type in message_serializer_types:
+            self._runtime.add_message_serializer(try_get_known_serializers_for_type(message_serializer_type))
+
 
 
     async def run(self):

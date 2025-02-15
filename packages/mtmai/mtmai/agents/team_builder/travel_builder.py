@@ -2,13 +2,11 @@ import logging
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
-from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_core.tools import FunctionTool
-from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
-from mtmai.tools.calculator import web_search
 
 from mtmai.agents._agents import MtRoundRobinGroupChat
+
+from ...mtmaisdk.clients.rest.models.model_family import ModelFamily
 from ..model_client import MtmOpenAIChatCompletionClient
 
 logger = logging.getLogger(__name__)
@@ -23,6 +21,7 @@ class TravelTeamBuilder:
 
         model_client = MtmOpenAIChatCompletionClient(
             model="tenant_default",
+            # model_info={"Family": ModelFamily.R1, "Vision": False, "FunctionCalling": True, "JsonOutput": True},
         )
         planner_agent = AssistantAgent(
             name="planner_agent",

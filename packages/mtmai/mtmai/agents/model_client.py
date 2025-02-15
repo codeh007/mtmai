@@ -33,33 +33,17 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
     component_config_schema = OpenAIClientConfigurationConfigModel
     component_provider_override = "mtmai.agents.model_client.MtmOpenAIChatCompletionClient"
     def __init__(self, **kwargs: Unpack[OpenAIClientConfiguration]):
-        # _raw_config
         if not kwargs.get("model_info"):
-            kwargs["model_info"] = {
-                "Family": ModelFamily.R1,
-                "Vision": False,
-                "FunctionCalling": True,
-                "JsonOutput": True,
-            }
-
-        #     Model:       "deepseek-ai/deepseek-r1",
-		# BaseUrl:     mtutils.Ptr("https://integrate.api.nvidia.com/v1"),
-		# ApiKey:      mtutils.Ptr(""),
-		# MaxTokens:   mtutils.Ptr(8096),
-		# MaxRetries:  mtutils.Ptr(2),
-		# Temperature: mtutils.Ptr(float32(0.7)),
-		# TopP:        mtutils.Ptr(float32(0.7)),
-		# ModelInfo: &gen.ModelInfo{
-		# 	Family:          gen.R1,
-		# 	Vision:          false,
-		# 	FunctionCalling: true,
-		# 	JsonOutput:      true,
-		# },
+            kwargs["model_info"] = ModelInfo(
+                family=ModelFamily.R1,
+                vision=False,
+                function_calling=True,
+                json_output=True,
+            )
         super().__init__(**kwargs)
+        pass
 
     def _to_config(self) -> OpenAIClientConfigurationConfigModel:
-        # copied_config = self._raw_config.copy()
-        # copied_config["model_info"] = self.model_info_to_keep
         # return OpenAIClientConfigurationConfigModel(**copied_config)
         return super()._to_config()
 

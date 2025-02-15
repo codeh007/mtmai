@@ -7,49 +7,7 @@ from autogen_core.models import (
 from autogen_ext.models.openai.config import AzureOpenAIClientConfiguration
 from pydantic import BaseModel
 
-
-# class GroupChatMessage(BaseModel):
-#     """Implements a sample message sent by an LLM agent"""
-
-#     body: LLMMessage
-
-
-# class RequestToSpeak(BaseModel):
-#     """Message type for agents to speak"""
-
-#     pass
-
-
-# @dataclass
-# class AskToGreet:
-#     content: str
-
-
-# @dataclass
-# class Greeting:
-#     content: str
-
-
-# @dataclass
-# class Feedback:
-#     content: str
-
-
-# Define Host configuration model
-# class HostConfig(BaseModel):
-#     hostname: str
-#     port: int
-
-#     @property
-#     def address(self) -> str:
-#         return f"{self.hostname}:{self.port}"
-
-
-# Define GroupChatManager configuration model
-# class GroupChatManagerConfig(BaseModel):
-#     topic_type: str
-#     max_rounds: int
-
+from ..mtmaisdk.clients.rest.models.task_result import TaskResult
 
 # Define WriterAgent configuration model
 class ChatAgentConfig(BaseModel):
@@ -71,20 +29,10 @@ class UIAgentConfig(BaseModel):
     def max_delay(self) -> float:
         return self.artificial_stream_delay_seconds.get("max", 0.0)
 
-
-# Define the overall AppConfig model
-# class AppConfig(BaseModel):
-#     host: HostConfig
-#     group_chat_manager: GroupChatManagerConfig
-#     writer_agent: ChatAgentConfig
-#     editor_agent: ChatAgentConfig
-#     ui_agent: UIAgentConfig
-#     client_config: AzureOpenAIClientConfiguration = None  # type: ignore[assignment] # This was required to do custom instantiation in `load_config`
-
-# class CascadingMessage(BaseModel):
-#     content: str |None= None
-
-# class ReceiveMessageEvent(BaseModel):
-#     round: int
-#     sender: str
-#     recipient: str
+class ApiSaveTeamState(BaseModel):
+    # state: Dict[str, Any]
+    pass
+class ApiSaveTeamTaskResult(BaseModel):
+    tenant_id: str
+    team_id: str
+    task_result: TaskResult

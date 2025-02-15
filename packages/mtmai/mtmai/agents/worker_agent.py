@@ -1,13 +1,10 @@
 import time
 import logging
 from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, TopicId, default_subscription, message_handler
-from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
-    RoundRobinGroupChatConfig,
-)
 
+from ._types import ApiSaveTeamTaskResult
 from ..context import get_tenant_id, set_tenant_id
 from mtmaisdk.clients.rest.models.ag_state import AgState
-
 from ..aghelper import AgHelper
 
 from .team_builder.assisant_team_builder import AssistantTeamBuilder
@@ -98,10 +95,9 @@ class WorkerMainAgent(RoutedAgent):
         team_component_data:Component = None
         if not message.team_id:
             # 获取模型配置
-            defaultModel = await self.gomtmapi.model_api.model_get(
-                tenant=input.tenant_id, model="default"
-            )
-            # model_config = defaultModel.config
+            # defaultModel = await self.gomtmapi.model_api.model_get(
+            #     tenant=input.tenant_id, model="default"
+            # )
             default_team_builder = AssistantTeamBuilder(self.gomtmapi)
             team_component = await default_team_builder.create_team()
             team_component_data=team_component.dump_component()
@@ -132,17 +128,14 @@ class WorkerMainAgent(RoutedAgent):
                     break
                 try:
                     if isinstance(event, TaskResult):
-                        # await self.publish_message(
-                        #     topic_id=DefaultTopicId(),
-                        #     message=ChatMessageCreate(
-                        #         content=event.messages[],
-                        #         tenant_id=message.tenant_id,
-                        #         team_id=message.team_id,
-                        #         threadId=thread_id,
-                        #         runId=message.run_id,
-                        #     ),
-                        # )
-                        logger.info(f"WorkerMainAgent TaskResult: {event}")
+                        await self.publish_message(
+                            topic_id=DefaultTopicId(),
+                            message=ApiSaveTeamTaskResult(
+                                tenant_id=tenant_id,
+                                team_id=message.team_id,
+                                task_result=event,
+                            ),
+                        )
                     elif isinstance( event, TextMessage):
                         await self.publish_message(
                             topic_id=DefaultTopicId(),
@@ -160,14 +153,14 @@ class WorkerMainAgent(RoutedAgent):
                             message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
                             topic_id=DefaultTopicId(),
                         )
-                        await self.gomtmapi.ag_events_api.ag_event_create(
-                            tenant=message.tenant_id,
-                            ag_event_create=AgEventCreate(
+                        await self.runtime.publish_message(
+                            message=AgEventCreate(
                                 data=event,
                                 framework="autogen",
                                 # stepRunId=hatctx.step_run_id,
                                 meta={},
                             ),
+                            topic_id=DefaultTopicId(),
                         )
                     else:
                         logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")

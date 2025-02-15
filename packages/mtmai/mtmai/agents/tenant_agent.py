@@ -21,13 +21,7 @@ class TenantAgent(RoutedAgent):
     async def handle_tenant_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:
         if not message.tenant_id or len(message.tenant_id) == 0:
             raise ValueError("tenantId 不能为空")
-        # 获取模型配置
-        defaultModel = await self.gomtmapi.model_api.model_get(
-            tenant=message.tenant_id, model="default"
-        )
-        # model_config = defaultModel.config
-        team_builder = TravelTeamBuilder()
-        team1 = await team_builder.create_team()
+        team1 = await TravelTeamBuilder().create_team()
         team2 = await CompanyResearchTeamBuilder().create_team()
 
         all_teams = [team1, team2]

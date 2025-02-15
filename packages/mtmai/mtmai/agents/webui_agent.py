@@ -9,6 +9,12 @@ from autogen_core.models import (
     UserMessage,
 )
 
+from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+
+from ..mtmaisdk.clients.rest.models.task_result import TaskResult
+
+from ..mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
+
 from ..context import get_tenant_id
 
 from ..mtlibs.id import generate_uuid
@@ -35,25 +41,23 @@ class UIAgent(RoutedAgent):
         super().__init__("UI Agent")
         self.gomtmapi = gomtmapi
 
+    async def save_state(self) -> Mapping[str, Any]:
+        """Save the state of the group chat team."""
+        try:
+            return UIAgentState(last_message="last_message:todo").model_dump()
+        finally:
+            # Indicate that the team is no longer running.
+            # self._is_running = False
+            pass
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        """Load the state of the group chat team."""
+        self.last_message = state["last_message"]
+
     @message_handler
-    async def handle_message_chunk(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
+    async def handle_message_create(self, message: ChatMessageCreate, ctx: MessageContext) -> None:
         tenant_id=get_tenant_id()
-        print(f": 测试tenantId_2: {tenant_id}")
-
         logger.info(f"UI Agent 收到消息: {message}")
-
-        # 聊天消息入库功能暂时取消,因后端没完全实现()
-        # await self.gomtmapi.chat_api.chat_create_message(
-        #     tenant=message.tenant_id,
-        #     chat_message_create=message,
-        #     )
-
-        # 保存状态
-        state = await self.runtime.save_state()
-        logger.info(f"UI Agent 保存状态: {state}")
-
-
-        # 保存用户的聊天信息
         try:
             if not message.thread_id:
                 message.thread_id=generate_uuid()
@@ -70,7 +74,6 @@ class UIAgent(RoutedAgent):
                     role=role,
                 ) ,
             )
-            # logger.info(f"UI Agent 保存聊天成功: {chatSession}")
             # TODO: api 操作失败时, 自动停止 agent
         except ApiException as e:
             logger.error(f"UI Agent 保存消息失败: {e}")
@@ -79,18 +82,23 @@ class UIAgent(RoutedAgent):
             logger.error(f"UI Agent 保存消息失败(unknown error): {e}")
             raise e
 
+    @message_handler
+    async def handle_ag_event(self, message: AgEventCreate, ctx: MessageContext) -> None:
+        tenant_id=get_tenant_id()
+        logger.info(f"TODO: AgEventCreate {message}")
+
+    @message_handler
+    async def handle_task_result(self, message: TaskResult, ctx: MessageContext) -> None:
+        logger.info(f"TODO: TaskResult {message}")
+
+    @message_handler
+    async def handle_api_save_team_state(self, message: ApiSaveTeamState, ctx: MessageContext) -> None:
+        # 保存状态
+        state = await self.runtime.save_state()
+        logger.info(f"TODO:UI Agent 保存状态: {state}")
+
+    @message_handler
+    async def handle_api_save_team_task_result(self, message: ApiSaveTeamTaskResult, ctx: MessageContext) -> None:
+        logger.info(f"TODO:UI Agent 保存任务结果: {message}")
 
 
-
-    async def save_state(self) -> Mapping[str, Any]:
-        """Save the state of the group chat team."""
-        try:
-            return UIAgentState(last_message="last_message:todo").model_dump()
-        finally:
-            # Indicate that the team is no longer running.
-            # self._is_running = False
-            pass
-
-    async def load_state(self, state: Mapping[str, Any]) -> None:
-        """Load the state of the group chat team."""
-        self.last_message = state["last_message"]
