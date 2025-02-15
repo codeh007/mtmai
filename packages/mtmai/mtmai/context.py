@@ -24,7 +24,7 @@ from mtmai.core.config import settings
 from mtmai.mtlibs.httpx_transport import LoggingTransport
 from mtmai.mtlibs.llms import fix_tool_calls
 
-context_var: ContextVar["AgentContext"] = ContextVar("mtmai_ctx")
+gomtm_ctx: ContextVar["AgentContext"] = ContextVar("gomtm_ctx", default=None)
 
 project_id_context: ContextVar[str] = ContextVar("project_id", default=None)
 project_context: ContextVar[User] = ContextVar("project", default=None)
@@ -385,7 +385,7 @@ def init_mtmai_context(hatchetCtx: HatchetContext) -> AgentContext:
         user_id = additional_metadata.get("userId")
     agent_ctx = AgentContext(tenant_id=tenant_id, user_id=user_id)
     agent_ctx.hatchet_ctx = hatchetCtx
-    context_var.set(agent_ctx)
+    gomtm_ctx.set(agent_ctx)
     return agent_ctx
 
 # def init_tenant_context(tenant_id: str):
@@ -396,7 +396,7 @@ def init_mtmai_context(hatchetCtx: HatchetContext) -> AgentContext:
 
 def get_mtmai_context() -> AgentContext:
     try:
-        return context_var.get()
+        return gomtm_ctx.get()
     except LookupError:
         raise RuntimeError("mtmai_context  error")
 

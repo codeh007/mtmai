@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 # @default_subscription
 @type_subscription(topic_type="tenant")
 class TenantAgent(RoutedAgent):
-    def __init__(self, gomtmapi: AsyncRestApi) -> None:
+    def __init__(self) -> None:
         super().__init__("TenantAgent")
-        self.gomtmapi=gomtmapi
+        # self.gomtmapi=gomtmapi
 
     @message_handler
     async def handle_tenant_message_type(self, message: TenantSeedReq, mctx: MessageContext) -> None:

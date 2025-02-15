@@ -1,18 +1,19 @@
 import asyncio
+from contextvars import ContextVar
 from logging import Logger
 from typing import Callable
-
+from lazify import LazyProxy
 import grpc
 
 from mtmaisdk.clients.run_event_listener import RunEventListenerClient
 from mtmaisdk.clients.workflow_listener import PooledWorkflowRunListener
 from mtmaisdk.connection import new_conn
+from .context.context import get_api_token_context, get_backend_url, get_tenant_id
 
 from .clients.admin import AdminClient, new_admin
 from .clients.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from .clients.events import EventClient, new_event
-from .clients.mtmapi import AsyncGomtmRestApi
-from .clients.rest_client import RestApi
+from .clients.rest_client import AsyncRestApi, RestApi
 from .loader import ClientConfig, ConfigLoader
 
 
@@ -70,9 +71,9 @@ class Client:
         dispatcher_client = new_dispatcher(config)
         rest_client = RestApi(config.server_url, config.token, config.tenant_id)
         workflow_listener = None  # Initialize this if needed
-        gomtm_rest_client = AsyncGomtmRestApi(
-            config.server_url, config.token, config.tenant_id
-        )
+        # gomtm_rest_client = AsyncGomtmRestApi(
+        #     config.server_url, config.token, config.tenant_id
+        # )
 
         return cls(
             event_client,
@@ -82,7 +83,7 @@ class Client:
             rest_client,
             config,
             debug,
-            gomtm_rest_client,
+            # gomtm_rest_client,
         )
 
     def __init__(
@@ -94,7 +95,7 @@ class Client:
         rest_client: RestApi,
         config: ClientConfig,
         debug: bool = False,
-        gomtm_rest_client: AsyncGomtmRestApi | None = None,
+        # gomtm_rest_client: AsyncGomtmRestApi | None = None,
     ):
         try:
             loop = asyncio.get_running_loop()
@@ -111,7 +112,7 @@ class Client:
         self.workflow_listener = workflow_listener
         self.logInterceptor = config.logInterceptor
         self.debug = debug
-        self.gomtm_rest_client = gomtm_rest_client
+        # self.gomtm_rest_client = gomtm_rest_client
 
 
 def with_host_port(host: str, port: int):
@@ -124,3 +125,30 @@ def with_host_port(host: str, port: int):
 
 new_client = Client.from_environment
 new_client_raw = Client.from_config
+
+## 新功能 =====================================================================================================================================================
+
+def get_gomtm():
+    backend_url = get_backend_url()
+    if not backend_url:
+        raise ValueError("backend_url is required")
+    # return ApiClient(
+    #     configuration=Configuration(
+    #         host=backend_url,
+    #     )
+    # )
+    api_token = get_api_token_context()
+    tenant_id = get_tenant_id()
+    return AsyncRestApi(backend_url, api_token, tenant_id)
+
+gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_ctx", default=None)
+
+
+def get_gomtm_api() -> AsyncRestApi:
+    try:
+        return gomtm_ctx.get()
+    except LookupError:
+        raise RuntimeError("gomtm_ctx  error")
+
+
+gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api, enable_cache=False)  # type: ignore

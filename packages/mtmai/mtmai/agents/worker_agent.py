@@ -2,17 +2,19 @@ import time
 import logging
 from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, TopicId, default_subscription, message_handler
 
-from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmaisdk.context.context import get_tenant_id, set_tenant_id
+
+from mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-from ..context import get_tenant_id, set_tenant_id
+# from ..context import get_tenant_id, set_tenant_id
 from mtmaisdk.clients.rest.models.ag_state import AgState
 from ..aghelper import AgHelper
 
 from .team_builder.assisant_team_builder import AssistantTeamBuilder
 from ..mtlibs.id import generate_uuid
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
+# from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
@@ -182,22 +184,6 @@ class WorkerMainAgent(RoutedAgent):
                 componentId=team_id,
                 runId=run_id,
             ))
-            # try:
-            #     state_to_save = await team.save_state()
-            #     saveed_response: AgState = (
-            #         await self.gomtmapi.ag_state_api.ag_state_upsert(
-            #             tenant=message.tenant_id,
-            #             state=thread_id,
-            #             ag_state_upsert=AgStateUpsert(
-            #                 id=thread_id,
-            #                 componentId=team_id,
-            #                 runId=message.run_id,
-            #                 state=state_to_save,
-            #             ),
-            #         )
-            #     )
-            # except Exception as e:
-            #     logger.error(f"WorkerMainAgent 保存状态出错: {e}")
 
     async def action_seed_tenant(self, message: AgentRunInput):
         logger.info(f"WorkerMainAgent 收到消息: {message}")

@@ -23,8 +23,10 @@ from autogen_ext.models.openai.config import (
     OpenAIClientConfigurationConfigModel,
 )
 from json_repair import repair_json
-from ..gomtm_client import get_gomtm_client
-from ..context import get_tenant_id
+
+from ..mtmaisdk.context.context import get_gomtm, get_tenant_id
+# from ..gomtm_client import get_gomtm_client
+# from ..context import get_tenant_id
 
 logger=logging.getLogger(__name__)
 
@@ -56,7 +58,7 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             tenant_id = get_tenant_id()
             if not tenant_id:
                 raise ValueError("(MtmOpenAIChatCompletionClient)tenant_id is required")
-            self.gomtmapi = get_gomtm_client()
+            self.gomtmapi = get_gomtm()
 
             defaultModel = await self.gomtmapi.model_api.model_get(
                 tenant=tenant_id,

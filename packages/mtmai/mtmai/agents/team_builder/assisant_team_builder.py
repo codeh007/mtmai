@@ -3,7 +3,7 @@ import logging
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
-from ...gomtm_client import get_gomtm_client
+# from ...gomtm_client import get_gomtm_client
 from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from ...mtmaisdk.clients.rest_client import AsyncRestApi
 
@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 class AssistantTeamBuilder:
     """默认聊天团队"""
     def __init__(self):
-        self.gomtmapi = get_gomtm_client()
+        # self.gomtmapi = get_gomtm_client()
+        pass
 
     async def create_team(self):
         model_client = MtmOpenAIChatCompletionClient(

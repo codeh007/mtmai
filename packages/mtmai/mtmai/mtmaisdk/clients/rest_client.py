@@ -4,7 +4,7 @@ import threading
 from typing import Any
 
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
-from ..context.context import get_api_token_context, get_backend_url, get_tenant_id
+# from ..context.context import get_api_token_context, get_backend_url, get_tenant_id
 from .rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
@@ -55,20 +55,6 @@ from .rest.api.ag_state_api import AgStateApi
 from .rest.api.model_api import ModelApi
 from .rest.api.team_api import TeamApi
 from .rest.api.teams_api import TeamsApi
-
-def get_gomtm():
-    backend_url = get_backend_url()
-    if not backend_url:
-        raise ValueError("backend_url is required")
-    # return ApiClient(
-    #     configuration=Configuration(
-    #         host=backend_url,
-    #     )
-    # )
-    api_token = get_api_token_context()
-    tenant_id = get_tenant_id()
-    return AsyncRestApi(backend_url, api_token, tenant_id)
-
 
 class AsyncRestApi:
     def __init__(self, host: str, api_key: str, tenant_id: str):
@@ -480,6 +466,5 @@ class RestApi:
         )
 
     def events_replay(self, event_ids: list[str] | EventList) -> EventList:
-        return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))
         return self._run_coroutine(self.aio.events_replay(event_ids))

@@ -9,19 +9,17 @@ from autogen_core.models import (
     UserMessage,
 )
 
-from ..gomtm_client import get_gomtm_client
+from ..context import get_mtmai_context
+
+from ..mtmaisdk.context.context import get_gomtm, get_tenant_id
 from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from ..mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from ..mtmaisdk.clients.rest.models.task_result import TaskResult
 from ..mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from ..context import get_mtmai_context, get_tenant_id
+# from ..context import get_mtmai_context, get_tenant_id
 from ..mtlibs.id import generate_uuid
 from ..mtmaisdk.clients.rest.exceptions import ApiException
-from mtmaisdk.clients.rest_client import AsyncRestApi
-# from rich.console import Console
-# from rich.markdown import Markdown
-# from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 @default_subscription
@@ -30,7 +28,7 @@ class UIAgent(RoutedAgent):
 
     def __init__(self) -> None:
         super().__init__("UI Agent")
-        self.gomtmapi = get_gomtm_client()
+        self.gomtmapi = get_gomtm()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         """Load the state of the group chat team."""
@@ -42,7 +40,7 @@ class UIAgent(RoutedAgent):
         logger.info(f"UI Agent 收到消息: {message}")
         hatchet_ctx = get_mtmai_context()
         try:
-            await self.gomtmapi..chat_api.chat_message_upsert(
+            await self.gomtmapi.chat_api.chat_message_upsert(
                 tenant=message.tenant_id,
                 chat_message_upsert=ChatMessageUpsert(
                     tenantId=message.tenant_id,
