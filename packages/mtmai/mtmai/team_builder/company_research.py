@@ -1,13 +1,11 @@
-import logging
-
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import FunctionTool
 
 from mtmai.agents._agents import MtRoundRobinGroupChat
-from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 
-logger = logging.getLogger(__name__)
+from .__init__ import current_team_version
 
 
 def google_search(query: str, num_results: int = 2, max_chars: int = 500) -> list:  # type: ignore[type-arg]
@@ -168,12 +166,16 @@ def analyze_stock(ticker: str) -> dict:  # type: ignore[type-arg]
 
 
 class CompanyResearchTeamBuilder:
-    async def create_team(self):
-        """创建公司研究团队"""
-        model_client = MtmOpenAIChatCompletionClient(
-            model="tenant_default",
-        )
+    @property
+    def name(self):
+        return "company_research"
 
+    @property
+    def description(self):
+        return "公司研究团队"
+
+    async def create_team(self, default_model_client: ChatCompletionClient = None):
+        """创建公司研究团队"""
         # tools
         google_search_tool = FunctionTool(
             google_search,
@@ -185,7 +187,7 @@ class CompanyResearchTeamBuilder:
 
         search_agent = AssistantAgent(
             name="Google_Search_Agent",
-            model_client=model_client,
+            model_client=default_model_client,
             tools=[google_search_tool],
             description="Search Google for information, returns top 2 results with a snippet and body content",
             system_message="You are a helpful AI assistant. Solve tasks using your tools.",
@@ -193,7 +195,7 @@ class CompanyResearchTeamBuilder:
 
         stock_analysis_agent = AssistantAgent(
             name="Stock_Analysis_Agent",
-            model_client=model_client,
+            model_client=default_model_client,
             tools=[stock_analysis_tool],
             description="Analyze stock data and generate a plot",
             system_message="Perform data analysis.",
@@ -201,7 +203,7 @@ class CompanyResearchTeamBuilder:
 
         report_agent = AssistantAgent(
             name="Report_Agent",
-            model_client=model_client,
+            model_client=default_model_client,
             description="Generate a report based the search and results of stock analysis",
             system_message="You are a helpful assistant that can generate a comprehensive report on a given topic based on search and stock analysis. When you done with generating the report, reply with TERMINATE.",
         )
@@ -218,7 +220,7 @@ class CompanyResearchTeamBuilder:
             ],
             termination_condition=combined_termination,
         )
-        team.component_version = 2
-        team.component_label = "company_research"
-        team.component_description = "公司研究团队"
+        team.component_version = current_team_version
+        team.component_label = self.name
+        team.component_description = self.description
         return team

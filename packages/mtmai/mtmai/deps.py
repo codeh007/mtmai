@@ -1,21 +1,16 @@
 import logging
 from contextvars import ContextVar
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from sqlmodel import Session
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from mtmai.core.config import HEADER_SITE_HOST, settings
-from mtmai.crud.curd_site import get_site_domain
-from mtmai.db.db import get_async_engine, get_checkpointer
+from mtmai.core.config import settings
+
+# from mtmai.db.db import get_async_engine, get_checkpointer
 from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
-from mtmai.models.site import Site
-
-# from mtmai.mtmaisdk.context.context import user_context
 
 logger = logging.getLogger(__name__)
 
@@ -194,13 +189,13 @@ def require_managers(*manager_names: str):
     return Depends(dependency)
 
 
-async def get_asession() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSession(get_async_engine()) as session:
-        yield session
+# async def get_asession() -> AsyncGenerator[AsyncSession, None]:
+#     async with AsyncSession(get_async_engine()) as session:
+#         yield session
 
 
 SessionDep = Annotated[Session, Depends(get_db)]
-AsyncSessionDep = Annotated[AsyncSession, Depends(get_asession)]
+# AsyncSessionDep = Annotated[AsyncSession, Depends(get_asession)]
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
@@ -256,41 +251,40 @@ def get_optional_current_user(
 
 
 OptionalUserDep = Annotated[User | None, Depends(get_optional_current_user)]
-CheckPointerDep = Annotated[AsyncPostgresSaver, Depends(get_checkpointer)]
+# CheckPointerDep = Annotated[AsyncPostgresSaver, Depends(get_checkpointer)]
 
 
-async def get_site(session: AsyncSessionDep, request: Request) -> Site:
-    """
-    根据入站域名获取对应是site 对象
-    """
-    income_domain = request.headers.get(HEADER_SITE_HOST)
-    if not income_domain:
-        # 尝试从多个来源获取前端域名
-        # 1. 检查反向代理头
-        if "X-Forwarded-Host" in request.headers:
-            income_domain = request.headers["X-Forwarded-Host"]
-        # 2. 检查 Referer 头
-        elif "Referer" in request.headers:
-            from urllib.parse import urlparse
+# async def get_site(session: AsyncSessionDep, request: Request) -> Site:
+#     """
+#     根据入站域名获取对应是site 对象
+#     """
+#     income_domain = request.headers.get(HEADER_SITE_HOST)
+#     if not income_domain:
+#         # 尝试从多个来源获取前端域名
+#         # 1. 检查反向代理头
+#         if "X-Forwarded-Host" in request.headers:
+#             income_domain = request.headers["X-Forwarded-Host"]
+#         # 2. 检查 Referer 头
+#         elif "Referer" in request.headers:
+#             from urllib.parse import urlparse
 
-            referer = request.headers["Referer"]
-            income_domain = urlparse(referer).netloc
-        # 3. 检查 Origin 头
-        elif "Origin" in request.headers:
-            from urllib.parse import urlparse
+#             referer = request.headers["Referer"]
+#             income_domain = urlparse(referer).netloc
+#         # 3. 检查 Origin 头
+#         elif "Origin" in request.headers:
+#             from urllib.parse import urlparse
 
-            origin = request.headers["Origin"]
-            income_domain = urlparse(origin).netloc
-        # 4. 如果以上都失败，使用 Host 头作为后备
-        else:
-            income_domain = request.headers.get("Host")
+#             origin = request.headers["Origin"]
+#             income_domain = urlparse(origin).netloc
+#         # 4. 如果以上都失败，使用 Host 头作为后备
+#         else:
+#             income_domain = request.headers.get("Host")
 
-    if income_domain:
-        site = await get_site_domain(session, income_domain)
-        return site
-    else:
-        raise HTTPException(status_code=400, detail="Unable to determine site domain")
+#     if income_domain:
+#         site = await get_site_domain(session, income_domain)
+#         return site
+#     else:
+#         raise HTTPException(status_code=400, detail="Unable to determine site domain")
 
 
-SiteDep = Annotated[Site, Depends(get_site)]
-SiteDep = Annotated[Site, Depends(get_site)]
+# SiteDep = Annotated[Site, Depends(get_site)]

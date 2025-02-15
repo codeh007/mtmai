@@ -4,14 +4,13 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 
-# from mtmai.context import set_current_user_id, set_user
 from mtmai.core import security
 from mtmai.core.config import settings
-from mtmai.crud import curd
 from mtmai.models.models import TokenPayload
-from mtmai.mtmaisdk.context.context import set_current_user_id, set_user
+from mtmai.mtmaisdk.context.context import set_current_user_id
 
 
+# TODO: 需要修改
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         jwt_token = None
@@ -32,8 +31,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             set_current_user_id(token_data.sub)
         except (InvalidTokenError, ValidationError):
             return await call_next(request)
-        user = await curd.get_user_by_id(token_data.sub)
-        if user:
-            set_user(user)
+        # user = await curd.get_user_by_id(token_data.sub)
+        # if user:
+        #     set_user(user)
 
+        return await call_next(request)
+        return await call_next(request)
         return await call_next(request)

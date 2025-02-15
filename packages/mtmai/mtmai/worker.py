@@ -23,7 +23,6 @@ from mtmaisdk.context.context import Context, set_api_token_context, set_backend
 from mtmai.core.config import settings
 
 from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-from .agents.tenant_agent import TenantAgent
 from .agents.webui_agent import UIAgent
 from .agents.worker_agent import WorkerAgent
 from .mtmaisdk.client import set_gomtm_api_context
@@ -131,16 +130,17 @@ class WorkerAppAgent:
         self._runtime.start()
 
         await WorkerAgent.register(
-            self._runtime, "worker_main_agent", lambda: WorkerAgent(self.gomtmapi)
-        )
-        await TenantAgent.register(
-            self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi)
+            self._runtime, "worker_main_agent", lambda: WorkerAgent(self.wfapp)
         )
         await UIAgent.register(
             self._runtime,
             "ui_agent",
             lambda: UIAgent(self.wfapp),
         )
+        # await TenantAgent.register(
+        #     self._runtime, "tenant_agent", lambda: TenantAgent(self.wfapp)
+        # )
+
         self._is_running = True
 
         # Create a new event loop but don't block on it

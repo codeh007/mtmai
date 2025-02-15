@@ -1,6 +1,11 @@
 import logging
 
-from autogen_core import MessageContext, RoutedAgent, message_handler, type_subscription
+from autogen_core import (
+    MessageContext,
+    RoutedAgent,
+    default_subscription,
+    message_handler,
+)
 from mtmaisdk.clients.rest.models.team import Team
 from mtmaisdk.clients.rest.models.team_component import TeamComponent
 from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
@@ -8,28 +13,30 @@ from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 from mtmai.team_builder.company_research import CompanyResearchTeamBuilder
 from mtmai.team_builder.travel_builder import TravelTeamBuilder
 
+from ..mtmaisdk.hatchet import Hatchet
+
 logger = logging.getLogger(__name__)
 
 
-# @default_subscription
-@type_subscription(topic_type="tenant")
+@default_subscription
 class TenantAgent(RoutedAgent):
-    def __init__(self) -> None:
+    def __init__(self, wfapp: Hatchet) -> None:
         super().__init__("TenantAgent")
-        # self.gomtmapi=gomtmapi
 
     @message_handler
-    async def handle_tenant_message_type(
+    async def handle_tenant_message(
         self, message: TenantSeedReq, mctx: MessageContext
     ) -> None:
         if not message.tenant_id or len(message.tenant_id) == 0:
-            raise ValueError("tenantId 不能为空")
-        team1 = await TravelTeamBuilder().create_team()
-        team2 = await CompanyResearchTeamBuilder().create_team()
+            raise ValueError("tenantId required")
+        # team1 = await TravelTeamBuilder().create_team()
+        # team2 = await CompanyResearchTeamBuilder().create_team()
+        # all_teams = [team1, team2]
 
-        all_teams = [team1, team2]
-        for team in all_teams:
-            # 保存 team
+        team_builters = [TravelTeamBuilder(), CompanyResearchTeamBuilder()]
+
+        for team_builder in team_builters:
+            team = await team_builder.create_team()
             team_comp = team.dump_component()
             comp = TeamComponent(**team_comp.model_dump())
             team2 = Team(
@@ -40,7 +47,7 @@ class TenantAgent(RoutedAgent):
             logger.info(
                 f"create team for tenant: {message.tenant_id}, team: {team._team_id}"
             )
-            defaultModel = await self.gomtmapi.team_api.team_upsert(
+            await self.gomtmapi.team_api.team_upsert(
                 tenant=message.tenant_id,
                 team=team._team_id,
                 team2=team2,

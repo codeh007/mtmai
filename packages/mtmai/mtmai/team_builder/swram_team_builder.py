@@ -15,7 +15,7 @@ class SwramTeamBuilder:
     def description(self):
         return "swram demo team"
 
-    async def create_team(self, default_model_client: ChatCompletionClient):
+    async def create_team(self, default_model_client: ChatCompletionClient = None):
         assistant = AssistantAgent("assistant", model_client=default_model_client)
         user_proxy = UserProxyAgent(
             "user_proxy", input_func=input
@@ -34,4 +34,5 @@ class SwramTeamBuilder:
         team.component_version = current_team_version
         team.component_label = self.name
         team.component_description = self.description
+        return team
         return team

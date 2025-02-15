@@ -11,7 +11,6 @@ from autogen_core import (
     DefaultTopicId,
     MessageContext,
     RoutedAgent,
-    TopicId,
     default_subscription,
     message_handler,
 )
@@ -26,11 +25,10 @@ from team_builder.swram_team_builder import SwramTeamBuilder
 
 from ..aghelper import AgHelper
 from ..mtlibs.id import generate_uuid
+from ..mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 
 logger = logging.getLogger(__name__)
-
-# deault_team_label = "default"
 
 
 @default_subscription
@@ -89,8 +87,8 @@ class WorkerAgent(RoutedAgent):
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
             await self.runtime.publish_message(
-                message,
-                topic_id=TopicId(type="tenant", source="tenant"),
+                TenantSeedReq(tenantId=tenant_id),
+                topic_id=DefaultTopicId(),
             )
             return
 
@@ -200,12 +198,3 @@ class WorkerAgent(RoutedAgent):
                     runId=run_id,
                 ),
             )
-
-    # async def action_seed_tenant(self, message: AgentRunInput):
-    #     logger.info(f"WorkerMainAgent 收到消息: {message}")
-    #             componentId=team_id,
-    #             runId=run_id,
-    #         ))
-
-    async def action_seed_tenant(self, message: AgentRunInput):
-        logger.info(f"WorkerMainAgent 收到消息: {message}")
