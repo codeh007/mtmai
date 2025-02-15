@@ -4,6 +4,7 @@ import threading
 from typing import Any
 
 from mtmaisdk.clients.rest.api.ag_events_api import AgEventsApi
+from ..context.context import get_api_token_context, get_backend_url, get_tenant_id
 from .rest.api.chat_api import ChatApi
 from mtmaisdk.clients.rest.api.default_api import DefaultApi
 from mtmaisdk.clients.rest.api.event_api import EventApi
@@ -55,6 +56,19 @@ from .rest.api.model_api import ModelApi
 from .rest.api.team_api import TeamApi
 from .rest.api.teams_api import TeamsApi
 
+def get_gomtm():
+    backend_url = get_backend_url()
+    if not backend_url:
+        raise ValueError("backend_url is required")
+    # return ApiClient(
+    #     configuration=Configuration(
+    #         host=backend_url,
+    #     )
+    # )
+    api_token = get_api_token_context()
+    tenant_id = get_tenant_id()
+    return AsyncRestApi(backend_url, api_token, tenant_id)
+
 
 class AsyncRestApi:
     def __init__(self, host: str, api_key: str, tenant_id: str):
@@ -72,7 +86,6 @@ class AsyncRestApi:
         self._event_api = None
         self._log_api = None
         self._default_api = None
-        # self._llm_api = None
         self._ag_events_api = None
         self._teams_api = None
         self._team_api = None
@@ -129,12 +142,6 @@ class AsyncRestApi:
             self._mtmai_api = MtmaiApi(self.api_client)
 
         return self._mtmai_api
-
-    # @property
-    # def llm_api(self):
-    #     if self._llm_api is None:
-    #         self._llm_api = LlmApi(self.api_client)
-    #     return self._llm_api
 
     @property
     def ag_events_api(self):

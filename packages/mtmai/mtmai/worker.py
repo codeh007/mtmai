@@ -31,7 +31,7 @@ from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 
 from .agents.webui_agent import UIAgent
 from mtmai.context import AgentContext, get_mtmai_context, init_mtmai_context, set_backend_url
-from mtmaisdk.context.context import Context
+from mtmaisdk.context.context import Context, set_api_token_context
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
 from rich.console import Console
 from rich.markdown import Markdown
@@ -105,6 +105,8 @@ class WorkerApp():
                         logger=logger,
                     )
                 )
+                token= clientConfig.token
+                set_api_token_context(token)
                 self.gomtmapi= AsyncRestApi(host=settings.GOMTM_URL,api_key=workerConfig.token,tenant_id=clientConfig.tenant_id)
 
                 self.wfapp = Hatchet.from_config(
@@ -132,9 +134,7 @@ class WorkerApp():
         ui_agent_type = await UIAgent.register(
             self._runtime,
             "ui_agent",
-            lambda: UIAgent(
-                gomtmapi=self.gomtmapi
-            ),
+            lambda: UIAgent(),
         )
         self._is_running=True
 
@@ -179,6 +179,7 @@ class WorkerApp():
                 # 这里, 暂时使用 workflow_run_id 作为 run id.
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
+
 
                 await worker_app._runtime.publish_message(input,DefaultTopicId())
                 return {"result": "success"}

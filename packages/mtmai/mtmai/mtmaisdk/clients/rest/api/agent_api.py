@@ -18,7 +18,7 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmaisdk.clients.rest.models.ag_event_v2 import AgEventV2
+from mtmaisdk.clients.rest.models.agent_stream200_response import AgentStream200Response
 
 from mtmaisdk.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmaisdk.clients.rest.api_response import ApiResponse
@@ -55,7 +55,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> AgEventV2:
+    ) -> AgentStream200Response:
         """agent_stream
 
         拉取事件
@@ -96,7 +96,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventV2",
+            '200': "AgentStream200Response",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -128,7 +128,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[AgEventV2]:
+    ) -> ApiResponse[AgentStream200Response]:
         """agent_stream
 
         拉取事件
@@ -169,7 +169,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventV2",
+            '200': "AgentStream200Response",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -242,7 +242,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AgEventV2",
+            '200': "AgentStream200Response",
             '400': "APIErrors",
             '403': "APIError",
         }

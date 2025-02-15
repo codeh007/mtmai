@@ -30,8 +30,8 @@ project_id_context: ContextVar[str] = ContextVar("project_id", default=None)
 project_context: ContextVar[User] = ContextVar("project", default=None)
 user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
 user_context: ContextVar[User] = ContextVar("user", default=None)
-tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
-backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
+# tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
+# backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
 
 
 def get_current_user_id() -> str:
@@ -49,17 +49,13 @@ def get_user() -> User | None:
 def set_user(user: User):
     user_context.set(user)
 
-def set_tenant_id(tenant_id: str):
-    tenant_id_context.set(tenant_id)
+# def set_tenant_id(tenant_id: str):
+#     tenant_id_context.set(tenant_id)
 
-def get_tenant_id() -> str | None:
-    return tenant_id_context.get()
+# def get_tenant_id() -> str | None:
+#     return tenant_id_context.get()
 
-def set_backend_url(backend_url: str):
-    backend_url_context.set(backend_url)
 
-def get_backend_url() -> str | None:
-    return backend_url_context.get()
 
 
 class AgentContext:
@@ -392,10 +388,10 @@ def init_mtmai_context(hatchetCtx: HatchetContext) -> AgentContext:
     context_var.set(agent_ctx)
     return agent_ctx
 
-def init_tenant_context(tenant_id: str):
-    tenant_ctx = TenantContext(tenant_id=tenant_id)
-    context_var.set(tenant_ctx)
-    return tenant_ctx
+# def init_tenant_context(tenant_id: str):
+#     tenant_ctx = TenantContext(tenant_id=tenant_id)
+#     context_var.set(tenant_ctx)
+#     return tenant_ctx
 
 
 def get_mtmai_context() -> AgentContext:

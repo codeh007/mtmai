@@ -8,33 +8,29 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
+
+from ..gomtm_client import get_gomtm_client
 from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from ..mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from ..mtmaisdk.clients.rest.models.task_result import TaskResult
 from ..mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from ..context import get_tenant_id
+from ..context import get_mtmai_context, get_tenant_id
 from ..mtlibs.id import generate_uuid
 from ..mtmaisdk.clients.rest.exceptions import ApiException
 from mtmaisdk.clients.rest_client import AsyncRestApi
-from rich.console import Console
-from rich.markdown import Markdown
-from pydantic import BaseModel
-
-
-# class UIAgentState(BaseModel):
-#     """UI Agent 状态"""
-#     last_message: str = ""
-
+# from rich.console import Console
+# from rich.markdown import Markdown
+# from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 @default_subscription
 class UIAgent(RoutedAgent):
     """Handles UI-related tasks and message processing for the distributed group chat system."""
 
-    def __init__(self, gomtmapi: AsyncRestApi) -> None:
+    def __init__(self) -> None:
         super().__init__("UI Agent")
-        self.gomtmapi = gomtmapi
+        self.gomtmapi = get_gomtm_client()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         """Load the state of the group chat team."""
@@ -44,9 +40,9 @@ class UIAgent(RoutedAgent):
     async def handle_message_create(self, message: ChatMessageUpsert, ctx: MessageContext) -> None:
         tenant_id=get_tenant_id()
         logger.info(f"UI Agent 收到消息: {message}")
+        hatchet_ctx = get_mtmai_context()
         try:
-            # chat_create_message 实际是 upsert
-            await self.gomtmapi.chat_api.chat_message_upsert(
+            await self.gomtmapi..chat_api.chat_message_upsert(
                 tenant=message.tenant_id,
                 chat_message_upsert=ChatMessageUpsert(
                     tenantId=message.tenant_id,
@@ -76,6 +72,7 @@ class UIAgent(RoutedAgent):
     async def handle_api_save_team_state(self, message: ApiSaveTeamState, ctx: MessageContext) -> None:
         """保存团队状态"""
         logger.info(f"UI Agent 保存团队状态: {message}")
+        # gomtm_client = get_gomtm_client()
         try:
             await self.gomtmapi.ag_state_api.ag_state_upsert(
                     tenant=message.tenant_id,
