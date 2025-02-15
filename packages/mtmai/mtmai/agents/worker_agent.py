@@ -2,7 +2,9 @@ import time
 import logging
 from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, TopicId, default_subscription, message_handler
 
-from ._types import ApiSaveTeamTaskResult
+from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+
+from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from ..context import get_tenant_id, set_tenant_id
 from mtmaisdk.clients.rest.models.ag_state import AgState
 from ..aghelper import AgHelper
@@ -12,8 +14,6 @@ from ..mtlibs.id import generate_uuid
 from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-from mtmaisdk.clients.rest.models.chat_message import ChatMessage
-from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from pydantic import BaseModel
 from autogen_agentchat.messages import TextMessage
@@ -71,6 +71,9 @@ class WorkerMainAgent(RoutedAgent):
         if not tenant_id:
             raise ValueError("tenant_id is required")
         set_tenant_id(tenant_id)
+        run_id=message.run_id
+        if not run_id:
+            raise ValueError("run_id is required")
 
         ag_helper = AgHelper(self.gomtmapi)
         if not message.team_id:
@@ -94,12 +97,7 @@ class WorkerMainAgent(RoutedAgent):
 
         team_component_data:Component = None
         if not message.team_id:
-            # 获取模型配置
-            # defaultModel = await self.gomtmapi.model_api.model_get(
-            #     tenant=input.tenant_id, model="default"
-            # )
-            default_team_builder = AssistantTeamBuilder(self.gomtmapi)
-            team_component = await default_team_builder.create_team()
+            team_component = await AssistantTeamBuilder().create_team()
             team_component_data=team_component.dump_component()
         else:
             try:
@@ -132,32 +130,30 @@ class WorkerMainAgent(RoutedAgent):
                             topic_id=DefaultTopicId(),
                             message=ApiSaveTeamTaskResult(
                                 tenant_id=tenant_id,
-                                team_id=message.team_id,
+                                team_id=team_id,
                                 task_result=event,
                             ),
                         )
                     elif isinstance( event, TextMessage):
                         await self.publish_message(
                             topic_id=DefaultTopicId(),
-                            message=ChatMessageCreate(
+                            message=ChatMessageUpsert(
                                 content=event.content,
                                 tenant_id=message.tenant_id,
                                 team_id=message.team_id,
                                 threadId=thread_id,
-                                runId=message.run_id,
+                                runId=run_id,
                             ),
                         )
                     elif isinstance(event, BaseModel):
                         await self.publish_message(
-                            # todo 消息content 需要正确处理
-                            message=ChatMessageCreate(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
+                            message=ChatMessageUpsert(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
                             topic_id=DefaultTopicId(),
                         )
                         await self.runtime.publish_message(
                             message=AgEventCreate(
                                 data=event,
                                 framework="autogen",
-                                # stepRunId=hatctx.step_run_id,
                                 meta={},
                             ),
                             topic_id=DefaultTopicId(),
@@ -169,28 +165,38 @@ class WorkerMainAgent(RoutedAgent):
 
         except Exception as e:
             logger.error(f"WorkerMainAgent 运行出错: {e}")
+            raise e
         finally:
             # 保存状态
             if team and hasattr(team, "_participants"):
                 for agent in team._participants:
                     if hasattr(agent, "close"):
                         await agent.close()
-            try:
-                state_to_save = await team.save_state()
-                saveed_response: AgState = (
-                    await self.gomtmapi.ag_state_api.ag_state_upsert(
-                        tenant=message.tenant_id,
-                        state=thread_id,
-                        ag_state_upsert=AgStateUpsert(
-                            id=thread_id,
-                            componentId=team_id,
-                            runId=message.run_id,
-                            state=state_to_save,
-                        ),
-                    )
-                )
-            except Exception as e:
-                logger.error(f"WorkerMainAgent 保存状态出错: {e}")
+
+            state_to_save = await team.save_state()
+            await self.publish_message( topic_id=DefaultTopicId(), message=ApiSaveTeamState(
+                tenant_id=tenant_id,
+                team_id=team_id,
+                state=state_to_save,
+                componentId=team_id,
+                runId=run_id,
+            ))
+            # try:
+            #     state_to_save = await team.save_state()
+            #     saveed_response: AgState = (
+            #         await self.gomtmapi.ag_state_api.ag_state_upsert(
+            #             tenant=message.tenant_id,
+            #             state=thread_id,
+            #             ag_state_upsert=AgStateUpsert(
+            #                 id=thread_id,
+            #                 componentId=team_id,
+            #                 runId=message.run_id,
+            #                 state=state_to_save,
+            #             ),
+            #         )
+            #     )
+            # except Exception as e:
+            #     logger.error(f"WorkerMainAgent 保存状态出错: {e}")
 
     async def action_seed_tenant(self, message: AgentRunInput):
         logger.info(f"WorkerMainAgent 收到消息: {message}")

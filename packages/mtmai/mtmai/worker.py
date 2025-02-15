@@ -5,6 +5,8 @@ import sys
 from typing import cast
 import httpx
 
+from .mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+
 from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 
 from .mtmaisdk.clients.rest.models.task_result import TaskResult
@@ -21,7 +23,6 @@ from autogen_core import (
     DefaultTopicId,
 )
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
-from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest_client import AsyncRestApi
 from mtmaisdk.worker.worker import Worker
 
@@ -68,7 +69,7 @@ class WorkerApp():
             AgentRunInput,
             TenantSeedReq,
             ChatMessage,
-            ChatMessageCreate,
+            ChatMessageUpsert,
             AgEventCreate,
             TaskResult,
             ApiSaveTeamState,

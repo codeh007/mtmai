@@ -20,8 +20,8 @@ from pydantic import Field, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
-from mtmaisdk.clients.rest.models.chat_message_create import ChatMessageCreate
 from mtmaisdk.clients.rest.models.chat_message_list import ChatMessageList
+from mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmaisdk.clients.rest.models.chat_session import ChatSession
 from mtmaisdk.clients.rest.models.chat_session_list import ChatSessionList
 from mtmaisdk.clients.rest.models.chat_session_update import ChatSessionUpdate
@@ -45,11 +45,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_message(
+    async def chat_message_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        chat_message_create: ChatMessageCreate,
+        chat_message_upsert: ChatMessageUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -63,16 +62,14 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ChatMessage:
-        """chat_create_message
+        """chat_message_upsert
 
-        发送聊天消息
+        保存 聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param chat_message_create: (required)
-        :type chat_message_create: ChatMessageCreate
+        :param chat_message_upsert: (required)
+        :type chat_message_upsert: ChatMessageUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -95,10 +92,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_message_serialize(
+        _param = self._chat_message_upsert_serialize(
             tenant=tenant,
-            chat=chat,
-            chat_message_create=chat_message_create,
+            chat_message_upsert=chat_message_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -122,11 +118,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_message_with_http_info(
+    async def chat_message_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        chat_message_create: ChatMessageCreate,
+        chat_message_upsert: ChatMessageUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -140,16 +135,14 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[ChatMessage]:
-        """chat_create_message
+        """chat_message_upsert
 
-        发送聊天消息
+        保存 聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param chat_message_create: (required)
-        :type chat_message_create: ChatMessageCreate
+        :param chat_message_upsert: (required)
+        :type chat_message_upsert: ChatMessageUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -172,10 +165,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_message_serialize(
+        _param = self._chat_message_upsert_serialize(
             tenant=tenant,
-            chat=chat,
-            chat_message_create=chat_message_create,
+            chat_message_upsert=chat_message_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -199,11 +191,10 @@ class ChatApi:
 
 
     @validate_call
-    async def chat_create_message_without_preload_content(
+    async def chat_message_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat: Annotated[StrictStr, Field(description="The chat id")],
-        chat_message_create: ChatMessageCreate,
+        chat_message_upsert: ChatMessageUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -217,16 +208,14 @@ class ChatApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """chat_create_message
+        """chat_message_upsert
 
-        发送聊天消息
+        保存 聊天消息
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat: The chat id (required)
-        :type chat: str
-        :param chat_message_create: (required)
-        :type chat_message_create: ChatMessageCreate
+        :param chat_message_upsert: (required)
+        :type chat_message_upsert: ChatMessageUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -249,10 +238,9 @@ class ChatApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._chat_create_message_serialize(
+        _param = self._chat_message_upsert_serialize(
             tenant=tenant,
-            chat=chat,
-            chat_message_create=chat_message_create,
+            chat_message_upsert=chat_message_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -271,11 +259,10 @@ class ChatApi:
         return response_data.response
 
 
-    def _chat_create_message_serialize(
+    def _chat_message_upsert_serialize(
         self,
         tenant,
-        chat,
-        chat_message_create,
+        chat_message_upsert,
         _request_auth,
         _content_type,
         _headers,
@@ -299,14 +286,12 @@ class ChatApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if chat is not None:
-            _path_params['chat'] = chat
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if chat_message_create is not None:
-            _body_params = chat_message_create
+        if chat_message_upsert is not None:
+            _body_params = chat_message_upsert
 
 
         # set the HTTP header `Accept`
@@ -340,7 +325,7 @@ class ChatApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/chat/{chat}/messages',
+            resource_path='/api/v1/tenants/{tenant}/chat/sessions',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

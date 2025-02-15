@@ -1,13 +1,6 @@
-# from dataclasses import dataclass
 from typing import Dict
-
-from autogen_core.models import (
-    LLMMessage,
-)
-from autogen_ext.models.openai.config import AzureOpenAIClientConfiguration
 from pydantic import BaseModel
-
-from ..mtmaisdk.clients.rest.models.task_result import TaskResult
+from autogen_agentchat.base import TaskResult
 
 # Define WriterAgent configuration model
 class ChatAgentConfig(BaseModel):
@@ -30,9 +23,14 @@ class UIAgentConfig(BaseModel):
         return self.artificial_stream_delay_seconds.get("max", 0.0)
 
 class ApiSaveTeamState(BaseModel):
-    # state: Dict[str, Any]
-    pass
+    tenant_id: str
+    team_id: str
+    state: dict
+    componentId: str
+    runId: str
+
 class ApiSaveTeamTaskResult(BaseModel):
     tenant_id: str
     team_id: str
     task_result: TaskResult
+
