@@ -17,30 +17,21 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmaisdk.clients.rest.models.event_base import EventBase
-from mtmaisdk.clients.rest.models.event_new_agent_state import EventNewAgentState
 from mtmaisdk.clients.rest.models.event_types import EventTypes
-from mtmaisdk.clients.rest.models.start_workflow_run_event import StartWorkflowRunEvent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGEVENTV2_ONE_OF_SCHEMAS = ["EventBase", "EventNewAgentState", "EventTypes", "StartWorkflowRunEvent"]
+AGEVENTV2_ONE_OF_SCHEMAS = ["EventTypes"]
 
 class AgEventV2(BaseModel):
     """
     AgEventV2
     """
-    # data type: EventNewAgentState
-    oneof_schema_1_validator: Optional[EventNewAgentState] = None
     # data type: EventTypes
-    oneof_schema_2_validator: Optional[EventTypes] = None
-    # data type: EventBase
-    oneof_schema_3_validator: Optional[EventBase] = None
-    # data type: StartWorkflowRunEvent
-    oneof_schema_4_validator: Optional[StartWorkflowRunEvent] = None
-    actual_instance: Optional[Union[EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent]] = None
-    one_of_schemas: Set[str] = { "EventBase", "EventNewAgentState", "EventTypes", "StartWorkflowRunEvent" }
+    oneof_schema_1_validator: Optional[EventTypes] = None
+    actual_instance: Optional[Union[EventTypes]] = None
+    one_of_schemas: Set[str] = { "EventTypes" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -63,32 +54,17 @@ class AgEventV2(BaseModel):
         instance = AgEventV2.model_construct()
         error_messages = []
         match = 0
-        # validate data type: EventNewAgentState
-        if not isinstance(v, EventNewAgentState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `EventNewAgentState`")
-        else:
-            match += 1
         # validate data type: EventTypes
         if not isinstance(v, EventTypes):
             error_messages.append(f"Error! Input type `{type(v)}` is not `EventTypes`")
         else:
             match += 1
-        # validate data type: EventBase
-        if not isinstance(v, EventBase):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `EventBase`")
-        else:
-            match += 1
-        # validate data type: StartWorkflowRunEvent
-        if not isinstance(v, StartWorkflowRunEvent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `StartWorkflowRunEvent`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventTypes. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgEventV2 with oneOf schemas: EventTypes. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -103,37 +79,19 @@ class AgEventV2(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into EventNewAgentState
-        try:
-            instance.actual_instance = EventNewAgentState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         # deserialize data into EventTypes
         try:
             instance.actual_instance = EventTypes.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into EventBase
-        try:
-            instance.actual_instance = EventBase.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into StartWorkflowRunEvent
-        try:
-            instance.actual_instance = StartWorkflowRunEvent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventTypes. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgEventV2 with oneOf schemas: EventTypes. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -147,7 +105,7 @@ class AgEventV2(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], EventBase, EventNewAgentState, EventTypes, StartWorkflowRunEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], EventTypes]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

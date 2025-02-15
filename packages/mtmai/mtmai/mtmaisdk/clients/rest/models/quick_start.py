@@ -28,8 +28,10 @@ class QuickStart(BaseModel):
     """ # noqa: E501
     icon: Optional[StrictStr] = Field(default=None, description="图标")
     team_id: Optional[StrictStr] = Field(default=None, description="团队ID")
-    content: StrictStr = Field(description="内容")
-    __properties: ClassVar[List[str]] = ["icon", "team_id", "content"]
+    summary: Optional[StrictStr] = Field(default=None, description="摘要")
+    content: StrictStr = Field(description="提交跟 agent 的内容")
+    cn: Optional[StrictStr] = Field(default=None, description="html class name")
+    __properties: ClassVar[List[str]] = ["icon", "team_id", "summary", "content", "cn"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +86,9 @@ class QuickStart(BaseModel):
         _obj = cls.model_validate({
             "icon": obj.get("icon"),
             "team_id": obj.get("team_id"),
-            "content": obj.get("content")
+            "summary": obj.get("summary"),
+            "content": obj.get("content"),
+            "cn": obj.get("cn")
         })
         return _obj
 
