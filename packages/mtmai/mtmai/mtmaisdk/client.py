@@ -71,9 +71,6 @@ class Client:
         dispatcher_client = new_dispatcher(config)
         rest_client = RestApi(config.server_url, config.token, config.tenant_id)
         workflow_listener = None  # Initialize this if needed
-        # gomtm_rest_client = AsyncGomtmRestApi(
-        #     config.server_url, config.token, config.tenant_id
-        # )
 
         return cls(
             event_client,
@@ -83,7 +80,6 @@ class Client:
             rest_client,
             config,
             debug,
-            # gomtm_rest_client,
         )
 
     def __init__(
@@ -95,7 +91,6 @@ class Client:
         rest_client: RestApi,
         config: ClientConfig,
         debug: bool = False,
-        # gomtm_rest_client: AsyncGomtmRestApi | None = None,
     ):
         try:
             loop = asyncio.get_running_loop()
@@ -141,14 +136,16 @@ def get_gomtm():
     tenant_id = get_tenant_id()
     return AsyncRestApi(backend_url, api_token, tenant_id)
 
-gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_ctx", default=None)
+gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_api_ctx", default=None)
 
 
-def get_gomtm_api() -> AsyncRestApi:
-    try:
-        return gomtm_ctx.get()
-    except LookupError:
-        raise RuntimeError("gomtm_ctx  error")
+def get_gomtm_api_context() -> AsyncRestApi:
+    a= gomtm_ctx.get()
+    return a
 
 
-gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api, enable_cache=False)  # type: ignore
+def set_gomtm_api_context(gomtm_api: AsyncRestApi):
+    gomtm_ctx.set(gomtm_api)
+
+
+gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api_context, enable_cache=False)  # type: ignore

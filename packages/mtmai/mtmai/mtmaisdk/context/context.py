@@ -63,9 +63,10 @@ def set_backend_url(backend_url: str):
 def get_backend_url() -> str | None:
     return backend_url_context.get()
 
+
+
 def get_caller_file_path() -> str:
     caller_frame = inspect.stack()[2]
-
     return caller_frame.filename
 
 

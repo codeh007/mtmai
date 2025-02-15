@@ -8,7 +8,16 @@ from mtmaisdk.clients.rest.models.model_config import ModelConfig
 from ...mtmaisdk.clients.rest_client import AsyncRestApi
 
 from ..model_client import MtmOpenAIChatCompletionClient
-
+from autogen_core.models import (
+    AssistantMessage,
+    ChatCompletionClient,
+    CreateResult,
+    FunctionExecutionResult,
+    FunctionExecutionResultMessage,
+    LLMMessage,
+    SystemMessage,
+    UserMessage,
+)
 logger = logging.getLogger(__name__)
 
 class AssistantTeamBuilder:
@@ -17,10 +26,10 @@ class AssistantTeamBuilder:
         # self.gomtmapi = get_gomtm_client()
         pass
 
-    async def create_team(self):
-        model_client = MtmOpenAIChatCompletionClient(
-            model="tenant_default",
-        )
+    async def create_team(self, model_client:ChatCompletionClient):
+        # model_client = MtmOpenAIChatCompletionClient(
+        #     model="tenant_default",
+        # )
         planner_agent = AssistantAgent(
             name="planner_agent",
             model_client=model_client,

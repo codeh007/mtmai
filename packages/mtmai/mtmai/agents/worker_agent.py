@@ -86,6 +86,7 @@ class WorkerMainAgent(RoutedAgent):
                 )
             return
 
+
         ag_helper = AgHelper(self.gomtmapi)
         if not message.team_id:
             team = await ag_helper.get_or_create_default_team(

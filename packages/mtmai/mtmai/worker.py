@@ -5,27 +5,24 @@ import sys
 from typing import cast
 import httpx
 
+from .mtmaisdk.client import set_gomtm_api_context
 from .mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-
 from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-
 from .mtmaisdk.clients.rest.models.task_result import TaskResult
-
 from .mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
 from .agents.worker_agent import WorkerMainAgent
 from mtmaisdk import ClientConfig, Hatchet, loader
 from mtmaisdk.clients.rest import ApiClient
 from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
 from mtmaisdk.clients.rest.configuration import Configuration
-from autogen_core import Component, DefaultTopicId, SingleThreadedAgentRuntime, TopicId, try_get_known_serializers_for_type
 from mtmai.core.config import settings
 from autogen_core import (
     DefaultTopicId,
+    SingleThreadedAgentRuntime,
+    try_get_known_serializers_for_type,
 )
 from mtmaisdk.clients.rest.models.chat_message import ChatMessage
 from mtmaisdk.clients.rest_client import AsyncRestApi
-# from mtmaisdk.worker.worker import Worker
-
 from .agents.tenant_agent import TenantAgent
 from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
 
@@ -128,12 +125,15 @@ class WorkerApp():
         await self.start_autogen_host()
         self._runtime.start()
 
+        # gomtm_api = get_gomtm_api_context()
+
+
         await WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(self.gomtmapi))
         await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi))
         ui_agent_type = await UIAgent.register(
             self._runtime,
             "ui_agent",
-            lambda: UIAgent(),
+            lambda: UIAgent(self.wfapp),
         )
         self._is_running=True
 
@@ -160,7 +160,7 @@ class WorkerApp():
 
 
     async def setup_hatchet_workflows(self):
-        logger.info("Setting up hatchet workflows...")
+        # logger.info("Setting up hatchet workflows...")
         wfapp = self.wfapp
         worker_app = self
         @wfapp.workflow(
@@ -171,15 +171,10 @@ class WorkerApp():
         class FlowAg:
             @self.wfapp.step(timeout="30m")
             async def step_entry(self, hatctx: Context):
-                init_mtmai_context(hatctx)
+                set_gomtm_api_context(hatctx.aio)
                 input = cast(AgentRunInput, hatctx.workflow_input())
-
-                # 解释: 参考 autogen studio, 在同一个 session 中, 用户的每一个动作,都是一个新的run id, 例如,用户的一个提问.
-                # 这里, 暂时使用 workflow_run_id 作为 run id.
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
-
-
                 await worker_app._runtime.publish_message(input,DefaultTopicId())
                 return {"result": "success"}
 

@@ -1,5 +1,6 @@
 
 import logging
+from .agents.model_client import MtmOpenAIChatCompletionClient
 from mtmaisdk.clients.rest.models.team import Team
 
 from .mtmaisdk.clients.rest.models.team_component import TeamComponent
@@ -13,7 +14,6 @@ class AgHelper:
         self.gomtmapi = gomtmapi
 
     async def get_or_create_default_team(self, tenant_id: str, label:str):
-
         teams_list = await self.gomtmapi.teams_api.team_list(
             tenant=tenant_id, label=label
         )
@@ -25,9 +25,15 @@ class AgHelper:
             defaultModel = await self.gomtmapi.model_api.model_get(
                     tenant=tenant_id, model="default"
                 )
-            # model_config = defaultModel.config
+            model_dict = defaultModel.config.model_dump()
+            model_dict.pop("n", None)
+            # model_dict["model_info"] = model_dict.pop("model_info", None)
+            model_client = MtmOpenAIChatCompletionClient(
+                **model_dict,
+            )
+
             default_team_builder = AssistantTeamBuilder()
-            team_comp = await default_team_builder.create_team()
+            team_comp = await default_team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
             comp = component_model.model_dump()
             team2 = Team(
