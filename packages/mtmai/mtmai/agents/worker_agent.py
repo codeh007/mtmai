@@ -1,46 +1,54 @@
-import time
 import logging
-from autogen_core import Component, DefaultTopicId, MessageContext, RoutedAgent, TopicId, default_subscription, message_handler
-
-from mtmaisdk.context.context import get_tenant_id, set_tenant_id
-
-from mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-
-from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-# from ..context import get_tenant_id, set_tenant_id
-from mtmaisdk.clients.rest.models.ag_state import AgState
-from ..aghelper import AgHelper
-
-from .team_builder.assisant_team_builder import AssistantTeamBuilder
-from ..mtlibs.id import generate_uuid
-from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-# from mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-from mtmaisdk.clients.rest_client import AsyncRestApi
-from pydantic import BaseModel
-from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.base import TaskResult, Team
-from typing import Callable, Optional, Union
-from autogen_core import CancellationToken, Component, ComponentModel
+import time
 from pathlib import Path
+from typing import Callable, Optional, Union
+
+from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.messages import TextMessage
 from autogen_core import (
-    AgentId,
-    DefaultSubscription,
+    Component,
+    ComponentModel,
     DefaultTopicId,
     MessageContext,
     RoutedAgent,
+    TopicId,
+    default_subscription,
     message_handler,
 )
+from mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
+from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
+from mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmaisdk.clients.rest_client import AsyncRestApi
+from mtmaisdk.context.context import get_tenant_id, set_tenant_id
+from pydantic import BaseModel
+from team_builder.assisant_team_builder import AssistantTeamBuilder
+from team_builder.swram_team_builder import SwramTeamBuilder
+
+from ..aghelper import AgHelper
+from ..mtlibs.id import generate_uuid
+from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 
 logger = logging.getLogger(__name__)
 
-deault_team_label = "default"
+# deault_team_label = "default"
+
 
 @default_subscription
-class WorkerMainAgent(RoutedAgent):
+class WorkerAgent(RoutedAgent):
+    """
+    应用总代理(单例)
+    主要功能:
+    1. 管理应用的全局状态,包括,重置全局应用状态
+    2. 根据团队配置，创建团队
+    """
+
     def __init__(self, gomtmapi: AsyncRestApi) -> None:
         super().__init__("WorkerAgent")
-        self.gomtmapi=gomtmapi
+        self.gomtmapi = gomtmapi
+        self.team_builder = [
+            AssistantTeamBuilder(),
+            SwramTeamBuilder(),
+        ]
 
     async def _create_team_component(
         self,
@@ -67,13 +75,13 @@ class WorkerMainAgent(RoutedAgent):
     async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
         start_time = time.time()
         logger.info(f"WorkerMainAgent 收到消息: {message}")
-        tenant_id: str | None=message.tenant_id
+        tenant_id: str | None = message.tenant_id
         if not tenant_id:
-            tenant_id=get_tenant_id()
+            tenant_id = get_tenant_id()
         if not tenant_id:
             raise ValueError("tenant_id is required")
         set_tenant_id(tenant_id)
-        run_id=message.run_id
+        run_id = message.run_id
         if not run_id:
             raise ValueError("run_id is required")
 
@@ -81,28 +89,28 @@ class WorkerMainAgent(RoutedAgent):
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
             await self.runtime.publish_message(
-                    message,
-                    topic_id=TopicId(type="tenant", source="tenant"),
-                )
+                message,
+                topic_id=TopicId(type="tenant", source="tenant"),
+            )
             return
-
 
         ag_helper = AgHelper(self.gomtmapi)
         if not message.team_id:
+            assistant_team_builder = AssistantTeamBuilder()
             team = await ag_helper.get_or_create_default_team(
                 tenant_id=message.tenant_id,
-                label=deault_team_label,
+                label=assistant_team_builder.name,
             )
             message.team_id = team.metadata.id
 
-        thread_id= message.session_id
+        thread_id = message.session_id
         if not thread_id:
-            thread_id=generate_uuid()
+            thread_id = generate_uuid()
 
-        team_component_data:Component = None
+        team_component_data: Component = None
         if not message.team_id:
             team_component = await AssistantTeamBuilder().create_team()
-            team_component_data=team_component.dump_component()
+            team_component_data = team_component.dump_component()
         else:
             try:
                 team_data = await self.gomtmapi.teams_api.team_get(
@@ -111,16 +119,16 @@ class WorkerMainAgent(RoutedAgent):
                 )
                 if team_data is None:
                     raise ValueError("team not found")
-                team_component_data=team_data.component
+                team_component_data = team_data.component
             except Exception as e:
                 logger.error(f"WorkerMainAgent 获取团队组件数据出错: {e}")
-                team_component_data=None
+                team_component_data = None
         team = await self._create_team_component(team_component_data)
 
-        component=team
-        team_id=message.team_id
+        component = team
+        team_id = message.team_id
         if not team_id:
-            team_id=generate_uuid()
+            team_id = generate_uuid()
         try:
             async for event in component.run_stream(
                 task=message.content,
@@ -138,7 +146,7 @@ class WorkerMainAgent(RoutedAgent):
                                 task_result=event,
                             ),
                         )
-                    elif isinstance( event, TextMessage):
+                    elif isinstance(event, TextMessage):
                         await self.publish_message(
                             topic_id=DefaultTopicId(),
                             message=ChatMessageUpsert(
@@ -151,7 +159,11 @@ class WorkerMainAgent(RoutedAgent):
                         )
                     elif isinstance(event, BaseModel):
                         await self.publish_message(
-                            message=ChatMessageUpsert(content=event.model_dump_json(), tenant_id=message.tenant_id, team_id=message.team_id),
+                            message=ChatMessageUpsert(
+                                content=event.model_dump_json(),
+                                tenant_id=message.tenant_id,
+                                team_id=message.team_id,
+                            ),
                             topic_id=DefaultTopicId(),
                         )
                         await self.runtime.publish_message(
@@ -178,13 +190,22 @@ class WorkerMainAgent(RoutedAgent):
                         await agent.close()
 
             state_to_save = await team.save_state()
-            await self.publish_message( topic_id=DefaultTopicId(), message=ApiSaveTeamState(
-                tenant_id=tenant_id,
-                team_id=team_id,
-                state=state_to_save,
-                componentId=team_id,
-                runId=run_id,
-            ))
+            await self.publish_message(
+                topic_id=DefaultTopicId(),
+                message=ApiSaveTeamState(
+                    tenant_id=tenant_id,
+                    team_id=team_id,
+                    state=state_to_save,
+                    componentId=team_id,
+                    runId=run_id,
+                ),
+            )
+
+    # async def action_seed_tenant(self, message: AgentRunInput):
+    #     logger.info(f"WorkerMainAgent 收到消息: {message}")
+    #             componentId=team_id,
+    #             runId=run_id,
+    #         ))
 
     async def action_seed_tenant(self, message: AgentRunInput):
         logger.info(f"WorkerMainAgent 收到消息: {message}")

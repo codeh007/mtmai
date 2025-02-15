@@ -3,7 +3,6 @@ import logging
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_core.tools import FunctionTool
-from mtmaisdk.clients.rest.models.model_config import ModelConfig
 
 from mtmai.agents._agents import MtRoundRobinGroupChat
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
@@ -171,10 +170,6 @@ def analyze_stock(ticker: str) -> dict:  # type: ignore[type-arg]
 class CompanyResearchTeamBuilder:
     async def create_team(self):
         """创建公司研究团队"""
-
-        # model_dict = model_config.model_dump()
-        # model_dict["model_info"] = model_dict.pop("model_info", None)
-        # model_dict.pop("n", None)
         model_client = MtmOpenAIChatCompletionClient(
             model="tenant_default",
         )

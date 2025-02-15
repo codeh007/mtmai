@@ -4,11 +4,12 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from mtmai.context import set_current_user_id, set_user
+# from mtmai.context import set_current_user_id, set_user
 from mtmai.core import security
 from mtmai.core.config import settings
 from mtmai.crud import curd
 from mtmai.models.models import TokenPayload
+from mtmai.mtmaisdk.context.context import set_current_user_id, set_user
 
 
 class AuthMiddleware(BaseHTTPMiddleware):

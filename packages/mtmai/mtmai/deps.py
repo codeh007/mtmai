@@ -1,4 +1,5 @@
 import logging
+from contextvars import ContextVar
 from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends, HTTPException, Request, status
@@ -14,8 +15,11 @@ from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
 from mtmai.models.site import Site
 
+# from mtmai.mtmaisdk.context.context import user_context
+
 logger = logging.getLogger(__name__)
 
+user_context: ContextVar[User] = ContextVar("user", default=None)
 
 # Global manager instances
 # _db_manager: Optional[DatabaseManager] = None
@@ -27,6 +31,10 @@ reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token",
     auto_error=False,  # 没有 token header 时不触发异常
 )
+
+
+def get_user() -> User | None:
+    return user_context.get()
 
 
 # def get_db() -> Generator[Session, None, None]:
@@ -157,6 +165,7 @@ async def get_managers():
         # "team": await get_team_manager(),
     }
 
+
 # Error handling for manager operations
 class ManagerOperationError(Exception):
     """Custom exception for manager operation errors"""
@@ -193,9 +202,12 @@ async def get_asession() -> AsyncGenerator[AsyncSession, None]:
 SessionDep = Annotated[Session, Depends(get_db)]
 AsyncSessionDep = Annotated[AsyncSession, Depends(get_asession)]
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
+
+
 def get_host_from_request(request: Request):
     host = request.headers.get("Host")
     return host
+
 
 HostDep = Annotated[str, Depends(get_host_from_request)]
 
@@ -221,6 +233,8 @@ HostDep = Annotated[str, Depends(get_host_from_request)]
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
         raise HTTPException(
@@ -243,6 +257,7 @@ def get_optional_current_user(
 
 OptionalUserDep = Annotated[User | None, Depends(get_optional_current_user)]
 CheckPointerDep = Annotated[AsyncPostgresSaver, Depends(get_checkpointer)]
+
 
 async def get_site(session: AsyncSessionDep, request: Request) -> Site:
     """
@@ -277,4 +292,5 @@ async def get_site(session: AsyncSessionDep, request: Request) -> Site:
         raise HTTPException(status_code=400, detail="Unable to determine site domain")
 
 
+SiteDep = Annotated[Site, Depends(get_site)]
 SiteDep = Annotated[Site, Depends(get_site)]

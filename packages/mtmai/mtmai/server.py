@@ -1,7 +1,5 @@
-import asyncio
 import threading
 
-from autogen_core import SingleThreadedAgentRuntime
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -14,10 +12,9 @@ from mtmai.core.config import settings
 from mtmai.core.coreutils import is_in_dev, is_in_vercel
 from mtmai.middleware import AuthMiddleware
 
-from .worker import WorkerApp
-
 from .api import mount_api_routes
 from .mtlibs.env import is_in_docker, is_in_huggingface, is_in_windows
+from .worker import WorkerAppAgent
 
 
 def build_app():
@@ -26,7 +23,6 @@ def build_app():
         # from mtmai.worker import WorkerAgent
         # worker_app = WorkerAgent()
         try:
-
             # worker_task = asyncio.create_task(worker_app.setup())
 
             yield
@@ -205,7 +201,7 @@ def build_app():
 
 
 async def serve():
-    await WorkerApp().run()
+    await WorkerAppAgent().run()
     app = build_app()
     config = uvicorn.Config(
         app,
@@ -237,6 +233,7 @@ async def serve():
     except Exception as e:
         logger.error("Error in uvicorn server:", exc_info=e)
         raise
+
 
 def start_deamon_serve():
     """

@@ -1,17 +1,10 @@
-from contextvars import ContextVar
-
-from mtmai.models.models import User
-
-import asyncio
 import json
 from contextvars import ContextVar
 from typing import Type
+
 import httpx
 import orjson
 from attr import make_class
-# from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-# from langchain_core.tools import StructuredTool
-# # from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_openai import ChatOpenAI
 from lazify import LazyProxy
 from loguru import logger
@@ -19,10 +12,9 @@ from mtmaisdk import Context as HatchetContext
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel
 
-# from mtmai.agents.graphutils import ensure_valid_llm_response_v2
 from mtmai.core.config import settings
+from mtmai.models.models import User
 from mtmai.mtlibs.httpx_transport import LoggingTransport
-from mtmai.mtlibs.llms import fix_tool_calls
 
 gomtm_ctx: ContextVar["AgentContext"] = ContextVar("gomtm_ctx", default=None)
 
@@ -49,13 +41,12 @@ def get_user() -> User | None:
 def set_user(user: User):
     user_context.set(user)
 
+
 # def set_tenant_id(tenant_id: str):
 #     tenant_id_context.set(tenant_id)
 
 # def get_tenant_id() -> str | None:
 #     return tenant_id_context.get()
-
-
 
 
 class AgentContext:
@@ -81,6 +72,7 @@ class AgentContext:
     def set_hatch_context(self, ctx: HatchetContext):
         self.hatchet_ctx = ctx
         self.aio = ctx.rest_client.aio
+
     def log(self, lineformat, **kw_args):
         if self.hatchet_ctx:
             self.hatchet_ctx.log(
@@ -387,6 +379,7 @@ def init_mtmai_context(hatchetCtx: HatchetContext) -> AgentContext:
     agent_ctx.hatchet_ctx = hatchetCtx
     gomtm_ctx.set(agent_ctx)
     return agent_ctx
+
 
 # def init_tenant_context(tenant_id: str):
 #     tenant_ctx = TenantContext(tenant_id=tenant_id)

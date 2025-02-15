@@ -3,41 +3,42 @@ import logging
 import os
 import sys
 from typing import cast
-import httpx
 
-from .mtmaisdk.client import set_gomtm_api_context
-from .mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-from .mtmaisdk.clients.rest.models.task_result import TaskResult
-from .mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from .agents.worker_agent import WorkerMainAgent
-from mtmaisdk import ClientConfig, Hatchet, loader
-from mtmaisdk.clients.rest import ApiClient
-from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
-from mtmaisdk.clients.rest.configuration import Configuration
-from mtmai.core.config import settings
+import httpx
 from autogen_core import (
     DefaultTopicId,
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
-from mtmaisdk.clients.rest.models.chat_message import ChatMessage
-from mtmaisdk.clients.rest_client import AsyncRestApi
-from .agents.tenant_agent import TenantAgent
-from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
-
-from .agents.webui_agent import UIAgent
-from mtmaisdk.context.context import Context, set_api_token_context, set_backend_url
+from mtmaisdk import ClientConfig, Hatchet, loader
+from mtmaisdk.clients.rest import ApiClient
+from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
+from mtmaisdk.clients.rest.configuration import Configuration
 from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-# from rich.console import Console
-# from rich.markdown import Markdown
-from pydantic import BaseModel
+from mtmaisdk.clients.rest.models.chat_message import ChatMessage
+from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
+from mtmaisdk.clients.rest_client import AsyncRestApi
+from mtmaisdk.context.context import Context, set_api_token_context, set_backend_url
 
+from mtmai.core.config import settings
+
+from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+from .agents.tenant_agent import TenantAgent
+from .agents.webui_agent import UIAgent
+from .agents.worker_agent import WorkerAgent
+from .mtmaisdk.client import set_gomtm_api_context
+from .mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
+from .mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from .mtmaisdk.clients.rest.models.task_result import TaskResult
 
 logger = logging.getLogger()
-class WorkerAppConfig(BaseModel):
-    backend_url: str
-class WorkerApp():
+
+
+# class WorkerAppConfig(BaseModel):
+#     backend_url: str
+
+
+class WorkerAppAgent:
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
@@ -72,9 +73,9 @@ class WorkerApp():
             ApiSaveTeamTaskResult,
         ]
         for message_serializer_type in message_serializer_types:
-            self._runtime.add_message_serializer(try_get_known_serializers_for_type(message_serializer_type))
-
-
+            self._runtime.add_message_serializer(
+                try_get_known_serializers_for_type(message_serializer_type)
+            )
 
     async def run(self):
         maxRetry = settings.WORKER_MAX_RETRY
@@ -101,9 +102,13 @@ class WorkerApp():
                         logger=logger,
                     )
                 )
-                token= clientConfig.token
+                token = clientConfig.token
                 set_api_token_context(token)
-                self.gomtmapi= AsyncRestApi(host=settings.GOMTM_URL,api_key=workerConfig.token,tenant_id=clientConfig.tenant_id)
+                self.gomtmapi = AsyncRestApi(
+                    host=settings.GOMTM_URL,
+                    api_key=workerConfig.token,
+                    tenant_id=clientConfig.tenant_id,
+                )
 
                 self.wfapp = Hatchet.from_config(
                     clientConfig,
@@ -119,23 +124,24 @@ class WorkerApp():
             except Exception as e:
                 if i == maxRetry - 1:
                     sys.exit(1)
-                logger.info(f"failed to connect gomtm server, retry {i+1},err:{e}")
+                logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
                 await asyncio.sleep(settings.WORKER_INTERVAL)
 
         await self.start_autogen_host()
         self._runtime.start()
 
-        # gomtm_api = get_gomtm_api_context()
-
-
-        await WorkerMainAgent.register(self._runtime, "worker_main_agent", lambda: WorkerMainAgent(self.gomtmapi))
-        await TenantAgent.register(self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi))
-        ui_agent_type = await UIAgent.register(
+        await WorkerAgent.register(
+            self._runtime, "worker_main_agent", lambda: WorkerAgent(self.gomtmapi)
+        )
+        await TenantAgent.register(
+            self._runtime, "tenant_agent", lambda: TenantAgent(self.gomtmapi)
+        )
+        await UIAgent.register(
             self._runtime,
             "ui_agent",
             lambda: UIAgent(self.wfapp),
         )
-        self._is_running=True
+        self._is_running = True
 
         # Create a new event loop but don't block on it
         loop = asyncio.new_event_loop()
@@ -145,6 +151,7 @@ class WorkerApp():
 
     async def start_autogen_host(self):
         from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
+
         self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
         self.autogen_host.start()
         logger.info(f"🟢 AG host at: {settings.AG_HOST_ADDRESS}")
@@ -158,11 +165,10 @@ class WorkerApp():
                 await self.runtime.stop()
             logger.warning("worker and autogen host stopped")
 
-
     async def setup_hatchet_workflows(self):
-        # logger.info("Setting up hatchet workflows...")
         wfapp = self.wfapp
         worker_app = self
+
         @wfapp.workflow(
             name="ag",
             on_events=["ag:run"],
@@ -175,7 +181,7 @@ class WorkerApp():
                 input = cast(AgentRunInput, hatctx.workflow_input())
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
-                await worker_app._runtime.publish_message(input,DefaultTopicId())
+                await worker_app._runtime.publish_message(input, DefaultTopicId())
                 return {"result": "success"}
 
         self.worker.register_workflow(FlowAg())
@@ -227,7 +233,6 @@ class WorkerApp():
     #     self.worker.register_workflow(ScrapFlow())
 
     async def setup_browser_workflows(self):
-
         @self.wfapp.workflow(
             on_events=["browser:run"],
             # input_validator=CrewAIParams,
@@ -235,13 +240,12 @@ class WorkerApp():
         class FlowBrowser:
             @self.wfapp.step(timeout="10m", retries=1)
             async def run(self, hatctx: Context):
-                from mtmai.mtlibs.httpx_transport import LoggingTransport
-
                 from browser_use.browser.browser import Browser, BrowserConfig
                 from langchain_openai import ChatOpenAI
                 from mtmaisdk.clients.rest.models import BrowserParams
 
                 from mtmai.agents.browser_agent import BrowserAgent
+                from mtmai.mtlibs.httpx_transport import LoggingTransport
 
                 input = BrowserParams.model_validate(hatctx.workflow_input())
                 init_mtmai_context(hatctx)
@@ -275,5 +279,5 @@ class WorkerApp():
                     browser=Browser(config=BrowserConfig(headless=False)),
                 )
                 await agent.run()
-        self.worker.register_workflow(FlowBrowser())
 
+        self.worker.register_workflow(FlowBrowser())

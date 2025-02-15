@@ -1,11 +1,12 @@
-from contextvars import ContextVar
 import inspect
 import json
 import traceback
 from concurrent.futures import Future, ThreadPoolExecutor
+from contextvars import ContextVar
 from typing import Any, TypeVar, cast
 from warnings import warn
 
+from mtlibs.types import WorkflowValidator
 from mtmaisdk.clients.events import EventClient
 from mtmaisdk.clients.rest.tenacity_utils import tenacity_retry
 from mtmaisdk.clients.rest_client import RestApi
@@ -15,8 +16,6 @@ from mtmaisdk.context.worker_context import WorkerContext
 from mtmaisdk.contracts.dispatcher_pb2 import OverridesData
 from mtmaisdk.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
-
-from mtlibs.types import WorkflowValidator
 
 from ..clients.admin import (
     AdminClient,
@@ -35,34 +34,53 @@ DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
 
+user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
+# user_context: ContextVar[User] = ContextVar("user", default=None)
+
+
+def get_current_user_id() -> str:
+    return user_id_context.get()
+
+
+def set_current_user_id(user_id: str):
+    user_id_context.set(user_id)
+
+
 api_token_context: ContextVar[str] = ContextVar("api_token", default=None)
+
 
 def set_api_token_context(api_token: str):
     api_token_context.set(api_token)
 
+
 def get_api_token_context() -> str | None:
     return api_token_context.get()
+
 
 def get_gomtm():
     pass
 
 
 tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
+
+
 def set_tenant_id(tenant_id: str):
     tenant_id_context.set(tenant_id)
+
 
 def get_tenant_id() -> str | None:
     return tenant_id_context.get()
 
 
-
 backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
+
+
 def set_backend_url(backend_url: str):
     backend_url_context.set(backend_url)
 
+
 def get_backend_url() -> str | None:
     return backend_url_context.get()
-
 
 
 def get_caller_file_path() -> str:
