@@ -69,12 +69,13 @@ class AsyncRestApi:
         self._event_api = None
         self._log_api = None
         self._default_api = None
-        # self._ag_events_api = None
-        # self._teams_api = None
-        # self._team_api = None
-        # self._model_api = None
-        # self._ag_state_api = None
-        # self._chat_api = None
+        self._ag_events_api = None
+        self._teams_api = None
+        self._team_api = None
+        self._model_api = None
+        self._ag_state_api = None
+        self._chat_api = None
+        self._coms_api = None
 
     @property
     def api_client(self):
@@ -139,16 +140,16 @@ class AsyncRestApi:
         return self._coms_api
 
     @property
-    def model_api(self):
-        if self._model_api is None:
-            self._model_api = ModelApi(self.api_client)
+    def model_api(self) -> None | ModelApi:
+        if self._model_api is not None:
+            return self._model_api
+        self._model_api = ModelApi(self.api_client)
         return self._model_api
 
     @property
-    def chat_api(self):
+    def chat_api(self) -> None | ChatApi:
         if self._chat_api is None:
             self._chat_api = ChatApi(self.api_client)
-
         return self._chat_api
 
     @property

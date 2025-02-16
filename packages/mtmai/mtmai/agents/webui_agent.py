@@ -310,7 +310,7 @@ class UIAgent(RoutedAgent):
         return team
 
     async def get_or_create_default_team(self, tenant_id: str, label: str):
-        teams_list = await self.gomtmapi.teams_api.team_list(
+        teams_list = await self.gomtmapi.coms_api.coms_list(
             tenant=tenant_id, label=label
         )
         if teams_list.rows and len(teams_list.rows) > 0:
@@ -332,15 +332,15 @@ class UIAgent(RoutedAgent):
             team_comp = await default_team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
             comp = component_model.model_dump()
-            team2 = Team(
+            team_component = MtComponent(
                 label=component_model.label,
                 description=component_model.description or "",
                 component=comp,
             )
             logger.info(f"create default team for tenant {tenant_id}")
-            new_team = await self.gomtmapi.team_api.team_upsert(
+            new_team = await self.gomtmapi.coms_api.coms_upsert(
                 tenant=tenant_id,
-                team=generate_uuid(),
-                team2=team2,
+                com=generate_uuid(),
+                mt_component=team_component,
             )
             return new_team
