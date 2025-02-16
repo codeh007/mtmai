@@ -55,7 +55,7 @@ python_client_gen(){
 
     # uv pip install grpc_tools
     GRPC_OUT=${GEN_DIR}/contracts
-    mkdir -p $GRPC_OUT/contracts
+    mkdir -p $GRPC_OUT
     echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
     python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
     python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/events --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
