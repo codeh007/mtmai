@@ -36,5 +36,3 @@ class AuthMiddleware(BaseHTTPMiddleware):
         #     set_user(user)
 
         return await call_next(request)
-        return await call_next(request)
-        return await call_next(request)

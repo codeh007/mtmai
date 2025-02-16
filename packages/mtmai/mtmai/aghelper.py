@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class AgHelper:
-    def __init__(self, gomtmapi: AsyncRestApi):
+    def __init__(self, gomtmapi: AsyncRestApi) -> None:
         self.gomtmapi = gomtmapi
 
     async def get_or_create_default_team(self, tenant_id: str, label: str):

@@ -7,7 +7,7 @@ from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
-from .__version__ import version
+# from .__version__ import version
 
 APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
 
@@ -65,9 +65,7 @@ class Settings(BaseSettings):
 
     # db
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
-
     API_V1_STR: str = "/api/v1"
-    VERSION: str | None = version
     OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
 
     vercel_token: str | None = None

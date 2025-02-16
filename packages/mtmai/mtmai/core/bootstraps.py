@@ -6,6 +6,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from mtmai._version import version
+
 default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
 
 
@@ -15,7 +17,6 @@ def bootstrap_core():
 
     load_dotenv()
 
-    # # 搜索并加载环境变量文件
     for env_file in default_env_files:
         env_path = Path(env_file)
         if env_path.exists():
@@ -24,11 +25,10 @@ def bootstrap_core():
     setup_logging()
     logger = logging.getLogger()
     logger.info(
-        f"[🚀🚀🚀 mtmai]({settings.VERSION})"  # noqa: G004
+        f"[🚀🚀🚀 mtmai]({version})"  # noqa: G004
     )
     if sys.platform.startswith("win"):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    # setup http proxy
     if settings.HTTP_PROXY:
         logger.info(f"HTTP_PROXY: {settings.HTTP_PROXY}")
         os.environ["HTTP_PROXY"] = settings.HTTP_PROXY

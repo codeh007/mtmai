@@ -1,5 +1,3 @@
-import threading
-
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -7,24 +5,19 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from loguru import logger
 
-from mtmai.core.__version__ import version
+# from mtmai.core.__version__ import version
+from mtmai._version import version
 from mtmai.core.config import settings
-from mtmai.core.coreutils import is_in_dev, is_in_vercel
 from mtmai.middleware import AuthMiddleware
 
 from .api import mount_api_routes
-from .mtlibs.env import is_in_docker, is_in_huggingface, is_in_windows
-from .worker import WorkerAppAgent
+from .worker import WorkerAgent
 
 
 def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        # from mtmai.worker import WorkerAgent
-        # worker_app = WorkerAgent()
         try:
-            # worker_task = asyncio.create_task(worker_app.setup())
-
             yield
         except Exception as e:
             logger.exception(f"failed to setup worker: {e}")
@@ -41,24 +34,24 @@ def build_app():
             return f"{route.tags[0]}-{route.name}"
         return f"{route.name}"
 
-    openapi_tags = [
-        {
-            "name": "admin",
-            "description": "管理专用 ",
-        },
-        {
-            "name": "train",
-            "description": "模型训练及数据集",
-        },
-        {
-            "name": "mtmcrawler",
-            "description": "爬虫数据采集 ",
-        },
-        {
-            "name": "openai",
-            "description": "提供兼容 OPEN AI 协议 , 外置工作流 例如 langflow 可以通过此endpoint调用内部的工作流和模型",
-        },
-    ]
+    # openapi_tags = [
+    #     {
+    #         "name": "admin",
+    #         "description": "管理专用 ",
+    #     },
+    #     {
+    #         "name": "train",
+    #         "description": "模型训练及数据集",
+    #     },
+    #     {
+    #         "name": "mtmcrawler",
+    #         "description": "爬虫数据采集 ",
+    #     },
+    #     {
+    #         "name": "openai",
+    #         "description": "提供兼容 OPEN AI 协议 , 外置工作流 例如 langflow 可以通过此endpoint调用内部的工作流和模型",
+    #     },
+    # ]
 
     app = FastAPI(
         # docs_url=None,
@@ -73,7 +66,7 @@ def build_app():
             "syntaxHighlight": True,
             "syntaxHighlight.theme": "obsidian",
         },
-        openapi_tags=openapi_tags,
+        # openapi_tags=openapi_tags,
     )
     # templates = Jinja2Templates(directory="templates")
 
@@ -201,7 +194,7 @@ def build_app():
 
 
 async def serve():
-    await WorkerAppAgent().run()
+    await WorkerAgent().run()
     app = build_app()
     config = uvicorn.Config(
         app,
@@ -235,73 +228,73 @@ async def serve():
         raise
 
 
-def start_deamon_serve():
-    """
-    启动后台独立服务
-    根据具体环境自动启动
-    """
-    logger.info("start_deamon_serve")
-    if is_in_dev():
-        from mtmai.flows.deployments import start_prefect_deployment
+# def start_deamon_serve():
+#     """
+#     启动后台独立服务
+#     根据具体环境自动启动
+#     """
+#     logger.info("start_deamon_serve")
+#     if is_in_dev():
+#         from mtmai.flows.deployments import start_prefect_deployment
 
-        start_prefect_deployment(asThreading=True)
+#         start_prefect_deployment(asThreading=True)
 
-    if (
-        not settings.is_in_vercel
-        and not settings.is_in_gitpod
-        and settings.CF_TUNNEL_TOKEN
-        and not is_in_huggingface()
-        and not is_in_windows()
-    ):
-        # from mtmlib import tunnel
+#     if (
+#         not settings.is_in_vercel
+#         and not settings.is_in_gitpod
+#         and settings.CF_TUNNEL_TOKEN
+#         and not is_in_huggingface()
+#         and not is_in_windows()
+#     ):
+#         # from mtmlib import tunnel
 
-        # threading.Thread(target=lambda: asyncio.run(tunnel.start_cloudflared())).start()
+#         # threading.Thread(target=lambda: asyncio.run(tunnel.start_cloudflared())).start()
 
-        if not is_in_vercel() and not settings.is_in_gitpod:
-            from mtmai.mtlibs.server.searxng import run_searxng_server
+#         if not is_in_vercel() and not settings.is_in_gitpod:
+#             from mtmai.mtlibs.server.searxng import run_searxng_server
 
-            threading.Thread(target=run_searxng_server).start()
-        if (
-            not settings.is_in_vercel
-            and not settings.is_in_gitpod
-            and not is_in_windows()
-        ):
-            # def start_front_app():
-            #     mtmai_url = coreutils.backend_url_base()
-            #     if not mtutils.command_exists("mtmaiweb"):
-            #         LOG.warning("⚠️ mtmaiweb 命令未安装,跳过前端的启动")
-            #         return
-            #     mtutils.bash(
-            #         f"PORT={settings.FRONT_PORT} MTMAI_API_BASE={mtmai_url} mtmaiweb serve"
-            #     )
+#             threading.Thread(target=run_searxng_server).start()
+#         if (
+#             not settings.is_in_vercel
+#             and not settings.is_in_gitpod
+#             and not is_in_windows()
+#         ):
+#             # def start_front_app():
+#             #     mtmai_url = coreutils.backend_url_base()
+#             #     if not mtutils.command_exists("mtmaiweb"):
+#             #         LOG.warning("⚠️ mtmaiweb 命令未安装,跳过前端的启动")
+#             #         return
+#             #     mtutils.bash(
+#             #         f"PORT={settings.FRONT_PORT} MTMAI_API_BASE={mtmai_url} mtmaiweb serve"
+#             #     )
 
-            # threading.Thread(target=start_front_app).start()
+#             # threading.Thread(target=start_front_app).start()
 
-            # def start_prefect_server():
-            #     LOG.info("启动 prefect server")
+#             # def start_prefect_server():
+#             #     LOG.info("启动 prefect server")
 
-            #     sqlite_db_path = "/app/storage/prefect.db"
-            #     sql_connect_str = f"sqlite+aiosqlite:///{sqlite_db_path}"
-            #     mtutils.bash(
-            #         f"PREFECT_UI_STATIC_DIRECTORY=/app/storage PREFECT_API_DATABASE_CONNECTION_URL={sql_connect_str} prefect server start"
-            #     )
+#             #     sqlite_db_path = "/app/storage/prefect.db"
+#             #     sql_connect_str = f"sqlite+aiosqlite:///{sqlite_db_path}"
+#             #     mtutils.bash(
+#             #         f"PREFECT_UI_STATIC_DIRECTORY=/app/storage PREFECT_API_DATABASE_CONNECTION_URL={sql_connect_str} prefect server start"
+#             #     )
 
-            # threading.Thread(target=start_prefect_server).start()
-            pass
+#             # threading.Thread(target=start_prefect_server).start()
+#             pass
 
-        # if not is_in_vercel() and not settings.is_in_gitpod and not is_in_windows():
-        #     from mtmai.mtlibs.server.kasmvnc import run_kasmvnc
+#         # if not is_in_vercel() and not settings.is_in_gitpod and not is_in_windows():
+#         #     from mtmai.mtlibs.server.kasmvnc import run_kasmvnc
 
-        #     threading.Thread(target=run_kasmvnc).start()
+#         #     threading.Thread(target=run_kasmvnc).start()
 
-        if is_in_docker():
-            from mtmai.mtlibs.server.easyspider import run_easy_spider_server
+#         if is_in_docker():
+#             from mtmai.mtlibs.server.easyspider import run_easy_spider_server
 
-            threading.Thread(target=run_easy_spider_server).start()
+#             threading.Thread(target=run_easy_spider_server).start()
 
-    # LOG.info("start deamon finished")
-    # from mtmai.mtlibs.server.easyspider import run_easy_spider_server
+#     # LOG.info("start deamon finished")
+#     # from mtmai.mtlibs.server.easyspider import run_easy_spider_server
 
-    # threading.Thread(target=run_easy_spider_server).start()
+#     # threading.Thread(target=run_easy_spider_server).start()
 
-    logger.info("start deamon finished")
+#     logger.info("start deamon finished")

@@ -39,5 +39,11 @@ class ApiSaveTeamTaskResult(BaseModel):
     task_result: TaskResult
 
 
-# class TenantSeedMessage(BaseModel):
-#     tenant_id: str
+class SetupHfSpaceMsg(BaseModel):
+    tenant_id: str
+    username: str
+    password: str
+
+
+class LogItemMsg(BaseModel):
+    content: str

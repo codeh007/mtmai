@@ -4,7 +4,6 @@ import os
 import sys
 from typing import cast
 
-import httpx
 from autogen_core import (
     DefaultTopicId,
     SingleThreadedAgentRuntime,
@@ -23,6 +22,7 @@ from mtmaisdk.context.context import Context, set_api_token_context, set_backend
 from mtmai.core.config import settings
 
 from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+from .agents.hf_space_agent import HfSpaceAgent
 from .agents.webui_agent import UIAgent
 from .agents.worker_agent import WorkerAgent
 from .mtmaisdk.client import set_gomtm_api_context
@@ -33,11 +33,7 @@ from .mtmaisdk.clients.rest.models.task_result import TaskResult
 logger = logging.getLogger()
 
 
-# class WorkerAppConfig(BaseModel):
-#     backend_url: str
-
-
-class WorkerAppAgent:
+class WorkerAgent:
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
@@ -130,16 +126,23 @@ class WorkerAppAgent:
         self._runtime.start()
 
         await WorkerAgent.register(
-            self._runtime, "worker_main_agent", lambda: WorkerAgent(self.wfapp)
+            self._runtime,
+            "worker_main_agent",
+            lambda: WorkerAgent(gomtmapi=self.gomtmapiwfapp),
         )
         await UIAgent.register(
             self._runtime,
             "ui_agent",
-            lambda: UIAgent(self.wfapp),
+            lambda: UIAgent(wfapp=self.wfapp),
         )
-        # await TenantAgent.register(
-        #     self._runtime, "tenant_agent", lambda: TenantAgent(self.wfapp)
-        # )
+        await HfSpaceAgent.register(
+            self._runtime,
+            "hf_space_agent",
+            lambda: HfSpaceAgent(
+                description="hfspace_agent",
+                wfapp=self.wfapp,
+            ),
+        )
 
         self._is_running = True
 
@@ -186,52 +189,6 @@ class WorkerAppAgent:
 
         self.worker.register_workflow(FlowAg())
 
-    # async def _setup_scrape_workflows(self):
-    #     @self.wfapp.workflow(
-    #         name="scrape", on_events=["scrape:run"], input_validator=ScrapeGraphParams
-    #     )
-    #     class ScrapFlow:
-    #         @self.wfapp.step(timeout="20m", retries=2)
-    #         async def graph_entry(self, hatctx: Context):
-    #             # from scrapegraphai.graphs import SmartScraperGraph
-    #             # from mtmaisdk.clients.rest.api.llm_api import LlmApi
-
-    #             # 获取 llm 配置
-    #             llm_config = hatctx.rest_client.aio._api_client
-    #             log_api = LogApi(hatctx.rest_client.aio._api_client)
-    #             result = await log_api.log_line_list(step_run=hatctx.step_run_id)
-    #             print(result)
-    #             llm_api = LlmApi(hatctx.rest_client.aio._api_client)
-    #             llm_config = await llm_api.llm_get(
-    #                 # tenant=hatctx.tenant_id,
-    #                 # slug=hatctx.node_id,
-    #                 # agent_node_run_request=hatctx.agent_node_run_request,
-    #             )
-    #             print(llm_config)
-    #             # Define the configuration for the scraping pipeline
-    #             graph_config = {
-    #                 "llm": {
-    #                     "api_key": "YOUR_OPENAI_APIKEY",
-    #                     "model": "openai/gpt-4o-mini",
-    #                 },
-    #                 "verbose": True,
-    #                 "headless": False,
-    #             }
-
-    #             # Create the SmartScraperGraph instance
-    #             smart_scraper_graph = SmartScraperGraph(
-    #                 prompt="Extract me all the news from the website",
-    #                 source="https://www.wired.com",
-    #                 config=graph_config,
-    #             )
-
-    #             # Run the pipeline
-    #             # result = smart_scraper_graph.run()
-    #             result = await asyncio.to_thread(smart_scraper_graph.run)
-
-    #             print(json.dumps(result, indent=4))
-    #     self.worker.register_workflow(ScrapFlow())
-
     async def setup_browser_workflows(self):
         @self.wfapp.workflow(
             on_events=["browser:run"],
@@ -240,44 +197,41 @@ class WorkerAppAgent:
         class FlowBrowser:
             @self.wfapp.step(timeout="10m", retries=1)
             async def run(self, hatctx: Context):
-                from browser_use.browser.browser import Browser, BrowserConfig
-                from langchain_openai import ChatOpenAI
                 from mtmaisdk.clients.rest.models import BrowserParams
 
-                from mtmai.agents.browser_agent import BrowserAgent
-                from mtmai.mtlibs.httpx_transport import LoggingTransport
+                # from mtmai.agents.browser_agent import BrowserAgent
 
                 input = BrowserParams.model_validate(hatctx.workflow_input())
-                init_mtmai_context(hatctx)
+                # init_mtmai_context(hatctx)
 
-                ctx = get_mtmai_context()
-                tenant_id = ctx.tenant_id
-                llm_config = await wfapp.rest.aio.llm_api.llm_get(
-                    tenant=tenant_id, slug="default"
-                )
-                llm = ChatOpenAI(
-                    model=llm_config.model,
-                    api_key=llm_config.api_key,
-                    base_url=llm_config.base_url,
-                    temperature=0,
-                    max_tokens=40960,
-                    verbose=True,
-                    http_client=httpx.Client(transport=LoggingTransport()),
-                    http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
-                )
+                # ctx = get_mtmai_context()
+                # tenant_id = ctx.tenant_id
+                # llm_config = await wfapp.rest.aio.llm_api.llm_get(
+                #     tenant=tenant_id, slug="default"
+                # )
+                # llm = ChatOpenAI(
+                #     model=llm_config.model,
+                #     api_key=llm_config.api_key,
+                #     base_url=llm_config.base_url,
+                #     temperature=0,
+                #     max_tokens=40960,
+                #     verbose=True,
+                #     http_client=httpx.Client(transport=LoggingTransport()),
+                #     http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
+                # )
 
                 # 简单测试llm 是否配置正确
                 # aa=llm.invoke(["Hello, how are you?"])
                 # print(aa)
-                agent = BrowserAgent(
-                    generate_gif=False,
-                    use_vision=False,
-                    tool_call_in_content=False,
-                    # task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and scroll down by one page - then scroll up by 100 pixels - then scroll down by 100 pixels - then scroll down by 10000 pixels.",
-                    task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and to the string 'The vast majority of computer'",
-                    llm=llm,
-                    browser=Browser(config=BrowserConfig(headless=False)),
-                )
-                await agent.run()
+                # agent = BrowserAgent(
+                #     generate_gif=False,
+                #     use_vision=False,
+                #     tool_call_in_content=False,
+                #     # task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and scroll down by one page - then scroll up by 100 pixels - then scroll down by 100 pixels - then scroll down by 10000 pixels.",
+                #     task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and to the string 'The vast majority of computer'",
+                #     llm=llm,
+                #     browser=Browser(config=BrowserConfig(headless=False)),
+                # )
+                # await agent.run()
 
         self.worker.register_workflow(FlowBrowser())
