@@ -52,4 +52,3 @@ class RunRef(WorkflowRunRef, Generic[T]):
             return list(res.values())[0]
 
         return res
-        return res

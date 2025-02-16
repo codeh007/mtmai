@@ -198,30 +198,30 @@ async def chat_completions_stream_generator(
 
 
 # 根据名字获取 llm, 名字格式： together/xxx 或者 groq/xxx
-async def getllm_auto(name: str):
-    llm_config_item = get_graph_config().get(name)
-    if not llm_config_item:
-        raise Exception(f"未找到大语言模型配置: {name}")
+# async def getllm_auto(name: str):
+#     llm_config_item = get_graph_config().get(name)
+#     if not llm_config_item:
+#         raise Exception(f"未找到大语言模型配置: {name}")
 
-    provider = llm_config_item.get("provider")
-    if not provider:
-        raise Exception(f"未找到大语言模型配置: {name}")
+#     provider = llm_config_item.get("provider")
+#     if not provider:
+#         raise Exception(f"未找到大语言模型配置: {name}")
 
-    if provider == "groq":
-        base_url = "https://api.groq.com/openai/v1"
-    elif provider == "together":
-        base_url = "https://api.together.xyz/v1"
-    else:
-        raise Exception(f"未知的provider: {provider}")
+#     if provider == "groq":
+#         base_url = "https://api.groq.com/openai/v1"
+#     elif provider == "together":
+#         base_url = "https://api.together.xyz/v1"
+#     else:
+#         raise Exception(f"未知的provider: {provider}")
 
-    api_key = llm_config_item.get("api_key")
-    model = llm_config_item.get("model")
+#     api_key = llm_config_item.get("api_key")
+#     model = llm_config_item.get("model")
 
-    chatOpenAi = ChatOpenAI(
-        base_url=base_url,
-        api_key=api_key,
-        model=model,
-        temperature=0.7,
-        max_tokens=8000,
-    )
-    return chatOpenAi
+#     chatOpenAi = ChatOpenAI(
+#         base_url=base_url,
+#         api_key=api_key,
+#         model=model,
+#         temperature=0.7,
+#         max_tokens=8000,
+#     )
+#     return chatOpenAi

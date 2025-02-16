@@ -5,7 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from typing import Any, Coroutine
 
-from mtmai import logger
+# from mtmai import logger
+from loguru import logger
 from mtmai.events import EventClient
 
 wr: contextvars.ContextVar[str | None] = contextvars.ContextVar(
@@ -27,7 +28,7 @@ class InjectingFilter(logging.Filter):
     # otherwise we would use emit within the CustomLogHandler
     def filter(self, record):
         record.workflow_run_id = wr.get()
-        record.step_run_id = sr.get()
+        # record.step_run_id = sr.get()
         return True
 
 

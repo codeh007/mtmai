@@ -7,7 +7,7 @@ from multiprocessing import Queue
 from typing import Any, List, Mapping, Optional
 
 import grpc
-
+from loguru import logger
 from mtmai.contracts.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_STARTED,
     STEP_EVENT_TYPE_STARTED,
@@ -20,7 +20,6 @@ from mtmai.dispatcher.dispatcher import (
     new_dispatcher,
 )
 from mtmai.loader import ClientConfig
-from mtmai.logger import logger
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 
 ACTION_EVENT_RETRY_COUNT = 5

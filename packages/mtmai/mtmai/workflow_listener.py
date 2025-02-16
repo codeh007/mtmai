@@ -5,6 +5,7 @@ from typing import AsyncGenerator
 
 import grpc
 from grpc._cython import cygrpc
+from loguru import logger
 
 from mtmai.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
@@ -12,13 +13,9 @@ from mtmai.contracts.dispatcher_pb2 import (
     WorkflowRunEvent,
 )
 from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
-from mtmai.event_ts import Event_ts, read_with_interrupt
+from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
 
 from .loader import ClientConfig
-from .logger import logger
-from .mtlibs.hatchet_utils import get_metadata
-
-# from .metadata import get_metadata
 
 DEFAULT_WORKFLOW_LISTENER_RETRY_INTERVAL = 3  # seconds
 DEFAULT_WORKFLOW_LISTENER_RETRY_COUNT = 5

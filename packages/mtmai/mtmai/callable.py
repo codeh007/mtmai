@@ -1,6 +1,8 @@
 import asyncio
 from typing import Callable, Dict, Generic, List, Optional, TypedDict, TypeVar, Union
 
+from loguru import logger
+
 from mtmai.context import Context
 from mtmai.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
@@ -13,7 +15,6 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowConcurrencyOpts,
     WorkflowKind,
 )
-from mtmai.logger import logger
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 
 # from mtmai.rate_limit import RateLimit

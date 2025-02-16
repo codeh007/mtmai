@@ -6,6 +6,7 @@ from contextvars import ContextVar
 from typing import Any, TypeVar, cast
 from warnings import warn
 
+from loguru import logger
 from mtlibs.types import WorkflowValidator
 from pydantic import BaseModel, StrictStr
 
@@ -30,7 +31,7 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 
-from ..logger import logger
+# from ..logger import logger
 from ..mtlibs.hatchet_utils import tenacity_retry
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds

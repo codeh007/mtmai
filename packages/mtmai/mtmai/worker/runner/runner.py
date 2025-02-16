@@ -10,6 +10,7 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
+from loguru import logger
 from mtlibs.types import WorkflowValidator
 from mtmai.admin import new_admin
 from mtmai.client import new_client_raw
@@ -27,7 +28,6 @@ from mtmai.contracts.dispatcher_pb2 import (
 from mtmai.dispatcher.action_listener import Action
 from mtmai.dispatcher.dispatcher import new_dispatcher
 from mtmai.loader import ClientConfig
-from mtmai.logger import logger
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
 from mtmai.run_event_listener import new_listener
 from mtmai.worker.action_listener_process import ActionEvent

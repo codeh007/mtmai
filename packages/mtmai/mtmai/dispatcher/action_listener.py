@@ -6,6 +6,7 @@ from typing import Any, AsyncGenerator, List, Optional
 
 import grpc
 from grpc._cython import cygrpc
+from loguru import logger
 from mtmai.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
     ActionType,
@@ -16,9 +17,8 @@ from mtmai.contracts.dispatcher_pb2 import (
     WorkerUnsubscribeRequest,
 )
 from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
-from mtmai.event_ts import Event_ts, read_with_interrupt
-from mtmai.logger import logger
 from mtmai.mtlibs.backoff import exp_backoff_sleep
+from mtmai.mtlibs.hatchet_utils import Event_ts, read_with_interrupt
 from mtmai.mtlibs.serialization import flatten
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
 
@@ -26,10 +26,7 @@ from ..events import proto_timestamp_now
 from ..loader import ClientConfig
 from ..mtlibs.hatchet_utils import get_metadata
 
-# from ..metadata import get_metadata
-
 DEFAULT_ACTION_TIMEOUT = 600  # seconds
-
 
 DEFAULT_ACTION_LISTENER_RETRY_INTERVAL = 5  # seconds
 DEFAULT_ACTION_LISTENER_RETRY_COUNT = 1000

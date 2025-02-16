@@ -18,8 +18,6 @@ from mtmai.contracts.events_pb2_grpc import EventsServiceStub
 from .loader import ClientConfig
 from .mtlibs.hatchet_utils import get_metadata, tenacity_retry
 
-# from .metadata import get_metadata
-
 
 def new_event(conn, config: ClientConfig):
     return EventClient(

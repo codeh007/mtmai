@@ -464,4 +464,3 @@ class RestApi:
 
     def events_replay(self, event_ids: list[str] | EventList) -> EventList:
         return self._run_coroutine(self.aio.events_replay(event_ids))
-        return self._run_coroutine(self.aio.events_replay(event_ids))

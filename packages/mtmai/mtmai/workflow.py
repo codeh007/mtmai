@@ -10,6 +10,7 @@ from typing import (
     runtime_checkable,
 )
 
+from loguru import logger
 from pydantic import BaseModel
 
 from mtmai.contracts.workflows_pb2 import (
@@ -21,7 +22,6 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowConcurrencyOpts,
     WorkflowKind,
 )
-from mtmai.logger import logger
 
 
 class WorkflowStepProtocol(Protocol):

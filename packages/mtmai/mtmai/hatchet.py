@@ -2,6 +2,7 @@ import asyncio
 import logging
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
+from loguru import logger
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
@@ -20,7 +21,6 @@ from mtmai.events import EventClient
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
-from mtmai.logger import logger
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 
 # from mtmai.rate_limit import RateLimit
