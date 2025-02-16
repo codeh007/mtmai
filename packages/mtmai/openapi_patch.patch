@@ -54,7 +54,7 @@ index 71b6351..5f70c44 100644
  from pydantic import BaseModel, ConfigDict
  from typing_extensions import Self
 
-+from mtmaisdk.clients.rest.models.workflow_runs_metrics_counts import (
++from mtmai.clients.rest.models.workflow_runs_metrics_counts import (
 +    WorkflowRunsMetricsCounts,
 +)
 +

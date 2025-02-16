@@ -5,8 +5,8 @@ set -e
 python_client_gen(){
     ROOT_DIR=$(pwd)
     PROJECT_DIR=$(realpath ../../../gomtm)
-    GEN_DIR=$(pwd)/mtmai/mtmaisdk
-    dst_dir=$(pwd)/mtmai/mtmaisdk/clients/rest
+    GEN_DIR=$(pwd)/mtmai
+    dst_dir=$(pwd)/mtmai/clients/rest
     tmp_dir=./tmp
     version=7.3.0
     echo "生成 mtm python sdk PROJECT_DIR:${PROJECT_DIR}, GEN_DIR:${GEN_DIR}\n dst_dir:${dst_dir}"
@@ -19,7 +19,7 @@ python_client_gen(){
         --global-property=apiDocs=true \
         --global-property=modelTests=false \
         --global-property=modelDocs=true \
-        --package-name mtmaisdk.clients.rest
+        --package-name mtmai.clients.rest
 
     # mv $tmp_dir/mtmaisdk/clients/rest/api_client.py $dst_dir/api_client.py
     # mv $tmp_dir/mtmaisdk/clients/rest/configuration.py $dst_dir/configuration.py
@@ -37,19 +37,25 @@ python_client_gen(){
     #     --global-property=modelDocs=false \
     #     --package-name mtmaisdk.clients.rest
 
+    echo "阶段1: 复制 api 和 models 到目标目录 $tmp_dir/mtmai/clients/rest/models/__init__.py => ${dst_dir}"
     # copy the __init__ files from tmp to the destination since they are not generated for some reason
-    cp $tmp_dir/mtmaisdk/clients/rest/models/__init__.py $dst_dir/models/__init__.py
-    cp $tmp_dir/mtmaisdk/clients/rest/api/__init__.py $dst_dir/api/__init__.py
+    mkdir -p $dst_dir/models
+    cp $tmp_dir/mtmai/clients/rest/models/__init__.py $dst_dir/models/__init__.py
+    mkdir -p $dst_dir/api
+    cp $tmp_dir/mtmai/clients/rest/api/__init__.py $dst_dir/api/__init__.py
 
     echo "阶段1: 复制 api 和 models 到目标目录 ${dst_dir}"
-    cp -r $tmp_dir/mtmaisdk/clients/rest/api $dst_dir/
-    cp -r $tmp_dir/mtmaisdk/clients/rest/models $dst_dir/
+    mkdir -p $dst_dir/api
+    cp -r $tmp_dir/mtmai/clients/rest/api $dst_dir/
+    mkdir -p $dst_dir/models
+    cp -r $tmp_dir/mtmai/clients/rest/models $dst_dir/
 
     # remove tmp folder
     rm -rf $tmp_dir
 
     # uv pip install grpc_tools
     GRPC_OUT=${GEN_DIR}/contracts
+    mkdir -p $GRPC_OUT/contracts
     echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
     python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
     python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/events --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto

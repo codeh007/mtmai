@@ -7,12 +7,6 @@ from multiprocessing import Queue
 from typing import Any, List, Mapping, Optional
 
 import grpc
-from mtmaisdk.clients.dispatcher.action_listener import Action
-from mtmaisdk.clients.dispatcher.dispatcher import (
-    ActionListener,
-    GetActionListenerRequest,
-    new_dispatcher,
-)
 from mtmaisdk.contracts.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_STARTED,
     STEP_EVENT_TYPE_STARTED,
@@ -22,6 +16,12 @@ from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
 
 from mtmai.mtlibs.backoff import exp_backoff_sleep
+from mtmai.mtmaisdk.dispatcher.action_listener import Action
+from mtmai.mtmaisdk.dispatcher.dispatcher import (
+    ActionListener,
+    GetActionListenerRequest,
+    new_dispatcher,
+)
 
 # from mtmai.utils.backoff import exp_backoff_sleep
 

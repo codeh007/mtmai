@@ -5,35 +5,39 @@ import sys
 from typing import cast
 
 from autogen_core import (
-    DefaultTopicId,
+    AgentId,
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
-from mtmaisdk import ClientConfig, Hatchet, loader
-from mtmaisdk.clients.rest import ApiClient
-from mtmaisdk.clients.rest.api.mtmai_api import MtmaiApi
-from mtmaisdk.clients.rest.configuration import Configuration
-from mtmaisdk.clients.rest.models.agent_run_input import AgentRunInput
-from mtmaisdk.clients.rest.models.chat_message import ChatMessage
-from mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
-from mtmaisdk.clients.rest_client import AsyncRestApi
-from mtmaisdk.context.context import Context, set_api_token_context, set_backend_url
 
+from mtmai.clients.rest.api.mtmai_api import MtmaiApi
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.core.config import settings
+from mtmai.mtmaisdk import ClientConfig, loader
+from mtmai.mtmaisdk.configuration import Configuration
+from mtmai.mtmaisdk.context.context import (
+    Context,
+    set_api_token_context,
+    set_backend_url,
+)
+from mtmai.mtmaisdk.rest_client import AsyncRestApi
 
 from .agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from .agents.hf_space_agent import HfSpaceAgent
 from .agents.webui_agent import UIAgent
 from .agents.worker_agent import WorkerAgent
+from .clients.rest.api_client import ApiClient
+from .clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from .clients.rest.models.task_result import TaskResult
+from .clients.rest.models.team_component import TeamComponent
 from .mtmaisdk.client import set_gomtm_api_context
-from .mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from .mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from .mtmaisdk.clients.rest.models.task_result import TaskResult
+from .mtmaisdk.hatchet import Hatchet
 
 logger = logging.getLogger()
 
 
-class WorkerAgent:
+class WorkerApp:
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
@@ -50,6 +54,7 @@ class WorkerAgent:
         self._initialized = False
         self._is_running = False
         self.setup_runtime()
+        # super().__init__("WorkerAppAgent")
 
     def setup_runtime(self):
         # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
@@ -59,13 +64,15 @@ class WorkerAgent:
 
         message_serializer_types = [
             AgentRunInput,
-            TenantSeedReq,
+            # TenantSeedReq,
             ChatMessage,
             ChatMessageUpsert,
-            AgEventCreate,
+            # AgEventCreate,
+            TeamComponent,
             TaskResult,
             ApiSaveTeamState,
             ApiSaveTeamTaskResult,
+            # GptMessage,
         ]
         for message_serializer_type in message_serializer_types:
             self._runtime.add_message_serializer(
@@ -124,21 +131,26 @@ class WorkerAgent:
 
         await self.start_autogen_host()
         self._runtime.start()
+        ui_agent = await UIAgent.register(
+            runtime=self._runtime,
+            type="ui_agent",
+            factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
+        )
+        ui_agent_id = AgentId("ui_agent", "default")
+        self.worker_agent = await WorkerAgent.register(
+            runtime=self._runtime,
+            type="worker_main_agent",
+            factory=lambda: WorkerAgent(
+                description="worker_main_agent",
+                ui_agent=ui_agent_id,
+                wfapp=self.wfapp,
+            ),
+        )
 
-        await WorkerAgent.register(
-            self._runtime,
-            "worker_main_agent",
-            lambda: WorkerAgent(gomtmapi=self.gomtmapiwfapp),
-        )
-        await UIAgent.register(
-            self._runtime,
-            "ui_agent",
-            lambda: UIAgent(wfapp=self.wfapp),
-        )
         await HfSpaceAgent.register(
-            self._runtime,
-            "hf_space_agent",
-            lambda: HfSpaceAgent(
+            runtime=self._runtime,
+            type="hf_space_agent",
+            factory=lambda: HfSpaceAgent(
                 description="hfspace_agent",
                 wfapp=self.wfapp,
             ),
@@ -146,11 +158,11 @@ class WorkerAgent:
 
         self._is_running = True
 
-        # Create a new event loop but don't block on it
-        loop = asyncio.new_event_loop()
-        self.worker.setup_loop(loop)
-        asyncio.create_task(self.worker.async_start())
-        logger.info("worker started")
+        # 非阻塞启动
+        # self.worker.setup_loop(asyncio.new_event_loop())
+        # asyncio.create_task(self.worker.async_start())
+        # 阻塞启动
+        await self.worker.async_start()
 
     async def start_autogen_host(self):
         from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
@@ -184,7 +196,12 @@ class WorkerAgent:
                 input = cast(AgentRunInput, hatctx.workflow_input())
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
-                await worker_app._runtime.publish_message(input, DefaultTopicId())
+                # await worker_app._runtime.publish_message(input, DefaultTopicId())
+
+                target_agent_id = AgentId("worker_main_agent", "default")
+                await worker_app._runtime.send_message(
+                    message=input, recipient=target_agent_id
+                )
                 return {"result": "success"}
 
         self.worker.register_workflow(FlowAg())
@@ -197,7 +214,7 @@ class WorkerAgent:
         class FlowBrowser:
             @self.wfapp.step(timeout="10m", retries=1)
             async def run(self, hatctx: Context):
-                from mtmaisdk.clients.rest.models import BrowserParams
+                from mtmai.clients.rest.models import BrowserParams
 
                 # from mtmai.agents.browser_agent import BrowserAgent
 

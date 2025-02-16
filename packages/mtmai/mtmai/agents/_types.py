@@ -47,3 +47,13 @@ class SetupHfSpaceMsg(BaseModel):
 
 class LogItemMsg(BaseModel):
     content: str
+
+
+class MsgStartWebServer(BaseModel):
+    pass
+
+
+class MsgGetTeam(BaseModel):
+    tenant_id: str
+    team_id: str
+    # content: str

@@ -1,7 +1,7 @@
 import logging
 
-from mtmaisdk.clients.rest.models.team import Team
-from mtmaisdk.clients.rest_client import AsyncRestApi
+from mtmai.clients.rest.models.team import Team
+from mtmai.mtmaisdk.rest_client import AsyncRestApi
 
 from .agents.model_client import MtmOpenAIChatCompletionClient
 from .mtlibs.id import generate_uuid

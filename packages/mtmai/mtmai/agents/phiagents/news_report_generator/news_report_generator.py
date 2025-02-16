@@ -2,12 +2,9 @@ import json
 from textwrap import dedent
 from typing import Dict, Iterator, Optional
 
-import httpx
-from mtmai.mtlibs.httpx_transport import LoggingTransport
-from mtmaisdk.clients.rest.models.llm_config import LlmConfig
+from mtmai.clients.rest.models.llm_config import LlmConfig
 from phi.agent import Agent
 from phi.model.openai.chat import OpenAIChat
-from phi.model.openai.like import OpenAILike
 from phi.tools.duckduckgo import DuckDuckGo
 from phi.tools.newspaper4k import Newspaper4k
 from phi.utils.log import logger
@@ -18,7 +15,9 @@ from pydantic import BaseModel, Field
 class NewsArticle(BaseModel):
     title: str = Field(..., description="Title of the article.")
     url: str = Field(..., description="Link to the article.")
-    summary: Optional[str] = Field(..., description="Summary of the article if available.")
+    summary: Optional[str] = Field(
+        ..., description="Summary of the article if available."
+    )
 
 
 class SearchResults(BaseModel):
@@ -28,7 +27,9 @@ class SearchResults(BaseModel):
 class ScrapedArticle(BaseModel):
     title: str = Field(..., description="Title of the article.")
     url: str = Field(..., description="Link to the article.")
-    summary: Optional[str] = Field(..., description="Summary of the article if available.")
+    summary: Optional[str] = Field(
+        ..., description="Summary of the article if available."
+    )
     content: Optional[str] = Field(
         ...,
         description="Content of the in markdown format if available. Return None if the content is not available or does not make sense.",
@@ -36,16 +37,18 @@ class ScrapedArticle(BaseModel):
 
 
 class GenerateNewsReport(Workflow):
-    llmConfig: Optional[LlmConfig] = Field(default=None, description="LLM configuration")
+    llmConfig: Optional[LlmConfig] = Field(
+        default=None, description="LLM configuration"
+    )
     web_searcher: Agent = Field(default=None, description="Web searcher agent")
     article_scraper: Agent = Field(default=None, description="Article scraper agent")
     writer: Agent = Field(default=None, description="Writer agent")
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.llmConfig = kwargs.get('llmConfig')
-        
+
+        self.llmConfig = kwargs.get("llmConfig")
+
         llm_model = OpenAIChat(
             id=self.llmConfig.model,
             api_key=self.llmConfig.api_key,
@@ -109,9 +112,9 @@ class GenerateNewsReport(Workflow):
         )
 
     def run(
-        self, 
-        topic: str, 
-        use_search_cache: bool = True, 
+        self,
+        topic: str,
+        use_search_cache: bool = True,
         use_scrape_cache: bool = True,
         use_cached_report: bool = False,
         llmConfig: Optional[LlmConfig] = None,
@@ -137,7 +140,9 @@ class GenerateNewsReport(Workflow):
         search_results: Optional[SearchResults] = None
         try:
             if use_search_cache and "search_results" in self.session_state:
-                search_results = SearchResults.model_validate(self.session_state["search_results"])
+                search_results = SearchResults.model_validate(
+                    self.session_state["search_results"]
+                )
                 logger.info(f"Found {len(search_results.articles)} articles in cache.")
         except Exception as e:
             logger.warning(f"Could not read search results from cache: {e}")
@@ -150,7 +155,9 @@ class GenerateNewsReport(Workflow):
                 and web_searcher_response.content
                 and isinstance(web_searcher_response.content, SearchResults)
             ):
-                logger.info(f"WebSearcher identified {len(web_searcher_response.content.articles)} articles.")
+                logger.info(
+                    f"WebSearcher identified {len(web_searcher_response.content.articles)} articles."
+                )
                 search_results = web_searcher_response.content
                 # Save the search_results in the session state
                 self.session_state["search_results"] = search_results.model_dump()
@@ -177,8 +184,12 @@ class GenerateNewsReport(Workflow):
         ):
             for url, scraped_article in self.session_state["scraped_articles"].items():
                 try:
-                    validated_scraped_article = ScrapedArticle.model_validate(scraped_article)
-                    scraped_articles[validated_scraped_article.url] = validated_scraped_article
+                    validated_scraped_article = ScrapedArticle.model_validate(
+                        scraped_article
+                    )
+                    scraped_articles[validated_scraped_article.url] = (
+                        validated_scraped_article
+                    )
                 except Exception as e:
                     logger.warning(f"Could not read scraped article from cache: {e}")
             logger.info(f"Found {len(scraped_articles)} scraped articles in cache.")
@@ -189,17 +200,23 @@ class GenerateNewsReport(Workflow):
                 logger.info(f"Found scraped article in cache: {article.url}")
                 continue
 
-            article_scraper_response: RunResponse = self.article_scraper.run(article.url)
+            article_scraper_response: RunResponse = self.article_scraper.run(
+                article.url
+            )
             if (
                 article_scraper_response
                 and article_scraper_response.content
                 and isinstance(article_scraper_response.content, ScrapedArticle)
             ):
-                scraped_articles[article_scraper_response.content.url] = article_scraper_response.content.model_dump()
+                scraped_articles[article_scraper_response.content.url] = (
+                    article_scraper_response.content.model_dump()
+                )
                 logger.info(f"Scraped article: {article_scraper_response.content.url}")
 
         # 2.3: Save the scraped_articles in the session state
-        self.session_state["scraped_articles"] = {k: v for k, v in scraped_articles.items()}
+        self.session_state["scraped_articles"] = {
+            k: v for k, v in scraped_articles.items()
+        }
 
         ####################################################
         # Step 3: Write a report
@@ -216,5 +233,6 @@ class GenerateNewsReport(Workflow):
         # 3.2: Save the writer_response in the session state
         if "reports" not in self.session_state:
             self.session_state["reports"] = []
-        self.session_state["reports"].append({"topic": topic, "report": self.writer.run_response.content})
-
+        self.session_state["reports"].append(
+            {"topic": topic, "report": self.writer.run_response.content}
+        )

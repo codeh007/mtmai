@@ -1,14 +1,14 @@
 from typing import Union
 
-from mtmaisdk.client import Client
-from mtmaisdk.clients.rest.models.cron_workflows import CronWorkflows
-from mtmaisdk.clients.rest.models.cron_workflows_list import CronWorkflowsList
-from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import (
+from mtmai.clients.rest.models.cron_workflows import CronWorkflows
+from mtmai.clients.rest.models.cron_workflows_list import CronWorkflowsList
+from mtmai.clients.rest.models.cron_workflows_order_by_field import (
     CronWorkflowsOrderByField,
 )
-from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
+from mtmai.clients.rest.models.workflow_run_order_by_direction import (
     WorkflowRunOrderByDirection,
 )
+from mtmaisdk.client import Client
 from pydantic import BaseModel, field_validator
 
 

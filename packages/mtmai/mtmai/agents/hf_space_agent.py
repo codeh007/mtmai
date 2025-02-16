@@ -2,7 +2,9 @@ import logging
 
 from autogen_core import MessageContext, default_subscription, message_handler
 
-from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from ..clients.rest.models.chat_message_upsert import ChatMessageUpsert
+
+# from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from ._agents import MtBaseAgent
 
 logger = logging.getLogger(__name__)

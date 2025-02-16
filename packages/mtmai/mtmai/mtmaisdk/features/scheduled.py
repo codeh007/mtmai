@@ -1,15 +1,17 @@
 import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from mtmaisdk.client import Client
-from mtmaisdk.clients.rest.models.cron_workflows_order_by_field import (
+from mtmai.clients.rest.models.cron_workflows_order_by_field import (
     CronWorkflowsOrderByField,
 )
-from mtmaisdk.clients.rest.models.scheduled_workflows import ScheduledWorkflows
-from mtmaisdk.clients.rest.models.scheduled_workflows_list import ScheduledWorkflowsList
-from mtmaisdk.clients.rest.models.workflow_run_order_by_direction import (
+from mtmai.clients.rest.models.scheduled_workflows import ScheduledWorkflows
+from mtmai.clients.rest.models.scheduled_workflows_list import (
+    ScheduledWorkflowsList,
+)
+from mtmai.clients.rest.models.workflow_run_order_by_direction import (
     WorkflowRunOrderByDirection,
 )
+from mtmaisdk.client import Client
 from pydantic import BaseModel
 
 

@@ -7,27 +7,28 @@ from typing import Any, TypeVar, cast
 from warnings import warn
 
 from mtlibs.types import WorkflowValidator
-from mtmaisdk.clients.events import EventClient
-from mtmaisdk.clients.rest.tenacity_utils import tenacity_retry
-from mtmaisdk.clients.rest_client import RestApi
-from mtmaisdk.clients.run_event_listener import RunEventListenerClient
-from mtmaisdk.clients.workflow_listener import PooledWorkflowRunListener
 from mtmaisdk.context.worker_context import WorkerContext
 from mtmaisdk.contracts.dispatcher_pb2 import OverridesData
 from mtmaisdk.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
-from ..clients.admin import (
+from mtmai.mtmaisdk.admin import (
     AdminClient,
     ChildTriggerWorkflowOptions,
     ChildWorkflowRunDict,
     TriggerWorkflowOptions,
     WorkflowRunDict,
 )
-from ..clients.dispatcher.dispatcher import (  # type: ignore[attr-defined]
+from mtmai.mtmaisdk.dispatcher.dispatcher import (  # type: ignore[attr-defined]
     Action,
     DispatcherClient,
 )
+from mtmai.mtmaisdk.events import EventClient
+from mtmai.mtmaisdk.rest_client import RestApi
+from mtmai.mtmaisdk.run_event_listener import RunEventListenerClient
+from mtmai.mtmaisdk.tenacity_utils import tenacity_retry
+from mtmai.mtmaisdk.workflow_listener import PooledWorkflowRunListener
+
 from ..logger import logger
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds

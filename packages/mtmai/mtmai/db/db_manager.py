@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Optional, Union
 
 from loguru import logger
-from mtmaisdk.clients.rest.models.team import Team
 from sqlalchemy import exc, inspect, text
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
 from mtmai.models.ag import Response
+from mtmai.clients.rest.models.team import Team
 
 # from ..teammanager import TeamManager
 

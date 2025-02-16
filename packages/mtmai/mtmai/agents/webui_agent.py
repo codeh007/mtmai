@@ -1,26 +1,30 @@
 import logging
-from typing import Any, Mapping
+from pathlib import Path
+from typing import Any, Callable, Mapping, Optional, Union
 
 from autogen_core import (
+    Component,
+    ComponentModel,
     MessageContext,
     RoutedAgent,
     default_subscription,
     message_handler,
 )
-from team_builder import assisant_team_builder
 
-from ..mtmaisdk.clients.rest.exceptions import ApiException
-from ..mtmaisdk.clients.rest.models.ag_event_create import AgEventCreate
-from ..mtmaisdk.clients.rest.models.ag_state_upsert import AgStateUpsert
-from ..mtmaisdk.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from ..mtmaisdk.clients.rest.models.task_result import TaskResult
-from ..mtmaisdk.clients.rest.models.team import Team
-from ..mtmaisdk.clients.rest.models.team_component import TeamComponent
-from ..mtmaisdk.clients.rest.models.tenant_seed_req import TenantSeedReq
-from ..mtmaisdk.hatchet import Hatchet
-from ..team_builder.company_research import CompanyResearchTeamBuilder
-from ..team_builder.travel_builder import TravelTeamBuilder
-from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+from mtmai.clients.rest.exceptions import ApiException
+
+# from mtmai.clients.rest.models.ag_event_create import AgEventCreate
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.task_result import TaskResult
+from mtmai.clients.rest.models.team import Team
+from mtmai.clients.rest.models.team_component import TeamComponent
+from mtmai.mtmaisdk.hatchet import Hatchet
+from mtmai.team_builder import assisant_team_builder
+from mtmai.team_builder.company_research import CompanyResearchTeamBuilder
+from mtmai.team_builder.travel_builder import TravelTeamBuilder
+
+from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult, MsgGetTeam
 from .model_client import MtmOpenAIChatCompletionClient
 
 logger = logging.getLogger(__name__)
@@ -34,10 +38,11 @@ class UIAgent(RoutedAgent):
         2: 将消息和状态持久化到数据库
     """
 
-    def __init__(self, wfapp: Hatchet) -> None:
-        super().__init__("UI Agent")
-        self.wfapp = wfapp
-        self.gomtmapi = self.wfapp.rest.aio
+    def __init__(self, description: str, wfapp: Hatchet = None) -> None:
+        super().__init__(description)
+        if wfapp is not None:
+            self.wfapp = wfapp
+            self.gomtmapi = self.wfapp.rest.aio
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         """Load the state of the group chat team."""
@@ -66,12 +71,12 @@ class UIAgent(RoutedAgent):
             logger.error(f"UI Agent 保存消息失败(unknown error): {e}")
             raise e
 
-    @message_handler
-    async def handle_ag_event(
-        self, message: AgEventCreate, ctx: MessageContext
-    ) -> None:
-        # tenant_id=get_tenant_id()
-        logger.info("TODO: AgEventCreate")
+    # @message_handler
+    # async def handle_ag_event(
+    #     self, message: AgEventCreate, ctx: MessageContext
+    # ) -> None:
+    #     # tenant_id=get_tenant_id()
+    #     logger.info("TODO: AgEventCreate")
 
     @message_handler
     async def handle_task_result(
@@ -106,10 +111,11 @@ class UIAgent(RoutedAgent):
 
     @message_handler
     async def handle_tenant_message(
-        self, message: TenantSeedReq, mctx: MessageContext
-    ) -> None:
-        if not message.tenant_id or len(message.tenant_id) == 0:
-            raise ValueError("tenantId required")
+        self, message: MsgGetTeam, mctx: MessageContext
+    ) -> Team:
+        # if not message.tenant_id or len(message.tenant_id) == 0:
+        #     # raise ValueError("tenantId required")
+        #     raise CantHandleException("tenantId required")
         tenant_id = message.tenant_id
 
         team_builters = [
@@ -143,3 +149,38 @@ class UIAgent(RoutedAgent):
                 team=team._team_id,
                 team2=team2.model_dump(),
             )
+        teams = await self.gomtmapi.teams_api.team_list(tenant=tenant_id)
+        detault_team_item = next(
+            (
+                item
+                for item in teams.rows
+                if item.label == assisant_team_builder.AssistantTeamBuilder().name
+            ),
+            None,
+        )
+
+        return await self.gomtmapi.teams_api.team_get(
+            tenant=tenant_id,
+            team=detault_team_item.metadata.id,
+        )
+
+    async def _create_team_component(
+        self,
+        team_config: Union[str, Path, dict, ComponentModel],
+        input_func: Optional[Callable] = None,
+    ) -> Component:
+        """Create team instance from config"""
+        if isinstance(team_config, (str, Path)):
+            config = await self.load_from_file(team_config)
+        elif isinstance(team_config, dict):
+            config = team_config
+        else:
+            config = team_config.model_dump()
+
+        team = Team.load_component(config)
+
+        for agent in team._participants:
+            if hasattr(agent, "input_func"):
+                agent.input_func = input_func
+
+        return team

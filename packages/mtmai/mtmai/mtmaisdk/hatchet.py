@@ -2,10 +2,6 @@ import asyncio
 import logging
 from typing import Any, Callable, Optional, Type, TypeVar, Union
 
-from pydantic import BaseModel
-from typing_extensions import deprecated
-
-from mtmaisdk.clients.rest_client import RestApi
 from mtmaisdk.context.context import Context
 from mtmaisdk.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
@@ -18,12 +14,16 @@ from mtmaisdk.features.scheduled import ScheduledClient
 from mtmaisdk.labels import DesiredWorkerLabel
 from mtmaisdk.loader import ClientConfig, ConfigLoader
 from mtmaisdk.rate_limit import RateLimit
+from pydantic import BaseModel
+from typing_extensions import deprecated
 
-from .client import Client, new_client, new_client_raw
-from .clients.admin import AdminClient
-from .clients.dispatcher.dispatcher import DispatcherClient
-from .clients.events import EventClient
-from .clients.run_event_listener import RunEventListenerClient
+from mtmai.mtmaisdk.admin import AdminClient
+from mtmai.mtmaisdk.client import Client, new_client, new_client_raw
+from mtmai.mtmaisdk.dispatcher.dispatcher import DispatcherClient
+from mtmai.mtmaisdk.events import EventClient
+from mtmai.mtmaisdk.rest_client import RestApi
+from mtmai.mtmaisdk.run_event_listener import RunEventListenerClient
+
 from .logger import logger
 from .worker.worker import Worker
 from .workflow import ConcurrencyExpression, WorkflowMeta

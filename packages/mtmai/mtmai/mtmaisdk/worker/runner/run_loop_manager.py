@@ -4,15 +4,14 @@ from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
 
-from mtmaisdk import Context
+from mtlibs.types import WorkflowValidator
+from mtmai.mtmaisdk.context.context import Context
+from mtmai.mtmaisdk.dispatcher.action_listener import Action
 from mtmaisdk.client import Client, new_client_raw
-from mtmaisdk.clients.dispatcher.action_listener import Action
 from mtmaisdk.loader import ClientConfig
 from mtmaisdk.logger import logger
 from mtmaisdk.worker.runner.runner import Runner
 from mtmaisdk.worker.runner.utils.capture_logs import capture_logs
-
-from mtlibs.types import WorkflowValidator
 
 STOP_LOOP = "STOP_LOOP"
 

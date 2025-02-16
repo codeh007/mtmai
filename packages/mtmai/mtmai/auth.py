@@ -81,10 +81,10 @@ async def authenticate_user(
     return user
 
 
-async def get_current_user(
-    token: str = Depends(reuseable_oauth), session=Depends(get_asession)
-):
-    if not require_login():
-        return None
-    logger.info(f"call get_current_user token: {token}")
-    return await authenticate_user(token, session=session)
+# async def get_current_user(
+#     token: str = Depends(reuseable_oauth), session=Depends(get_asession)
+# ):
+#     if not require_login():
+#         return None
+#     logger.info(f"call get_current_user token: {token}")
+#     return await authenticate_user(token, session=session)

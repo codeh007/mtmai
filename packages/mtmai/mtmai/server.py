@@ -5,13 +5,11 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from loguru import logger
 
-# from mtmai.core.__version__ import version
 from mtmai._version import version
 from mtmai.core.config import settings
 from mtmai.middleware import AuthMiddleware
 
 from .api import mount_api_routes
-from .worker import WorkerAgent
 
 
 def build_app():
@@ -194,7 +192,6 @@ def build_app():
 
 
 async def serve():
-    await WorkerAgent().run()
     app = build_app()
     config = uvicorn.Config(
         app,
@@ -226,75 +223,3 @@ async def serve():
     except Exception as e:
         logger.error("Error in uvicorn server:", exc_info=e)
         raise
-
-
-# def start_deamon_serve():
-#     """
-#     启动后台独立服务
-#     根据具体环境自动启动
-#     """
-#     logger.info("start_deamon_serve")
-#     if is_in_dev():
-#         from mtmai.flows.deployments import start_prefect_deployment
-
-#         start_prefect_deployment(asThreading=True)
-
-#     if (
-#         not settings.is_in_vercel
-#         and not settings.is_in_gitpod
-#         and settings.CF_TUNNEL_TOKEN
-#         and not is_in_huggingface()
-#         and not is_in_windows()
-#     ):
-#         # from mtmlib import tunnel
-
-#         # threading.Thread(target=lambda: asyncio.run(tunnel.start_cloudflared())).start()
-
-#         if not is_in_vercel() and not settings.is_in_gitpod:
-#             from mtmai.mtlibs.server.searxng import run_searxng_server
-
-#             threading.Thread(target=run_searxng_server).start()
-#         if (
-#             not settings.is_in_vercel
-#             and not settings.is_in_gitpod
-#             and not is_in_windows()
-#         ):
-#             # def start_front_app():
-#             #     mtmai_url = coreutils.backend_url_base()
-#             #     if not mtutils.command_exists("mtmaiweb"):
-#             #         LOG.warning("⚠️ mtmaiweb 命令未安装,跳过前端的启动")
-#             #         return
-#             #     mtutils.bash(
-#             #         f"PORT={settings.FRONT_PORT} MTMAI_API_BASE={mtmai_url} mtmaiweb serve"
-#             #     )
-
-#             # threading.Thread(target=start_front_app).start()
-
-#             # def start_prefect_server():
-#             #     LOG.info("启动 prefect server")
-
-#             #     sqlite_db_path = "/app/storage/prefect.db"
-#             #     sql_connect_str = f"sqlite+aiosqlite:///{sqlite_db_path}"
-#             #     mtutils.bash(
-#             #         f"PREFECT_UI_STATIC_DIRECTORY=/app/storage PREFECT_API_DATABASE_CONNECTION_URL={sql_connect_str} prefect server start"
-#             #     )
-
-#             # threading.Thread(target=start_prefect_server).start()
-#             pass
-
-#         # if not is_in_vercel() and not settings.is_in_gitpod and not is_in_windows():
-#         #     from mtmai.mtlibs.server.kasmvnc import run_kasmvnc
-
-#         #     threading.Thread(target=run_kasmvnc).start()
-
-#         if is_in_docker():
-#             from mtmai.mtlibs.server.easyspider import run_easy_spider_server
-
-#             threading.Thread(target=run_easy_spider_server).start()
-
-#     # LOG.info("start deamon finished")
-#     # from mtmai.mtlibs.server.easyspider import run_easy_spider_server
-
-#     # threading.Thread(target=run_easy_spider_server).start()
-
-#     logger.info("start deamon finished")
