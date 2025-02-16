@@ -25,6 +25,7 @@ from mtmai.clients.rest.api.artifact_api import ArtifactApi
 from mtmai.clients.rest.api.blog_api import BlogApi
 from mtmai.clients.rest.api.browser_api import BrowserApi
 from mtmai.clients.rest.api.chat_api import ChatApi
+from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.default_api import DefaultApi
 from mtmai.clients.rest.api.endpoint_api import EndpointApi
 from mtmai.clients.rest.api.env_api import EnvApi
@@ -42,7 +43,5 @@ from mtmai.clients.rest.api.prompt_api import PromptApi
 from mtmai.clients.rest.api.proxy_api import ProxyApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
-from mtmai.clients.rest.api.team_api import TeamApi
-from mtmai.clients.rest.api.teams_api import TeamsApi
 from mtmai.clients.rest.api.ui_agent_api import UiAgentApi
 

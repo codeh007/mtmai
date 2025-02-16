@@ -1,10 +1,9 @@
 import asyncio
-
-# import logging
 import os
 import sys
 from typing import cast
 
+from agents.teams_agent import TeamBuilderAgent
 from autogen_core import (
     AgentId,
     SingleThreadedAgentRuntime,
@@ -15,8 +14,9 @@ from clients.rest_client import AsyncRestApi
 from loguru import logger
 
 from mtmai import loader
+from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+from mtmai.agents.hf_space_agent import HfSpaceAgent
 from mtmai.agents.webui_agent import UIAgent
-from mtmai.agents.worker_agent import WorkerAgent
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -28,11 +28,6 @@ from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import Context, set_api_token_context, set_backend_url
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
-
-from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
-from .hf_space_agent import HfSpaceAgent
-
-# logger = logging.getLogger()
 
 
 class WorkerApp:
@@ -52,7 +47,6 @@ class WorkerApp:
         self._initialized = False
         self._is_running = False
         self.setup_runtime()
-        # super().__init__("WorkerAppAgent")
 
     def setup_runtime(self):
         # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
@@ -135,10 +129,10 @@ class WorkerApp:
             factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
         )
         ui_agent_id = AgentId("ui_agent", "default")
-        self.worker_agent = await WorkerAgent.register(
+        self.worker_agent = await TeamBuilderAgent.register(
             runtime=self._runtime,
             type="worker_main_agent",
-            factory=lambda: WorkerAgent(
+            factory=lambda: TeamBuilderAgent(
                 description="worker_main_agent",
                 ui_agent=ui_agent_id,
                 wfapp=self.wfapp,
@@ -196,9 +190,10 @@ class WorkerApp:
                     input.run_id = hatctx.workflow_run_id()
                 # await worker_app._runtime.publish_message(input, DefaultTopicId())
 
-                target_agent_id = AgentId("worker_main_agent", "default")
+                # target_agent_id = AgentId("worker_main_agent", "default")
+                ui_agent_id = AgentId("ui_agent", "default")
                 await worker_app._runtime.send_message(
-                    message=input, recipient=target_agent_id
+                    message=input, recipient=ui_agent_id
                 )
                 return {"result": "success"}
 

@@ -12,8 +12,9 @@ from mtmai.clients.rest.api.log_api import LogApi
 from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api.step_run_api import StepRunApi
-from mtmai.clients.rest.api.team_api import TeamApi
-from mtmai.clients.rest.api.teams_api import TeamsApi
+
+# from mtmai.clients.rest.api.team_api import TeamApi
+# from mtmai.clients.rest.api.teams_api import TeamsApi
 from mtmai.clients.rest.api.workflow_api import WorkflowApi
 from mtmai.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmai.clients.rest.api_client import ApiClient
@@ -51,6 +52,8 @@ from mtmai.clients.rest.models.workflow_runs_cancel_request import (
     WorkflowRunsCancelRequest,
 )
 from mtmai.clients.rest.models.workflow_version import WorkflowVersion
+
+from .rest.api.coms_api import ComsApi
 
 
 class AsyncRestApi:
@@ -132,17 +135,23 @@ class AsyncRestApi:
             self._ag_events_api = AgEventsApi(self.api_client)
         return self._ag_events_api
 
-    @property
-    def teams_api(self):
-        if self._teams_api is None:
-            self._teams_api = TeamsApi(self.api_client)
-        return self._teams_api
+    # @property
+    # def teams_api(self):
+    #     if self._teams_api is None:
+    #         self._teams_api = TeamsApi(self.api_client)
+    #     return self._teams_api
+
+    # @property
+    # def team_api(self):
+    #     if self._team_api is None:
+    #         self._team_api = TeamApi(self.api_client)
+    #     return self._team_api
 
     @property
-    def team_api(self):
-        if self._team_api is None:
-            self._team_api = TeamApi(self.api_client)
-        return self._team_api
+    def coms_api(self):
+        if self._coms_api is None:
+            self._coms_api = ComsApi(self.api_client)
+        return self._coms_api
 
     @property
     def model_api(self):
