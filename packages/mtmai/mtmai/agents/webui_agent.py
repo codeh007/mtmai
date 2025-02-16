@@ -12,8 +12,6 @@ from autogen_core import (
 )
 
 from mtmai.clients.rest.exceptions import ApiException
-
-# from mtmai.clients.rest.models.ag_event_create import AgEventCreate
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.task_result import TaskResult
