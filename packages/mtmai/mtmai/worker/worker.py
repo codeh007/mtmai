@@ -23,7 +23,7 @@ from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
 
-from ..callable import HatchetCallable
+from ..mtlibs.callable import HatchetCallable
 
 T = TypeVar("T")
 

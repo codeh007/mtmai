@@ -25,8 +25,6 @@ from mtmai.mtlibs.serialization import flatten
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
 
 DEFAULT_ACTION_TIMEOUT = 600  # seconds
-
-DEFAULT_ACTION_LISTENER_RETRY_INTERVAL = 5  # seconds
 DEFAULT_ACTION_LISTENER_RETRY_COUNT = 1000
 
 
@@ -148,7 +146,7 @@ class ActionListener:
                 break
 
             try:
-                logger.debug("sending heartbeat")
+                # logger.debug("sending heartbeat")
                 await self.aio_client.Heartbeat(
                     HeartbeatRequest(
                         workerId=self.worker_id,

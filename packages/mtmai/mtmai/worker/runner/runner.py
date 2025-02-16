@@ -36,7 +36,7 @@ from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
 from worker.runner.capture_logs import copy_context_vars, sr, wr
 
-from ...callable import DurableContext
+from ...mtlibs.callable import DurableContext
 
 
 class WorkerStatus(Enum):

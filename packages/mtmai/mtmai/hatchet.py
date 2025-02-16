@@ -5,10 +5,10 @@ from clients.admin import AdminClient
 from clients.client import Client, new_client, new_client_raw
 from clients.events import EventClient
 from clients.rest_client import RestApi
+from mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
-from mtmai.callable import ConcurrencyFunction, HatchetCallable
 from mtmai.context.context import Context
 from mtmai.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
