@@ -27,7 +27,7 @@ class InjectingFilter(logging.Filter):
     # otherwise we would use emit within the CustomLogHandler
     def filter(self, record):
         record.workflow_run_id = wr.get()
-        # record.step_run_id = sr.get()
+        record.step_run_id = sr.get()
         return True
 
 

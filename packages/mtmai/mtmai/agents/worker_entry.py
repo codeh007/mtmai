@@ -1,5 +1,6 @@
 import asyncio
-import logging
+
+# import logging
 import os
 import sys
 from typing import cast
@@ -11,6 +12,7 @@ from autogen_core import (
 )
 from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
+from loguru import logger
 
 from mtmai import loader
 from mtmai.agents.webui_agent import UIAgent
@@ -30,7 +32,7 @@ from mtmai.hatchet import Hatchet
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from .hf_space_agent import HfSpaceAgent
 
-logger = logging.getLogger()
+# logger = logging.getLogger()
 
 
 class WorkerApp:
@@ -97,7 +99,7 @@ class WorkerApp:
                             server_name="localhost",
                         ),
                         # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-                        logger=logger,
+                        # logger=logger,
                     )
                 )
                 token = clientConfig.token
