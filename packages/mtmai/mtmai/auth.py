@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
+
 from mtmai.core import security
 from mtmai.core.config import settings
 from mtmai.core.logging import get_logger
@@ -20,19 +21,19 @@ def get_jwt_secret():
     return settings.SECRET_KEY
 
 
-def ensure_jwt_secret():
-    if require_login() and get_jwt_secret() is None:
-        raise ValueError(
-            "You must provide a JWT secret in the environment to use authentication. Run `chainlit create-secret` to generate one."
-        )
+# def ensure_jwt_secret():
+#     if require_login() and get_jwt_secret() is None:
+#         raise ValueError(
+#             "You must provide a JWT secret in the environment to use authentication. Run `chainlit create-secret` to generate one."
+#         )
 
 
-def is_oauth_enabled():
-    return config.code.oauth_callback and len(get_configured_oauth_providers()) > 0
+# def is_oauth_enabled():
+#     return config.code.oauth_callback and len(get_configured_oauth_providers()) > 0
 
 
-def require_login():
-    return True
+# def require_login():
+#     return True
 
 
 # def get_configuration():

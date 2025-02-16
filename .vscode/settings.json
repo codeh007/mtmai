@@ -1,4 +1,5 @@
 {
+	"editor.fontFamily": "JetBrains Mono, 'Fira Code', Consolas, 'Courier New', monospace",
 	"python.analysis.indexing": true,
 	//提示: packageIndexDepths 作用于 quickfix 中. 如果没有设置, 一般不能在 quickfix 中看到虚拟环境中的包.
 	"python.analysis.packageIndexDepths": [
@@ -22,7 +23,9 @@
 	"python.analysis.completeFunctionParens": true,
 	"python.analysis.inlayHints.functionReturnTypes": true,
 	"python.analysis.autoSearchPaths": true,
-	"python.analysis.extraPaths": ["${workspaceFolder}/packages/mtmai/mtmai"],
+	"python.analysis.extraPaths": [
+		"${workspaceFolder}/packages/mtmai/mtmai"
+	],
 	"[python]": {
 		"editor.defaultFormatter": "charliermarsh.ruff",
 		"editor.formatOnSave": true,
@@ -47,8 +50,9 @@
 	"python.testing.autoTestDiscoverOnSaveEnabled": true,
 	"python.testing.unittestEnabled": false,
 	"python.testing.pytestEnabled": true,
-	"python.testing.pytestArgs": ["."],
-
+	"python.testing.pytestArgs": [
+		"."
+	],
 	"explorer.fileNesting.enabled": true,
 	"explorer.fileNesting.patterns": {
 		"*.ts": "${capture}.ts, ${capture}.hooks.ts, ${capture}.hooks.tsx, ${capture}.contexts.ts, ${capture}.stories.tsx, ${capture}.story.tsx, ${capture}.spec.tsx, ${capture}.base.ts, ${capture}.base.tsx, ${capture}.types.ts, ${capture}.styles.ts, ${capture}.styles.tsx, ${capture}.utils.ts, ${capture}.utils.tsx, ${capture}.constants.ts, ${capture}.module.scss, ${capture}.module.css, ${capture}.md",
@@ -126,5 +130,25 @@
 	"editor.tabSize": 2,
 	"editor.linkedEditing": true,
 	"breadcrumbs.filePath": "off",
-	"files.trimTrailingWhitespace": true
+	"files.trimTrailingWhitespace": true,
+	"workbench.colorCustomizations": {
+		"activityBar.activeBackground": "#fbed80",
+		"activityBar.background": "#fbed80",
+		"activityBar.foreground": "#15202b",
+		"activityBar.inactiveForeground": "#15202b99",
+		"activityBarBadge.background": "#06b9a5",
+		"activityBarBadge.foreground": "#15202b",
+		"commandCenter.border": "#15202b99",
+		"sash.hoverBorder": "#fbed80",
+		"statusBar.background": "#f9e64f",
+		"statusBar.foreground": "#15202b",
+		"statusBarItem.hoverBackground": "#f7df1e",
+		"statusBarItem.remoteBackground": "#f9e64f",
+		"statusBarItem.remoteForeground": "#15202b",
+		"titleBar.activeBackground": "#f9e64f",
+		"titleBar.activeForeground": "#15202b",
+		"titleBar.inactiveBackground": "#f9e64f99",
+		"titleBar.inactiveForeground": "#15202b99"
+	},
+	"peacock.remoteColor": "#f9e64f"
 }
