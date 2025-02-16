@@ -1,4 +1,3 @@
-import logging
 import time
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Union
@@ -13,11 +12,11 @@ from autogen_core import (
     default_subscription,
     message_handler,
 )
+from loguru import logger
 from pydantic import BaseModel
 
 from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult, MsgGetTeam
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.clients.rest.exceptions import ApiException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
@@ -31,8 +30,6 @@ from mtmai.team_builder.company_research import CompanyResearchTeamBuilder
 from mtmai.team_builder.travel_builder import TravelTeamBuilder
 
 from ..clients.rest.models.mt_component import MtComponent
-
-logger = logging.getLogger(__name__)
 
 
 @default_subscription
@@ -57,24 +54,17 @@ class UIAgent(RoutedAgent):
     async def handle_message_create(
         self, message: ChatMessageUpsert, ctx: MessageContext
     ) -> None:
-        # logger.info(f"UI Agent 收到消息: {message}")
-        try:
-            await self.gomtmapi.chat_api.chat_message_upsert(
-                tenant=message.tenant_id,
-                chat_message_upsert=ChatMessageUpsert(
-                    tenantId=message.tenant_id,
-                    teamId=message.team_id,
-                    content=message.content,
-                    role=message.role,
-                    threadId=message.thread_id,
-                ).model_dump(),
-            )
-        except ApiException as e:
-            logger.error(f"UI Agent 保存消息失败: {e}")
-            raise e
-        except Exception as e:
-            logger.error(f"UI Agent 保存消息失败(unknown error): {e}")
-            raise e
+        await self.gomtmapi.chat_api.chat_message_upsert(
+            tenant=message.tenant_id,
+            chat_message_upsert=message.model_dump(),
+            # chat_message_upsert=ChatMessageUpsert(
+            #     tenantId=message.tenant_id,
+            #     componentId=message.component_id,
+            #     content=message.content,
+            #     role=message.role,
+            #     threadId=message.thread_id,
+            # ).model_dump(),
+        )
 
     # @message_handler
     # async def handle_ag_event(
@@ -100,10 +90,6 @@ class UIAgent(RoutedAgent):
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
-            # await self.runtime.publish_message(
-            #     TenantSeedReq(tenantId=tenant_id),
-            #     topic_id=DefaultTopicId(),
-            # )
             return
 
         if not message.team_id:
@@ -140,7 +126,7 @@ class UIAgent(RoutedAgent):
                     await self.handle_api_save_team_task_result(
                         ApiSaveTeamTaskResult(
                             tenant_id=tenant_id,
-                            team_id=team_id,
+                            component_id=team_id,
                             task_result=event,
                         ),
                         ctx,
@@ -150,7 +136,7 @@ class UIAgent(RoutedAgent):
                         ChatMessageUpsert(
                             content=event.content,
                             tenant_id=message.tenant_id,
-                            team_id=message.team_id,
+                            component_id=message.team_id,
                             threadId=thread_id,
                             runId=run_id,
                         ),
@@ -161,16 +147,16 @@ class UIAgent(RoutedAgent):
                         ChatMessageUpsert(
                             content=event.model_dump_json(),
                             tenant_id=message.tenant_id,
-                            team_id=message.team_id,
+                            component_id=message.team_id,
                         ),
                         ctx,
                     )
                 else:
                     logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
 
-        except Exception as e:
-            logger.error(f"WorkerMainAgent 运行出错: {e}")
-            raise e
+        # except Exception as e:
+        #     logger.error(f"WorkerMainAgent 运行出错: {e}")
+        #     raise e
         finally:
             # 确保停止团队的内部 agents
             if team and hasattr(team, "_participants"):
@@ -178,13 +164,13 @@ class UIAgent(RoutedAgent):
                     if hasattr(agent, "close"):
                         await agent.close()
 
+            # if self.runtime.
             result = await self.handle_api_save_team_state(
                 ApiSaveTeamState(
                     tenant_id=tenant_id,
-                    team_id=team_id,
+                    component_id=team_id,
                     state=await team.save_state(),
-                    componentId=team_id,
-                    runId=run_id,
+                    run_id=run_id,
                 ),
                 ctx,
             )
