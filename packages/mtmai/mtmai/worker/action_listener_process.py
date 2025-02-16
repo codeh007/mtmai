@@ -12,14 +12,14 @@ from mtmai.contracts.dispatcher_pb2 import (
     STEP_EVENT_TYPE_STARTED,
     ActionType,
 )
-from mtmai.dispatcher.action_listener import Action
-from mtmai.dispatcher.dispatcher import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.backoff import exp_backoff_sleep
+from mtmai.worker.dispatcher.action_listener import Action
+from mtmai.worker.dispatcher.dispatcher import (
     ActionListener,
     GetActionListenerRequest,
     new_dispatcher,
 )
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.backoff import exp_backoff_sleep
 
 ACTION_EVENT_RETRY_COUNT = 5
 

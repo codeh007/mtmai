@@ -4,16 +4,18 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
+from loguru import logger
 from pydantic import ValidationError
 
 from mtmai.core import security
 from mtmai.core.config import settings
-from mtmai.core.logging import get_logger
+
+# from mtmai.core.logging import get_logger
 from mtmai.crud import curd
 from mtmai.deps import get_asession
 from mtmai.models.models import TokenPayload, User
 
-logger = get_logger()
+# logger = get_logger()
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
 
 

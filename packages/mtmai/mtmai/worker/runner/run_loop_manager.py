@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
@@ -8,8 +7,8 @@ from clients.client import Client, new_client_raw
 from loguru import logger
 from mtlibs.types import WorkflowValidator
 from mtmai.context.context import Context
-from mtmai.dispatcher.action_listener import Action
 from mtmai.loader import ClientConfig
+from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.runner import Runner
 from mtmai.worker.runner.utils.capture_logs import capture_logs
 
@@ -38,8 +37,8 @@ class WorkerActionRunLoopManager:
     runner: Runner = field(init=False, default=None)
 
     def __post_init__(self):
-        if self.debug:
-            logger.setLevel(logging.DEBUG)
+        # if self.debug:
+        #     logger.setLevel(logging.DEBUG)
         self.client = new_client_raw(self.config, self.debug)
         self.start()
 

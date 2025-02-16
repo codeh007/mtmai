@@ -3,7 +3,7 @@ from typing import Callable, Dict, Generic, List, Optional, TypedDict, TypeVar, 
 
 from loguru import logger
 
-from mtmai.context import Context
+from mtmai.context.context import Context
 from mtmai.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
     CreateStepRateLimit,

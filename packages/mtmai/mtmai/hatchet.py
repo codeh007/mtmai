@@ -16,12 +16,12 @@ from mtmai.contracts.workflows_pb2 import (
     DesiredWorkerLabels,
     StickyStrategy,
 )
-from mtmai.dispatcher.dispatcher import DispatcherClient
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.run_event_listener import RunEventListenerClient
+from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 

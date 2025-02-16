@@ -14,7 +14,7 @@ from clients.admin import new_admin
 from clients.client import new_client_raw
 from loguru import logger
 from mtlibs.types import WorkflowValidator
-from mtmai.context import Context
+from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.contracts.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_COMPLETED,
@@ -25,12 +25,12 @@ from mtmai.contracts.dispatcher_pb2 import (
     STEP_EVENT_TYPE_STARTED,
     ActionType,
 )
-from mtmai.dispatcher.action_listener import Action
-from mtmai.dispatcher.dispatcher import new_dispatcher
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
 from mtmai.run_event_listener import new_listener
 from mtmai.worker.action_listener_process import ActionEvent
+from mtmai.worker.dispatcher.action_listener import Action
+from mtmai.worker.dispatcher.dispatcher import new_dispatcher
 from mtmai.worker.runner.utils.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode

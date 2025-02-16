@@ -1,4 +1,4 @@
-from mtmai.dispatcher.dispatcher import DispatcherClient
+from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 
 
 class WorkerContext:

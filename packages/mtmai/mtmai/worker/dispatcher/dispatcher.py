@@ -19,14 +19,13 @@ from mtmai.contracts.dispatcher_pb2 import (
     WorkerRegisterResponse,
 )
 from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
-from mtmai.dispatcher.action_listener import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.worker.dispatcher.action_listener import (
     Action,
     ActionListener,
     GetActionListenerRequest,
 )
-
-from ..loader import ClientConfig
-from ..mtlibs.hatchet_utils import get_metadata, tenacity_retry
 
 DEFAULT_REGISTER_TIMEOUT = 30
 

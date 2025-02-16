@@ -17,21 +17,14 @@ from clients.events import EventClient
 from clients.rest_client import RestApi
 from loguru import logger
 from mtlibs.types import WorkflowValidator
-from pydantic import BaseModel, StrictStr
-
 from mtmai.context.worker_context import WorkerContext
 from mtmai.contracts.dispatcher_pb2 import OverridesData
-from mtmai.dispatcher.dispatcher import (  # type: ignore[attr-defined]
-    Action,
-    DispatcherClient,
-)
 from mtmai.run_event_listener import RunEventListenerClient
-
-# from mtmai.tenacity_utils import tenacity_retry
+from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
+from pydantic import BaseModel, StrictStr
 
-# from ..logger import logger
 from ..mtlibs.hatchet_utils import tenacity_retry
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
@@ -39,7 +32,6 @@ DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 T = TypeVar("T", bound=BaseModel)
 
 user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
-# user_context: ContextVar[User] = ContextVar("user", default=None)
 
 
 def get_current_user_id() -> str:

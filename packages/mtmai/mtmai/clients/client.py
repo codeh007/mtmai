@@ -9,9 +9,9 @@ from clients.connection import new_conn
 from clients.events import EventClient, new_event
 from clients.rest_client import AsyncRestApi, RestApi
 from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
-from mtmai.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.run_event_listener import RunEventListenerClient
+from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from mtmai.workflow_listener import PooledWorkflowRunListener
 
 
