@@ -31,10 +31,10 @@ from mtmai.run_event_listener import new_listener
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
-from mtmai.worker.runner.utils.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+from worker.runner.capture_logs import copy_context_vars, sr, wr
 
 from ...callable import DurableContext
 

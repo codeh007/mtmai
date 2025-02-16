@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import json
+import traceback
 from typing import Any
 
 import grpc
@@ -91,3 +92,8 @@ def extract_claims_from_jwt(token: str):
     claims = json.loads(claims_data)
 
     return claims
+
+
+def errorWithTraceback(message: str, e: Exception):
+    trace = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+    return f"{message}\n{trace}"

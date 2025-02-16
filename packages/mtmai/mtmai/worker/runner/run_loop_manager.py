@@ -10,7 +10,7 @@ from mtmai.context.context import Context
 from mtmai.loader import ClientConfig
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.runner import Runner
-from mtmai.worker.runner.utils.capture_logs import capture_logs
+from worker.runner.capture_logs import capture_logs
 
 STOP_LOOP = "STOP_LOOP"
 
