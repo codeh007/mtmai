@@ -117,14 +117,6 @@ class UIAgent(RoutedAgent):
         thread_id = message.session_id
         if not thread_id:
             thread_id = generate_uuid()
-
-        # team_component_data: Team = await self.send_ui_msg(
-        #     MsgGetTeam(
-        #         tenant_id=tenant_id,
-        #         team_id=message.team_id,
-        #     )
-        # )
-        # team.
         team_component_data: MtComponent = await self.handle_tenant_message(
             MsgGetTeam(
                 tenant_id=tenant_id,
@@ -132,7 +124,7 @@ class UIAgent(RoutedAgent):
             ),
             ctx,
         )
-        team = Team.load_component(team_component_data.component.model_dump())
+        team = Team.load_component(team_component_data.component)
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
@@ -143,44 +135,38 @@ class UIAgent(RoutedAgent):
             ):
                 if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
                     break
-                try:
-                    if isinstance(event, TaskResult):
-                        await self.send_ui_msg(
-                            ApiSaveTeamTaskResult(
-                                tenant_id=tenant_id,
-                                team_id=team_id,
-                                task_result=event,
-                            ),
-                        )
-                    elif isinstance(event, TextMessage):
-                        await self.send_ui_msg(
-                            ChatMessageUpsert(
-                                content=event.content,
-                                tenant_id=message.tenant_id,
-                                team_id=message.team_id,
-                                threadId=thread_id,
-                                runId=run_id,
-                            ),
-                        )
-                    elif isinstance(event, BaseModel):
-                        await self.send_ui_msg(
-                            ChatMessageUpsert(
-                                content=event.model_dump_json(),
-                                tenant_id=message.tenant_id,
-                                team_id=message.team_id,
-                            ),
-                        )
-                        # await self.send_ui_msg(
-                        #     AgEventCreate(
-                        #         data=event,
-                        #         framework="autogen",
-                        #         meta={},
-                        #     ),
-                        # )
-                    else:
-                        logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
-                except Exception as e:
-                    logger.error(f"WorkerMainAgent stream 运行出错: {e}")
+
+                if isinstance(event, TaskResult):
+                    await self.handle_api_save_team_task_result(
+                        ApiSaveTeamTaskResult(
+                            tenant_id=tenant_id,
+                            team_id=team_id,
+                            task_result=event,
+                        ),
+                        ctx,
+                    )
+                elif isinstance(event, TextMessage):
+                    await self.handle_message_create(
+                        ChatMessageUpsert(
+                            content=event.content,
+                            tenant_id=message.tenant_id,
+                            team_id=message.team_id,
+                            threadId=thread_id,
+                            runId=run_id,
+                        ),
+                        ctx,
+                    )
+                elif isinstance(event, BaseModel):
+                    await self.handle_message_create(
+                        ChatMessageUpsert(
+                            content=event.model_dump_json(),
+                            tenant_id=message.tenant_id,
+                            team_id=message.team_id,
+                        ),
+                        ctx,
+                    )
+                else:
+                    logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
 
         except Exception as e:
             logger.error(f"WorkerMainAgent 运行出错: {e}")
@@ -192,7 +178,7 @@ class UIAgent(RoutedAgent):
                     if hasattr(agent, "close"):
                         await agent.close()
 
-            result = await self.send_ui_msg(
+            result = await self.handle_api_save_team_state(
                 ApiSaveTeamState(
                     tenant_id=tenant_id,
                     team_id=team_id,
@@ -200,6 +186,7 @@ class UIAgent(RoutedAgent):
                     componentId=team_id,
                     runId=run_id,
                 ),
+                ctx,
             )
             return result
 
@@ -237,7 +224,7 @@ class UIAgent(RoutedAgent):
     @message_handler
     async def handle_tenant_message(
         self, message: MsgGetTeam, mctx: MessageContext
-    ) -> Team:
+    ) -> MtComponent:
         # if not message.tenant_id or len(message.tenant_id) == 0:
         #     # raise ValueError("tenantId required")
         #     raise CantHandleException("tenantId required")
@@ -271,21 +258,21 @@ class UIAgent(RoutedAgent):
             await self.gomtmapi.coms_api.coms_upsert(
                 tenant=message.tenant_id,
                 com=team._team_id,
-                com2=team2.model_dump(),
+                mt_component=team2.model_dump(),
             )
-        teams = await self.gomtmapi.teams_api.team_list(tenant=tenant_id)
+        comps = await self.gomtmapi.coms_api.coms_list(tenant=tenant_id)
         detault_team_item = next(
             (
                 item
-                for item in teams.rows
+                for item in comps.rows
                 if item.label == assisant_team_builder.AssistantTeamBuilder().name
             ),
             None,
         )
 
-        return await self.gomtmapi.teams_api.team_get(
+        return await self.gomtmapi.coms_api.coms_get(
             tenant=tenant_id,
-            team=detault_team_item.metadata.id,
+            com=detault_team_item.metadata.id,
         )
 
     async def _create_team_component(
@@ -335,12 +322,13 @@ class UIAgent(RoutedAgent):
             team_component = MtComponent(
                 label=component_model.label,
                 description=component_model.description or "",
+                componentType="team",
                 component=comp,
             )
             logger.info(f"create default team for tenant {tenant_id}")
             new_team = await self.gomtmapi.coms_api.coms_upsert(
                 tenant=tenant_id,
                 com=generate_uuid(),
-                mt_component=team_component,
+                mt_component=team_component.model_dump(),
             )
             return new_team

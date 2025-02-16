@@ -28,12 +28,12 @@ class ChatMessageUpsert(BaseModel):
     """ # noqa: E501
     tenant_id: StrictStr = Field(alias="tenantId")
     content: StrictStr
-    team_id: StrictStr = Field(alias="teamId")
+    component_id: StrictStr = Field(alias="componentId")
     thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
     run_id: Optional[StrictStr] = Field(default=None, alias="runId")
     role: Optional[StrictStr] = None
     message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
-    __properties: ClassVar[List[str]] = ["tenantId", "content", "teamId", "threadId", "runId", "role", "messageType"]
+    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "messageType"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +88,7 @@ class ChatMessageUpsert(BaseModel):
         _obj = cls.model_validate({
             "tenantId": obj.get("tenantId"),
             "content": obj.get("content"),
-            "teamId": obj.get("teamId"),
+            "componentId": obj.get("componentId"),
             "threadId": obj.get("threadId"),
             "runId": obj.get("runId"),
             "role": obj.get("role"),
