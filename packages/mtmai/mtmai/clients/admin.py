@@ -3,9 +3,8 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, TypedDict, TypeVar, Union
 
 import grpc
+from clients.connection import new_conn
 from google.protobuf import timestamp_pb2
-
-from mtmai.connection import new_conn
 from mtmai.contracts.workflows_pb2 import (
     BulkTriggerWorkflowRequest,
     BulkTriggerWorkflowResponse,
@@ -19,17 +18,12 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowVersion,
 )
 from mtmai.contracts.workflows_pb2_grpc import WorkflowServiceStub
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
 from mtmai.run_event_listener import new_listener
-
-# from mtmai.tenacity_utils import tenacity_retry
+from mtmai.workflow import WorkflowMeta
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import RunRef, WorkflowRunRef
-
-from .loader import ClientConfig
-from .mtlibs.hatchet_utils import get_metadata, tenacity_retry
-
-# from .metadata import get_metadata
-from .workflow import WorkflowMeta
 
 
 def new_admin(config: ClientConfig):

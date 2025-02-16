@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import signal
 import time
 from dataclasses import dataclass, field
@@ -66,8 +65,8 @@ class WorkerActionListenerProcess:
     running_step_runs: Mapping[str, float] = field(init=False, default_factory=dict)
 
     def __post_init__(self):
-        if self.debug:
-            logger.setLevel(logging.DEBUG)
+        # if self.debug:
+        #     logger.setLevel(logging.DEBUG)
 
         loop = asyncio.get_event_loop()
         loop.add_signal_handler(signal.SIGINT, noop_handler)

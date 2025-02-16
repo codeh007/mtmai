@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator, List, Optional
 
 import grpc
+from clients.connection import new_conn
 from grpc._cython import cygrpc
 from loguru import logger
-from mtmai.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
     ActionType,
     AssignedAction,
@@ -22,7 +22,7 @@ from mtmai.mtlibs.hatchet_utils import Event_ts, read_with_interrupt
 from mtmai.mtlibs.serialization import flatten
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
 
-from ..events import proto_timestamp_now
+from ..clients.events import proto_timestamp_now
 from ..loader import ClientConfig
 from ..mtlibs.hatchet_utils import get_metadata
 

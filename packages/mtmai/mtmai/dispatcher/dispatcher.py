@@ -1,7 +1,7 @@
 from typing import Any, cast
 
+from clients.connection import new_conn
 from google.protobuf.timestamp_pb2 import Timestamp
-from mtmai.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
     STEP_EVENT_TYPE_COMPLETED,
     STEP_EVENT_TYPE_FAILED,

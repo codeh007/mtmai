@@ -1,14 +1,14 @@
 import asyncio
-import logging
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
-from loguru import logger
+from clients.admin import AdminClient
+from clients.client import Client, new_client, new_client_raw
+from clients.events import EventClient
+from clients.rest_client import RestApi
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
-from mtmai.admin import AdminClient
 from mtmai.callable import ConcurrencyFunction, HatchetCallable
-from mtmai.client import Client, new_client, new_client_raw
 from mtmai.context.context import Context
 from mtmai.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
@@ -17,14 +17,10 @@ from mtmai.contracts.workflows_pb2 import (
     StickyStrategy,
 )
 from mtmai.dispatcher.dispatcher import DispatcherClient
-from mtmai.events import EventClient
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
-
-# from mtmai.rate_limit import RateLimit
-from mtmai.rest_client import RestApi
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
@@ -236,8 +232,8 @@ class HatchetV1:
         else:
             self._client = new_client(config, debug)
 
-        if debug:
-            logger.setLevel(logging.DEBUG)
+        # if debug:
+        #     logger.setLevel(logging.DEBUG)
 
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
@@ -317,7 +313,7 @@ def concurrency(
     return inner
 
 
-T = TypeVar("T")
+# T = TypeVar("T")
 
 
 def function(

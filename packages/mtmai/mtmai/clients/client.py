@@ -4,15 +4,13 @@ from logging import Logger
 from typing import Callable
 
 import grpc
-from lazify import LazyProxy
-
-from mtmai.admin import AdminClient, new_admin
-from mtmai.connection import new_conn
+from clients.admin import AdminClient, new_admin
+from clients.connection import new_conn
+from clients.events import EventClient, new_event
+from clients.rest_client import AsyncRestApi, RestApi
 from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
 from mtmai.dispatcher.dispatcher import DispatcherClient, new_dispatcher
-from mtmai.events import EventClient, new_event
 from mtmai.loader import ClientConfig, ConfigLoader
-from mtmai.rest_client import AsyncRestApi, RestApi
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 
@@ -150,4 +148,4 @@ def set_gomtm_api_context(gomtm_api: AsyncRestApi):
     gomtm_ctx.set(gomtm_api)
 
 
-gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api_context, enable_cache=False)  # type: ignore
+# gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api_context, enable_cache=False)  # type: ignore

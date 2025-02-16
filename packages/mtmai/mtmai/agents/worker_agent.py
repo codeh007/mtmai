@@ -14,7 +14,7 @@ from autogen_core import (
 from pydantic import BaseModel
 from team_builder.assisant_team_builder import AssistantTeamBuilder
 
-from mtmai.aghelper import AgHelper
+from mtmai.agents.aghelper import AgHelper
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.team_component import TeamComponent

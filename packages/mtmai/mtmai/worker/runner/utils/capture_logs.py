@@ -5,9 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from typing import Any, Coroutine
 
-# from mtmai import logger
+from clients.events import EventClient
 from loguru import logger
-from mtmai.events import EventClient
 
 wr: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "workflow_run_id", default=None

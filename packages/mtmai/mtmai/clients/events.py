@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 import grpc
 from google.protobuf import timestamp_pb2
-
 from mtmai.contracts.events_pb2 import (
     BulkPushEventRequest,
     Event,
@@ -14,9 +13,8 @@ from mtmai.contracts.events_pb2 import (
     PutStreamEventRequest,
 )
 from mtmai.contracts.events_pb2_grpc import EventsServiceStub
-
-from .loader import ClientConfig
-from .mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
 
 
 def new_event(conn, config: ClientConfig):

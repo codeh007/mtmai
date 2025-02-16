@@ -16,8 +16,6 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowKind,
 )
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
-
-# from mtmai.rate_limit import RateLimit
 from mtmai.workflow_run import RunRef
 
 T = TypeVar("T")

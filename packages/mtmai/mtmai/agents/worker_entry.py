@@ -9,11 +9,12 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
+from clients.client import set_gomtm_api_context
+from clients.rest_client import AsyncRestApi
 
 from mtmai import loader
 from mtmai.agents.webui_agent import UIAgent
 from mtmai.agents.worker_agent import WorkerAgent
-from mtmai.client import set_gomtm_api_context
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -25,7 +26,6 @@ from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import Context, set_api_token_context, set_backend_url
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
-from mtmai.rest_client import AsyncRestApi
 
 from ._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from .hf_space_agent import HfSpaceAgent

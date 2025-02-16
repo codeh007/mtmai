@@ -10,11 +10,11 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
+from clients.admin import new_admin
+from clients.client import new_client_raw
 from loguru import logger
 from mtlibs.types import WorkflowValidator
-from mtmai.admin import new_admin
-from mtmai.client import new_client_raw
-from mtmai.context import Context  # type: ignore[attr-defined]
+from mtmai.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.contracts.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_COMPLETED,

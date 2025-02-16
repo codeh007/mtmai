@@ -1,6 +1,6 @@
 from typing import Union
 
-from mtmai.client import Client
+from clients.client import Client
 from mtmai.clients.rest.models.cron_workflows import CronWorkflows
 from mtmai.clients.rest.models.cron_workflows_list import CronWorkflowsList
 from mtmai.clients.rest.models.cron_workflows_order_by_field import (

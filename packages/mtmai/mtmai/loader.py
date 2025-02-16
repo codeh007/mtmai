@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 import yaml
 
-from .token import get_addresses_from_jwt, get_tenant_id_from_jwt
+from mtmai.mtlibs.hatchet_utils import get_addresses_from_jwt, get_tenant_id_from_jwt
 
 
 class ClientTLSConfig:

@@ -1,7 +1,7 @@
 import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from mtmai.client import Client
+from clients.client import Client
 from mtmai.clients.rest.models.cron_workflows_order_by_field import (
     CronWorkflowsOrderByField,
 )

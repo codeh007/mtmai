@@ -2,8 +2,6 @@ import os
 from typing import Any
 
 import grpc
-
-# if TYPE_CHECKING:
 from mtmai.loader import ClientConfig
 
 

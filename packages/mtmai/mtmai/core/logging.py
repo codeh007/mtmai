@@ -1,6 +1,5 @@
 import logging
 import pathlib
-import sys
 from logging.handlers import RotatingFileHandler
 
 from mtmai.core.config import settings
@@ -164,13 +163,13 @@ def setup_openai_base_logging():
     openai_base_client_logger.addHandler(file_handler)
 
 
-# Create a named logger
-logger = logging.getLogger("mtmai")
-logger.setLevel(logging.INFO)
+# # Create a named logger
+# logger = logging.getLogger("mtmai")
+# logger.setLevel(logging.INFO)
 
-handler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter("[%(levelname)s]\t🪓 -- %(asctime)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+# handler = logging.StreamHandler(sys.stdout)
+# formatter = logging.Formatter("[%(levelname)s]\t🪓 -- %(asctime)s - %(message)s")
+# handler.setFormatter(formatter)
+# logger.addHandler(handler)
 
-logger.propagate = False
+# logger.propagate = False

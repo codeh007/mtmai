@@ -1,9 +1,10 @@
 import logging
 
+from clients.rest_client import AsyncRestApi
+
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.clients.rest.models.team import Team
 from mtmai.mtlibs.id import generate_uuid
-from mtmai.rest_client import AsyncRestApi
 from mtmai.team_builder.assisant_team_builder import AssistantTeamBuilder
 
 logger = logging.getLogger(__name__)
