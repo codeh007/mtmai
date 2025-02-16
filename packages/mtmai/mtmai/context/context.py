@@ -25,11 +25,13 @@ from mtmai.dispatcher.dispatcher import (  # type: ignore[attr-defined]
 from mtmai.events import EventClient
 from mtmai.rest_client import RestApi
 from mtmai.run_event_listener import RunEventListenerClient
-from mtmai.tenacity_utils import tenacity_retry
+
+# from mtmai.tenacity_utils import tenacity_retry
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 
 from ..logger import logger
+from ..mtlibs.hatchet_utils import tenacity_retry
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 

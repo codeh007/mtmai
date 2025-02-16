@@ -16,7 +16,9 @@ from mtmai.event_ts import Event_ts, read_with_interrupt
 
 from .loader import ClientConfig
 from .logger import logger
-from .metadata import get_metadata
+from .mtlibs.hatchet_utils import get_metadata
+
+# from .metadata import get_metadata
 
 DEFAULT_WORKFLOW_LISTENER_RETRY_INTERVAL = 3  # seconds
 DEFAULT_WORKFLOW_LISTENER_RETRY_COUNT = 5

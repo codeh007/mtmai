@@ -14,10 +14,11 @@ from mtmai.contracts.events_pb2 import (
     PutStreamEventRequest,
 )
 from mtmai.contracts.events_pb2_grpc import EventsServiceStub
-from mtmai.tenacity_utils import tenacity_retry
 
 from .loader import ClientConfig
-from .metadata import get_metadata
+from .mtlibs.hatchet_utils import get_metadata, tenacity_retry
+
+# from .metadata import get_metadata
 
 
 def new_event(conn, config: ClientConfig):

@@ -32,3 +32,7 @@ def tenacity_should_retry(ex: Exception) -> bool:
         return True
     else:
         return False
+
+
+def get_metadata(token: str):
+    return [("authorization", "bearer " + token)]

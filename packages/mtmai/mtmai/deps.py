@@ -7,8 +7,6 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
 from mtmai.core.config import settings
-
-# from mtmai.db.db import get_async_engine, get_checkpointer
 from mtmai.db.db_manager import DatabaseManager
 from mtmai.models.models import User
 

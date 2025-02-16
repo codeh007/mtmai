@@ -1,14 +1,13 @@
 import os
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import grpc
 
-if TYPE_CHECKING:
-    from mtmai.loader import ClientConfig
+# if TYPE_CHECKING:
+from mtmai.loader import ClientConfig
 
 
 def new_conn(config: "ClientConfig", aio=False):
-
     credentials: grpc.ChannelCredentials | None = None
 
     # load channel credentials

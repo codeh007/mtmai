@@ -24,7 +24,9 @@ from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
 
 from ..events import proto_timestamp_now
 from ..loader import ClientConfig
-from ..metadata import get_metadata
+from ..mtlibs.hatchet_utils import get_metadata
+
+# from ..metadata import get_metadata
 
 DEFAULT_ACTION_TIMEOUT = 600  # seconds
 

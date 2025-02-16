@@ -20,12 +20,15 @@ from mtmai.contracts.workflows_pb2 import (
 )
 from mtmai.contracts.workflows_pb2_grpc import WorkflowServiceStub
 from mtmai.run_event_listener import new_listener
-from mtmai.tenacity_utils import tenacity_retry
+
+# from mtmai.tenacity_utils import tenacity_retry
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import RunRef, WorkflowRunRef
 
 from .loader import ClientConfig
-from .metadata import get_metadata
+from .mtlibs.hatchet_utils import get_metadata, tenacity_retry
+
+# from .metadata import get_metadata
 from .workflow import WorkflowMeta
 
 

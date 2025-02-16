@@ -24,10 +24,14 @@ from mtmai.dispatcher.action_listener import (
     ActionListener,
     GetActionListenerRequest,
 )
-from mtmai.tenacity_utils import tenacity_retry
 
 from ..loader import ClientConfig
-from ..metadata import get_metadata
+from ..mtlibs.hatchet_utils import get_metadata, tenacity_retry
+
+# from mtmai.tenacity_utils import tenacity_retry
+
+
+# from ..metadata import get_metadata
 
 DEFAULT_REGISTER_TIMEOUT = 30
 

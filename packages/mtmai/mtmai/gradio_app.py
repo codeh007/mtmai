@@ -121,9 +121,9 @@ def mount_gradio_app(app: FastAPI):
     gr.mount_gradio_app(app, demo, path="/")
 
 
-if __name__ == "__main__":
-    demo.launch(
-        share=True,
-        server_name="0.0.0.0",
-        server_port=18089,
-    )
+# if __name__ == "__main__":
+#     demo.launch(
+#         share=True,
+#         server_name="0.0.0.0",
+#         server_port=18089,
+#     )

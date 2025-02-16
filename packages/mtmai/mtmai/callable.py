@@ -13,11 +13,11 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowConcurrencyOpts,
     WorkflowKind,
 )
-from mtmai.labels import DesiredWorkerLabel
 from mtmai.logger import logger
-from mtmai.rate_limit import RateLimit
+from mtmai.models._types import DesiredWorkerLabel, RateLimit
 
-from .workflow_run import RunRef
+# from mtmai.rate_limit import RateLimit
+from mtmai.workflow_run import RunRef
 
 T = TypeVar("T")
 
