@@ -1,7 +1,6 @@
 import pytest
 from dotenv import load_dotenv
-
-from mtmaisdk.hatchet import Hatchet
+from mtmai.hatchet import Hatchet
 
 load_dotenv()
 

@@ -1,9 +1,9 @@
 import asyncio
 
 import typer
+from agents.worker_entry import WorkerApp
 
 import mtmai.core.bootstraps as bootstraps
-from mtmai.worker import WorkerApp
 
 bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)

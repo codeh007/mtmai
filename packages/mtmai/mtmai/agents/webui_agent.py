@@ -17,7 +17,7 @@ from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.task_result import TaskResult
 from mtmai.clients.rest.models.team import Team
 from mtmai.clients.rest.models.team_component import TeamComponent
-from mtmai.mtmaisdk.hatchet import Hatchet
+from mtmai.hatchet import Hatchet
 from mtmai.team_builder import assisant_team_builder
 from mtmai.team_builder.company_research import CompanyResearchTeamBuilder
 from mtmai.team_builder.travel_builder import TravelTeamBuilder
@@ -126,7 +126,6 @@ class UIAgent(RoutedAgent):
         )
         model_dict = defaultModel.config.model_dump()
         model_dict.pop("n", None)
-        # model_dict["model_info"] = model_dict.pop("model_info", None)
         model_client = MtmOpenAIChatCompletionClient(
             **model_dict,
         )

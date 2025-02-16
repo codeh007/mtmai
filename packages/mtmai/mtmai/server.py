@@ -6,10 +6,9 @@ from fastapi.routing import APIRoute
 from loguru import logger
 
 from mtmai._version import version
+from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
 from mtmai.middleware import AuthMiddleware
-
-from .api import mount_api_routes
 
 
 def build_app():

@@ -10,7 +10,7 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
 )
 from autogen_core import Component, RoutedAgent
 
-from ..mtmaisdk.hatchet import Hatchet
+from mtmai.hatchet import Hatchet
 
 logger = logging.getLogger(__name__)
 

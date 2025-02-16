@@ -23,15 +23,14 @@ from typing import Dict, List, Optional, Tuple, Union
 from urllib.parse import quote
 
 import mtmai.clients.rest.models
-from clients.rest.api_response import ApiResponse
-from clients.rest.api_response import T as ApiResponseT
-from clients.rest.exceptions import ApiException, ApiValueError
 from dateutil.parser import parse
-from mtmai.mtmaisdk.configuration import Configuration
-from mtmaisdk import rest
+from mtmai.clients.rest import rest
+from mtmai.clients.rest.api_response import ApiResponse
+from mtmai.clients.rest.api_response import T as ApiResponseT
+from mtmai.clients.rest.exceptions import ApiException, ApiValueError
 from pydantic import SecretStr
 
-# from mtmai.mtmaisdk.rest import rest
+from .configuration import Configuration
 
 RequestSerialized = Tuple[str, str, Dict[str, str], Optional[str], List[str]]
 
