@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -33,9 +33,19 @@ class CronWorkflows(BaseModel):
     workflow_id: StrictStr = Field(alias="workflowId")
     workflow_name: StrictStr = Field(alias="workflowName")
     cron: StrictStr
+    name: Optional[StrictStr] = None
     input: Optional[Dict[str, Any]] = None
     additional_metadata: Optional[Dict[str, Any]] = Field(default=None, alias="additionalMetadata")
-    __properties: ClassVar[List[str]] = ["metadata", "tenantId", "workflowVersionId", "workflowId", "workflowName", "cron", "input", "additionalMetadata"]
+    enabled: StrictBool
+    method: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "tenantId", "workflowVersionId", "workflowId", "workflowName", "cron", "name", "input", "additionalMetadata", "enabled", "method"]
+
+    @field_validator('method')
+    def method_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['DEFAULT', 'API']):
+            raise ValueError("must be one of enum values ('DEFAULT', 'API')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,8 +107,11 @@ class CronWorkflows(BaseModel):
             "workflowId": obj.get("workflowId"),
             "workflowName": obj.get("workflowName"),
             "cron": obj.get("cron"),
+            "name": obj.get("name"),
             "input": obj.get("input"),
-            "additionalMetadata": obj.get("additionalMetadata")
+            "additionalMetadata": obj.get("additionalMetadata"),
+            "enabled": obj.get("enabled"),
+            "method": obj.get("method")
         })
         return _obj
 

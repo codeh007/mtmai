@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
@@ -42,7 +42,15 @@ class ScheduledWorkflows(BaseModel):
     workflow_run_name: Optional[StrictStr] = Field(default=None, alias="workflowRunName")
     workflow_run_status: Optional[WorkflowRunStatus] = Field(default=None, alias="workflowRunStatus")
     workflow_run_id: Optional[Annotated[str, Field(min_length=36, strict=True, max_length=36)]] = Field(default=None, alias="workflowRunId")
-    __properties: ClassVar[List[str]] = ["metadata", "tenantId", "workflowVersionId", "workflowId", "workflowName", "triggerAt", "input", "additionalMetadata", "workflowRunCreatedAt", "workflowRunName", "workflowRunStatus", "workflowRunId"]
+    method: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "tenantId", "workflowVersionId", "workflowId", "workflowName", "triggerAt", "input", "additionalMetadata", "workflowRunCreatedAt", "workflowRunName", "workflowRunStatus", "workflowRunId", "method"]
+
+    @field_validator('method')
+    def method_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['DEFAULT', 'API']):
+            raise ValueError("must be one of enum values ('DEFAULT', 'API')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -109,7 +117,8 @@ class ScheduledWorkflows(BaseModel):
             "workflowRunCreatedAt": obj.get("workflowRunCreatedAt"),
             "workflowRunName": obj.get("workflowRunName"),
             "workflowRunStatus": obj.get("workflowRunStatus"),
-            "workflowRunId": obj.get("workflowRunId")
+            "workflowRunId": obj.get("workflowRunId"),
+            "method": obj.get("method")
         })
         return _obj
 

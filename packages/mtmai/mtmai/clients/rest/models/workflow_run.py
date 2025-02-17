@@ -38,7 +38,7 @@ class WorkflowRun(BaseModel):
     workflow_version: Optional[WorkflowVersion] = Field(default=None, alias="workflowVersion")
     status: WorkflowRunStatus
     display_name: Optional[StrictStr] = Field(default=None, alias="displayName")
-    job_runs: Optional[List[JobRun]] = Field(default=None, alias="jobRuns")
+    job_runs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="jobRuns")
     triggered_by: WorkflowRunTriggeredBy = Field(alias="triggeredBy")
     input: Optional[Dict[str, Any]] = None
     error: Optional[StrictStr] = None
@@ -95,13 +95,6 @@ class WorkflowRun(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of workflow_version
         if self.workflow_version:
             _dict['workflowVersion'] = self.workflow_version.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in job_runs (list)
-        _items = []
-        if self.job_runs:
-            for _item_job_runs in self.job_runs:
-                if _item_job_runs:
-                    _items.append(_item_job_runs.to_dict())
-            _dict['jobRuns'] = _items
         # override the default output from pydantic by calling `to_dict()` of triggered_by
         if self.triggered_by:
             _dict['triggeredBy'] = self.triggered_by.to_dict()
@@ -123,7 +116,7 @@ class WorkflowRun(BaseModel):
             "workflowVersion": WorkflowVersion.from_dict(obj["workflowVersion"]) if obj.get("workflowVersion") is not None else None,
             "status": obj.get("status"),
             "displayName": obj.get("displayName"),
-            "jobRuns": [JobRun.from_dict(_item) for _item in obj["jobRuns"]] if obj.get("jobRuns") is not None else None,
+            "jobRuns": obj.get("jobRuns"),
             "triggeredBy": WorkflowRunTriggeredBy.from_dict(obj["triggeredBy"]) if obj.get("triggeredBy") is not None else None,
             "input": obj.get("input"),
             "error": obj.get("error"),
@@ -136,7 +129,4 @@ class WorkflowRun(BaseModel):
         })
         return _obj
 
-from mtmai.clients.rest.models.job_run import JobRun
-# TODO: Rewrite to not use raise_errors
-WorkflowRun.model_rebuild(raise_errors=False)
 

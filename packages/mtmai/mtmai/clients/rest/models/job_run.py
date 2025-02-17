@@ -23,7 +23,7 @@ from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
-from mtmai.clients.rest.models.step_run import StepRun
+from mtmai.clients.rest.models.workflow_run import WorkflowRun
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -135,7 +135,7 @@ class JobRun(BaseModel):
         })
         return _obj
 
-from mtmai.clients.rest.models.workflow_run import WorkflowRun
+from mtmai.clients.rest.models.step_run import StepRun
 # TODO: Rewrite to not use raise_errors
 JobRun.model_rebuild(raise_errors=False)
 

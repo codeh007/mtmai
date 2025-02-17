@@ -34,6 +34,7 @@ class StepRunStatus(str, Enum):
     FAILED = 'FAILED'
     CANCELLED = 'CANCELLED'
     CANCELLING = 'CANCELLING'
+    BACKOFF = 'BACKOFF'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

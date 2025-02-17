@@ -26,6 +26,7 @@ class CronWorkflowsOrderByField(str, Enum):
     """
     allowed enum values
     """
+    NAME = 'name'
     CREATEDAT = 'createdAt'
 
     @classmethod
