@@ -1,4 +1,3 @@
-import logging
 from typing import List
 
 from autogen_agentchat.agents import UserProxyAgent
@@ -11,8 +10,6 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
 from autogen_core import Component, RoutedAgent
 
 from mtmai.hatchet import Hatchet
-
-logger = logging.getLogger(__name__)
 
 
 class MtWebUserProxyAgent(UserProxyAgent):

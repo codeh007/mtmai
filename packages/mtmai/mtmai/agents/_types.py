@@ -56,4 +56,3 @@ class MsgStartWebServer(BaseModel):
 class MsgGetTeam(BaseModel):
     tenant_id: str
     team_id: str
-    # content: str
