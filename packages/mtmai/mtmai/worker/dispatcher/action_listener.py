@@ -247,6 +247,7 @@ class ActionListener:
 
                     assigned_action = t.result()
 
+                    logger.info(f"🟢 Received action: \n{assigned_action}\n")
                     if assigned_action is cygrpc.EOF:
                         self.retries = self.retries + 1
                         break
@@ -374,11 +375,12 @@ class ActionListener:
             await self.start_heartbeater()
         else:
             # if ListenV2 is not available, fallback to Listen
-            listener = self.aio_client.Listen(
-                WorkerListenRequest(workerId=self.worker_id),
-                timeout=DEFAULT_ACTION_TIMEOUT,
-                metadata=get_metadata(self.token),
-            )
+            # listener = self.aio_client.Listen(
+            #     WorkerListenRequest(workerId=self.worker_id),
+            #     timeout=DEFAULT_ACTION_TIMEOUT,
+            #     metadata=get_metadata(self.token),
+            # )
+            logger.warning("v1 listener not implemented")
 
         self.last_connection_attempt = current_time
 

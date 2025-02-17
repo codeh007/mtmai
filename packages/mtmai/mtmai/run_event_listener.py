@@ -4,6 +4,7 @@ from typing import AsyncGenerator
 
 import grpc
 from clients.connection import new_conn
+from loguru import logger
 
 from mtmai.contracts.dispatcher_pb2 import (
     RESOURCE_TYPE_STEP_RUN,
@@ -129,6 +130,7 @@ class RunEventListener:
 
             try:
                 async for workflow_event in listener:
+                    logger.info(f"🟢 Received workflow event: {workflow_event}")
                     eventType = None
                     if workflow_event.resourceType == RESOURCE_TYPE_STEP_RUN:
                         if workflow_event.eventType in step_run_event_type_mapping:

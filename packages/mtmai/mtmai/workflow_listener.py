@@ -134,6 +134,9 @@ class PooledWorkflowRunListener:
                             )
 
                             for subscription_id in subscriptions:
+                                logger.info(
+                                    f"🟢 Putting workflow event into subscription {subscription_id}, {workflow_event.eventType}"
+                                )
                                 await self.events[subscription_id].put(workflow_event)
 
                     except grpc.RpcError as e:
