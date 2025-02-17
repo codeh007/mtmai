@@ -1,16 +1,11 @@
 import asyncio
 import os
 import sys
-from typing import Any, AsyncGenerator, List, Mapping, Sequence, cast
+from typing import Any, Mapping, Sequence, cast
 
 from agents.teams_agent import TeamBuilderAgent
 from autogen_agentchat.base import Team
-from autogen_agentchat.messages import (
-    AgentEvent,
-    BaseChatMessage,
-    ModelClientStreamingChunkEvent,
-    TextMessage,
-)
+from autogen_agentchat.messages import AgentEvent
 from autogen_core import (
     AgentId,
     AgentRuntime,
@@ -42,8 +37,6 @@ from typing_extensions import Self
 
 
 class WorkerAgentConfig(BaseModel):
-    """The declarative configuration for the worker agent."""
-
     name: str
     # model_client: ComponentModel
     # tools: List[ComponentModel] | None
@@ -59,7 +52,7 @@ class WorkerAgentConfig(BaseModel):
 
 class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
     """
-    参考 autogen 的 Team 的实现方式
+    参考 autogen 的 BaseGroupChat 的实现方式
     """
 
     component_type = "worker"
@@ -89,10 +82,36 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             asyncio.Queue()
         )
 
-        # self.reset()
-
     async def _init(self, runtime: AgentRuntime) -> None:
-        self.reset()
+        await self.start_autogen_host()
+        ui_agent_id = AgentId("ui_agent", "default")
+        ui_agent = await UIAgent.register(
+            runtime=self._runtime,
+            type=ui_agent_id.type,
+            factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
+        )
+
+        team_builder_id = AgentId("team_builder_agent", "default")
+        self.worker_agent = await TeamBuilderAgent.register(
+            runtime=self._runtime,
+            type=team_builder_id.type,
+            factory=lambda: TeamBuilderAgent(
+                description=team_builder_id.type,
+                ui_agent=ui_agent_id,
+                wfapp=self.wfapp,
+            ),
+        )
+
+        hf_space_agent_id = AgentId("hf_space_agent", "default")
+
+        await HfSpaceAgent.register(
+            runtime=self._runtime,
+            type=hf_space_agent_id.type,
+            factory=lambda: HfSpaceAgent(
+                description=hf_space_agent_id.type,
+                wfapp=self.wfapp,
+            ),
+        )
         self._initialized = True
 
     async def run(
@@ -102,104 +121,20 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         cancellation_token: CancellationToken | None = None,
     ) -> TaskResult:
         result: TaskResult | None = None
-        async for message in self.run_stream(
-            task=task,
-            cancellation_token=cancellation_token,
-        ):
-            if isinstance(message, TaskResult):
-                result = message
-        if result is not None:
-            return result
-        raise AssertionError("The stream should have returned the final result.")
-
-    async def run_stream(
-        self,
-        *,
-        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
-        cancellation_token: CancellationToken | None = None,
-    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
-        # Create the messages list if the task is a string or a chat message.
-        messages: List[ChatMessage] | None = None
-        if task is None:
-            pass
-        elif isinstance(task, str):
-            messages = [TextMessage(content=task, source="user")]
-        elif isinstance(task, BaseChatMessage):
-            messages = [task]
-        else:
-            if not task:
-                raise ValueError("Task list cannot be empty.")
-            messages = []
-            for msg in task:
-                if not isinstance(msg, BaseChatMessage):
-                    raise ValueError(
-                        "All messages in task list must be valid ChatMessage types"
-                    )
-                messages.append(msg)
-
-        if self._is_running:
-            raise ValueError(
-                "The team is already running, it cannot run again until it is stopped."
-            )
-        self._is_running = True
-
-        # Start the runtime.
-        # TODO: The runtime should be started by a managed context.
-        self._runtime.start()
-
         if not self._initialized:
             await self._init(self._runtime)
+        self._runtime.start()
 
-        # Start a coroutine to stop the runtime and signal the output message queue is complete.
-        async def stop_runtime() -> None:
-            await self._runtime.stop_when_idle()
-            await self._output_message_queue.put(None)
+        await self._init_ingestor()
+        logger.info("worker agent 结束")
 
-        shutdown_task = asyncio.create_task(stop_runtime())
+    async def handle_message(self, message: AgentRunInput):
+        """处理外部消息,包括用户输入的消息"""
+        ui_agent_id = AgentId("ui_agent", "default")
+        await self._runtime.send_message(message=message, recipient=ui_agent_id)
 
-        try:
-            # Run the team by sending the start message to the group chat manager.
-            # The group chat manager will start the group chat by relaying the message to the participants
-            # and the closure agent.
-            # await self._runtime.send_message(
-            #     GroupChatStart(messages=messages),
-            #     recipient=AgentId(
-            #         type=self._group_chat_manager_topic_type, key=self._team_id
-            #     ),
-            #     cancellation_token=cancellation_token,
-            # )
-            # Collect the output messages in order.
-            output_messages: List[AgentEvent | ChatMessage] = []
-            # Yield the messsages until the queue is empty.
-            while True:
-                message_future = asyncio.ensure_future(self._output_message_queue.get())
-                if cancellation_token is not None:
-                    cancellation_token.link_future(message_future)
-                # Wait for the next message, this will raise an exception if the task is cancelled.
-                message = await message_future
-                if message is None:
-                    break
-                yield message
-                if isinstance(message, ModelClientStreamingChunkEvent):
-                    # Skip the model client streaming chunk events.
-                    continue
-                output_messages.append(message)
-
-            # Yield the final result.
-            yield TaskResult(messages=output_messages, stop_reason=self._stop_reason)
-
-        finally:
-            # Wait for the shutdown task to finish.
-            await shutdown_task
-
-            # Clear the output message queue.
-            while not self._output_message_queue.empty():
-                self._output_message_queue.get_nowait()
-
-            # Indicate that the team is no longer running.
-            self._is_running = False
-
-    async def run_old(self):
+    async def _init_ingestor(self):
+        """食入外部消息,包括用户输入的消息"""
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
@@ -248,36 +183,6 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                     sys.exit(1)
                 logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
                 await asyncio.sleep(settings.WORKER_INTERVAL)
-
-        await self.start_autogen_host()
-        self._runtime.start()
-        ui_agent = await UIAgent.register(
-            runtime=self._runtime,
-            type="ui_agent",
-            factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
-        )
-        ui_agent_id = AgentId("ui_agent", "default")
-        self.worker_agent = await TeamBuilderAgent.register(
-            runtime=self._runtime,
-            type="worker_main_agent",
-            factory=lambda: TeamBuilderAgent(
-                description="worker_main_agent",
-                ui_agent=ui_agent_id,
-                wfapp=self.wfapp,
-            ),
-        )
-
-        await HfSpaceAgent.register(
-            runtime=self._runtime,
-            type="hf_space_agent",
-            factory=lambda: HfSpaceAgent(
-                description="hfspace_agent",
-                wfapp=self.wfapp,
-            ),
-        )
-
-        self._is_running = True
-
         # 非阻塞启动
         # self.worker.setup_loop(asyncio.new_event_loop())
         # asyncio.create_task(self.worker.async_start())
@@ -289,7 +194,6 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
         self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
         self.autogen_host.start()
-        logger.info(f"🟢 AG host at: {settings.AG_HOST_ADDRESS}")
 
     async def stop(self):
         if self.worker:
@@ -310,20 +214,13 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             input_validator=AgentRunInput,
         )
         class FlowAg:
-            @self.wfapp.step(timeout="30m")
+            @self.wfapp.step(timeout="60m")
             async def step_entry(self, hatctx: Context):
                 set_gomtm_api_context(hatctx.aio)
                 input = cast(AgentRunInput, hatctx.workflow_input())
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
-                # await worker_app._runtime.publish_message(input, DefaultTopicId())
-
-                # target_agent_id = AgentId("worker_main_agent", "default")
-                ui_agent_id = AgentId("ui_agent", "default")
-                await worker_app._runtime.send_message(
-                    message=input, recipient=ui_agent_id
-                )
-                return {"result": "success"}
+                return await worker_app.handle_message(input)
 
         self.worker.register_workflow(FlowAg())
 

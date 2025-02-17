@@ -313,9 +313,6 @@ def concurrency(
     return inner
 
 
-# T = TypeVar("T")
-
-
 def function(
     name: str = "",
     auto_register: bool = True,

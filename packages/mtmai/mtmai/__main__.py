@@ -18,7 +18,7 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    asyncio.run(WorkerAgent().run())
+    asyncio.run(WorkerAgent().run(task="Hello, world!"))
 
 
 if __name__ == "__main__":
