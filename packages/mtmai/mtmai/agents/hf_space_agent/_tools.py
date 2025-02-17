@@ -25,3 +25,6 @@ stock_price_tool = FunctionTool(get_stock_price, description="Get the stock pric
 
 async def hf_space_reset():
     logger.info("Resetting HF Space=====================================")
+
+
+hf_space_reset_tool = FunctionTool(hf_space_reset, description="Reset HF Space")

@@ -1,9 +1,8 @@
 from autogen_core import MessageContext, default_subscription, message_handler
 from loguru import logger
 
-from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-
 from .._agents import MtBaseAgent
+from ._types import ResetHFMsg
 
 
 @default_subscription
@@ -19,7 +18,5 @@ class HfSpaceAgent(MtBaseAgent):
     #         self.gomtmapi = self.wfapp.rest.aio
 
     @message_handler
-    async def handle_message(
-        self, message: ChatMessageUpsert, ctx: MessageContext
-    ) -> None:
+    async def handle_message(self, message: ResetHFMsg, ctx: MessageContext) -> None:
         logger.info(f"HFSpace 收到消息:{self.type}")
