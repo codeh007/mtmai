@@ -48,6 +48,7 @@ from mtmai.clients.rest.models.artifact_markdown_v3 import ArtifactMarkdownV3
 from mtmai.clients.rest.models.artifact_tool_response import ArtifactToolResponse
 from mtmai.clients.rest.models.artifact_v3 import ArtifactV3
 from mtmai.clients.rest.models.artifact_v3_contents_inner import ArtifactV3ContentsInner
+from mtmai.clients.rest.models.assigned_action import AssignedAction
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmai.clients.rest.models.blog import Blog
