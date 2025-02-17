@@ -1,12 +1,20 @@
 import asyncio
 import os
 import sys
-from typing import Any, Mapping, cast
+from typing import Any, AsyncGenerator, List, Mapping, Sequence, cast
 
 from agents.teams_agent import TeamBuilderAgent
 from autogen_agentchat.base import Team
+from autogen_agentchat.messages import (
+    AgentEvent,
+    BaseChatMessage,
+    ModelClientStreamingChunkEvent,
+    TextMessage,
+)
 from autogen_core import (
     AgentId,
+    AgentRuntime,
+    CancellationToken,
     ComponentBase,
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
@@ -14,8 +22,6 @@ from autogen_core import (
 from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
 from loguru import logger
-from pydantic import BaseModel
-
 from mtmai import loader
 from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
@@ -31,6 +37,8 @@ from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import Context, set_api_token_context, set_backend_url
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
+from pydantic import BaseModel
+from typing_extensions import Self
 
 
 class WorkerAgentConfig(BaseModel):
@@ -71,28 +79,127 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         set_backend_url(self.backend_url)
         self._initialized = False
         self._is_running = False
-        self.setup_runtime()
 
-    def setup_runtime(self):
-        # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
-        # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
+        # Create a runtime for the team.
+        # TODO: The runtime should be created by a managed context.
         self._runtime = SingleThreadedAgentRuntime()
+        # Constants for the closure agent to collect the output messages.
+        self._stop_reason: str | None = None
+        self._output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | None] = (
+            asyncio.Queue()
+        )
 
-        message_serializer_types = [
-            AgentRunInput,
-            ChatMessage,
-            ChatMessageUpsert,
-            TeamComponent,
-            TaskResult,
-            ApiSaveTeamState,
-            ApiSaveTeamTaskResult,
-        ]
-        for message_serializer_type in message_serializer_types:
-            self._runtime.add_message_serializer(
-                try_get_known_serializers_for_type(message_serializer_type)
+        # self.reset()
+
+    async def _init(self, runtime: AgentRuntime) -> None:
+        self.reset()
+        self._initialized = True
+
+    async def run(
+        self,
+        *,
+        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+        cancellation_token: CancellationToken | None = None,
+    ) -> TaskResult:
+        result: TaskResult | None = None
+        async for message in self.run_stream(
+            task=task,
+            cancellation_token=cancellation_token,
+        ):
+            if isinstance(message, TaskResult):
+                result = message
+        if result is not None:
+            return result
+        raise AssertionError("The stream should have returned the final result.")
+
+    async def run_stream(
+        self,
+        *,
+        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+        cancellation_token: CancellationToken | None = None,
+    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+        # Create the messages list if the task is a string or a chat message.
+        messages: List[ChatMessage] | None = None
+        if task is None:
+            pass
+        elif isinstance(task, str):
+            messages = [TextMessage(content=task, source="user")]
+        elif isinstance(task, BaseChatMessage):
+            messages = [task]
+        else:
+            if not task:
+                raise ValueError("Task list cannot be empty.")
+            messages = []
+            for msg in task:
+                if not isinstance(msg, BaseChatMessage):
+                    raise ValueError(
+                        "All messages in task list must be valid ChatMessage types"
+                    )
+                messages.append(msg)
+
+        if self._is_running:
+            raise ValueError(
+                "The team is already running, it cannot run again until it is stopped."
             )
+        self._is_running = True
 
-    async def run(self):
+        # Start the runtime.
+        # TODO: The runtime should be started by a managed context.
+        self._runtime.start()
+
+        if not self._initialized:
+            await self._init(self._runtime)
+
+        # Start a coroutine to stop the runtime and signal the output message queue is complete.
+        async def stop_runtime() -> None:
+            await self._runtime.stop_when_idle()
+            await self._output_message_queue.put(None)
+
+        shutdown_task = asyncio.create_task(stop_runtime())
+
+        try:
+            # Run the team by sending the start message to the group chat manager.
+            # The group chat manager will start the group chat by relaying the message to the participants
+            # and the closure agent.
+            # await self._runtime.send_message(
+            #     GroupChatStart(messages=messages),
+            #     recipient=AgentId(
+            #         type=self._group_chat_manager_topic_type, key=self._team_id
+            #     ),
+            #     cancellation_token=cancellation_token,
+            # )
+            # Collect the output messages in order.
+            output_messages: List[AgentEvent | ChatMessage] = []
+            # Yield the messsages until the queue is empty.
+            while True:
+                message_future = asyncio.ensure_future(self._output_message_queue.get())
+                if cancellation_token is not None:
+                    cancellation_token.link_future(message_future)
+                # Wait for the next message, this will raise an exception if the task is cancelled.
+                message = await message_future
+                if message is None:
+                    break
+                yield message
+                if isinstance(message, ModelClientStreamingChunkEvent):
+                    # Skip the model client streaming chunk events.
+                    continue
+                output_messages.append(message)
+
+            # Yield the final result.
+            yield TaskResult(messages=output_messages, stop_reason=self._stop_reason)
+
+        finally:
+            # Wait for the shutdown task to finish.
+            await shutdown_task
+
+            # Clear the output message queue.
+            while not self._output_message_queue.empty():
+                self._output_message_queue.get_nowait()
+
+            # Indicate that the team is no longer running.
+            self._is_running = False
+
+    async def run_old(self):
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
@@ -294,7 +401,24 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             #     GroupChatReset(),
             #     recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
             # )
-            pass
+            # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
+            # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
+            self._runtime = SingleThreadedAgentRuntime()
+
+            message_serializer_types = [
+                AgentRunInput,
+                ChatMessage,
+                ChatMessageUpsert,
+                TeamComponent,
+                TaskResult,
+                ApiSaveTeamState,
+                ApiSaveTeamTaskResult,
+            ]
+            for message_serializer_type in message_serializer_types:
+                self._runtime.add_message_serializer(
+                    try_get_known_serializers_for_type(message_serializer_type)
+                )
+
         finally:
             # Stop the runtime.
             await self._runtime.stop_when_idle()
@@ -345,3 +469,26 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         finally:
             # Indicate that the team is no longer running.
             self._is_running = False
+
+    def _to_config(self) -> WorkerAgentConfig:
+        participants = [
+            participant.dump_component() for participant in self._participants
+        ]
+        termination_condition = (
+            self._termination_condition.dump_component()
+            if self._termination_condition
+            else None
+        )
+        return WorkerAgentConfig(
+            participants=participants,
+            termination_condition=termination_condition,
+            max_turns=self._max_turns,
+        )
+
+    @classmethod
+    def _from_config(cls, config: WorkerAgentConfig) -> Self:
+        # participants = [ChatAgent.load_component(participant) for participant in config.participants]
+        # termination_condition = (
+        #     TerminationCondition.load_component(config.termination_condition) if config.termination_condition else None
+        # )
+        return cls(max_turns=config.max_turns)

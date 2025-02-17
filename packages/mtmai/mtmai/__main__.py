@@ -1,7 +1,7 @@
 import asyncio
 
 import typer
-from agents.worker_agent import WorkerAgent
+from agents.worker_agent.worker_agent import WorkerAgent
 
 import mtmai.core.bootstraps as bootstraps
 
