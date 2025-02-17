@@ -1,7 +1,7 @@
 import asyncio
 
 import typer
-from agents.worker_entry import WorkerApp
+from agents.worker_agent import WorkerAgent
 
 import mtmai.core.bootstraps as bootstraps
 
@@ -18,7 +18,7 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    asyncio.run(WorkerApp().run())
+    asyncio.run(WorkerAgent().run())
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ class UIAgentConfig(BaseModel):
 
 class ApiSaveTeamState(BaseModel):
     tenant_id: str
-    team_id: str
+    # team_id: str
     state: dict
     componentId: str
     runId: str

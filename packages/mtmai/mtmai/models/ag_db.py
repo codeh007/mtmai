@@ -5,73 +5,71 @@ from enum import Enum
 from typing import List, Optional, Union
 from uuid import UUID, uuid4
 
-from autogen_core import ComponentModel
 from sqlalchemy import ForeignKey, Integer
 from sqlmodel import JSON, Column, DateTime, Field, SQLModel, func
 
-from .ag import MessageConfig, MessageMeta, TeamResult
+from .ag import MessageConfig, TeamResult
+
+# class Team(SQLModel, table=True):
+#     __table_args__ = {"sqlite_autoincrement": True}
+#     id: Optional[int] = Field(default=None, primary_key=True)
+#     created_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), server_default=func.now()),
+#     )  # pylint: disable=not-callable
+#     updated_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
+#     )  # pylint: disable=not-callable
+#     user_id: Optional[str] = None
+#     version: Optional[str] = "0.0.1"
+#     component: Union[ComponentModel, dict] = Field(sa_column=Column(JSON))
 
 
-class Team(SQLModel, table=True):
-    __table_args__ = {"sqlite_autoincrement": True}
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), server_default=func.now()),
-    )  # pylint: disable=not-callable
-    updated_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
-    )  # pylint: disable=not-callable
-    user_id: Optional[str] = None
-    version: Optional[str] = "0.0.1"
-    component: Union[ComponentModel, dict] = Field(sa_column=Column(JSON))
+# class Message(SQLModel, table=True):
+#     __table_args__ = {"sqlite_autoincrement": True}
+#     id: Optional[int] = Field(default=None, primary_key=True)
+#     created_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), server_default=func.now()),
+#     )  # pylint: disable=not-callable
+#     updated_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
+#     )  # pylint: disable=not-callable
+#     user_id: Optional[str] = None
+#     version: Optional[str] = "0.0.1"
+#     config: Union[MessageConfig, dict] = Field(
+#         default_factory=MessageConfig, sa_column=Column(JSON)
+#     )
+#     session_id: Optional[int] = Field(
+#         default=None,
+#         sa_column=Column(Integer, ForeignKey("session.id", ondelete="CASCADE")),
+#     )
+#     run_id: Optional[UUID] = Field(default=None, foreign_key="run.id")
+#     message_meta: Optional[Union[MessageMeta, dict]] = Field(
+#         default={}, sa_column=Column(JSON)
+#     )
 
 
-class Message(SQLModel, table=True):
-    __table_args__ = {"sqlite_autoincrement": True}
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), server_default=func.now()),
-    )  # pylint: disable=not-callable
-    updated_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
-    )  # pylint: disable=not-callable
-    user_id: Optional[str] = None
-    version: Optional[str] = "0.0.1"
-    config: Union[MessageConfig, dict] = Field(
-        default_factory=MessageConfig, sa_column=Column(JSON)
-    )
-    session_id: Optional[int] = Field(
-        default=None,
-        sa_column=Column(Integer, ForeignKey("session.id", ondelete="CASCADE")),
-    )
-    run_id: Optional[UUID] = Field(default=None, foreign_key="run.id")
-    message_meta: Optional[Union[MessageMeta, dict]] = Field(
-        default={}, sa_column=Column(JSON)
-    )
-
-
-class Session(SQLModel, table=True):
-    __table_args__ = {"sqlite_autoincrement": True}
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), server_default=func.now()),
-    )  # pylint: disable=not-callable
-    updated_at: datetime = Field(
-        default_factory=datetime.now,
-        sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
-    )  # pylint: disable=not-callable
-    user_id: Optional[str] = None
-    version: Optional[str] = "0.0.1"
-    team_id: Optional[int] = Field(
-        default=None,
-        sa_column=Column(Integer, ForeignKey("team.id", ondelete="CASCADE")),
-    )
-    name: Optional[str] = None
+# class Session(SQLModel, table=True):
+#     __table_args__ = {"sqlite_autoincrement": True}
+#     id: Optional[int] = Field(default=None, primary_key=True)
+#     created_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), server_default=func.now()),
+#     )  # pylint: disable=not-callable
+#     updated_at: datetime = Field(
+#         default_factory=datetime.now,
+#         sa_column=Column(DateTime(timezone=True), onupdate=func.now()),
+#     )  # pylint: disable=not-callable
+#     user_id: Optional[str] = None
+#     version: Optional[str] = "0.0.1"
+#     team_id: Optional[int] = Field(
+#         default=None,
+#         sa_column=Column(Integer, ForeignKey("team.id", ondelete="CASCADE")),
+#     )
+#     name: Optional[str] = None
 
 
 class RunStatus(str, Enum):

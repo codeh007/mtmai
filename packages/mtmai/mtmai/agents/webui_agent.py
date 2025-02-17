@@ -66,13 +66,6 @@ class UIAgent(RoutedAgent):
             # ).model_dump(),
         )
 
-    # @message_handler
-    # async def handle_ag_event(
-    #     self, message: AgEventCreate, ctx: MessageContext
-    # ) -> None:
-    #     # tenant_id=get_tenant_id()
-    #     logger.info("TODO: AgEventCreate")
-
     @message_handler
     async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
         start_time = time.time()
@@ -110,12 +103,12 @@ class UIAgent(RoutedAgent):
             ),
             ctx,
         )
-        team = Team.load_component(team_component_data.component)
+        self.team = Team.load_component(team_component_data.component)
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
         try:
-            async for event in team.run_stream(
+            async for event in self.team.run_stream(
                 task=message.content,
                 cancellation_token=ctx.cancellation_token,
             ):
@@ -153,28 +146,16 @@ class UIAgent(RoutedAgent):
                     )
                 else:
                     logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
-
-        # except Exception as e:
-        #     logger.error(f"WorkerMainAgent 运行出错: {e}")
-        #     raise e
         finally:
-            # 确保停止团队的内部 agents
-            if team and hasattr(team, "_participants"):
-                for agent in team._participants:
-                    if hasattr(agent, "close"):
-                        await agent.close()
-
-            # if self.runtime.
-            result = await self.handle_api_save_team_state(
+            await self.handle_api_save_team_state(
                 ApiSaveTeamState(
                     tenant_id=tenant_id,
-                    component_id=team_id,
-                    state=await team.save_state(),
-                    run_id=run_id,
+                    componentId=team_id,
+                    state=await self.team.save_state(),
+                    runId=run_id,
                 ),
                 ctx,
             )
-            return result
 
     @message_handler
     async def handle_task_result(
@@ -188,17 +169,20 @@ class UIAgent(RoutedAgent):
     ) -> None:
         """保存团队状态"""
         logger.info("保存团队状态")
-        try:
-            await self.gomtmapi.ag_state_api.ag_state_upsert(
-                tenant=message.tenant_id,
-                ag_state_upsert=AgStateUpsert(
-                    componentId=message.componentId,
-                    runId=message.runId,
-                    state=message.state,
-                ).model_dump(),
-            )
-        except Exception as e:
-            logger.error(f"WorkerMainAgent 保存状态出错: {e}")
+        # 确保停止团队的内部 agents
+        if self.team and hasattr(self.team, "_participants"):
+            for agent in self.team._participants:
+                if hasattr(agent, "close"):
+                    await agent.close()
+
+        await self.gomtmapi.ag_state_api.ag_state_upsert(
+            tenant=message.tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                componentId=message.componentId,
+                runId=message.runId,
+                state=message.state,
+            ).model_dump(),
+        )
 
     @message_handler
     async def handle_api_save_team_task_result(

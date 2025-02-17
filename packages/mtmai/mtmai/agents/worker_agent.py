@@ -1,17 +1,20 @@
 import asyncio
 import os
 import sys
-from typing import cast
+from typing import Any, Mapping, cast
 
 from agents.teams_agent import TeamBuilderAgent
+from autogen_agentchat.base import Team
 from autogen_core import (
     AgentId,
+    ComponentBase,
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
 from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
 from loguru import logger
+from pydantic import BaseModel
 
 from mtmai import loader
 from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
@@ -30,7 +33,29 @@ from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 
 
-class WorkerApp:
+class WorkerAgentConfig(BaseModel):
+    """The declarative configuration for the worker agent."""
+
+    name: str
+    # model_client: ComponentModel
+    # tools: List[ComponentModel] | None
+    # handoffs: List[HandoffBase | str] | None = None
+    # model_context: ComponentModel | None = None
+    # memory: List[ComponentModel] | None = None
+    description: str
+    system_message: str | None = None
+    model_client_stream: bool = False
+    reflect_on_tool_use: bool
+    tool_call_summary_format: str
+
+
+class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
+    """
+    参考 autogen 的 Team 的实现方式
+    """
+
+    component_type = "worker"
+
     def __init__(self):
         self.backend_url = settings.GOMTM_URL
         if not self.backend_url:
@@ -52,19 +77,15 @@ class WorkerApp:
         # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
         # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
         self._runtime = SingleThreadedAgentRuntime()
-        # self._runtime.add_message_serializer(try_get_known_serializers_for_type(CascadingMessage))
 
         message_serializer_types = [
             AgentRunInput,
-            # TenantSeedReq,
             ChatMessage,
             ChatMessageUpsert,
-            # AgEventCreate,
             TeamComponent,
             TaskResult,
             ApiSaveTeamState,
             ApiSaveTeamTaskResult,
-            # GptMessage,
         ]
         for message_serializer_type in message_serializer_types:
             self._runtime.add_message_serializer(
@@ -245,3 +266,82 @@ class WorkerApp:
                 # await agent.run()
 
         self.worker.register_workflow(FlowBrowser())
+
+    async def reset(self) -> None:
+        if not self._initialized:
+            raise RuntimeError(
+                "The group chat has not been initialized. It must be run before it can be reset."
+            )
+
+        if self._is_running:
+            raise RuntimeError(
+                "The group chat is currently running. It must be stopped before it can be reset."
+            )
+        self._is_running = True
+
+        # Start the runtime.
+        self._runtime.start()
+
+        try:
+            # Send a reset messages to all participants.
+            # for participant_topic_type in self._participant_topic_types:
+            #     await self._runtime.send_message(
+            #         GroupChatReset(),
+            #         recipient=AgentId(type=participant_topic_type, key=self._team_id),
+            #     )
+            # # Send a reset message to the group chat manager.
+            # await self._runtime.send_message(
+            #     GroupChatReset(),
+            #     recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
+            # )
+            pass
+        finally:
+            # Stop the runtime.
+            await self._runtime.stop_when_idle()
+
+            # Reset the output message queue.
+            self._stop_reason = None
+            while not self._output_message_queue.empty():
+                self._output_message_queue.get_nowait()
+
+            # Indicate that the team is no longer running.
+            self._is_running = False
+
+    async def save_state(self) -> Mapping[str, Any]:
+        """Save the state of the group chat team."""
+        if not self._initialized:
+            raise RuntimeError(
+                "The group chat has not been initialized. It must be run before it can be saved."
+            )
+
+        if self._is_running:
+            raise RuntimeError("The team cannot be saved while it is running.")
+        self._is_running = True
+
+        try:
+            # Save the state of the runtime. This will save the state of the participants and the group chat manager.
+            agent_states = await self._runtime.save_state()
+            # return TeamState(agent_states=agent_states, team_id=self._team_id).model_dump()
+
+        finally:
+            # Indicate that the team is no longer running.
+            self._is_running = False
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        """Load the state of the group chat team."""
+        if not self._initialized:
+            await self._init(self._runtime)
+
+        if self._is_running:
+            raise RuntimeError("The team cannot be loaded while it is running.")
+        self._is_running = True
+
+        try:
+            # Load the state of the runtime. This will load the state of the participants and the group chat manager.
+            # team_state = TeamState.model_validate(state)
+            # self._team_id = team_state.team_id
+            # await self._runtime.load_state(team_state.agent_states)
+            pass
+        finally:
+            # Indicate that the team is no longer running.
+            self._is_running = False
