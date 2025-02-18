@@ -256,7 +256,6 @@ from mtmai.clients.rest.models.termination_types import TerminationTypes
 from mtmai.clients.rest.models.text_highlight import TextHighlight
 from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
-from mtmai.clients.rest.models.text_message_config import TextMessageConfig
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
 from mtmai.clients.rest.models.tool_component import ToolComponent
