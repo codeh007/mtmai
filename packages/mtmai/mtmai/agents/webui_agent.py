@@ -15,7 +15,6 @@ from autogen_core import (
 from loguru import logger
 from pydantic import BaseModel
 
-from mtmai.agents._types import ApiSaveTeamTaskResult
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -113,14 +112,15 @@ class UIAgent(RoutedAgent):
                     break
 
                 if isinstance(event, TaskResult):
-                    await self.handle_api_save_team_task_result(
-                        ApiSaveTeamTaskResult(
-                            tenant_id=tenant_id,
-                            component_id=team_id,
-                            task_result=event,
-                        ),
-                        ctx,
-                    )
+                    # await self.handle_api_save_team_task_result(
+                    #     ApiSaveTeamTaskResult(
+                    #         tenant_id=tenant_id,
+                    #         component_id=team_id,
+                    #         task_result=event,
+                    #     ),
+                    #     ctx,
+                    # )
+                    logger.info(f"UI Agent 收到任务结果(TODO): {event}")
                 elif isinstance(event, TextMessage):
                     await self.handle_message_create(
                         ChatMessageUpsert(
@@ -148,80 +148,28 @@ class UIAgent(RoutedAgent):
                 team=self.team,
                 team_id=team_id,
                 tenant_id=tenant_id,
-                runId=run_id,
+                run_id=run_id,
             )
 
     async def save_team_state(
-        self, team: Team, team_id: str, tenant_id: str, runId: str
+        self, team: Team, team_id: str, tenant_id: str, run_id: str
     ) -> None:
         """保存团队状态"""
         logger.info("保存团队状态")
         # 确保停止团队的内部 agents
-        if self.team and hasattr(self.team, "_participants"):
-            for agent in self.team._participants:
+        if team and hasattr(team, "_participants"):
+            for agent in team._participants:
                 if hasattr(agent, "close"):
                     await agent.close()
-
         state = await team.save_state()
         await self.gomtmapi.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
                 componentId=team_id,
-                runId=runId,
+                runId=run_id,
                 state=state,
             ).model_dump(),
         )
-
-    # @message_handler
-    # async def handle_tenant_message(
-    #     self, message: MsgGetTeam, mctx: MessageContext
-    # ) -> MtComponent:
-    #     tenant_id = message.tenant_id
-
-    #     team_builters = [
-    #         TravelTeamBuilder(),
-    #         CompanyResearchTeamBuilder(),
-    #         assisant_team_builder.AssistantTeamBuilder(),
-    #     ]
-    #     defaultModel = await self.gomtmapi.model_api.model_get(
-    #         tenant=tenant_id, model="default"
-    #     )
-    #     model_dict = defaultModel.config.model_dump()
-    #     model_dict.pop("n", None)
-    #     model_client = MtmOpenAIChatCompletionClient(
-    #         **model_dict,
-    #     )
-    #     for team_builder in team_builters:
-    #         team = await team_builder.create_team(model_client)
-    #         team_comp = team.dump_component()
-    #         comp = TeamComponent(**team_comp.model_dump())
-    #         team2 = MtComponent(
-    #             label=team_comp.label,
-    #             description=team_comp.description or "",
-    #             component=comp.model_dump(),
-    #         )
-    #         logger.info(
-    #             f"create team for tenant: {message.tenant_id}, team: {team._team_id}"
-    #         )
-    #         await self.gomtmapi.coms_api.coms_upsert(
-    #             tenant=message.tenant_id,
-    #             com=team._team_id,
-    #             mt_component=team2.model_dump(),
-    #         )
-    #     comps = await self.gomtmapi.coms_api.coms_list(tenant=tenant_id)
-    #     detault_team_item = next(
-    #         (
-    #             item
-    #             for item in comps.rows
-    #             if item.label == assisant_team_builder.AssistantTeamBuilder().name
-    #         ),
-    #         None,
-    #     )
-
-    #     return await self.gomtmapi.coms_api.coms_get(
-    #         tenant=tenant_id,
-    #         com=detault_team_item.metadata.id,
-    #     )
 
     async def _create_team_component(
         self,
