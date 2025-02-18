@@ -1,11 +1,6 @@
-import logging
 from typing import Any, Unpack
-from autogen_core.models import (
-    CreateResult,
-    ModelFamily,
-    ModelInfo,
-)
 
+from autogen_core.models import CreateResult, ModelFamily, ModelInfo
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.models.openai.config import (
     OpenAIClientConfiguration,
@@ -14,12 +9,13 @@ from autogen_ext.models.openai.config import (
 from json_repair import repair_json
 
 
-logger=logging.getLogger(__name__)
-
 class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
     component_type = "model"
     component_config_schema = OpenAIClientConfigurationConfigModel
-    component_provider_override = "mtmai.agents.model_client.MtmOpenAIChatCompletionClient"
+    component_provider_override = (
+        "mtmai.agents.model_client.MtmOpenAIChatCompletionClient"
+    )
+
     def __init__(self, **kwargs: Unpack[OpenAIClientConfiguration]):
         if not kwargs.get("model_info"):
             kwargs["model_info"] = ModelInfo(
@@ -33,13 +29,8 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
     def _to_config(self) -> OpenAIClientConfigurationConfigModel:
         return super()._to_config()
 
-
     async def create(self, *args: Any, **kwargs: Any) -> CreateResult:
-        """
-            如果没有内置的 model config, 则从后端拉取默认的
-        """
         try:
-            # logger.info(f"OpenAI API Request: {args} {kwargs}")
             response = await super().create(*args, **kwargs)
             if kwargs.get("json_output", False):
                 # 修正json格式
@@ -54,9 +45,7 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             # )
             return response
         except Exception as e:
-            logger.exception(
-                "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
-            )
+            # logger.exception(
+            #     "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
+            # )
             raise e
-
-

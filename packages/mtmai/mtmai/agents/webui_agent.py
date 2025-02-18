@@ -15,19 +15,16 @@ from autogen_core import (
 from loguru import logger
 from pydantic import BaseModel
 
-from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult, MsgGetTeam
+from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.task_result import TaskResult
-from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import get_tenant_id, set_tenant_id
 from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.team_builder import assisant_team_builder
-from mtmai.team_builder.company_research import CompanyResearchTeamBuilder
-from mtmai.team_builder.travel_builder import TravelTeamBuilder
 
 from ..clients.rest.models.mt_component import MtComponent
 
@@ -85,25 +82,26 @@ class UIAgent(RoutedAgent):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
             return
 
+        team_comp_data: MtComponent = None
         if not message.team_id:
             assistant_team_builder = assisant_team_builder.AssistantTeamBuilder()
-            team = await self.get_or_create_default_team(
+            team_comp_data = await self.get_or_create_default_team(
                 tenant_id=message.tenant_id,
                 label=assistant_team_builder.name,
             )
-            message.team_id = team.metadata.id
+            message.team_id = team_comp_data.metadata.id
 
         thread_id = message.session_id
         if not thread_id:
             thread_id = generate_uuid()
-        team_component_data: MtComponent = await self.handle_tenant_message(
-            MsgGetTeam(
-                tenant_id=tenant_id,
-                team_id=message.team_id,
-            ),
-            ctx,
-        )
-        self.team = Team.load_component(team_component_data.component)
+        # team_component_data: MtComponent = await self.handle_tenant_message(
+        #     MsgGetTeam(
+        #         tenant_id=tenant_id,
+        #         team_id=message.team_id,
+        #     ),
+        #     ctx,
+        # )
+        self.team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
@@ -191,59 +189,56 @@ class UIAgent(RoutedAgent):
         """保存团队最终结果"""
         logger.info("TODO:UI Agent 保存任务结果")
 
-    @message_handler
-    async def handle_tenant_message(
-        self, message: MsgGetTeam, mctx: MessageContext
-    ) -> MtComponent:
-        # if not message.tenant_id or len(message.tenant_id) == 0:
-        #     # raise ValueError("tenantId required")
-        #     raise CantHandleException("tenantId required")
-        tenant_id = message.tenant_id
+    # @message_handler
+    # async def handle_tenant_message(
+    #     self, message: MsgGetTeam, mctx: MessageContext
+    # ) -> MtComponent:
+    #     tenant_id = message.tenant_id
 
-        team_builters = [
-            TravelTeamBuilder(),
-            CompanyResearchTeamBuilder(),
-            assisant_team_builder.AssistantTeamBuilder(),
-        ]
-        defaultModel = await self.gomtmapi.model_api.model_get(
-            tenant=tenant_id, model="default"
-        )
-        model_dict = defaultModel.config.model_dump()
-        model_dict.pop("n", None)
-        model_client = MtmOpenAIChatCompletionClient(
-            **model_dict,
-        )
-        for team_builder in team_builters:
-            team = await team_builder.create_team(model_client)
-            team_comp = team.dump_component()
-            comp = TeamComponent(**team_comp.model_dump())
-            team2 = MtComponent(
-                label=team_comp.label,
-                description=team_comp.description or "",
-                component=comp.model_dump(),
-            )
-            logger.info(
-                f"create team for tenant: {message.tenant_id}, team: {team._team_id}"
-            )
-            await self.gomtmapi.coms_api.coms_upsert(
-                tenant=message.tenant_id,
-                com=team._team_id,
-                mt_component=team2.model_dump(),
-            )
-        comps = await self.gomtmapi.coms_api.coms_list(tenant=tenant_id)
-        detault_team_item = next(
-            (
-                item
-                for item in comps.rows
-                if item.label == assisant_team_builder.AssistantTeamBuilder().name
-            ),
-            None,
-        )
+    #     team_builters = [
+    #         TravelTeamBuilder(),
+    #         CompanyResearchTeamBuilder(),
+    #         assisant_team_builder.AssistantTeamBuilder(),
+    #     ]
+    #     defaultModel = await self.gomtmapi.model_api.model_get(
+    #         tenant=tenant_id, model="default"
+    #     )
+    #     model_dict = defaultModel.config.model_dump()
+    #     model_dict.pop("n", None)
+    #     model_client = MtmOpenAIChatCompletionClient(
+    #         **model_dict,
+    #     )
+    #     for team_builder in team_builters:
+    #         team = await team_builder.create_team(model_client)
+    #         team_comp = team.dump_component()
+    #         comp = TeamComponent(**team_comp.model_dump())
+    #         team2 = MtComponent(
+    #             label=team_comp.label,
+    #             description=team_comp.description or "",
+    #             component=comp.model_dump(),
+    #         )
+    #         logger.info(
+    #             f"create team for tenant: {message.tenant_id}, team: {team._team_id}"
+    #         )
+    #         await self.gomtmapi.coms_api.coms_upsert(
+    #             tenant=message.tenant_id,
+    #             com=team._team_id,
+    #             mt_component=team2.model_dump(),
+    #         )
+    #     comps = await self.gomtmapi.coms_api.coms_list(tenant=tenant_id)
+    #     detault_team_item = next(
+    #         (
+    #             item
+    #             for item in comps.rows
+    #             if item.label == assisant_team_builder.AssistantTeamBuilder().name
+    #         ),
+    #         None,
+    #     )
 
-        return await self.gomtmapi.coms_api.coms_get(
-            tenant=tenant_id,
-            com=detault_team_item.metadata.id,
-        )
+    #     return await self.gomtmapi.coms_api.coms_get(
+    #         tenant=tenant_id,
+    #         com=detault_team_item.metadata.id,
+    #     )
 
     async def _create_team_component(
         self,
