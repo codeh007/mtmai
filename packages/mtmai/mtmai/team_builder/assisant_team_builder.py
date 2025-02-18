@@ -40,7 +40,7 @@ class AssistantTeamBuilder:
 
     @property
     def description(self):
-        return "默认AI助理团"
+        return "AI助理"
 
     async def create_team(self, default_model_client: ChatCompletionClient = None):
         # By default, AssistantAgent returns the tool output as the response.
