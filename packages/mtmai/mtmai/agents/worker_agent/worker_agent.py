@@ -221,6 +221,8 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 input = cast(AgentRunInput, hatctx.workflow_input())
                 if not input.run_id:
                     input.run_id = hatctx.workflow_run_id()
+                if not input.step_run_id:
+                    input.step_run_id = hatctx.step_run_id
                 return await worker_app.handle_message(input)
 
         self.worker.register_workflow(FlowAg())
@@ -283,8 +285,6 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 "The group chat is currently running. It must be stopped before it can be reset."
             )
         self._is_running = True
-
-        # Start the runtime.
         self._runtime.start()
 
         try:

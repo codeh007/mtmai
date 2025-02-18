@@ -90,13 +90,6 @@ class UIAgent(RoutedAgent):
         thread_id = message.session_id
         if not thread_id:
             thread_id = generate_uuid()
-        # team_component_data: MtComponent = await self.handle_tenant_message(
-        #     MsgGetTeam(
-        #         tenant_id=tenant_id,
-        #         team_id=message.team_id,
-        #     ),
-        #     ctx,
-        # )
         self.team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:
@@ -129,6 +122,9 @@ class UIAgent(RoutedAgent):
                             runId=run_id,
                         ),
                         ctx,
+                    )
+                    self.wfapp.event.stream(
+                        "hello1await111111111111", step_run_id=message.step_run_id
                     )
                 elif isinstance(event, BaseModel):
                     await self.handle_message_create(

@@ -105,7 +105,6 @@ class Client:
         self.workflow_listener = workflow_listener
         self.logInterceptor = config.logInterceptor
         self.debug = debug
-        # self.gomtm_rest_client = gomtm_rest_client
 
 
 def with_host_port(host: str, port: int):
