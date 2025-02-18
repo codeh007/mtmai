@@ -1,5 +1,6 @@
 from typing import Any, Unpack
 
+import openai
 from autogen_core.models import CreateResult, ModelFamily, ModelInfo
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.models.openai.config import (
@@ -44,6 +45,8 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             #     response_content=response.content,
             # )
             return response
+        except openai.RateLimitError as e:
+            raise e
         except Exception as e:
             # logger.exception(
             #     "Mtm Model Client Error", error=str(e), error_type=type(e).__name__

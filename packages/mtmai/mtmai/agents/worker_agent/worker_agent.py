@@ -4,7 +4,7 @@ import sys
 from typing import Any, Mapping, Sequence, cast
 
 from agents.teams_agent import TeamBuilderAgent
-from autogen_agentchat.base import Team
+from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import AgentEvent
 from autogen_core import (
     AgentId,
@@ -27,7 +27,8 @@ from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from mtmai.clients.rest.models.task_result import TaskResult
+
+# from mtmai.clients.rest.models.task_result import TaskResult
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import Context, set_api_token_context, set_backend_url
 from mtmai.core.config import settings
@@ -307,7 +308,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 ChatMessage,
                 ChatMessageUpsert,
                 TeamComponent,
-                TaskResult,
+                # TaskResult,
                 ApiSaveTeamState,
                 ApiSaveTeamTaskResult,
             ]

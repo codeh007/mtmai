@@ -25,14 +25,14 @@ class AssistantTeamBuilder:
             system_message="你是足球赛事分析专家，可以分析足球赛事，并给出分析结果",
         )
         language_agent = AssistantAgent(
-            name="投注建议专家",
+            name="editor_agent",
             model_client=default_model_client,
             description="投注建议专家，可以给出投注建议",
             system_message="你是投注建议专家，可以给出投注建议",
         )
 
         summary_agent = AssistantAgent(
-            name="足彩助理",
+            name="summary_agent",
             model_client=default_model_client,
             description="足彩助理，可以给出足彩投注建议",
             system_message="你是足彩助理，可以给出足彩投注建议,当你有确定答案时，你应输出 TERMINATE",

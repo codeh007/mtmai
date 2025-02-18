@@ -159,6 +159,7 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
+from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmai.clients.rest.models.node_run_action import NodeRunAction
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
@@ -231,7 +232,6 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
-from mtmai.clients.rest.models.task_result import TaskResult
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant

@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Union
 
-from autogen_agentchat.base import Team
+from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import TextMessage
 from autogen_core import (
     Component,
@@ -15,18 +15,18 @@ from autogen_core import (
 from loguru import logger
 from pydantic import BaseModel
 
-from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
+from mtmai.agents._types import ApiSaveTeamTaskResult
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from mtmai.clients.rest.models.task_result import TaskResult
+from mtmai.clients.rest.models.mt_component import MtComponent
+
+# from mtmai.clients.rest.models.task_result import TaskResult
 from mtmai.context.context import get_tenant_id, set_tenant_id
 from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.team_builder import assisant_team_builder
-
-from ..clients.rest.models.mt_component import MtComponent
 
 
 @default_subscription
@@ -66,7 +66,6 @@ class UIAgent(RoutedAgent):
     @message_handler
     async def on_new_message(self, message: AgentRunInput, ctx: MessageContext) -> None:
         start_time = time.time()
-        logger.info(f"WorkerMainAgent 收到消息: {message}")
         tenant_id: str | None = message.tenant_id
         if not tenant_id:
             tenant_id = get_tenant_id()
@@ -143,27 +142,17 @@ class UIAgent(RoutedAgent):
                         ctx,
                     )
                 else:
-                    logger.info(f"WorkerMainAgent 收到(未知类型)消息: {event}")
+                    logger.info(f"UI Agent 收到(未知类型)消息: {event}")
         finally:
-            await self.handle_api_save_team_state(
-                ApiSaveTeamState(
-                    tenant_id=tenant_id,
-                    componentId=team_id,
-                    state=await self.team.save_state(),
-                    runId=run_id,
-                ),
-                ctx,
+            await self.save_team_state(
+                team=self.team,
+                team_id=team_id,
+                tenant_id=tenant_id,
+                runId=run_id,
             )
 
-    @message_handler
-    async def handle_task_result(
-        self, message: TaskResult, ctx: MessageContext
-    ) -> None:
-        logger.info("TODO: TaskResult")
-
-    @message_handler
-    async def handle_api_save_team_state(
-        self, message: ApiSaveTeamState, ctx: MessageContext
+    async def save_team_state(
+        self, team: Team, team_id: str, tenant_id: str, runId: str
     ) -> None:
         """保存团队状态"""
         logger.info("保存团队状态")
@@ -173,21 +162,15 @@ class UIAgent(RoutedAgent):
                 if hasattr(agent, "close"):
                     await agent.close()
 
+        state = await team.save_state()
         await self.gomtmapi.ag_state_api.ag_state_upsert(
-            tenant=message.tenant_id,
+            tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
-                componentId=message.componentId,
-                runId=message.runId,
-                state=message.state,
+                componentId=team_id,
+                runId=runId,
+                state=state,
             ).model_dump(),
         )
-
-    @message_handler
-    async def handle_api_save_team_task_result(
-        self, message: ApiSaveTeamTaskResult, ctx: MessageContext
-    ) -> None:
-        """保存团队最终结果"""
-        logger.info("TODO:UI Agent 保存任务结果")
 
     # @message_handler
     # async def handle_tenant_message(
@@ -275,7 +258,6 @@ class UIAgent(RoutedAgent):
             )
             model_dict = defaultModel.config.model_dump()
             model_dict.pop("n", None)
-            # model_dict["model_info"] = model_dict.pop("model_info", None)
             model_client = MtmOpenAIChatCompletionClient(
                 **model_dict,
             )
@@ -283,17 +265,14 @@ class UIAgent(RoutedAgent):
             default_team_builder = assisant_team_builder.AssistantTeamBuilder()
             team_comp = await default_team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
-            comp = component_model.model_dump()
-            team_component = MtComponent(
-                label=component_model.label,
-                description=component_model.description or "",
-                componentType="team",
-                component=comp,
-            )
-            logger.info(f"create default team for tenant {tenant_id}")
             new_team = await self.gomtmapi.coms_api.coms_upsert(
                 tenant=tenant_id,
                 com=generate_uuid(),
-                mt_component=team_component.model_dump(),
+                mt_component=MtComponent(
+                    label=component_model.label,
+                    description=component_model.description or "",
+                    componentType="team",
+                    component=component_model.model_dump(),
+                ).model_dump(),
             )
             return new_team
