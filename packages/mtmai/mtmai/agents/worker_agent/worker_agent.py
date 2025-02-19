@@ -1,11 +1,12 @@
 import asyncio
 import os
 import sys
+import time
 from typing import Any, Mapping, Sequence, cast
 
-from agents.teams_agent import TeamBuilderAgent
+from agents.team_builder.teams_agent import TeamBuilderAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent
+from autogen_agentchat.messages import AgentEvent, TextMessage
 from autogen_core import (
     AgentId,
     AgentRuntime,
@@ -20,19 +21,27 @@ from loguru import logger
 from mtmai import loader
 from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
-from mtmai.agents.webui_agent import UIAgent
+from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
+from mtmai.agents.team_builder import assisant_team_builder
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-
-# from mtmai.clients.rest.models.task_result import TaskResult
+from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.team_component import TeamComponent
-from mtmai.context.context import Context, set_api_token_context, set_backend_url
+from mtmai.context.context import (
+    Context,
+    get_tenant_id,
+    set_api_token_context,
+    set_backend_url,
+    set_tenant_id,
+)
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
+from mtmai.mtlibs.id import generate_uuid
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -85,12 +94,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
     async def _init(self, runtime: AgentRuntime) -> None:
         await self.start_autogen_host()
-        ui_agent_id = AgentId("ui_agent", "default")
-        ui_agent = await UIAgent.register(
-            runtime=self._runtime,
-            type=ui_agent_id.type,
-            factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
-        )
+        # ui_agent_id = AgentId("ui_agent", "default")
+        # ui_agent = await UIAgent.register(
+        #     runtime=self._runtime,
+        #     type=ui_agent_id.type,
+        #     factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
+        # )
 
         team_builder_id = AgentId("team_builder_agent", "default")
         self.worker_agent = await TeamBuilderAgent.register(
@@ -98,7 +107,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             type=team_builder_id.type,
             factory=lambda: TeamBuilderAgent(
                 description=team_builder_id.type,
-                ui_agent=ui_agent_id,
+                # ui_agent=ui_agent_id,
                 wfapp=self.wfapp,
             ),
         )
@@ -129,10 +138,84 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         await self._init_ingestor()
         logger.info("worker agent 结束")
 
-    async def handle_message(self, message: AgentRunInput):
-        """处理外部消息,包括用户输入的消息"""
-        ui_agent_id = AgentId("ui_agent", "default")
-        await self._runtime.send_message(message=message, recipient=ui_agent_id)
+    # @message_handler
+    async def handle_message(self, message: AgentRunInput) -> TaskResult:
+        start_time = time.time()
+        tenant_id: str | None = message.tenant_id
+        if not tenant_id:
+            tenant_id = get_tenant_id()
+        if not tenant_id:
+            raise ValueError("tenant_id is required")
+        set_tenant_id(tenant_id)
+        run_id = message.run_id
+        if not run_id:
+            raise ValueError("run_id is required")
+
+        user_input = message.content
+        if user_input.startswith("/tenant/seed"):
+            logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
+            return
+
+        team_comp_data: MtComponent = None
+        if not message.team_id:
+            assistant_team_builder = assisant_team_builder.AssistantTeamBuilder()
+            team_comp_data = await self.get_or_create_default_team(
+                tenant_id=message.tenant_id,
+                label=assistant_team_builder.name,
+            )
+            message.team_id = team_comp_data.metadata.id
+
+        thread_id = message.session_id
+        if not thread_id:
+            thread_id = generate_uuid()
+        self.team = Team.load_component(team_comp_data.component)
+        team_id = message.team_id
+        if not team_id:
+            team_id = generate_uuid()
+
+        task_result: TaskResult | None = None
+        try:
+            async for event in self.team.run_stream(
+                task=message.content,
+                # cancellation_token=ctx.cancellation_token,
+            ):
+                # if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
+                #     break
+
+                if isinstance(event, TaskResult):
+                    logger.info(f"UI Agent 收到任务结果(TODO): {event}")
+                    task_result = event
+                elif isinstance(event, TextMessage):
+                    await self.handle_message_create(
+                        ChatMessageUpsert(
+                            content=event.content,
+                            tenant_id=message.tenant_id,
+                            component_id=message.team_id,
+                            threadId=thread_id,
+                            runId=run_id,
+                        ),
+                    )
+                    self.wfapp.event.stream(
+                        "hello1await111111111111", step_run_id=message.step_run_id
+                    )
+                elif isinstance(event, BaseModel):
+                    await self.handle_message_create(
+                        ChatMessageUpsert(
+                            content=event.model_dump_json(),
+                            tenant_id=message.tenant_id,
+                            component_id=message.team_id,
+                        ),
+                    )
+                else:
+                    logger.info(f"UI Agent 收到(未知类型)消息: {event}")
+        finally:
+            await self.save_team_state(
+                team=self.team,
+                team_id=team_id,
+                tenant_id=tenant_id,
+                run_id=run_id,
+            )
+        return task_result
 
     async def _init_ingestor(self):
         """食入外部消息,包括用户输入的消息"""
@@ -195,6 +278,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
         self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
         self.autogen_host.start()
+
+    async def handle_message_create(self, message: ChatMessageUpsert) -> None:
+        await self.gomtmapi.chat_api.chat_message_upsert(
+            tenant=message.tenant_id,
+            chat_message_upsert=message.model_dump(),
+        )
 
     async def stop(self):
         if self.worker:
@@ -390,3 +479,56 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #     TerminationCondition.load_component(config.termination_condition) if config.termination_condition else None
         # )
         return cls(max_turns=config.max_turns)
+
+    async def get_or_create_default_team(self, tenant_id: str, label: str):
+        teams_list = await self.gomtmapi.coms_api.coms_list(
+            tenant=tenant_id, label=label
+        )
+        if teams_list.rows and len(teams_list.rows) > 0:
+            logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
+            return teams_list.rows[0]
+        else:
+            logger.info(f"create default team for tenant {tenant_id}")
+            defaultModel = await self.gomtmapi.model_api.model_get(
+                tenant=tenant_id, model="default"
+            )
+            model_dict = defaultModel.config.model_dump()
+            model_dict.pop("n", None)
+            model_client = MtmOpenAIChatCompletionClient(
+                **model_dict,
+            )
+
+            default_team_builder = assisant_team_builder.AssistantTeamBuilder()
+            team_comp = await default_team_builder.create_team(model_client)
+            component_model = team_comp.dump_component()
+            new_team = await self.gomtmapi.coms_api.coms_upsert(
+                tenant=tenant_id,
+                com=generate_uuid(),
+                mt_component=MtComponent(
+                    label=component_model.label,
+                    description=component_model.description or "",
+                    componentType="team",
+                    component=component_model.model_dump(),
+                ).model_dump(),
+            )
+            return new_team
+
+    async def save_team_state(
+        self, team: Team, team_id: str, tenant_id: str, run_id: str
+    ) -> None:
+        """保存团队状态"""
+        logger.info("保存团队状态")
+        # 确保停止团队的内部 agents
+        if team and hasattr(team, "_participants"):
+            for agent in team._participants:
+                if hasattr(agent, "close"):
+                    await agent.close()
+        state = await team.save_state()
+        await self.gomtmapi.ag_state_api.ag_state_upsert(
+            tenant=tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                componentId=team_id,
+                runId=run_id,
+                state=state,
+            ).model_dump(),
+        )

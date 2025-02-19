@@ -1,11 +1,8 @@
-import logging
 from typing import Any
 
 from autogen_core import AgentId, RoutedAgent, default_subscription
 
 from mtmai.hatchet import Hatchet
-
-logger = logging.getLogger(__name__)
 
 
 @default_subscription
@@ -17,14 +14,12 @@ class TeamBuilderAgent(RoutedAgent):
     2. 根据团队配置，创建团队
     """
 
-    def __init__(
-        self, description: str, ui_agent: AgentId = None, wfapp: Hatchet = None
-    ) -> None:
+    def __init__(self, description: str, wfapp: Hatchet = None) -> None:
         if wfapp is not None:
             self.wfapp = wfapp
             self.gomtmapi = self.wfapp.rest.aio
-        if ui_agent is not None:
-            self.ui_agent = ui_agent
+        # if ui_agent is not None:
+        #     self.ui_agent = ui_agent
         else:
             raise ValueError("ui_agent is required")
         # self.team_builder = [
