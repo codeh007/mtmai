@@ -17,27 +17,24 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmai.clients.rest.models.chat_message_role import ChatMessageRole
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatMessageUpsert(BaseModel):
+class ChatHistoryListRowsInner(BaseModel):
     """
-    ChatMessageUpsert
+    单个聊天消息
     """ # noqa: E501
-    tenant_id: StrictStr = Field(alias="tenantId")
+    metadata: APIResourceMeta
+    role: ChatMessageRole
     content: StrictStr
-    component_id: StrictStr = Field(alias="componentId")
-    thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
-    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
-    role: Optional[StrictStr] = None
-    source: Optional[StrictStr] = 'user'
-    message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
-    agent_type: Optional[StrictStr] = Field(default=None, alias="agentType")
-    workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
-    step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
-    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "source", "messageType", "agentType", "workflowRunId", "stepRunId"]
+    source: Optional[StrictStr] = None
+    config: Optional[ChatMessageConfig] = None
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -57,7 +54,7 @@ class ChatMessageUpsert(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatMessageUpsert from a JSON string"""
+        """Create an instance of ChatHistoryListRowsInner from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,11 +75,17 @@ class ChatMessageUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatMessageUpsert from a dict"""
+        """Create an instance of ChatHistoryListRowsInner from a dict"""
         if obj is None:
             return None
 
@@ -90,17 +93,11 @@ class ChatMessageUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "tenantId": obj.get("tenantId"),
-            "content": obj.get("content"),
-            "componentId": obj.get("componentId"),
-            "threadId": obj.get("threadId"),
-            "runId": obj.get("runId"),
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "role": obj.get("role"),
-            "source": obj.get("source") if obj.get("source") is not None else 'user',
-            "messageType": obj.get("messageType"),
-            "agentType": obj.get("agentType"),
-            "workflowRunId": obj.get("workflowRunId"),
-            "stepRunId": obj.get("stepRunId")
+            "content": obj.get("content"),
+            "source": obj.get("source"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

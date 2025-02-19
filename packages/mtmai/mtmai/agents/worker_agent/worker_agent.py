@@ -107,7 +107,6 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             type=team_builder_id.type,
             factory=lambda: TeamBuilderAgent(
                 description=team_builder_id.type,
-                # ui_agent=ui_agent_id,
                 wfapp=self.wfapp,
             ),
         )
@@ -192,22 +191,16 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                             tenant_id=message.tenant_id,
                             component_id=message.team_id,
                             threadId=thread_id,
+                            role=event.source,
                             runId=run_id,
                         ),
                     )
                     self.wfapp.event.stream(
                         "hello1await111111111111", step_run_id=message.step_run_id
                     )
-                elif isinstance(event, BaseModel):
-                    await self.handle_message_create(
-                        ChatMessageUpsert(
-                            content=event.model_dump_json(),
-                            tenant_id=message.tenant_id,
-                            component_id=message.team_id,
-                        ),
-                    )
+
                 else:
-                    logger.info(f"UI Agent 收到(未知类型)消息: {event}")
+                    logger.info(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
             await self.save_team_state(
                 team=self.team,
@@ -312,7 +305,15 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                     input.run_id = hatctx.workflow_run_id()
                 if not input.step_run_id:
                     input.step_run_id = hatctx.step_run_id
-                return await worker_app.handle_message(input)
+                task_result: TaskResult = await worker_app.handle_message(input)
+                # Convert TaskResult to a JSON-serializable dict
+                return {
+                    "messages": [
+                        msg.model_dump() if hasattr(msg, "model_dump") else msg
+                        for msg in task_result.messages
+                    ],
+                    "stop_reason": task_result.stop_reason,
+                }
 
         self.worker.register_workflow(FlowAg())
 

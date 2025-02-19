@@ -21,7 +21,6 @@ from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
-from mtmai.clients.rest.models.chat_message_role import ChatMessageRole
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,7 +29,7 @@ class ChatMessage(BaseModel):
     单个聊天消息
     """ # noqa: E501
     metadata: APIResourceMeta
-    role: ChatMessageRole
+    role: StrictStr
     content: StrictStr
     source: Optional[StrictStr] = None
     config: Optional[ChatMessageConfig] = None
