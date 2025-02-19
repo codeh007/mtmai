@@ -33,7 +33,7 @@ class StepRun(BaseModel):
     metadata: APIResourceMeta
     tenant_id: StrictStr = Field(alias="tenantId")
     job_run_id: StrictStr = Field(alias="jobRunId")
-    job_run: Optional[JobRun] = Field(default=None, alias="jobRun")
+    job_run: Optional[Dict[str, Any]] = Field(default=None, alias="jobRun")
     step_id: StrictStr = Field(alias="stepId")
     step: Optional[Step] = None
     child_workflows_count: Optional[StrictInt] = Field(default=None, alias="childWorkflowsCount")
@@ -100,9 +100,6 @@ class StepRun(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of job_run
-        if self.job_run:
-            _dict['jobRun'] = self.job_run.to_dict()
         # override the default output from pydantic by calling `to_dict()` of step
         if self.step:
             _dict['step'] = self.step.to_dict()
@@ -121,7 +118,7 @@ class StepRun(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "tenantId": obj.get("tenantId"),
             "jobRunId": obj.get("jobRunId"),
-            "jobRun": JobRun.from_dict(obj["jobRun"]) if obj.get("jobRun") is not None else None,
+            "jobRun": obj.get("jobRun"),
             "stepId": obj.get("stepId"),
             "step": Step.from_dict(obj["step"]) if obj.get("step") is not None else None,
             "childWorkflowsCount": obj.get("childWorkflowsCount"),
@@ -147,7 +144,4 @@ class StepRun(BaseModel):
         })
         return _obj
 
-from mtmai.clients.rest.models.job_run import JobRun
-# TODO: Rewrite to not use raise_errors
-StepRun.model_rebuild(raise_errors=False)
 

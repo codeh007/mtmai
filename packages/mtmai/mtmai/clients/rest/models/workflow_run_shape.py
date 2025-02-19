@@ -22,6 +22,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.workflow_run_status import WorkflowRunStatus
 from mtmai.clients.rest.models.workflow_run_triggered_by import WorkflowRunTriggeredBy
 from mtmai.clients.rest.models.workflow_version import WorkflowVersion
@@ -39,7 +40,7 @@ class WorkflowRunShape(BaseModel):
     workflow_version: Optional[WorkflowVersion] = Field(default=None, alias="workflowVersion")
     status: WorkflowRunStatus
     display_name: Optional[StrictStr] = Field(default=None, alias="displayName")
-    job_runs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="jobRuns")
+    job_runs: Optional[List[JobRun]] = Field(default=None, alias="jobRuns")
     triggered_by: WorkflowRunTriggeredBy = Field(alias="triggeredBy")
     input: Optional[Dict[str, Any]] = None
     error: Optional[StrictStr] = None
@@ -96,6 +97,13 @@ class WorkflowRunShape(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of workflow_version
         if self.workflow_version:
             _dict['workflowVersion'] = self.workflow_version.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in job_runs (list)
+        _items = []
+        if self.job_runs:
+            for _item_job_runs in self.job_runs:
+                if _item_job_runs:
+                    _items.append(_item_job_runs.to_dict())
+            _dict['jobRuns'] = _items
         # override the default output from pydantic by calling `to_dict()` of triggered_by
         if self.triggered_by:
             _dict['triggeredBy'] = self.triggered_by.to_dict()
@@ -118,7 +126,7 @@ class WorkflowRunShape(BaseModel):
             "workflowVersion": WorkflowVersion.from_dict(obj["workflowVersion"]) if obj.get("workflowVersion") is not None else None,
             "status": obj.get("status"),
             "displayName": obj.get("displayName"),
-            "jobRuns": obj.get("jobRuns"),
+            "jobRuns": [JobRun.from_dict(_item) for _item in obj["jobRuns"]] if obj.get("jobRuns") is not None else None,
             "triggeredBy": WorkflowRunTriggeredBy.from_dict(obj["triggeredBy"]) if obj.get("triggeredBy") is not None else None,
             "input": obj.get("input"),
             "error": obj.get("error"),
