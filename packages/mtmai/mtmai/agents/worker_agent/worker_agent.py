@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import sys
 import time
@@ -16,6 +17,7 @@ from autogen_agentchat.messages import (
     ToolCallRequestEvent,
 )
 from autogen_core import (
+    EVENT_LOGGER_NAME,
     AgentId,
     AgentRuntime,
     CancellationToken,
@@ -23,6 +25,7 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
+from autogen_core.logging import LLMCallEvent
 from autogenstudio.datamodel import LLMCallEventMessage
 from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
@@ -67,6 +70,18 @@ class WorkerAgentConfig(BaseModel):
     model_client_stream: bool = False
     reflect_on_tool_use: bool
     tool_call_summary_format: str
+
+
+class RunEventLogger(logging.Handler):
+    """Event logger that queues LLMCallEvents for streaming"""
+
+    def __init__(self):
+        super().__init__()
+        self.events = asyncio.Queue()
+
+    def emit(self, record: logging.LogRecord):
+        if isinstance(record.msg, LLMCallEvent):
+            self.events.put_nowait(LLMCallEventMessage(content=str(record.msg)))
 
 
 class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
@@ -182,6 +197,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             team_id = generate_uuid()
 
         task_result: TaskResult | None = None
+
+        # Setup logger correctly
+        logger = logging.getLogger(EVENT_LOGGER_NAME)
+        logger.setLevel(logging.INFO)
+        llm_event_logger = RunEventLogger()
+        logger.handlers = [llm_event_logger]  # Replace all handlers
 
         try:
             async for event in self.team.run_stream(

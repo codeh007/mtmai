@@ -78,7 +78,7 @@ class AssistantTeamBuilder:
         # max_msg_termination = MaxMessageTermination(max_messages=6)
         # text_mention_termination = TextMentionTermination("TERMINATE")
         # 提示: 不要加:"TERMINATE" 这个条件,因为团队的相关agents自己会提及 "TERMINATE",
-        # 当团队成员提及 "TERMINATE" 时, 会自动终止团队
+        # 团队成员提及 "TERMINATE" 时, 会自动终止团队
         max_messages_termination = MaxMessageTermination(max_messages=25)
         termination = max_messages_termination
         # combined_termination = max_messages_termination & termination
