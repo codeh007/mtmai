@@ -243,7 +243,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                             "hello1await111111111111", step_run_id=message.step_run_id
                         )
                     else:
-                        logger.info(f"worker Agent 消息没有content: {event}")
+                        logger.warn(f"worker Agent 消息没有content: {event}")
                 else:
                     logger.info(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
