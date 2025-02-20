@@ -6,7 +6,15 @@ from typing import Any, Mapping, Sequence, cast
 
 from agents.team_builder.teams_agent import TeamBuilderAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent, TextMessage
+from autogen_agentchat.messages import (
+    AgentEvent,
+    HandoffMessage,
+    MultiModalMessage,
+    StopMessage,
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+)
 from autogen_core import (
     AgentId,
     AgentRuntime,
@@ -15,6 +23,7 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     try_get_known_serializers_for_type,
 )
+from autogenstudio.datamodel import LLMCallEventMessage
 from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
 from loguru import logger
@@ -173,6 +182,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             team_id = generate_uuid()
 
         task_result: TaskResult | None = None
+
         try:
             async for event in self.team.run_stream(
                 task=message.content,
@@ -184,7 +194,18 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 if isinstance(event, TaskResult):
                     logger.info(f"Worker Agent 收到任务结果: {event}")
                     task_result = event
-                elif isinstance(event, TextMessage):
+                elif isinstance(
+                    event,
+                    (
+                        TextMessage,
+                        MultiModalMessage,
+                        StopMessage,
+                        HandoffMessage,
+                        ToolCallRequestEvent,
+                        ToolCallExecutionEvent,
+                        LLMCallEventMessage,
+                    ),
+                ):
                     await self.handle_message_create(
                         ChatMessageUpsert(
                             content=event.content,

@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
-from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+from autogen_agentchat.conditions import MaxMessageTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
@@ -74,12 +74,14 @@ class AssistantTeamBuilder:
             """,
         )
 
-        termination = TextMentionTermination(text="TERMINATE")
+        # termination = TextMentionTermination(text="TERMINATE")
         # max_msg_termination = MaxMessageTermination(max_messages=6)
-        text_mention_termination = TextMentionTermination("TERMINATE")
+        # text_mention_termination = TextMentionTermination("TERMINATE")
+        # 提示: 不要加:"TERMINATE" 这个条件,因为团队的相关agents自己会提及 "TERMINATE",
+        # 当团队成员提及 "TERMINATE" 时, 会自动终止团队
         max_messages_termination = MaxMessageTermination(max_messages=25)
-        termination = text_mention_termination | max_messages_termination
-        combined_termination = max_messages_termination & termination
+        termination = max_messages_termination
+        # combined_termination = max_messages_termination & termination
 
         selector_prompt = """Select an agent to perform task.
 
