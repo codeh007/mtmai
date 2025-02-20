@@ -164,6 +164,13 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
     # @message_handler
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
         start_time = time.time()
+
+        # Setup logger correctly
+        logger = logging.getLogger(EVENT_LOGGER_NAME)
+        logger.setLevel(logging.INFO)
+        llm_event_logger = RunEventLogger()
+        logger.handlers = [llm_event_logger]  # Replace all handlers
+
         tenant_id: str | None = message.tenant_id
         if not tenant_id:
             tenant_id = get_tenant_id()
@@ -188,24 +195,24 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             )
             message.team_id = team_comp_data.metadata.id
 
-        thread_id = message.session_id
-        if not thread_id:
-            thread_id = generate_uuid()
-        self.team = Team.load_component(team_comp_data.component)
+        team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
 
+        thread_id = message.session_id
+        if not thread_id:
+            thread_id = generate_uuid()
+        else:
+            logger.info(f"现有session: {thread_id}")
+            # 加载团队状态
+            # await self.load_state(thread_id)
+            ...
+
         task_result: TaskResult | None = None
 
-        # Setup logger correctly
-        logger = logging.getLogger(EVENT_LOGGER_NAME)
-        logger.setLevel(logging.INFO)
-        llm_event_logger = RunEventLogger()
-        logger.handlers = [llm_event_logger]  # Replace all handlers
-
         try:
-            async for event in self.team.run_stream(
+            async for event in team.run_stream(
                 task=message.content,
                 # cancellation_token=ctx.cancellation_token,
             ):
@@ -248,7 +255,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                     logger.info(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
             await self.save_team_state(
-                team=self.team,
+                team=team,
                 team_id=team_id,
                 tenant_id=tenant_id,
                 run_id=run_id,
