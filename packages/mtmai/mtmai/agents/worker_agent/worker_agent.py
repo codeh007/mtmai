@@ -182,7 +182,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 #     break
 
                 if isinstance(event, TaskResult):
-                    logger.info(f"UI Agent 收到任务结果(TODO): {event}")
+                    logger.info(f"Worker Agent 收到任务结果: {event}")
                     task_result = event
                 elif isinstance(event, TextMessage):
                     await self.handle_message_create(
@@ -193,6 +193,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                             threadId=thread_id,
                             role=event.source,
                             runId=run_id,
+                            stepRunId=message.step_run_id,
                         ),
                     )
                     self.wfapp.event.stream(
