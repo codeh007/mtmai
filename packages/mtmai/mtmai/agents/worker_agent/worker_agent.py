@@ -5,7 +5,6 @@ import sys
 import time
 from typing import Any, Mapping, Sequence, cast
 
-from agents.team_builder.teams_agent import TeamBuilderAgent
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -35,6 +34,7 @@ from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder import assisant_team_builder
+from mtmai.agents.tenant_agent.tenant_agent import TenantAgent
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -125,12 +125,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #     factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
         # )
 
-        team_builder_id = AgentId("team_builder_agent", "default")
-        self.worker_agent = await TeamBuilderAgent.register(
+        tenant_agent_id = AgentId("tenant_agent", "default")
+        self.tenant_agent = await TenantAgent.register(
             runtime=self._runtime,
-            type=team_builder_id.type,
-            factory=lambda: TeamBuilderAgent(
-                description=team_builder_id.type,
+            type=tenant_agent_id.type,
+            factory=lambda: TenantAgent(
+                description=tenant_agent_id.type,
                 wfapp=self.wfapp,
             ),
         )
