@@ -32,9 +32,12 @@ from loguru import logger
 from mtmai import loader
 from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
-from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder import assisant_team_builder
-from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant, TenantAgent
+from mtmai.agents.tenant_agent.tenant_agent import (
+    MsgGetTeamComponent,
+    MsgResetTenant,
+    TenantAgent,
+)
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -199,6 +202,13 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             )
             message.team_id = team_comp_data.metadata.id
 
+        else:
+            data2 = await self._runtime.send_message(
+                MsgGetTeamComponent(
+                    tenant_id=message.tenant_id, component_id=message.team_id
+                ),
+                self.tenant_agent_id,
+            )
         team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:
@@ -536,39 +546,6 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #     TerminationCondition.load_component(config.termination_condition) if config.termination_condition else None
         # )
         return cls(max_turns=config.max_turns)
-
-    async def get_or_create_default_team(self, tenant_id: str, label: str):
-        teams_list = await self.gomtmapi.coms_api.coms_list(
-            tenant=tenant_id, label=label
-        )
-        if teams_list.rows and len(teams_list.rows) > 0:
-            logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
-            return teams_list.rows[0]
-        else:
-            logger.info(f"create default team for tenant {tenant_id}")
-            defaultModel = await self.gomtmapi.model_api.model_get(
-                tenant=tenant_id, model="default"
-            )
-            model_dict = defaultModel.config.model_dump()
-            model_dict.pop("n", None)
-            model_client = MtmOpenAIChatCompletionClient(
-                **model_dict,
-            )
-
-            default_team_builder = assisant_team_builder.AssistantTeamBuilder()
-            team_comp = await default_team_builder.create_team(model_client)
-            component_model = team_comp.dump_component()
-            new_team = await self.gomtmapi.coms_api.coms_upsert(
-                tenant=tenant_id,
-                com=generate_uuid(),
-                mt_component=MtComponent(
-                    label=component_model.label,
-                    description=component_model.description or "",
-                    componentType="team",
-                    component=component_model.model_dump(),
-                ).model_dump(),
-            )
-            return new_team
 
     async def save_team_state(
         self, team: Team, team_id: str, tenant_id: str, run_id: str
