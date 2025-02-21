@@ -65,4 +65,3 @@ class TravelTeamBuilder:
         team.component_description = self.description
 
         return team
-        return team
