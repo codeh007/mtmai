@@ -203,6 +203,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             message.team_id = team_comp_data.metadata.id
 
         else:
+            # 直接通过 grpc 获取团队组件
             data2 = await self._runtime.send_message(
                 MsgGetTeamComponent(
                     tenant_id=message.tenant_id, component_id=message.team_id
