@@ -7,11 +7,9 @@ from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
-# from .__version__ import version
-
 APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
 
-HEADER_SITE_HOST = "X-Site-Host"  # 通过http header 传递前端域名
+# HEADER_SITE_HOST = "X-Site-Host"  # 通过http header 传递前端域名
 
 
 def parse_cors(v: Any) -> list[str] | str:
@@ -82,10 +80,10 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: str | None = None
 
     # cloudflare
-    CLOUDFLARE_ACCOUNT_ID: str | None = None
-    CLOUDFLARE_API_EMAIL: str | None = None
-    CLOUDFLARE_API_TOKEN: str | None = None
-    CLOUDFLARE_AI_TOKEN: str | None = None
+    # CLOUDFLARE_ACCOUNT_ID: str | None = None
+    # CLOUDFLARE_API_EMAIL: str | None = None
+    # CLOUDFLARE_API_TOKEN: str | None = None
+    # CLOUDFLARE_AI_TOKEN: str | None = None
 
     # logging
     LOGGING_LEVEL: str | None = "info"
@@ -118,10 +116,10 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
-    EMAIL_TEST_USER: str = "test@example.com"
-    FIRST_SUPERUSER: str = "mt@mt.com"
-    FIRST_SUPERUSER_PASSWORD: str = "feihuo321"
-    FIRST_SUPERUSER_EMAIL: str = "mt@mt.com"
+    # EMAIL_TEST_USER: str = "test@example.com"
+    # FIRST_SUPERUSER: str = "mt@mt.com"
+    # FIRST_SUPERUSER_PASSWORD: str = "feihuo321"
+    # FIRST_SUPERUSER_EMAIL: str = "mt@mt.com"
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
@@ -149,10 +147,10 @@ class Settings(BaseSettings):
     # def is_in_gitpod(self) -> bool | None:
     #     return os.getenv("GITPOD_WORKSPACE_URL")
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def is_in_vercel(self) -> bool:
-        return os.getenv("VERCEL")
+    # @computed_field  # type: ignore[prop-decorator]
+    # @property
+    # def is_in_vercel(self) -> bool:
+    #     return os.getenv("VERCEL")
 
     SEARXNG_URL_BASE: str | None = "http://127.0.0.1:18777"
 
@@ -162,28 +160,15 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str | None = None
     GITHUB_CLIENT_SECRET: str | None = None
 
-    # DEFAULT_PASSWORD: str | None = "feihuo321"
-
     # huggingface
     HUGGINGFACEHUB_API_TOKEN: str | None = None
     HUGGINGFACEHUB_USER: str | None = None
     HUGGINGFACEHUB_DEFAULT_WORKSPACE: str | None = None
 
-    gitsrc_dir: str | None = "gitsrc"
+    # gitsrc_dir: str | None = "gitsrc"
 
     IS_TRACE_HTTPX: bool = True
     OTEL_ENABLED: bool | None = False
-
-    # @property
-    # def otel_deploy_name(self) -> str:
-    #     if is_in_vercel():
-    #         return "vercel"
-    #     if mtutils.is_in_gitpod():
-    #         return "gitpod"
-    #     if is_in_huggingface():
-    #         return "hf"
-    #     return "unknown-deploy"
-
     LOKI_ENDPOINT: str | None = "https://logs-prod-017.grafana.net/loki/api/v1/push"
     LOKI_USER: str | None = None
     GRAFANA_TOKEN: str | None = None
@@ -197,13 +182,13 @@ class Settings(BaseSettings):
     DOCKERHUB_PASSWORD: str | None = None
     DOCKERHUB_USER: str | None = None
 
-    DOCKER_IMAGE_TAG: str | None = "docker.io/gitgit188/tmpboaiv3"
+    # DOCKER_IMAGE_TAG: str | None = "docker.io/gitgit188/tmpboaiv3"
 
     # langgraph
     langgraph_checkpointer: Literal["memory", "postgres"] = "postgres"
 
-    GROQ_TOKEN: str | None = ""
-    TOGETHER_TOKEN: str | None = ""
+    # GROQ_TOKEN: str | None = ""
+    # TOGETHER_TOKEN: str | None = ""
 
     # http
     HTTP_PROXY: str | None = None
@@ -221,10 +206,10 @@ class Settings(BaseSettings):
     SELENIUM_HUB_URL: str | None = None
 
     # 其他
-    graph_config_path: str = "configs/graph_config.yml"
+    # graph_config_path: str = "configs/graph_config.yml"
     # mtforms_config_path: str = "configs/mtforms.yml"
     # chainlit
-    CHAINLIT_AUTH_SECRET: str | None = None
+    # CHAINLIT_AUTH_SECRET: str | None = None
 
     # prefect
     PREFECT_API_KEY: str | None = None
@@ -234,9 +219,8 @@ class Settings(BaseSettings):
     WORKER_NAME: str = "pyworker"
     WORKER_INTERVAL: int = 3
     WORKER_MAX_RETRY: int = 1000
-    GOMTM_URL: str = "http://localhost:8383"
-    HATCHET_CLIENT_TOKEN: str | None = None
-
+    GOMTM_URL: str = "http://127.0.0.1:8383"
+    # HATCHET_CLIENT_TOKEN: str | None = None
     AG_HOST_ADDRESS: str = "0.0.0.0:7777"
 
 

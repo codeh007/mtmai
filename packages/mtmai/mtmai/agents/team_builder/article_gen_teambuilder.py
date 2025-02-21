@@ -7,25 +7,26 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from ..tools.web_search import search_web_tool
-from .__init__ import current_team_version
+
+# from .__init__ import current_team_version
 
 
 def percentage_change_tool(start: float, end: float) -> float:
     return ((end - start) / start) * 100
 
 
-class AssistantTeamBuilder:
+class ArticleGenTeamBuilder:
     """默认AI助理团"""
 
     @property
     def name(self):
-        return "assistant_team"
+        return "article_gen_team"
 
     @property
     def description(self):
-        return "AI助理"
+        return "文章生成团队"
 
-    async def create_team(self, model_client: ChatCompletionClient = None):
+    async def create_team(self, default_model_client: ChatCompletionClient = None):
         # By default, AssistantAgent returns the tool output as the response.
         # If your tool does not return a well-formed string in natural language format,
         # you may want to add a reflection step within the agent by setting reflect_on_tool_use=True when creating the agent.
@@ -33,7 +34,7 @@ class AssistantTeamBuilder:
         planning_agent = AssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
-            model_client=model_client,
+            model_client=default_model_client,
             system_message="""
             You are a planning agent.
             Your job is to break down complex tasks into smaller, manageable subtasks.
@@ -53,7 +54,7 @@ class AssistantTeamBuilder:
             "WebSearchAgent",
             description="An agent for searching information on the web.",
             tools=[search_web_tool],
-            model_client=model_client,
+            model_client=default_model_client,
             system_message="""
             You are a web search agent.
             Your only tool is search_tool - use it to find information.
@@ -62,26 +63,10 @@ class AssistantTeamBuilder:
             """,
         )
 
-        data_analyst_agent = AssistantAgent(
-            "DataAnalystAgent",
-            description="An agent for performing calculations.",
-            model_client=model_client,
-            tools=[percentage_change_tool],
-            system_message="""
-            You are a data analyst.
-            Given the tasks you have been assigned, you should analyze the data and provide results using the tools provided.
-            If you have not seen the data, ask for it.
-            """,
-        )
-
-        # termination = TextMentionTermination(text="TERMINATE")
-        # max_msg_termination = MaxMessageTermination(max_messages=6)
-        # text_mention_termination = TextMentionTermination("TERMINATE")
         # 提示: 不要加:"TERMINATE" 这个条件,因为团队的相关agents自己会提及 "TERMINATE",
         # 团队成员提及 "TERMINATE" 时, 会自动终止团队
         max_messages_termination = MaxMessageTermination(max_messages=25)
         termination = max_messages_termination
-        # combined_termination = max_messages_termination & termination
 
         selector_prompt = """Select an agent to perform task.
 
@@ -131,15 +116,15 @@ Only select one agent.
             return None
 
         team = SelectorGroupChat(
-            [planning_agent, web_search_agent, data_analyst_agent],
-            model_client=model_client,
+            [planning_agent, web_search_agent],
+            model_client=default_model_client,
             termination_condition=termination,
             selector_prompt=selector_prompt,
             allow_repeated_speaker=True,  # Allow an agent to speak multiple turns in a row.
             # selector_func=selector_func,  # 可选,(自定义选择器)
             selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
         )
-        team.component_version = current_team_version
+        # team.component_version = current_team_version
         team.component_label = self.name
         team.component_description = self.description
         return team
