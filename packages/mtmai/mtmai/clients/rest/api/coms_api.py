@@ -282,9 +282,11 @@ class ComsApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if com is not None:
-            _path_params['com'] = com
         # process the query parameters
+        if com is not None:
+            
+            _query_params.append(('com', com))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -308,7 +310,7 @@ class ComsApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/comps/{com}',
+            resource_path='/api/v1/tenants/{tenant}/comps/get',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

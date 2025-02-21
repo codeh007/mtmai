@@ -77,6 +77,7 @@ from mtmai.clients.rest.models.chat_session_list import ChatSessionList
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_highlight import CodeHighlight
 from mtmai.clients.rest.models.common_result import CommonResult
+from mtmai.clients.rest.models.component_get import ComponentGet
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
