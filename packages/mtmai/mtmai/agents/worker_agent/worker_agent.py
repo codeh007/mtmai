@@ -34,7 +34,7 @@ from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder import assisant_team_builder
-from mtmai.agents.tenant_agent.tenant_agent import TenantAgent
+from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant, TenantAgent
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -125,12 +125,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #     factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
         # )
 
-        tenant_agent_id = AgentId("tenant_agent", "default")
+        self.tenant_agent_id = AgentId("tenant_agent", "default")
         self.tenant_agent = await TenantAgent.register(
             runtime=self._runtime,
-            type=tenant_agent_id.type,
+            type=self.tenant_agent_id.type,
             factory=lambda: TenantAgent(
-                description=tenant_agent_id.type,
+                description=self.tenant_agent_id.type,
                 wfapp=self.wfapp,
             ),
         )
@@ -184,6 +184,10 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
+            result = await self._runtime.send_message(
+                MsgResetTenant(tenant_id=tenant_id),
+                self.tenant_agent_id,
+            )
             return
 
         team_comp_data: MtComponent = None
@@ -360,11 +364,11 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
                 task_result: TaskResult = await worker_app.handle_message(input)
                 # Convert TaskResult to a JSON-serializable dict
                 return {
-                    "messages": [
-                        msg.model_dump() if hasattr(msg, "model_dump") else msg
-                        for msg in task_result.messages
-                    ],
-                    "stop_reason": task_result.stop_reason,
+                    # "messages": [
+                    #     msg.model_dump() if hasattr(msg, "model_dump") else msg
+                    #     for msg in task_result.messages
+                    # ],
+                    "ok": True,
                 }
 
         self.worker.register_workflow(FlowAg())
