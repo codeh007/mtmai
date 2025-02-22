@@ -18,7 +18,6 @@ from autogen_agentchat.messages import (
 from autogen_core import (
     EVENT_LOGGER_NAME,
     AgentId,
-    AgentRuntime,
     CancellationToken,
     ComponentBase,
     SingleThreadedAgentRuntime,
@@ -112,22 +111,28 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
         # Create a runtime for the team.
         # TODO: The runtime should be created by a managed context.
-        self._runtime = SingleThreadedAgentRuntime()
+        # self._create_runtime()
         # Constants for the closure agent to collect the output messages.
         self._stop_reason: str | None = None
         self._output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | None] = (
             asyncio.Queue()
         )
 
-    async def _init(self, runtime: AgentRuntime) -> None:
-        await self.start_autogen_host()
-        # ui_agent_id = AgentId("ui_agent", "default")
-        # ui_agent = await UIAgent.register(
-        #     runtime=self._runtime,
-        #     type=ui_agent_id.type,
-        #     factory=lambda: UIAgent(description="ui_agent", wfapp=self.wfapp),
-        # )
+    async def _create_runtime(self):
+        # 使用本地runtime
+        # self._runtime = SingleThreadedAgentRuntime()
 
+        # 使用远程gomtm runtime
+        from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
+
+        grpc_host = "127.0.0.1:8383"
+        grpc_runtime = GrpcWorkerAgentRuntime(host_address=grpc_host)
+        self._runtime = grpc_runtime
+        await self._runtime.start()
+
+    async def _init(self) -> None:
+        await self.start_autogen_host()
+        await self._create_runtime()
         self.tenant_agent_id = AgentId("tenant_agent", "default")
         self.tenant_agent = await TenantAgent.register(
             runtime=self._runtime,
@@ -158,7 +163,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
     ) -> TaskResult:
         result: TaskResult | None = None
         if not self._initialized:
-            await self._init(self._runtime)
+            await self._init()
         self._runtime.start()
 
         await self._init_ingestor()
