@@ -128,6 +128,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             try_get_known_serializers_for_type(MsgGetTeamComponent)
         )
         await self._runtime.start()
+        logger.info("mtm(grpc) runtime 启动完成")
 
     async def _init(self) -> None:
         await self.start_autogen_host()
