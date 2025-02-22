@@ -164,7 +164,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         result: TaskResult | None = None
         if not self._initialized:
             await self._init()
-        self._runtime.start()
+        # self._runtime.start()
 
         await self._init_ingestor()
         logger.info("worker agent 结束")
