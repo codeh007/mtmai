@@ -25,26 +25,28 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import descriptor_pb2 as google_dot_protobuf_dot_descriptor__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11mtm/sppb/ag.proto\x12\x08mtmai.pb\x1a google/protobuf/descriptor.proto\"F\n\x0eTeamGetRequest\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x17\n\x07team_id\x18\x02 \x01(\tR\x06teamId\"\'\n\x0cTeamGetReply\x12\x17\n\x07team_id\x18\x01 \x01(\tR\x06teamId\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting2\xc7\x01\n\tAgService\x12=\n\x07TeamGet\x12\x18.mtmai.pb.TeamGetRequest\x1a\x16.mtmai.pb.TeamGetReply\"\x00\x12<\n\x05Greet\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00(\x01\x12=\n\x06Greet2\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00\x30\x01\x42\x81\x01\n\x0c\x63om.mtmai.pbB\x07\x41gProtoP\x01Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\xa2\x02\x03MPX\xaa\x02\x08Mtmai.Pb\xca\x02\x08Mtmai\\Pb\xe2\x02\x14Mtmai\\Pb\\GPBMetadata\xea\x02\tMtmai::Pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11mtm/sppb/ag.proto\x12\x0emtmai.mtm.sppb\x1a google/protobuf/descriptor.proto\"F\n\x0eTeamGetRequest\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x17\n\x07team_id\x18\x02 \x01(\tR\x06teamId\"\'\n\x0cTeamGetReply\x12\x17\n\x07team_id\x18\x01 \x01(\tR\x06teamId\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting\"U\n\x13MsgGetTeamComponent\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12!\n\x0c\x63omponent_id\x18\x03 \x01(\tR\x0b\x63omponentId2\xeb\x01\n\tAgService\x12I\n\x07TeamGet\x12\x1e.mtmai.mtm.sppb.TeamGetRequest\x1a\x1c.mtmai.mtm.sppb.TeamGetReply\"\x00\x12H\n\x05Greet\x12\x1c.mtmai.mtm.sppb.GreetRequest\x1a\x1d.mtmai.mtm.sppb.GreetResponse\"\x00(\x01\x12I\n\x06Greet2\x12\x1c.mtmai.mtm.sppb.GreetRequest\x1a\x1d.mtmai.mtm.sppb.GreetResponse\"\x00\x30\x01\x42\xa0\x01\n\x12\x63om.mtmai.mtm.sppbB\x07\x41gProtoP\x01Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\xa2\x02\x03MMS\xaa\x02\x0eMtmai.Mtm.Sppb\xca\x02\x0eMtmai\\Mtm\\Sppb\xe2\x02\x1aMtmai\\Mtm\\Sppb\\GPBMetadata\xea\x02\x10Mtmai::Mtm::Sppbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mtm.sppb.ag_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n\014com.mtmai.pbB\007AgProtoP\001Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\242\002\003MPX\252\002\010Mtmai.Pb\312\002\010Mtmai\\Pb\342\002\024Mtmai\\Pb\\GPBMetadata\352\002\tMtmai::Pb'
-  _globals['_TEAMGETREQUEST']._serialized_start=65
-  _globals['_TEAMGETREQUEST']._serialized_end=135
-  _globals['_TEAMGETREPLY']._serialized_start=137
-  _globals['_TEAMGETREPLY']._serialized_end=176
-  _globals['_DEMOSTREAM1REQUEST']._serialized_start=178
-  _globals['_DEMOSTREAM1REQUEST']._serialized_end=218
-  _globals['_DEMOSTREAM1REPLY']._serialized_start=220
-  _globals['_DEMOSTREAM1REPLY']._serialized_end=258
-  _globals['_GREETREQUEST']._serialized_start=260
-  _globals['_GREETREQUEST']._serialized_end=294
-  _globals['_GREETRESPONSE']._serialized_start=296
-  _globals['_GREETRESPONSE']._serialized_end=339
-  _globals['_AGSERVICE']._serialized_start=342
-  _globals['_AGSERVICE']._serialized_end=541
+  _globals['DESCRIPTOR']._serialized_options = b'\n\022com.mtmai.mtm.sppbB\007AgProtoP\001Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\242\002\003MMS\252\002\016Mtmai.Mtm.Sppb\312\002\016Mtmai\\Mtm\\Sppb\342\002\032Mtmai\\Mtm\\Sppb\\GPBMetadata\352\002\020Mtmai::Mtm::Sppb'
+  _globals['_TEAMGETREQUEST']._serialized_start=71
+  _globals['_TEAMGETREQUEST']._serialized_end=141
+  _globals['_TEAMGETREPLY']._serialized_start=143
+  _globals['_TEAMGETREPLY']._serialized_end=182
+  _globals['_DEMOSTREAM1REQUEST']._serialized_start=184
+  _globals['_DEMOSTREAM1REQUEST']._serialized_end=224
+  _globals['_DEMOSTREAM1REPLY']._serialized_start=226
+  _globals['_DEMOSTREAM1REPLY']._serialized_end=264
+  _globals['_GREETREQUEST']._serialized_start=266
+  _globals['_GREETREQUEST']._serialized_end=300
+  _globals['_GREETRESPONSE']._serialized_start=302
+  _globals['_GREETRESPONSE']._serialized_end=345
+  _globals['_MSGGETTEAMCOMPONENT']._serialized_start=347
+  _globals['_MSGGETTEAMCOMPONENT']._serialized_end=432
+  _globals['_AGSERVICE']._serialized_start=435
+  _globals['_AGSERVICE']._serialized_end=670
 # @@protoc_insertion_point(module_scope)

@@ -28,7 +28,7 @@ class AgService(Protocol):
 class AgServiceServer(ConnecpyServer):
     def __init__(self, *, service: AgService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/mtmai.pb.AgService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.AgService"
         self._endpoints = {
             "TeamGet": Endpoint[_pb2.TeamGetRequest, _pb2.TeamGetReply](
                 service_name="AgService",
@@ -54,7 +54,7 @@ class AgServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "mtmai.pb.AgService"
+        return "mtmai.mtm.sppb.AgService"
 
 
 class AgServiceSync(Protocol):
@@ -66,7 +66,7 @@ class AgServiceSync(Protocol):
 class AgServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: AgServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/mtmai.pb.AgService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.AgService"
         self._endpoints = {
             "TeamGet": Endpoint[_pb2.TeamGetRequest, _pb2.TeamGetReply](
                 service_name="AgService",
@@ -92,7 +92,7 @@ class AgServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "mtmai.pb.AgService"
+        return "mtmai.mtm.sppb.AgService"
 
 
 class AgServiceClient(ConnecpyClient):
@@ -105,7 +105,7 @@ class AgServiceClient(ConnecpyClient):
         **kwargs,
     ) -> _pb2.TeamGetReply:
         return self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/TeamGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
@@ -121,7 +121,7 @@ class AgServiceClient(ConnecpyClient):
         **kwargs,
     ) -> _pb2.GreetResponse:
         return self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/Greet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
@@ -137,7 +137,7 @@ class AgServiceClient(ConnecpyClient):
         **kwargs,
     ) -> _pb2.GreetResponse:
         return self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/Greet2",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
@@ -156,7 +156,7 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         **kwargs,
     ) -> _pb2.TeamGetReply:
         return await self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/TeamGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
@@ -174,7 +174,7 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         **kwargs,
     ) -> _pb2.GreetResponse:
         return await self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/Greet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
@@ -192,7 +192,7 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         **kwargs,
     ) -> _pb2.GreetResponse:
         return await self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/Greet2",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,

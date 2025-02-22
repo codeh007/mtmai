@@ -5,6 +5,7 @@ import sys
 import time
 from typing import Any, Mapping, Sequence, cast
 
+from agents.worker_agent import serializer_types
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -29,14 +30,8 @@ from clients.client import set_gomtm_api_context
 from clients.rest_client import AsyncRestApi
 from loguru import logger
 from mtmai import loader
-from mtmai.agents._types import ApiSaveTeamState, ApiSaveTeamTaskResult
 from mtmai.agents.hf_space_agent import HfSpaceAgent
-from mtmai.agents.team_builder import assisant_team_builder
-from mtmai.agents.tenant_agent.tenant_agent import (
-    MsgGetTeamComponent,
-    MsgResetTenant,
-    TenantAgent,
-)
+from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant, TenantAgent
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
@@ -45,7 +40,6 @@ from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context import (
     Context,
     get_tenant_id,
@@ -56,6 +50,7 @@ from mtmai.context.context import (
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
+from mtmai.mtm.sppb.ag_pb2 import MsgGetTeamComponent
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -123,11 +118,15 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         # self._runtime = SingleThreadedAgentRuntime()
 
         # 使用远程gomtm runtime
-        from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
+        from mtmai.runtimes.mtmruntime._worker_runtime import GrpcWorkerAgentRuntime
 
         grpc_host = "127.0.0.1:8383"
         grpc_runtime = GrpcWorkerAgentRuntime(host_address=grpc_host)
         self._runtime = grpc_runtime
+        # for serializer_type in attrs(serializer_types):
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(MsgGetTeamComponent)
+        )
         await self._runtime.start()
 
     async def _init(self) -> None:
@@ -200,17 +199,25 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
         team_comp_data: MtComponent = None
         if not message.team_id:
-            assistant_team_builder = assisant_team_builder.AssistantTeamBuilder()
-            team_comp_data = await self.get_or_create_default_team(
-                tenant_id=message.tenant_id,
-                label=assistant_team_builder.name,
+            team_id = "fake_team_id"
+            result = await self._runtime.send_message(
+                serializer_types.MsgGetTeamComponent(
+                    tenant_id=message.tenant_id, component_id=team_id
+                ),
+                self.tenant_agent_id,
             )
-            message.team_id = team_comp_data.metadata.id
+            logger.info(f"get team component: {result}")
+            # assistant_team_builder = assisant_team_builder.AssistantTeamBuilder()
+            # team_comp_data = await self.get_or_create_default_team(
+            #     tenant_id=message.tenant_id,
+            #     label=assistant_team_builder.name,
+            # )
+            # message.team_id = team_comp_data.metadata.id
 
         else:
             # 直接通过 grpc 获取团队组件
             data2 = await self._runtime.send_message(
-                MsgGetTeamComponent(
+                serializer_types.MsgGetTeamComponent(
                     tenant_id=message.tenant_id, component_id=message.team_id
                 ),
                 self.tenant_agent_id,
@@ -450,33 +457,10 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         self._runtime.start()
 
         try:
-            # Send a reset messages to all participants.
-            # for participant_topic_type in self._participant_topic_types:
-            #     await self._runtime.send_message(
-            #         GroupChatReset(),
-            #         recipient=AgentId(type=participant_topic_type, key=self._team_id),
-            #     )
-            # # Send a reset message to the group chat manager.
-            # await self._runtime.send_message(
-            #     GroupChatReset(),
-            #     recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
-            # )
-            # from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
-            # grpc_runtime = GrpcWorkerAgentRuntime(host_address=settings.AG_HOST_ADDRESS)
             self._runtime = SingleThreadedAgentRuntime()
-
-            message_serializer_types = [
-                AgentRunInput,
-                ChatMessage,
-                ChatMessageUpsert,
-                TeamComponent,
-                # TaskResult,
-                ApiSaveTeamState,
-                ApiSaveTeamTaskResult,
-            ]
-            for message_serializer_type in message_serializer_types:
+            for serializer_type in serializer_types:
                 self._runtime.add_message_serializer(
-                    try_get_known_serializers_for_type(message_serializer_type)
+                    try_get_known_serializers_for_type(serializer_type)
                 )
 
         finally:
