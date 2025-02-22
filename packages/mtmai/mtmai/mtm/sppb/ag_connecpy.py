@@ -21,7 +21,6 @@ _sym_db = symbol_database.Default()
 
 class AgService(Protocol):
     async def TeamGet(self, req: _pb2.TeamGetRequest, ctx: ServiceContext) -> _pb2.TeamGetReply: ...
-    async def DemoStream1(self, req: _pb2.DemoStream1Request, ctx: ServiceContext) -> _pb2.DemoStream1Reply: ...
     async def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     async def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
 
@@ -37,13 +36,6 @@ class AgServiceServer(ConnecpyServer):
                 function=getattr(service, "TeamGet"),
                 input=_pb2.TeamGetRequest,
                 output=_pb2.TeamGetReply,
-            ),
-            "DemoStream1": Endpoint[_pb2.DemoStream1Request, _pb2.DemoStream1Reply](
-                service_name="AgService",
-                name="DemoStream1",
-                function=getattr(service, "DemoStream1"),
-                input=_pb2.DemoStream1Request,
-                output=_pb2.DemoStream1Reply,
             ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -67,7 +59,6 @@ class AgServiceServer(ConnecpyServer):
 
 class AgServiceSync(Protocol):
     def TeamGet(self, req: _pb2.TeamGetRequest, ctx: ServiceContext) -> _pb2.TeamGetReply: ...
-    def DemoStream1(self, req: _pb2.DemoStream1Request, ctx: ServiceContext) -> _pb2.DemoStream1Reply: ...
     def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
 
@@ -83,13 +74,6 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "TeamGet"),
                 input=_pb2.TeamGetRequest,
                 output=_pb2.TeamGetReply,
-            ),
-            "DemoStream1": Endpoint[_pb2.DemoStream1Request, _pb2.DemoStream1Reply](
-                service_name="AgService",
-                name="DemoStream1",
-                function=getattr(service, "DemoStream1"),
-                input=_pb2.DemoStream1Request,
-                output=_pb2.DemoStream1Reply,
             ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -125,22 +109,6 @@ class AgServiceClient(ConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
-            **kwargs,
-        )
-
-    def DemoStream1(
-        self,
-        *,
-        request: _pb2.DemoStream1Request,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        **kwargs,
-    ) -> _pb2.DemoStream1Reply:
-        return self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/DemoStream1",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.DemoStream1Reply,
             **kwargs,
         )
 
@@ -192,24 +160,6 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
-            session=session,
-            **kwargs,
-        )
-
-    async def DemoStream1(
-        self,
-        *,
-        request: _pb2.DemoStream1Request,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        session: Union[httpx.AsyncClient, None] = None,
-        **kwargs,
-    ) -> _pb2.DemoStream1Reply:
-        return await self._make_request(
-            url=f"{server_path_prefix}/mtmai.pb.AgService/DemoStream1",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.DemoStream1Reply,
             session=session,
             **kwargs,
         )

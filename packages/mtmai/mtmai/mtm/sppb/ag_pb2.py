@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import descriptor_pb2 as google_dot_protobuf_dot_descriptor__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11mtm/sppb/ag.proto\x12\x08mtmai.pb\x1a google/protobuf/descriptor.proto\"F\n\x0eTeamGetRequest\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x17\n\x07team_id\x18\x02 \x01(\tR\x06teamId\"\'\n\x0cTeamGetReply\x12\x17\n\x07team_id\x18\x01 \x01(\tR\x06teamId\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting2\x94\x02\n\tAgService\x12=\n\x07TeamGet\x12\x18.mtmai.pb.TeamGetRequest\x1a\x16.mtmai.pb.TeamGetReply\"\x00\x12K\n\x0b\x44\x65moStream1\x12\x1c.mtmai.pb.DemoStream1Request\x1a\x1a.mtmai.pb.DemoStream1Reply\"\x00\x30\x01\x12<\n\x05Greet\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00(\x01\x12=\n\x06Greet2\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00\x30\x01\x42\x81\x01\n\x0c\x63om.mtmai.pbB\x07\x41gProtoP\x01Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\xa2\x02\x03MPX\xaa\x02\x08Mtmai.Pb\xca\x02\x08Mtmai\\Pb\xe2\x02\x14Mtmai\\Pb\\GPBMetadata\xea\x02\tMtmai::Pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11mtm/sppb/ag.proto\x12\x08mtmai.pb\x1a google/protobuf/descriptor.proto\"F\n\x0eTeamGetRequest\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x17\n\x07team_id\x18\x02 \x01(\tR\x06teamId\"\'\n\x0cTeamGetReply\x12\x17\n\x07team_id\x18\x01 \x01(\tR\x06teamId\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting2\xc7\x01\n\tAgService\x12=\n\x07TeamGet\x12\x18.mtmai.pb.TeamGetRequest\x1a\x16.mtmai.pb.TeamGetReply\"\x00\x12<\n\x05Greet\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00(\x01\x12=\n\x06Greet2\x12\x16.mtmai.pb.GreetRequest\x1a\x17.mtmai.pb.GreetResponse\"\x00\x30\x01\x42\x81\x01\n\x0c\x63om.mtmai.pbB\x07\x41gProtoP\x01Z\'github.com/codeh007/gomtm/mtm/sppb;sppb\xa2\x02\x03MPX\xaa\x02\x08Mtmai.Pb\xca\x02\x08Mtmai\\Pb\xe2\x02\x14Mtmai\\Pb\\GPBMetadata\xea\x02\tMtmai::Pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -46,5 +46,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GREETRESPONSE']._serialized_start=296
   _globals['_GREETRESPONSE']._serialized_end=339
   _globals['_AGSERVICE']._serialized_start=342
-  _globals['_AGSERVICE']._serialized_end=618
+  _globals['_AGSERVICE']._serialized_end=541
 # @@protoc_insertion_point(module_scope)
