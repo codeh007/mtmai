@@ -97,6 +97,10 @@ botocore==1.36.5
     # via
     #   boto3
     #   s3transfer
+brotli==1.1.0
+    # via brotli-asgi
+brotli-asgi==1.4.0
+    # via connecpy
 browser-use==0.1.23
     # via mtxai (pyproject.toml)
 cachetools==5.5.1
@@ -126,6 +130,8 @@ click==8.1.8
     #   uvicorn
 cobble==0.1.4
     # via mammoth
+connecpy==1.3.2
+    # via mtxai (pyproject.toml)
 courlan==1.3.2
     # via trafilatura
 cryptography==43.0.3
@@ -254,6 +260,7 @@ httpx==0.27.2
     #   anthropic
     #   autogen-ext
     #   browser-use
+    #   connecpy
     #   fastapi
     #   fireworks-ai
     #   httpx-ws
@@ -539,6 +546,7 @@ proto-plus==1.25.0
 protobuf==5.29.3
     # via
     #   autogen-core
+    #   connecpy
     #   google-ai-generativelanguage
     #   google-api-core
     #   google-generativeai
@@ -748,9 +756,12 @@ sse-starlette==2.2.1
     # via mcp
 starlette==0.45.3
     # via
+    #   brotli-asgi
+    #   connecpy
     #   fastapi
     #   mcp
     #   sse-starlette
+    #   zstd-asgi
 structlog==25.1.0
     # via mtxai (pyproject.toml)
 tenacity==9.0.0
@@ -866,4 +877,8 @@ youtube-transcript-api==0.6.3
 zipp==3.21.0
     # via importlib-metadata
 zstandard==0.23.0
-    # via langsmith
+    # via
+    #   langsmith
+    #   zstd-asgi
+zstd-asgi==0.2
+    # via connecpy
