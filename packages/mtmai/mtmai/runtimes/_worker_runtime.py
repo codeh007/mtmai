@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import json
 import logging
 import os
 import signal
@@ -87,6 +88,7 @@ from ..agents.team_builder.travel_builder import TravelTeamBuilder
 from ..agents.tenant_agent.tenant_agent import MsgResetTenant
 from ..clients.client import set_gomtm_api_context
 from ..clients.rest.api_client import ApiClient
+from ..clients.rest.models.ag_state_upsert import AgStateUpsert
 from ..clients.rest.models.agent_run_input import AgentRunInput
 from ..clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from ..clients.rest.models.mt_component import MtComponent
@@ -854,7 +856,10 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                 tenant_id=message.tenant_id, component_id=message.team_id
             ),
         )
-        team = Team.load_component(team_comp_data.component)
+
+        component_json = json.loads(team_comp_data.component)
+
+        team = Team.load_component(component_json)
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
@@ -932,24 +937,6 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         )
         def my_func(context: Context) -> MyResultType:
             return MyResultType(my_func="testing123")
-
-        # @wfapp.durable(
-        #     events=["durable:run"],
-        # )
-        # async def my_durable_func(
-        #     context: DurableContext,
-        # ) -> dict[str, MyResultType | None]:
-        #     result = cast(
-        #         dict[str, Any], await context.run(my_func, {"test": "test"}).result()
-        #     )
-
-        #     context.log(result)
-
-        #     return {"my_durable_func": result.get("my_func")}
-
-        # worker = hatchet.worker("test-worker", max_runs=5)
-
-        # wfapp.admin.run(my_durable_func, {"test": "test"})
 
         @wfapp.workflow(
             name="ag",
@@ -1070,3 +1057,29 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
             )
             results.append(new_team)
         return results
+
+    async def save_team_state(
+        self, team: Team, team_id: str, tenant_id: str, run_id: str
+    ) -> None:
+        """保存团队状态"""
+        logger.info("保存团队状态")
+        # 确保停止团队的内部 agents
+        if team and hasattr(team, "_participants"):
+            for agent in team._participants:
+                if hasattr(agent, "close"):
+                    await agent.close()
+        state = await team.save_state()
+        await self.gomtmapi.ag_state_api.ag_state_upsert(
+            tenant=tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                componentId=team_id,
+                runId=run_id,
+                state=state,
+            ).model_dump(),
+        )
+
+    async def handle_message_create(self, message: ChatMessageUpsert) -> None:
+        await self.gomtmapi.chat_api.chat_message_upsert(
+            tenant=message.tenant_id,
+            chat_message_upsert=message.model_dump(),
+        )
