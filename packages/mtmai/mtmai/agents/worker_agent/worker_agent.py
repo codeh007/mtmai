@@ -213,7 +213,11 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #         self.tenant_agent_id,
         #     )
 
-        team_comp_data = self.
+        team_comp_data = await self.mtm_client.ag.GetComponent(
+            request=MsgGetTeamComponent(
+                tenant_id=message.tenant_id, component_id=message.team_id
+            )
+        )
         team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:

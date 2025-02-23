@@ -31,7 +31,6 @@ from typing import (
 )
 from urllib.parse import urlparse
 
-import httpx
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     HandoffMessage,
@@ -68,7 +67,9 @@ from autogen_core._telemetry import (
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
 from autogenstudio.datamodel import LLMCallEventMessage
+from connecpy.context import ClientContext
 from google.protobuf import any_pb2
+from mtm.sppb import ag_pb2
 from mtmai import loader
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.configuration import Configuration
@@ -158,13 +159,7 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                 host=settings.GOMTM_URL,
             )
         )
-
-        timeout_s = 20
-        session = httpx.AsyncClient(
-            base_url=settings.GOMTM_URL,
-            timeout=timeout_s,
-        )
-        self.mtm_client = MtmClient(settings.GOMTM_URL, session=session)
+        self.mtm_client = MtmClient(settings.GOMTM_URL)
         self._runtime = SingleThreadedAgentRuntime(
             tracer_provider=tracer_provider,
             # payload_serialization_format=self._payload_serialization_format,
@@ -852,8 +847,14 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
             tenant_teams = await self.list_team_component(message.tenant_id)
             logger.info(f"get team component: {tenant_teams}")
             message.team_id = tenant_teams[0].metadata.id
+
+        team_comp_data = await self.mtm_client.ag.GetComponent(
+            ctx=ClientContext(),
+            request=ag_pb2.GetComponentRequest(
+                tenant_id=message.tenant_id, component_id=message.team_id
+            ),
+        )
         team = Team.load_component(team_comp_data.component)
-        # self._thread_runtime.
         team_id = message.team_id
         if not team_id:
             team_id = generate_uuid()
