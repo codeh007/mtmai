@@ -20,10 +20,9 @@ _sym_db = symbol_database.Default()
 
 
 class AgService(Protocol):
-    async def TeamGet(self, req: _pb2.TeamGetRequest, ctx: ServiceContext) -> _pb2.TeamGetReply: ...
     async def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     async def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
-    async def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentReply: ...
+    async def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentResponse: ...
 
 
 class AgServiceServer(ConnecpyServer):
@@ -31,14 +30,6 @@ class AgServiceServer(ConnecpyServer):
         super().__init__()
         self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.AgService"
         self._endpoints = {
-            "TeamGet": Endpoint[_pb2.TeamGetRequest, _pb2.TeamGetReply](
-                service_name="AgService",
-                name="TeamGet",
-                function=getattr(service, "TeamGet"),
-                input=_pb2.TeamGetRequest,
-                output=_pb2.TeamGetReply,
-                allowed_methods=("POST",),
-            ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
                 name="Greet",
@@ -55,12 +46,12 @@ class AgServiceServer(ConnecpyServer):
                 output=_pb2.GreetResponse,
                 allowed_methods=("POST",),
             ),
-            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentReply](
+            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentResponse](
                 service_name="AgService",
                 name="GetComponent",
                 function=getattr(service, "GetComponent"),
                 input=_pb2.GetComponentRequest,
-                output=_pb2.GetComponentReply,
+                output=_pb2.GetComponentResponse,
                 allowed_methods=("POST",),
             ),
         }
@@ -70,10 +61,9 @@ class AgServiceServer(ConnecpyServer):
 
 
 class AgServiceSync(Protocol):
-    def TeamGet(self, req: _pb2.TeamGetRequest, ctx: ServiceContext) -> _pb2.TeamGetReply: ...
     def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
-    def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentReply: ...
+    def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentResponse: ...
 
 
 class AgServiceServerSync(ConnecpyServer):
@@ -81,14 +71,6 @@ class AgServiceServerSync(ConnecpyServer):
         super().__init__()
         self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.AgService"
         self._endpoints = {
-            "TeamGet": Endpoint[_pb2.TeamGetRequest, _pb2.TeamGetReply](
-                service_name="AgService",
-                name="TeamGet",
-                function=getattr(service, "TeamGet"),
-                input=_pb2.TeamGetRequest,
-                output=_pb2.TeamGetReply,
-                allowed_methods=("POST",),
-            ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
                 name="Greet",
@@ -105,12 +87,12 @@ class AgServiceServerSync(ConnecpyServer):
                 output=_pb2.GreetResponse,
                 allowed_methods=("POST",),
             ),
-            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentReply](
+            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentResponse](
                 service_name="AgService",
                 name="GetComponent",
                 function=getattr(service, "GetComponent"),
                 input=_pb2.GetComponentRequest,
-                output=_pb2.GetComponentReply,
+                output=_pb2.GetComponentResponse,
                 allowed_methods=("POST",),
             ),
         }
@@ -120,24 +102,6 @@ class AgServiceServerSync(ConnecpyServer):
 
 
 class AgServiceClient(ConnecpyClient):
-    def TeamGet(
-        self,
-        *,
-        request: _pb2.TeamGetRequest,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        **kwargs,
-    ) -> _pb2.TeamGetReply:
-        method = "POST"
-        return self._make_request(
-            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.TeamGetReply,
-            method=method,
-            **kwargs,
-        )
-
     def Greet(
         self,
         *,
@@ -181,39 +145,19 @@ class AgServiceClient(ConnecpyClient):
         ctx: ClientContext,
         server_path_prefix: str = "",
         **kwargs,
-    ) -> _pb2.GetComponentReply:
+    ) -> _pb2.GetComponentResponse:
         method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/GetComponent",
             ctx=ctx,
             request=request,
-            response_obj=_pb2.GetComponentReply,
+            response_obj=_pb2.GetComponentResponse,
             method=method,
             **kwargs,
         )
 
 
 class AsyncAgServiceClient(AsyncConnecpyClient):
-    async def TeamGet(
-        self,
-        *,
-        request: _pb2.TeamGetRequest,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        session: Union[httpx.AsyncClient, None] = None,
-        **kwargs,
-    ) -> _pb2.TeamGetReply:
-        method = "POST"
-        return await self._make_request(
-            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.TeamGetReply,
-            method=method,
-            session=session,
-            **kwargs,
-        )
-
     async def Greet(
         self,
         *,
@@ -262,13 +206,13 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         server_path_prefix: str = "",
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
-    ) -> _pb2.GetComponentReply:
+    ) -> _pb2.GetComponentResponse:
         method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/GetComponent",
             ctx=ctx,
             request=request,
-            response_obj=_pb2.GetComponentReply,
+            response_obj=_pb2.GetComponentResponse,
             method=method,
             session=session,
             **kwargs,

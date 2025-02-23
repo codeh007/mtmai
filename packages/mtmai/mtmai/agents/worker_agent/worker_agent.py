@@ -21,7 +21,6 @@ from autogen_core import (
     Subscription,
     TopicId,
     message_handler,
-    try_get_known_serializers_for_type,
 )
 from autogen_core.logging import LLMCallEvent
 from autogenstudio.datamodel import LLMCallEventMessage
@@ -38,7 +37,8 @@ from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.context import get_tenant_id, set_backend_url, set_tenant_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.id import generate_uuid
-from mtmai.mtm.sppb.ag_pb2 import MsgGetTeamComponent
+
+# from mtmai.mtm.sppb.ag_pb2 import MsgGetTeamComponent
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -111,9 +111,9 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         grpc_runtime = GrpcWorkerAgentRuntime()
         self._runtime = grpc_runtime
         # for serializer_type in attrs(serializer_types):
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(MsgGetTeamComponent)
-        )
+        # self._runtime.add_message_serializer(
+        #     try_get_known_serializers_for_type(MsgGetTeamComponent)
+        # )
         await self._runtime.start()
         logger.info("mtm(grpc) runtime 启动完成")
         await self._runtime.add_subscription(
@@ -192,11 +192,11 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         team_comp_data: MtComponent = None
         if not message.team_id:
             team_id = "fake_team_id"
-            result = await self._runtime.send_message(
-                MsgGetTeamComponent(tenant_id=message.tenant_id, component_id=team_id),
-                self.tenant_agent_id,
-            )
-            logger.info(f"get team component: {result}")
+            # result = await self._runtime.send_message(
+            #     MsgGetTeamComponent(tenant_id=message.tenant_id, component_id=team_id),
+            #     self.tenant_agent_id,
+            # )
+            # logger.info(f"get team component: {result}")
             # assistant_team_builder = assisant_team_builder.AssistantTeamBuilder()
             # team_comp_data = await self.get_or_create_default_team(
             #     tenant_id=message.tenant_id,
@@ -213,11 +213,11 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         #         self.tenant_agent_id,
         #     )
 
-        team_comp_data = await self.mtm_client.ag.GetComponent(
-            request=MsgGetTeamComponent(
-                tenant_id=message.tenant_id, component_id=message.team_id
-            )
-        )
+        # team_comp_data = await self.mtm_client.ag.GetComponent(
+        #     request=MsgGetTeamComponent(
+        #         tenant_id=message.tenant_id, component_id=message.team_id
+        #     )
+        # )
         team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:

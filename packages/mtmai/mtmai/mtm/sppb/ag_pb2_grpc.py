@@ -6,7 +6,8 @@ from mtm.sppb import ag_pb2 as mtm_dot_sppb_dot_ag__pb2
 
 
 class AgServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -14,11 +15,6 @@ class AgServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.TeamGet = channel.unary_unary(
-                '/mtmai.mtm.sppb.AgService/TeamGet',
-                request_serializer=mtm_dot_sppb_dot_ag__pb2.TeamGetRequest.SerializeToString,
-                response_deserializer=mtm_dot_sppb_dot_ag__pb2.TeamGetReply.FromString,
-                _registered_method=True)
         self.Greet = channel.stream_unary(
                 '/mtmai.mtm.sppb.AgService/Greet',
                 request_serializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.SerializeToString,
@@ -32,18 +28,13 @@ class AgServiceStub(object):
         self.GetComponent = channel.unary_unary(
                 '/mtmai.mtm.sppb.AgService/GetComponent',
                 request_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
-                response_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReply.FromString,
+                response_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.FromString,
                 _registered_method=True)
 
 
 class AgServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def TeamGet(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
+    """
 
     def Greet(self, request_iterator, context):
         """demos
@@ -68,11 +59,6 @@ class AgServiceServicer(object):
 
 def add_AgServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'TeamGet': grpc.unary_unary_rpc_method_handler(
-                    servicer.TeamGet,
-                    request_deserializer=mtm_dot_sppb_dot_ag__pb2.TeamGetRequest.FromString,
-                    response_serializer=mtm_dot_sppb_dot_ag__pb2.TeamGetReply.SerializeToString,
-            ),
             'Greet': grpc.stream_unary_rpc_method_handler(
                     servicer.Greet,
                     request_deserializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.FromString,
@@ -86,7 +72,7 @@ def add_AgServiceServicer_to_server(servicer, server):
             'GetComponent': grpc.unary_unary_rpc_method_handler(
                     servicer.GetComponent,
                     request_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.FromString,
-                    response_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReply.SerializeToString,
+                    response_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -97,34 +83,8 @@ def add_AgServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AgService(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def TeamGet(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/mtmai.mtm.sppb.AgService/TeamGet',
-            mtm_dot_sppb_dot_ag__pb2.TeamGetRequest.SerializeToString,
-            mtm_dot_sppb_dot_ag__pb2.TeamGetReply.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
+    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
+    """
 
     @staticmethod
     def Greet(request_iterator,
@@ -196,7 +156,7 @@ class AgService(object):
             target,
             '/mtmai.mtm.sppb.AgService/GetComponent',
             mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
-            mtm_dot_sppb_dot_ag__pb2.GetComponentReply.FromString,
+            mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.FromString,
             options,
             channel_credentials,
             insecure,
