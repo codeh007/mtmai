@@ -21,7 +21,7 @@ from mtmai.worker.dispatcher.dispatcher import (
     new_dispatcher,
 )
 
-ACTION_EVENT_RETRY_COUNT = 5
+ACTION_EVENT_RETRY_COUNT = 6
 
 
 @dataclass
@@ -119,21 +119,26 @@ class WorkerActionListenerProcess:
                 logger.debug("stopping event send loop...")
                 break
 
-            logger.debug(f"tx: event: {event.action.action_id}/{event.type}")
+            logger.info(f"tx: event: {event.action.action_id}/{event.type}")
             asyncio.create_task(self.send_event(event))
 
     async def start_blocked_main_loop(self):
-        threshold = 1
-        while not self.killing:
-            count = 0
-            for step_run_id, start_time in self.running_step_runs.items():
-                diff = self.now() - start_time
-                if diff > threshold:
-                    count += 1
+        try:
+            threshold = 1
+            while not self.killing:
+                count = 0
+                for step_run_id, start_time in self.running_step_runs.items():
+                    diff = self.now() - start_time
+                    if diff > threshold:
+                        count += 1
 
-            if count > 0:
-                logger.warning(f"{BLOCKED_THREAD_WARNING}: Waiting Steps {count}")
-            await asyncio.sleep(1)
+                if count > 0:
+                    logger.warning(f"{BLOCKED_THREAD_WARNING}: Waiting Steps {count}")
+                await asyncio.sleep(1)
+            if self.killing:
+                logger.info("killing @stopping blocked main loop...")
+        except Exception as e:
+            logger.error(f"出现未知错误: error in blocked main loop: {e}")
 
     async def send_event(self, event: ActionEvent, retry_attempt: int = 1):
         try:

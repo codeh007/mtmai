@@ -7,6 +7,7 @@ import logging
 import os
 import signal
 import sys
+import time
 import uuid
 import warnings
 from asyncio import Future, Task
@@ -33,7 +34,9 @@ from typing import (
     cast,
 )
 
+from autogen_agentchat.base import TaskResult
 from autogen_core import (
+    EVENT_LOGGER_NAME,
     JSON_DATA_CONTENT_TYPE,
     PROTOBUF_DATA_CONTENT_TYPE,
     Agent,
@@ -67,6 +70,7 @@ from mtmai.hatchet import Hatchet
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
+from ...agents.worker_agent.worker_agent import RunEventLogger
 from ...clients.client import set_gomtm_api_context
 from ...clients.rest.api_client import ApiClient
 from ...clients.rest.models.agent_run_input import AgentRunInput
@@ -992,10 +996,19 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                 logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
                 await asyncio.sleep(settings.WORKER_INTERVAL)
         # 非阻塞启动
-        self.worker.setup_loop(asyncio.new_event_loop())
-        asyncio.create_task(self.worker.async_start())
+        # self.worker.setup_loop(asyncio.new_event_loop())
+        # asyncio.create_task(self.worker.async_start())
         # 阻塞启动
-        # await self.worker.async_start()
+        await self.worker.async_start()
+
+    async def handle_message(self, message: AgentRunInput) -> TaskResult:
+        start_time = time.time()
+
+        # Setup logger correctly
+        logger = logging.getLogger(EVENT_LOGGER_NAME)
+        logger.setLevel(logging.INFO)
+        llm_event_logger = RunEventLogger()
+        logger.handlers = [llm_event_logger]  # Replace all handlers
 
     async def setup_hatchet_workflows(self):
         wfapp = self.wfapp

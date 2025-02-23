@@ -292,7 +292,7 @@ class Worker:
         await self.action_listener_health_check
 
     async def exit_gracefully(self) -> None:
-        logger.debug(f"gracefully stopping worker: {self.name}")
+        logger.info(f"gracefully stopping worker: {self.name}")
 
         if self.killing:
             return self.exit_forcefully()
