@@ -19,14 +19,11 @@ from typing import (
 )
 
 from autogen_core import Agent
+from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, agent_worker_pb2_grpc
 from typing_extensions import Self
 
 from ._constants import GRPC_IMPORT_ERROR_STR
 from ._type_helpers import ChannelArgumentType
-from .protos import agent_worker_pb2, agent_worker_pb2_grpc
-
-# from mtm.sppb import agent_worker_pb2
-
 
 try:
     import grpc.aio
@@ -34,7 +31,7 @@ except ImportError as e:
     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
 
 if TYPE_CHECKING:
-    from .protos.agent_worker_pb2_grpc import AgentRpcAsyncStub
+    from autogen_ext.runtimes.grpc.protos.agent_worker_pb2_grpc import AgentRpcAsyncStub
 
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")

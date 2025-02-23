@@ -58,26 +58,27 @@ from autogen_core._telemetry import (
     get_telemetry_grpc_metadata,
 )
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
+from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
 from google.protobuf import any_pb2
+from opentelemetry.trace import TracerProvider
+
 from mtmai import loader
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.context.context import Context, set_api_token_context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
-from opentelemetry.trace import TracerProvider
 
-from ...agents.worker_agent.worker_agent import RunEventLogger
-from ...clients.client import set_gomtm_api_context
-from ...clients.rest.api_client import ApiClient
-from ...clients.rest.models.agent_run_input import AgentRunInput
-from ...clients.rest_client import AsyncRestApi
-from ...mtlibs.callable import DurableContext
+from ..agents.worker_agent.worker_agent import RunEventLogger
+from ..clients.client import set_gomtm_api_context
+from ..clients.rest.api_client import ApiClient
+from ..clients.rest.models.agent_run_input import AgentRunInput
+from ..clients.rest_client import AsyncRestApi
+from ..mtlibs.callable import DurableContext
 from . import _constants
 from ._constants import GRPC_IMPORT_ERROR_STR
 from ._host_connection import HostConnection
 from ._type_helpers import ChannelArgumentType
-from .protos import agent_worker_pb2, cloudevent_pb2
 
 try:
     import grpc.aio
