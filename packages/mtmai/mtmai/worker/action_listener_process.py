@@ -65,9 +65,6 @@ class WorkerActionListenerProcess:
     running_step_runs: Mapping[str, float] = field(init=False, default_factory=dict)
 
     def __post_init__(self):
-        # if self.debug:
-        #     logger.setLevel(logging.DEBUG)
-
         loop = asyncio.get_event_loop()
         loop.add_signal_handler(signal.SIGINT, noop_handler)
         loop.add_signal_handler(signal.SIGTERM, noop_handler)
@@ -242,7 +239,7 @@ class WorkerActionListenerProcess:
         except Exception as e:
             logger.error(f"error in action loop: {e}")
         finally:
-            logger.info("action loop closed")
+            logger.warn("action loop closed")
             if not self.killing:
                 await self.exit_gracefully(skip_unregister=True)
 
@@ -258,7 +255,7 @@ class WorkerActionListenerProcess:
         if self.killing:
             return
 
-        logger.debug("closing action listener...")
+        logger.warn("closing action listener...")
 
         await self.cleanup()
 
@@ -269,7 +266,7 @@ class WorkerActionListenerProcess:
 
     def exit_forcefully(self):
         asyncio.run(self.cleanup())
-        logger.debug("forcefully closing listener...")
+        logger.warn("forcefully closing listener...")
 
 
 def worker_action_listener_process(*args, **kwargs):

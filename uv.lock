@@ -823,18 +823,20 @@ wheels = [
 
 [[package]]
 name = "connecpy"
-version = "1.3.2"
+version = "1.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "brotli" },
     { name = "brotli-asgi" },
     { name = "httpx" },
     { name = "protobuf" },
     { name = "starlette" },
+    { name = "zstandard" },
     { name = "zstd-asgi" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/9a/5de739ad029d32cd8a82d813ca5144deccaff87a2562fa8bae70cb300a7a/connecpy-1.3.2.tar.gz", hash = "sha256:97bc68fc77d05a3b16d11f679ba08a4386c58d19ccc267165d64000533f7bbf2", size = 76963 }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/1f/653f67e06574dde632702005ec1e877fbb28fce68cc664cab7712bcb23f2/connecpy-1.4.2.tar.gz", hash = "sha256:7e4a5a23b2a400d794cac911166feceee159a9e4a0dd8bfe5a34ceb39091f510", size = 84649 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/0a/6f9a7a60b99bc73813c2b78d841f69f1a47a355a13e12bb53c882f18583c/connecpy-1.3.2-py3-none-any.whl", hash = "sha256:d6978808190065ff155cc9d1ba58ed138764fb9cb5d96e2ccd0bace3b29870b7", size = 20291 },
+    { url = "https://files.pythonhosted.org/packages/ce/e1/bcb2c7a728d5585519e9861b4cff72d17a7541a19642595e5e9b76034890/connecpy-1.4.2-py3-none-any.whl", hash = "sha256:12fe9fc05092b4ecd7bdbfea07ec86aa0468c6bcb69d7f4ead73eefb6d2949dd", size = 26549 },
 ]
 
 [[package]]
@@ -3170,7 +3172,7 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
     { name = "browser-use", specifier = ">=0.1.23" },
     { name = "cel-python", specifier = ">=0.1.5" },
-    { name = "connecpy", specifier = ">=1.3.2" },
+    { name = "connecpy", specifier = ">=1.4.2" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "exa-py", specifier = ">=1.7.2" },
     { name = "fastapi", specifier = ">=0.115.7" },

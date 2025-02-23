@@ -29,6 +29,11 @@ class AgServiceStub(object):
                 request_serializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_ag__pb2.GreetResponse.FromString,
                 _registered_method=True)
+        self.GetComponent = channel.unary_unary(
+                '/mtmai.mtm.sppb.AgService/GetComponent',
+                request_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
+                response_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReply.FromString,
+                _registered_method=True)
 
 
 class AgServiceServicer(object):
@@ -53,6 +58,13 @@ class AgServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetComponent(self, request, context):
+        """team
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AgServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -70,6 +82,11 @@ def add_AgServiceServicer_to_server(servicer, server):
                     servicer.Greet2,
                     request_deserializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.FromString,
                     response_serializer=mtm_dot_sppb_dot_ag__pb2.GreetResponse.SerializeToString,
+            ),
+            'GetComponent': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetComponent,
+                    request_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.FromString,
+                    response_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -153,6 +170,33 @@ class AgService(object):
             '/mtmai.mtm.sppb.AgService/Greet2',
             mtm_dot_sppb_dot_ag__pb2.GreetRequest.SerializeToString,
             mtm_dot_sppb_dot_ag__pb2.GreetResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetComponent(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mtmai.mtm.sppb.AgService/GetComponent',
+            mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
+            mtm_dot_sppb_dot_ag__pb2.GetComponentReply.FromString,
             options,
             channel_credentials,
             insecure,

@@ -6,13 +6,11 @@ import logging
 import os
 import signal
 import sys
-import time
 import uuid
 import warnings
 from asyncio import Future, Task
 from collections import defaultdict
 from typing import (
-    TYPE_CHECKING,
     Any,
     AsyncIterable,
     AsyncIterator,
@@ -31,10 +29,19 @@ from typing import (
     TypeVar,
     cast,
 )
+from urllib.parse import urlparse
 
-from autogen_agentchat.base import TaskResult
+import httpx
+from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.messages import (
+    HandoffMessage,
+    MultiModalMessage,
+    StopMessage,
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+)
 from autogen_core import (
-    EVENT_LOGGER_NAME,
     JSON_DATA_CONTENT_TYPE,
     PROTOBUF_DATA_CONTENT_TYPE,
     Agent,
@@ -47,6 +54,7 @@ from autogen_core import (
     MessageContext,
     MessageHandlerContext,
     MessageSerializer,
+    SingleThreadedAgentRuntime,
     Subscription,
     TopicId,
 )
@@ -59,6 +67,7 @@ from autogen_core._telemetry import (
 )
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
+from autogenstudio.datamodel import LLMCallEventMessage
 from google.protobuf import any_pb2
 from mtmai import loader
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
@@ -68,24 +77,22 @@ from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from opentelemetry.trace import TracerProvider
 
-from ..agents.worker_agent.worker_agent import RunEventLogger
+from ..agents.model_client import MtmOpenAIChatCompletionClient
+from ..agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
+from ..agents.team_builder.assisant_team_builder import AssistantTeamBuilder
+from ..agents.team_builder.m1_web_builder import M1WebTeamBuilder
+from ..agents.team_builder.swram_team_builder import SwramTeamBuilder
+from ..agents.team_builder.travel_builder import TravelTeamBuilder
+from ..agents.tenant_agent.tenant_agent import MsgResetTenant
 from ..clients.client import set_gomtm_api_context
 from ..clients.rest.api_client import ApiClient
 from ..clients.rest.models.agent_run_input import AgentRunInput
+from ..clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from ..clients.rest.models.mt_component import MtComponent
 from ..clients.rest_client import AsyncRestApi
+from ..mtlibs.id import generate_uuid
+from ..mtm_client import MtmClient
 from . import _constants
-
-# from ._constants import GRPC_IMPORT_ERROR_STR
-# from ._host_connection import HostConnection
-# from ._type_helpers import ChannelArgumentType
-
-# try:
-#     import grpc.aio
-# except ImportError as e:
-#     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
-
-if TYPE_CHECKING:
-    pass
 
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")
@@ -113,10 +120,8 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
     def __init__(
         self,
         tracer_provider: TracerProvider | None = None,
-        # extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        # self._host_address = host_address
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
@@ -135,11 +140,9 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         self._pending_requests: Dict[str, Future[Any]] = {}
         self._pending_requests_lock = asyncio.Lock()
         self._next_request_id = 0
-        # self._host_connection: HostConnection | None = None
         self._background_tasks: Set[Task[Any]] = set()
         self._subscription_manager = SubscriptionManager()
         self._serialization_registry = SerializationRegistry()
-        # self._extra_grpc_config = extra_grpc_config or []
 
         if payload_serialization_format not in {
             JSON_DATA_CONTENT_TYPE,
@@ -150,27 +153,29 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
             )
 
         self._payload_serialization_format = payload_serialization_format
-
-        self.api_url = "http://127.0.0.1:8383"
-        self.grpc_host = "127.0.0.1:8383"
         self.api_client = ApiClient(
             configuration=Configuration(
-                host=self.api_url,
+                host=settings.GOMTM_URL,
             )
+        )
+
+        timeout_s = 20
+        session = httpx.AsyncClient(
+            base_url=settings.GOMTM_URL,
+            timeout=timeout_s,
+        )
+        self.mtm_client = MtmClient(settings.GOMTM_URL, session=session)
+        self._runtime = SingleThreadedAgentRuntime(
+            tracer_provider=tracer_provider,
+            # payload_serialization_format=self._payload_serialization_format,
         )
 
     async def start(self) -> None:
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        logger.info(f"gomtm runtime start: {self.grpc_host}")
-        # self._host_connection = await HostConnection.from_host_address(
-        #     self.grpc_host, extra_grpc_config=self._extra_grpc_config
-        # )
-
-        # if self._read_task is None:
-        #     self._read_task = asyncio.create_task(self._run_read_loop())
-
+        logger.info(f"gomtm runtime start: {settings.GOMTM_URL}")
+        self._runtime.start()
         self._running = True
 
         await self._init_ingestor()
@@ -180,41 +185,6 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         exception = task.exception()
         if exception is not None:
             raise exception
-
-    async def _run_read_loop(self) -> None:
-        logger.info("Starting read loop")
-        assert self._host_connection is not None
-        # TODO: catch exceptions and reconnect
-        while self._running:
-            try:
-                message = await self._host_connection.recv()
-                oneofcase = agent_worker_pb2.Message.WhichOneof(message, "message")
-                match oneofcase:
-                    case "request":
-                        task = asyncio.create_task(
-                            self._process_request(message.request)
-                        )
-                        self._background_tasks.add(task)
-                        task.add_done_callback(self._raise_on_exception)
-                        task.add_done_callback(self._background_tasks.discard)
-                    case "response":
-                        task = asyncio.create_task(
-                            self._process_response(message.response)
-                        )
-                        self._background_tasks.add(task)
-                        task.add_done_callback(self._raise_on_exception)
-                        task.add_done_callback(self._background_tasks.discard)
-                    case "cloudEvent":
-                        task = asyncio.create_task(
-                            self._process_event(message.cloudEvent)
-                        )
-                        self._background_tasks.add(task)
-                        task.add_done_callback(self._raise_on_exception)
-                        task.add_done_callback(self._background_tasks.discard)
-                    case None:
-                        logger.warning("No message")
-            except Exception as e:
-                logger.error("Error in read loop", exc_info=e)
 
     async def stop(self) -> None:
         """Stop the runtime immediately."""
@@ -255,11 +225,7 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
 
         for sig in signals:
             loop.add_signal_handler(sig, signal_handler)
-
-        # Wait for the signal to trigger the shutdown event.
         await shutdown_event.wait()
-
-        # Stop the runtime.
         await self.stop()
 
     @property
@@ -817,10 +783,13 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                 os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
                 os.environ["DISPLAY"] = ":1"
                 config_loader = loader.ConfigLoader(".")
+
+                api_url = urlparse(settings.GOMTM_URL)
+                grpc_host_port = f"{api_url.hostname}:{api_url.port}"
                 clientConfig = config_loader.load_client_config(
                     loader.ClientConfig(
                         server_url=settings.GOMTM_URL,
-                        host_port=workerConfig.grpc_host_port,
+                        host_port=grpc_host_port,
                         tls_config=loader.ClientTLSConfig(
                             tls_strategy="none",
                             cert_file="None",
@@ -863,13 +832,92 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         await self.worker.async_start()
 
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
-        start_time = time.time()
+        tenant_id: str | None = message.tenant_id
+        run_id = message.run_id
+        user_input = message.content
+        if user_input.startswith("/tenant/seed"):
+            logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
+            result = await self._runtime.send_message(
+                MsgResetTenant(tenant_id=tenant_id),
+                self.tenant_agent_id,
+            )
+            return
+        team_comp_data: MtComponent = None
+        if not message.team_id:
+            # team_id = "fake_team_id"
+            # result = await self._runtime.send_message(
+            #     MsgGetTeamComponent(tenant_id=message.tenant_id, component_id=team_id),
+            #     self.tenant_agent_id,
+            # )
+            tenant_teams = await self.list_team_component(message.tenant_id)
+            logger.info(f"get team component: {tenant_teams}")
+            message.team_id = tenant_teams[0].metadata.id
+        team = Team.load_component(team_comp_data.component)
+        # self._thread_runtime.
+        team_id = message.team_id
+        if not team_id:
+            team_id = generate_uuid()
 
-        # Setup logger correctly
-        logger = logging.getLogger(EVENT_LOGGER_NAME)
-        logger.setLevel(logging.INFO)
-        llm_event_logger = RunEventLogger()
-        logger.handlers = [llm_event_logger]  # Replace all handlers
+        thread_id = message.session_id
+        if not thread_id:
+            thread_id = generate_uuid()
+        else:
+            logger.info(f"现有session: {thread_id}")
+            # 加载团队状态
+            # await self.load_state(thread_id)
+            ...
+
+        task_result: TaskResult | None = None
+        try:
+            async for event in team.run_stream(
+                task=message.content,
+                # cancellation_token=ctx.cancellation_token,
+            ):
+                # if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
+                #     break
+
+                if isinstance(event, TaskResult):
+                    logger.info(f"Worker Agent 收到任务结果: {event}")
+                    task_result = event
+                elif isinstance(
+                    event,
+                    (
+                        TextMessage,
+                        MultiModalMessage,
+                        StopMessage,
+                        HandoffMessage,
+                        ToolCallRequestEvent,
+                        ToolCallExecutionEvent,
+                        LLMCallEventMessage,
+                    ),
+                ):
+                    if event.content:
+                        await self.handle_message_create(
+                            ChatMessageUpsert(
+                                content=event.content,
+                                tenant_id=message.tenant_id,
+                                component_id=message.team_id,
+                                threadId=thread_id,
+                                role=event.source,
+                                runId=run_id,
+                                stepRunId=message.step_run_id,
+                            ),
+                        )
+                        self.wfapp.event.stream(
+                            "hello1await111111111111", step_run_id=message.step_run_id
+                        )
+                    else:
+                        logger.warn(f"worker Agent 消息没有content: {event}")
+                else:
+                    logger.info(f"worker Agent 收到(未知类型)消息: {event}")
+        finally:
+            await self.save_team_state(
+                team=team,
+                team_id=team_id,
+                tenant_id=tenant_id,
+                run_id=run_id,
+            )
+        return task_result
 
     async def setup_hatchet_workflows(self):
         wfapp = self.wfapp
@@ -974,3 +1022,50 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                 # await agent.run()
 
         self.worker.register_workflow(FlowBrowser())
+
+    async def list_team_component(self, tenant_id: str):
+        # return await self.gomtmapi.(tenant_id, component_id)
+        return await self.tenant_reset_teams(tenant_id)
+
+    async def tenant_reset_teams(self, tenant_id: str):
+        logger.info(f"TenantAgent 重置租户信息: {tenant_id}")
+        results = []
+        teams_list = await self.gomtmapi.coms_api.coms_list(
+            tenant=tenant_id, label="default"
+        )
+        if teams_list.rows and len(teams_list.rows) > 0:
+            logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
+            results.append(teams_list.rows[0])
+        defaultModel = await self.gomtmapi.model_api.model_get(
+            tenant=tenant_id, model="default"
+        )
+        model_dict = defaultModel.config.model_dump()
+        model_dict.pop("n", None)
+        model_client = MtmOpenAIChatCompletionClient(
+            **model_dict,
+        )
+
+        self.team_builders = [
+            AssistantTeamBuilder(),
+            SwramTeamBuilder(),
+            ArticleGenTeamBuilder(),
+            M1WebTeamBuilder(),
+            TravelTeamBuilder(),
+        ]
+        for team_builder in self.team_builders:
+            label = team_builder.name
+            logger.info(f"create team for tenant {tenant_id}")
+            team_comp = await team_builder.create_team(model_client)
+            component_model = team_comp.dump_component()
+            new_team = await self.gomtmapi.coms_api.coms_upsert(
+                tenant=tenant_id,
+                com=generate_uuid(),
+                mt_component=MtComponent(
+                    label=label,
+                    description=component_model.description or "",
+                    componentType="team",
+                    component=component_model.model_dump(),
+                ).model_dump(),
+            )
+            results.append(new_team)
+        return results

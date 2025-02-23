@@ -22,9 +22,9 @@ class MsgResetTenant(BaseModel):
     tenant_id: str
 
 
-class MsgGetTeamComponent(BaseModel):
-    tenant_id: str
-    component_id: str
+# class MsgGetTeamComponent(BaseModel):
+#     tenant_id: str
+#     component_id: str
 
 
 @default_subscription

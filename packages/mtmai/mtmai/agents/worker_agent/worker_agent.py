@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import time
 from typing import Any, Mapping, Sequence
 
 from autogen_agentchat.base import TaskResult, Team
@@ -21,6 +20,7 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     Subscription,
     TopicId,
+    message_handler,
     try_get_known_serializers_for_type,
 )
 from autogen_core.logging import LLMCallEvent
@@ -124,7 +124,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         )
 
     async def _init(self) -> None:
-        await self.start_autogen_host()
+        # await self.start_autogen_host()
         await self._create_runtime()
         self.tenant_agent_id = AgentId("tenant_agent", "default")
         self.tenant_agent = await TenantAgent.register(
@@ -162,10 +162,8 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         # await self._init_ingestor()
         # logger.info("worker agent 结束")
 
-    # @message_handler
+    @message_handler
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
-        start_time = time.time()
-
         # Setup logger correctly
         logger = logging.getLogger(EVENT_LOGGER_NAME)
         logger.setLevel(logging.INFO)
@@ -206,14 +204,16 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             # )
             # message.team_id = team_comp_data.metadata.id
 
-        else:
-            # 直接通过 grpc 获取团队组件
-            data2 = await self._runtime.send_message(
-                MsgGetTeamComponent(
-                    tenant_id=message.tenant_id, component_id=message.team_id
-                ),
-                self.tenant_agent_id,
-            )
+        # else:
+        #     # 直接通过 grpc 获取团队组件
+        #     data2 = await self._runtime.send_message(
+        #         MsgGetTeamComponent(
+        #             tenant_id=message.tenant_id, component_id=message.team_id
+        #         ),
+        #         self.tenant_agent_id,
+        #     )
+
+        team_comp_data = self.
         team = Team.load_component(team_comp_data.component)
         team_id = message.team_id
         if not team_id:
@@ -281,11 +281,11 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
             )
         return task_result
 
-    async def start_autogen_host(self):
-        from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
+    # async def start_autogen_host(self):
+    #     from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
 
-        self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
-        self.autogen_host.start()
+    #     self.autogen_host = GrpcWorkerAgentRuntimeHost(address=settings.AG_HOST_ADDRESS)
+    #     self.autogen_host.start()
 
     async def handle_message_create(self, message: ChatMessageUpsert) -> None:
         await self.gomtmapi.chat_api.chat_message_upsert(
