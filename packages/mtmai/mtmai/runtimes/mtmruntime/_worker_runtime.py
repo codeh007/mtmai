@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import inspect
-import json
 import logging
 import os
 import signal
@@ -19,7 +18,6 @@ from typing import (
     AsyncIterator,
     Awaitable,
     Callable,
-    ClassVar,
     DefaultDict,
     Dict,
     List,
@@ -28,8 +26,8 @@ from typing import (
     ParamSpec,
     Sequence,
     Set,
-    Tuple,
     Type,
+    TypedDict,
     TypeVar,
     cast,
 )
@@ -68,17 +66,18 @@ from mtmai.context.context import Context, set_api_token_context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from opentelemetry.trace import TracerProvider
-from typing_extensions import Self
 
 from ...agents.worker_agent.worker_agent import RunEventLogger
 from ...clients.client import set_gomtm_api_context
 from ...clients.rest.api_client import ApiClient
 from ...clients.rest.models.agent_run_input import AgentRunInput
 from ...clients.rest_client import AsyncRestApi
+from ...mtlibs.callable import DurableContext
 from . import _constants
 from ._constants import GRPC_IMPORT_ERROR_STR
+from ._host_connection import HostConnection
 from ._type_helpers import ChannelArgumentType
-from .protos import agent_worker_pb2, agent_worker_pb2_grpc, cloudevent_pb2
+from .protos import agent_worker_pb2, cloudevent_pb2
 
 try:
     import grpc.aio
@@ -86,7 +85,7 @@ except ImportError as e:
     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
 
 if TYPE_CHECKING:
-    from .protos.agent_worker_pb2_grpc import AgentRpcAsyncStub
+    pass
 
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")
@@ -107,121 +106,6 @@ class QueueAsyncIterable(AsyncIterator[Any], AsyncIterable[Any]):
 
     def __aiter__(self) -> AsyncIterator[Any]:
         return self
-
-
-class HostConnection:
-    DEFAULT_GRPC_CONFIG: ClassVar[ChannelArgumentType] = [
-        (
-            "grpc.service_config",
-            json.dumps(
-                {
-                    "methodConfig": [
-                        {
-                            "name": [{}],
-                            "retryPolicy": {
-                                "maxAttempts": 3,
-                                "initialBackoff": "0.01s",
-                                "maxBackoff": "5s",
-                                "backoffMultiplier": 2,
-                                "retryableStatusCodes": ["UNAVAILABLE"],
-                            },
-                        }
-                    ],
-                }
-            ),
-        )
-    ]
-
-    def __init__(self, channel: grpc.aio.Channel, stub: Any) -> None:  # type: ignore
-        self._channel = channel
-        self._send_queue = asyncio.Queue[agent_worker_pb2.Message]()
-        self._recv_queue = asyncio.Queue[agent_worker_pb2.Message]()
-        self._connection_task: Task[None] | None = None
-        self._stub: AgentRpcAsyncStub = stub
-        self._client_id = str(uuid.uuid4())
-
-    @property
-    def stub(self) -> Any:
-        return self._stub
-
-    @property
-    def metadata(self) -> Sequence[Tuple[str, str]]:
-        return [("client-id", self._client_id)]
-
-    @classmethod
-    async def from_host_address(
-        cls,
-        host_address: str,
-        extra_grpc_config: ChannelArgumentType = DEFAULT_GRPC_CONFIG,
-    ) -> Self:
-        logger.info("Connecting to %s", host_address)
-        #  Always use DEFAULT_GRPC_CONFIG and override it with provided grpc_config
-        merged_options = [
-            (k, v)
-            for k, v in {
-                **dict(HostConnection.DEFAULT_GRPC_CONFIG),
-                **dict(extra_grpc_config),
-            }.items()
-        ]
-
-        channel = grpc.aio.insecure_channel(
-            host_address,
-            options=merged_options,
-        )
-        stub: AgentRpcAsyncStub = agent_worker_pb2_grpc.AgentRpcStub(channel)  # type: ignore
-        instance = cls(channel, stub)
-
-        instance._connection_task = await instance._connect(
-            stub, instance._send_queue, instance._recv_queue, instance._client_id
-        )
-
-        return instance
-
-    async def close(self) -> None:
-        if self._connection_task is None:
-            raise RuntimeError("Connection is not open.")
-        await self._channel.close()
-        await self._connection_task
-
-    @staticmethod
-    async def _connect(
-        stub: Any,  # AgentRpcAsyncStub
-        send_queue: asyncio.Queue[agent_worker_pb2.Message],
-        receive_queue: asyncio.Queue[agent_worker_pb2.Message],
-        client_id: str,
-    ) -> Task[None]:
-        from grpc.aio import StreamStreamCall
-
-        # TODO: where do exceptions from reading the iterable go? How do we recover from those?
-        stream: StreamStreamCall[agent_worker_pb2.Message, agent_worker_pb2.Message] = (
-            stub.OpenChannel(  # type: ignore
-                QueueAsyncIterable(send_queue), metadata=[("client-id", client_id)]
-            )
-        )
-
-        await stream.wait_for_connection()
-
-        async def read_loop() -> None:
-            while True:
-                logger.info("Waiting for message from host")
-                message = cast(agent_worker_pb2.Message, await stream.read())  # type: ignore
-                if message == grpc.aio.EOF:  # type: ignore
-                    logger.info("EOF")
-                    break
-                logger.info(f"Received a message from host: {message}")
-                await receive_queue.put(message)
-                logger.info("Put message in receive queue")
-
-        return asyncio.create_task(read_loop())
-
-    async def send(self, message: agent_worker_pb2.Message) -> None:
-        logger.info(f"Send message to host: {message}")
-        await self._send_queue.put(message)
-        logger.info("Put message in send queue")
-
-    async def recv(self) -> agent_worker_pb2.Message:
-        logger.info("Getting message from queue")
-        return await self._recv_queue.get()
 
 
 # TODO: Lots of types need to have protobuf equivalents:
@@ -308,11 +192,15 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         self._host_connection = await HostConnection.from_host_address(
             self.grpc_host, extra_grpc_config=self._extra_grpc_config
         )
-        await self._init_ingestor()
+
         if self._read_task is None:
             self._read_task = asyncio.create_task(self._run_read_loop())
 
         self._running = True
+
+        # 注意: eventloop, 如果嵌套了,可能会莫名其妙的退出
+        await self._init_ingestor()
+        # await self.setup_hatchet_workflows_v2()
         logger.info(f"(Gomtm)Runtime started with apiurl: {self.api_url}")
 
     def _raise_on_exception(self, task: Task[Any]) -> None:
@@ -1013,6 +901,33 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
     async def setup_hatchet_workflows(self):
         wfapp = self.wfapp
         worker_app = self
+
+        class MyResultType(TypedDict):
+            my_func: str
+
+        @wfapp.function(
+            name="my_func2232",
+        )
+        def my_func(context: Context) -> MyResultType:
+            return MyResultType(my_func="testing123")
+
+        @wfapp.durable(
+            events=["durable:run"],
+        )
+        async def my_durable_func(
+            context: DurableContext,
+        ) -> dict[str, MyResultType | None]:
+            result = cast(
+                dict[str, Any], await context.run(my_func, {"test": "test"}).result()
+            )
+
+            context.log(result)
+
+            return {"my_durable_func": result.get("my_func")}
+
+        # worker = hatchet.worker("test-worker", max_runs=5)
+
+        wfapp.admin.run(my_durable_func, {"test": "test"})
 
         @wfapp.workflow(
             name="ag",
