@@ -198,9 +198,7 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
 
         self._running = True
 
-        # 注意: eventloop, 如果嵌套了,可能会莫名其妙的退出
         await self._init_ingestor()
-        # await self.setup_hatchet_workflows_v2()
         logger.info(f"(Gomtm)Runtime started with apiurl: {self.api_url}")
 
     def _raise_on_exception(self, task: Task[Any]) -> None:
@@ -883,7 +881,7 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
                     sys.exit(1)
                 logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
                 await asyncio.sleep(settings.WORKER_INTERVAL)
-        # 非阻塞启动
+        # 非阻塞启动(注意: eventloop, 如果嵌套了,可能会莫名其妙的退出)
         # self.worker.setup_loop(asyncio.new_event_loop())
         # asyncio.create_task(self.worker.async_start())
         # 阻塞启动
