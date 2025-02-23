@@ -20,6 +20,8 @@ from autogen_core import (
     CancellationToken,
     ComponentBase,
     SingleThreadedAgentRuntime,
+    Subscription,
+    TopicId,
     try_get_known_serializers_for_type,
 )
 from autogen_core.logging import LLMCallEvent
@@ -116,6 +118,12 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         )
         await self._runtime.start()
         logger.info("mtm(grpc) runtime 启动完成")
+        await self._runtime.add_subscription(
+            subscription=Subscription(
+                topic_id=TopicId(type="tenant_agent", key="default"),
+                callback=self.tenant_agent.handle_message,
+            )
+        )
 
     async def _init(self) -> None:
         await self.start_autogen_host()
