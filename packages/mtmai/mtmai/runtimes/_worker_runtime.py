@@ -60,30 +60,29 @@ from autogen_core._telemetry import (
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
 from google.protobuf import any_pb2
-from opentelemetry.trace import TracerProvider
-
 from mtmai import loader
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.context.context import Context, set_api_token_context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
+from opentelemetry.trace import TracerProvider
 
 from ..agents.worker_agent.worker_agent import RunEventLogger
 from ..clients.client import set_gomtm_api_context
 from ..clients.rest.api_client import ApiClient
 from ..clients.rest.models.agent_run_input import AgentRunInput
 from ..clients.rest_client import AsyncRestApi
-from ..mtlibs.callable import DurableContext
 from . import _constants
-from ._constants import GRPC_IMPORT_ERROR_STR
-from ._host_connection import HostConnection
-from ._type_helpers import ChannelArgumentType
 
-try:
-    import grpc.aio
-except ImportError as e:
-    raise ImportError(GRPC_IMPORT_ERROR_STR) from e
+# from ._constants import GRPC_IMPORT_ERROR_STR
+# from ._host_connection import HostConnection
+# from ._type_helpers import ChannelArgumentType
+
+# try:
+#     import grpc.aio
+# except ImportError as e:
+#     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
 
 if TYPE_CHECKING:
     pass
@@ -109,37 +108,12 @@ class QueueAsyncIterable(AsyncIterator[Any], AsyncIterable[Any]):
         return self
 
 
-# TODO: Lots of types need to have protobuf equivalents:
-# Core:
-#   - FunctionCall, CodeResult, possibly CodeBlock
-#   - All the types in https://github.com/microsoft/autogen/blob/main/python/packages/autogen-core/src/autogen_core/models/_types.py
-#
-# Agentchat:
-#   - All the types in https://github.com/microsoft/autogen/blob/main/python/packages/autogen-agentchat/src/autogen_agentchat/messages.py to protobufs.
-#
-# Ext --
-#   CodeExecutor:
-#       - CommandLineCodeResult
-
-
 class GrpcWorkerAgentRuntime(AgentRuntime):
-    """An agent runtime for running remote or cross-language agents.
-
-    Agent messaging uses protobufs from `agent_worker.proto`_ and ``CloudEvent`` from `cloudevent.proto`_.
-
-    Cross-language agents will additionally require all agents use shared protobuf schemas for any message types that are sent between agents.
-
-    .. _agent_worker.proto: https://github.com/microsoft/autogen/blob/main/protos/agent_worker.proto
-
-    .. _cloudevent.proto: https://github.com/microsoft/autogen/blob/main/protos/cloudevent.proto
-
-    """
-
     # TODO: Needs to handle agent close() call
     def __init__(
         self,
         tracer_provider: TracerProvider | None = None,
-        extra_grpc_config: ChannelArgumentType | None = None,
+        # extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
         # self._host_address = host_address
@@ -161,11 +135,11 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         self._pending_requests: Dict[str, Future[Any]] = {}
         self._pending_requests_lock = asyncio.Lock()
         self._next_request_id = 0
-        self._host_connection: HostConnection | None = None
+        # self._host_connection: HostConnection | None = None
         self._background_tasks: Set[Task[Any]] = set()
         self._subscription_manager = SubscriptionManager()
         self._serialization_registry = SerializationRegistry()
-        self._extra_grpc_config = extra_grpc_config or []
+        # self._extra_grpc_config = extra_grpc_config or []
 
         if payload_serialization_format not in {
             JSON_DATA_CONTENT_TYPE,
@@ -189,13 +163,13 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        logger.info(f"Connecting to host: {self.grpc_host}")
-        self._host_connection = await HostConnection.from_host_address(
-            self.grpc_host, extra_grpc_config=self._extra_grpc_config
-        )
+        logger.info(f"gomtm runtime start: {self.grpc_host}")
+        # self._host_connection = await HostConnection.from_host_address(
+        #     self.grpc_host, extra_grpc_config=self._extra_grpc_config
+        # )
 
-        if self._read_task is None:
-            self._read_task = asyncio.create_task(self._run_read_loop())
+        # if self._read_task is None:
+        #     self._read_task = asyncio.create_task(self._run_read_loop())
 
         self._running = True
 
@@ -910,23 +884,23 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         def my_func(context: Context) -> MyResultType:
             return MyResultType(my_func="testing123")
 
-        @wfapp.durable(
-            events=["durable:run"],
-        )
-        async def my_durable_func(
-            context: DurableContext,
-        ) -> dict[str, MyResultType | None]:
-            result = cast(
-                dict[str, Any], await context.run(my_func, {"test": "test"}).result()
-            )
+        # @wfapp.durable(
+        #     events=["durable:run"],
+        # )
+        # async def my_durable_func(
+        #     context: DurableContext,
+        # ) -> dict[str, MyResultType | None]:
+        #     result = cast(
+        #         dict[str, Any], await context.run(my_func, {"test": "test"}).result()
+        #     )
 
-            context.log(result)
+        #     context.log(result)
 
-            return {"my_durable_func": result.get("my_func")}
+        #     return {"my_durable_func": result.get("my_func")}
 
         # worker = hatchet.worker("test-worker", max_runs=5)
 
-        wfapp.admin.run(my_durable_func, {"test": "test"})
+        # wfapp.admin.run(my_durable_func, {"test": "test"})
 
         @wfapp.workflow(
             name="ag",

@@ -3,7 +3,6 @@ import logging
 import time
 from typing import Any, Mapping, Sequence
 
-from agents.worker_agent import serializer_types
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -196,9 +195,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         if not message.team_id:
             team_id = "fake_team_id"
             result = await self._runtime.send_message(
-                serializer_types.MsgGetTeamComponent(
-                    tenant_id=message.tenant_id, component_id=team_id
-                ),
+                MsgGetTeamComponent(tenant_id=message.tenant_id, component_id=team_id),
                 self.tenant_agent_id,
             )
             logger.info(f"get team component: {result}")
@@ -212,7 +209,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         else:
             # 直接通过 grpc 获取团队组件
             data2 = await self._runtime.send_message(
-                serializer_types.MsgGetTeamComponent(
+                MsgGetTeamComponent(
                     tenant_id=message.tenant_id, component_id=message.team_id
                 ),
                 self.tenant_agent_id,
@@ -320,10 +317,10 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
 
         try:
             self._runtime = SingleThreadedAgentRuntime()
-            for serializer_type in serializer_types:
-                self._runtime.add_message_serializer(
-                    try_get_known_serializers_for_type(serializer_type)
-                )
+            # for serializer_type in serializer_types:
+            #     self._runtime.add_message_serializer(
+            #         try_get_known_serializers_for_type(serializer_type)
+            #     )
 
         finally:
             # Stop the runtime.
