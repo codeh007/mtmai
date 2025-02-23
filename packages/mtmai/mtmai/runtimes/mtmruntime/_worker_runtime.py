@@ -4,7 +4,9 @@ import asyncio
 import inspect
 import json
 import logging
+import os
 import signal
+import sys
 import uuid
 import warnings
 from asyncio import Future, Task
@@ -56,9 +58,19 @@ from autogen_core._telemetry import (
 )
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from google.protobuf import any_pb2
+from mtmai import loader
+from mtmai.clients.rest.api.mtmai_api import MtmaiApi
+from mtmai.clients.rest.configuration import Configuration
+from mtmai.context.context import Context, set_api_token_context
+from mtmai.core.config import settings
+from mtmai.hatchet import Hatchet
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
+from ...clients.client import set_gomtm_api_context
+from ...clients.rest.api_client import ApiClient
+from ...clients.rest.models.agent_run_input import AgentRunInput
+from ...clients.rest_client import AsyncRestApi
 from . import _constants
 from ._constants import GRPC_IMPORT_ERROR_STR
 from ._type_helpers import ChannelArgumentType
@@ -237,12 +249,11 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
     # TODO: Needs to handle agent close() call
     def __init__(
         self,
-        host_address: str,
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        self._host_address = host_address
+        # self._host_address = host_address
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
@@ -277,18 +288,28 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
 
         self._payload_serialization_format = payload_serialization_format
 
+        self.api_url = "http://127.0.0.1:8383"
+        self.grpc_host = "127.0.0.1:8383"
+        self.api_client = ApiClient(
+            configuration=Configuration(
+                host=self.api_url,
+            )
+        )
+
     async def start(self) -> None:
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        logger.info(f"Connecting to host: {self._host_address}")
+        logger.info(f"Connecting to host: {self.grpc_host}")
         self._host_connection = await HostConnection.from_host_address(
-            self._host_address, extra_grpc_config=self._extra_grpc_config
+            self.grpc_host, extra_grpc_config=self._extra_grpc_config
         )
-        logger.info("Connection established")
+        await self._init_ingestor()
         if self._read_task is None:
             self._read_task = asyncio.create_task(self._run_read_loop())
+
         self._running = True
+        logger.info(f"(Gomtm)Runtime started with apiurl: {self.api_url}")
 
     def _raise_on_exception(self, task: Task[Any]) -> None:
         exception = task.exception()
@@ -919,3 +940,136 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
         self, serializer: MessageSerializer[Any] | Sequence[MessageSerializer[Any]]
     ) -> None:
         self._serialization_registry.add_serializer(serializer)
+
+    async def _init_ingestor(self):
+        """食入外部消息,包括用户输入的消息"""
+        maxRetry = settings.WORKER_MAX_RETRY
+        for i in range(maxRetry):
+            try:
+                mtmaiapi = MtmaiApi(self.api_client)
+                workerConfig = await mtmaiapi.mtmai_worker_config()
+                os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
+                os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
+                os.environ["DISPLAY"] = ":1"
+                config_loader = loader.ConfigLoader(".")
+                clientConfig = config_loader.load_client_config(
+                    loader.ClientConfig(
+                        server_url=settings.GOMTM_URL,
+                        host_port=workerConfig.grpc_host_port,
+                        tls_config=loader.ClientTLSConfig(
+                            tls_strategy="none",
+                            cert_file="None",
+                            key_file="None",
+                            ca_file="None",
+                            server_name="localhost",
+                        ),
+                        # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+                        # logger=logger,
+                    )
+                )
+                token = clientConfig.token
+                set_api_token_context(token)
+                self.gomtmapi = AsyncRestApi(
+                    host=settings.GOMTM_URL,
+                    api_key=workerConfig.token,
+                    tenant_id=clientConfig.tenant_id,
+                )
+
+                self.wfapp = Hatchet.from_config(
+                    clientConfig,
+                    debug=True,
+                )
+
+                self.worker = self.wfapp.worker(settings.WORKER_NAME)
+                await self.setup_hatchet_workflows()
+
+                logger.info("connect gomtm server success")
+                break
+
+            except Exception as e:
+                if i == maxRetry - 1:
+                    sys.exit(1)
+                logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
+                await asyncio.sleep(settings.WORKER_INTERVAL)
+        # 非阻塞启动
+        self.worker.setup_loop(asyncio.new_event_loop())
+        asyncio.create_task(self.worker.async_start())
+        # 阻塞启动
+        # await self.worker.async_start()
+
+    async def setup_hatchet_workflows(self):
+        wfapp = self.wfapp
+        worker_app = self
+
+        @wfapp.workflow(
+            name="ag",
+            on_events=["ag:run"],
+            input_validator=AgentRunInput,
+        )
+        class FlowAg:
+            @self.wfapp.step(timeout="60m")
+            async def step_entry(self, hatctx: Context):
+                set_gomtm_api_context(hatctx.aio)
+                input = cast(AgentRunInput, hatctx.workflow_input())
+                if not input.run_id:
+                    input.run_id = hatctx.workflow_run_id()
+                if not input.step_run_id:
+                    input.step_run_id = hatctx.step_run_id
+                task_result = await worker_app.handle_message(input)
+                # Convert TaskResult to a JSON-serializable dict
+                return {
+                    # "messages": [
+                    #     msg.model_dump() if hasattr(msg, "model_dump") else msg
+                    #     for msg in task_result.messages
+                    # ],
+                    "ok": True,
+                }
+
+        self.worker.register_workflow(FlowAg())
+
+    async def setup_browser_workflows(self):
+        @self.wfapp.workflow(
+            on_events=["browser:run"],
+            # input_validator=CrewAIParams,
+        )
+        class FlowBrowser:
+            @self.wfapp.step(timeout="10m", retries=1)
+            async def run(self, hatctx: Context):
+                from mtmai.clients.rest.models import BrowserParams
+
+                # from mtmai.agents.browser_agent import BrowserAgent
+
+                input = BrowserParams.model_validate(hatctx.workflow_input())
+                # init_mtmai_context(hatctx)
+
+                # ctx = get_mtmai_context()
+                # tenant_id = ctx.tenant_id
+                # llm_config = await wfapp.rest.aio.llm_api.llm_get(
+                #     tenant=tenant_id, slug="default"
+                # )
+                # llm = ChatOpenAI(
+                #     model=llm_config.model,
+                #     api_key=llm_config.api_key,
+                #     base_url=llm_config.base_url,
+                #     temperature=0,
+                #     max_tokens=40960,
+                #     verbose=True,
+                #     http_client=httpx.Client(transport=LoggingTransport()),
+                #     http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
+                # )
+
+                # 简单测试llm 是否配置正确
+                # aa=llm.invoke(["Hello, how are you?"])
+                # print(aa)
+                # agent = BrowserAgent(
+                #     generate_gif=False,
+                #     use_vision=False,
+                #     tool_call_in_content=False,
+                #     # task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and scroll down by one page - then scroll up by 100 pixels - then scroll down by 100 pixels - then scroll down by 10000 pixels.",
+                #     task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and to the string 'The vast majority of computer'",
+                #     llm=llm,
+                #     browser=Browser(config=BrowserConfig(headless=False)),
+                # )
+                # await agent.run()
+
+        self.worker.register_workflow(FlowBrowser())
