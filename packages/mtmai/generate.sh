@@ -45,5 +45,6 @@ python_client_gen(){
         # Linux and others
         find ${GRPC_OUT} -type f -name '*_grpc.py' -print0 | xargs -0 sed -i 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
     fi
+    echo "修正grpc相对导入 完成"
 }
 python_client_gen
