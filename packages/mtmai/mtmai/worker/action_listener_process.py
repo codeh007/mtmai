@@ -119,7 +119,7 @@ class WorkerActionListenerProcess:
                 logger.debug("stopping event send loop...")
                 break
 
-            logger.info(f"tx: event: {event.action.action_id}/{event.type}")
+            logger.debug(f"tx: event: {event.action.action_id}/{event.type}")
             asyncio.create_task(self.send_event(event))
 
     async def start_blocked_main_loop(self):

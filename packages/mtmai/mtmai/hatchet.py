@@ -231,10 +231,6 @@ class HatchetV1:
             self._client = client
         else:
             self._client = new_client(config, debug)
-
-        # if debug:
-        #     logger.setLevel(logging.DEBUG)
-
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
 
@@ -299,7 +295,7 @@ class HatchetV1:
         )
 
 
-T = TypeVar("T")
+# T = TypeVar("T")
 
 
 def concurrency(
