@@ -54,6 +54,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectList"),
                 input=_pb2.SpProjectListReq,
                 output=_pb2.SpProjectListReply,
+                allowed_methods=("POST",),
             ),
             "SpProjectGet": Endpoint[_pb2.SpProjectGetReq, _pb2.SpProject](
                 service_name="SpService",
@@ -61,6 +62,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectGet"),
                 input=_pb2.SpProjectGetReq,
                 output=_pb2.SpProject,
+                allowed_methods=("POST",),
             ),
             "SpProjectCreate": Endpoint[_pb2.SpProjectCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -68,6 +70,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectCreate"),
                 input=_pb2.SpProjectCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectUpdate": Endpoint[_pb2.SpProjectUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -75,6 +78,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectUpdate"),
                 input=_pb2.SpProjectUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -82,6 +86,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectRun": Endpoint[_pb2.SpiderProjectRunReq, _pb2.Result](
                 service_name="SpService",
@@ -89,6 +94,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectRun"),
                 input=_pb2.SpiderProjectRunReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectVisit": Endpoint[_pb2.SpiderProjectVisitReq, _pb2.Result](
                 service_name="SpService",
@@ -96,6 +102,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectVisit"),
                 input=_pb2.SpiderProjectVisitReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectReload": Endpoint[_pb2.SpProjectReloadReq, _pb2.Result](
                 service_name="SpService",
@@ -103,6 +110,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpProjectReload"),
                 input=_pb2.SpProjectReloadReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteList": Endpoint[_pb2.SpRouteListReq, _pb2.SpRouteListReply](
                 service_name="SpService",
@@ -110,6 +118,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpRouteList"),
                 input=_pb2.SpRouteListReq,
                 output=_pb2.SpRouteListReply,
+                allowed_methods=("POST",),
             ),
             "SpRouteGet": Endpoint[_pb2.SpRouteGetReq, _pb2.SpRoute](
                 service_name="SpService",
@@ -117,6 +126,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpRouteGet"),
                 input=_pb2.SpRouteGetReq,
                 output=_pb2.SpRoute,
+                allowed_methods=("POST",),
             ),
             "SpRouteCreate": Endpoint[_pb2.SpRouteCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -124,6 +134,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpRouteCreate"),
                 input=_pb2.SpRouteCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteUpdate": Endpoint[_pb2.SpRouteUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -131,6 +142,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpRouteUpdate"),
                 input=_pb2.SpRouteUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -138,6 +150,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpRouteDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiList": Endpoint[_pb2.SpContentmodiListReq, _pb2.SpContentmodiListReply](
                 service_name="SpService",
@@ -145,6 +158,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpContentmodiList"),
                 input=_pb2.SpContentmodiListReq,
                 output=_pb2.SpContentmodiListReply,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiGet": Endpoint[_pb2.SpContentmodiGetReq, _pb2.SpContentmodi](
                 service_name="SpService",
@@ -152,6 +166,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpContentmodiGet"),
                 input=_pb2.SpContentmodiGetReq,
                 output=_pb2.SpContentmodi,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiCreate": Endpoint[_pb2.SpContentmodiCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -159,6 +174,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpContentmodiCreate"),
                 input=_pb2.SpContentmodiCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiUpdate": Endpoint[_pb2.SpContentmodiUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -166,6 +182,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpContentmodiUpdate"),
                 input=_pb2.SpContentmodiUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -173,6 +190,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpContentmodiDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpOptionGet": Endpoint[_pb2.SpOptionGetReq, _pb2.SpOption](
                 service_name="SpService",
@@ -180,6 +198,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpOptionGet"),
                 input=_pb2.SpOptionGetReq,
                 output=_pb2.SpOption,
+                allowed_methods=("POST",),
             ),
             "SpOptionSave": Endpoint[_pb2.SpOption, _pb2.Result](
                 service_name="SpService",
@@ -187,6 +206,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "SpOptionSave"),
                 input=_pb2.SpOption,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "Sp2Fetch": Endpoint[_pb2.Sp2FetchReq, _pb2.Sp2FetchRes](
                 service_name="SpService",
@@ -194,6 +214,7 @@ class SpServiceServer(ConnecpyServer):
                 function=getattr(service, "Sp2Fetch"),
                 input=_pb2.Sp2FetchReq,
                 output=_pb2.Sp2FetchRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -236,6 +257,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectList"),
                 input=_pb2.SpProjectListReq,
                 output=_pb2.SpProjectListReply,
+                allowed_methods=("POST",),
             ),
             "SpProjectGet": Endpoint[_pb2.SpProjectGetReq, _pb2.SpProject](
                 service_name="SpService",
@@ -243,6 +265,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectGet"),
                 input=_pb2.SpProjectGetReq,
                 output=_pb2.SpProject,
+                allowed_methods=("POST",),
             ),
             "SpProjectCreate": Endpoint[_pb2.SpProjectCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -250,6 +273,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectCreate"),
                 input=_pb2.SpProjectCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectUpdate": Endpoint[_pb2.SpProjectUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -257,6 +281,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectUpdate"),
                 input=_pb2.SpProjectUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -264,6 +289,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectRun": Endpoint[_pb2.SpiderProjectRunReq, _pb2.Result](
                 service_name="SpService",
@@ -271,6 +297,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectRun"),
                 input=_pb2.SpiderProjectRunReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectVisit": Endpoint[_pb2.SpiderProjectVisitReq, _pb2.Result](
                 service_name="SpService",
@@ -278,6 +305,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectVisit"),
                 input=_pb2.SpiderProjectVisitReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpProjectReload": Endpoint[_pb2.SpProjectReloadReq, _pb2.Result](
                 service_name="SpService",
@@ -285,6 +313,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpProjectReload"),
                 input=_pb2.SpProjectReloadReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteList": Endpoint[_pb2.SpRouteListReq, _pb2.SpRouteListReply](
                 service_name="SpService",
@@ -292,6 +321,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpRouteList"),
                 input=_pb2.SpRouteListReq,
                 output=_pb2.SpRouteListReply,
+                allowed_methods=("POST",),
             ),
             "SpRouteGet": Endpoint[_pb2.SpRouteGetReq, _pb2.SpRoute](
                 service_name="SpService",
@@ -299,6 +329,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpRouteGet"),
                 input=_pb2.SpRouteGetReq,
                 output=_pb2.SpRoute,
+                allowed_methods=("POST",),
             ),
             "SpRouteCreate": Endpoint[_pb2.SpRouteCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -306,6 +337,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpRouteCreate"),
                 input=_pb2.SpRouteCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteUpdate": Endpoint[_pb2.SpRouteUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -313,6 +345,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpRouteUpdate"),
                 input=_pb2.SpRouteUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpRouteDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -320,6 +353,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpRouteDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiList": Endpoint[_pb2.SpContentmodiListReq, _pb2.SpContentmodiListReply](
                 service_name="SpService",
@@ -327,6 +361,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpContentmodiList"),
                 input=_pb2.SpContentmodiListReq,
                 output=_pb2.SpContentmodiListReply,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiGet": Endpoint[_pb2.SpContentmodiGetReq, _pb2.SpContentmodi](
                 service_name="SpService",
@@ -334,6 +369,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpContentmodiGet"),
                 input=_pb2.SpContentmodiGetReq,
                 output=_pb2.SpContentmodi,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiCreate": Endpoint[_pb2.SpContentmodiCreateReq, _pb2.Result](
                 service_name="SpService",
@@ -341,6 +377,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpContentmodiCreate"),
                 input=_pb2.SpContentmodiCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiUpdate": Endpoint[_pb2.SpContentmodiUpdateReq, _pb2.Result](
                 service_name="SpService",
@@ -348,6 +385,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpContentmodiUpdate"),
                 input=_pb2.SpContentmodiUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpContentmodiDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="SpService",
@@ -355,6 +393,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpContentmodiDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "SpOptionGet": Endpoint[_pb2.SpOptionGetReq, _pb2.SpOption](
                 service_name="SpService",
@@ -362,6 +401,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpOptionGet"),
                 input=_pb2.SpOptionGetReq,
                 output=_pb2.SpOption,
+                allowed_methods=("POST",),
             ),
             "SpOptionSave": Endpoint[_pb2.SpOption, _pb2.Result](
                 service_name="SpService",
@@ -369,6 +409,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "SpOptionSave"),
                 input=_pb2.SpOption,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "Sp2Fetch": Endpoint[_pb2.Sp2FetchReq, _pb2.Sp2FetchRes](
                 service_name="SpService",
@@ -376,6 +417,7 @@ class SpServiceServerSync(ConnecpyServer):
                 function=getattr(service, "Sp2Fetch"),
                 input=_pb2.Sp2FetchReq,
                 output=_pb2.Sp2FetchRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -392,11 +434,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpProjectListReply:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProjectListReply,
+            method=method,
             **kwargs,
         )
 
@@ -408,11 +452,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpProject:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProject,
+            method=method,
             **kwargs,
         )
 
@@ -424,11 +470,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -440,11 +488,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -456,11 +506,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -472,11 +524,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectRun",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -488,11 +542,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectVisit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -504,11 +560,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectReload",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -520,11 +578,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpRouteListReply:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRouteListReply,
+            method=method,
             **kwargs,
         )
 
@@ -536,11 +596,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpRoute:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRoute,
+            method=method,
             **kwargs,
         )
 
@@ -552,11 +614,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -568,11 +632,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -584,11 +650,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -600,11 +668,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpContentmodiListReply:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodiListReply,
+            method=method,
             **kwargs,
         )
 
@@ -616,11 +686,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpContentmodi:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodi,
+            method=method,
             **kwargs,
         )
 
@@ -632,11 +704,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -648,11 +722,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -664,11 +740,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -680,11 +758,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.SpOption:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpOptionGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpOption,
+            method=method,
             **kwargs,
         )
 
@@ -696,11 +776,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpOptionSave",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -712,11 +794,13 @@ class SpServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Sp2FetchRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/Sp2Fetch",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Sp2FetchRes,
+            method=method,
             **kwargs,
         )
 
@@ -731,11 +815,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpProjectListReply:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProjectListReply,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -749,11 +835,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpProject:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProject,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -767,11 +855,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -785,11 +875,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -803,11 +895,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -821,11 +915,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectRun",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -839,11 +935,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectVisit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -857,11 +955,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpProjectReload",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -875,11 +975,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpRouteListReply:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRouteListReply,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -893,11 +995,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpRoute:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRoute,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -911,11 +1015,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -929,11 +1035,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -947,11 +1055,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpRouteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -965,11 +1075,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpContentmodiListReply:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodiListReply,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -983,11 +1095,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpContentmodi:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodi,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1001,11 +1115,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1019,11 +1135,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1037,11 +1155,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpContentmodiDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1055,11 +1175,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.SpOption:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpOptionGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpOption,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1073,11 +1195,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/SpOptionSave",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -1091,11 +1215,13 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Sp2FetchRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.SpService/Sp2Fetch",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Sp2FetchRes,
+            method=method,
             session=session,
             **kwargs,
         )

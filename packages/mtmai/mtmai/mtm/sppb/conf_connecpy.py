@@ -38,6 +38,7 @@ class ConfServiceServer(ConnecpyServer):
                 function=getattr(service, "ConfList"),
                 input=_pb2.ConfListReq,
                 output=_pb2.ConfListRes,
+                allowed_methods=("POST",),
             ),
             "ConfGet": Endpoint[_pb2.ConfGetReq, _pb2.ConfGetRes](
                 service_name="ConfService",
@@ -45,6 +46,7 @@ class ConfServiceServer(ConnecpyServer):
                 function=getattr(service, "ConfGet"),
                 input=_pb2.ConfGetReq,
                 output=_pb2.ConfGetRes,
+                allowed_methods=("POST",),
             ),
             "ConfCreate": Endpoint[_pb2.ConfCreateReq, _pb2.Result](
                 service_name="ConfService",
@@ -52,6 +54,7 @@ class ConfServiceServer(ConnecpyServer):
                 function=getattr(service, "ConfCreate"),
                 input=_pb2.ConfCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "ConfUpdate": Endpoint[_pb2.ConfUpdateReq, _pb2.Result](
                 service_name="ConfService",
@@ -59,6 +62,7 @@ class ConfServiceServer(ConnecpyServer):
                 function=getattr(service, "ConfUpdate"),
                 input=_pb2.ConfUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "ConfDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="ConfService",
@@ -66,6 +70,7 @@ class ConfServiceServer(ConnecpyServer):
                 function=getattr(service, "ConfDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -92,6 +97,7 @@ class ConfServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ConfList"),
                 input=_pb2.ConfListReq,
                 output=_pb2.ConfListRes,
+                allowed_methods=("POST",),
             ),
             "ConfGet": Endpoint[_pb2.ConfGetReq, _pb2.ConfGetRes](
                 service_name="ConfService",
@@ -99,6 +105,7 @@ class ConfServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ConfGet"),
                 input=_pb2.ConfGetReq,
                 output=_pb2.ConfGetRes,
+                allowed_methods=("POST",),
             ),
             "ConfCreate": Endpoint[_pb2.ConfCreateReq, _pb2.Result](
                 service_name="ConfService",
@@ -106,6 +113,7 @@ class ConfServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ConfCreate"),
                 input=_pb2.ConfCreateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "ConfUpdate": Endpoint[_pb2.ConfUpdateReq, _pb2.Result](
                 service_name="ConfService",
@@ -113,6 +121,7 @@ class ConfServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ConfUpdate"),
                 input=_pb2.ConfUpdateReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
             "ConfDelete": Endpoint[_pb2.ResDeleteReq, _pb2.Result](
                 service_name="ConfService",
@@ -120,6 +129,7 @@ class ConfServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ConfDelete"),
                 input=_pb2.ResDeleteReq,
                 output=_pb2.Result,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -136,11 +146,13 @@ class ConfServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.ConfListRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfListRes,
+            method=method,
             **kwargs,
         )
 
@@ -152,11 +164,13 @@ class ConfServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.ConfGetRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfGetRes,
+            method=method,
             **kwargs,
         )
 
@@ -168,11 +182,13 @@ class ConfServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -184,11 +200,13 @@ class ConfServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -200,11 +218,13 @@ class ConfServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             **kwargs,
         )
 
@@ -219,11 +239,13 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.ConfListRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfListRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -237,11 +259,13 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.ConfGetRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfGetRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -255,11 +279,13 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -273,11 +299,13 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -291,11 +319,13 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Result:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.ConfService/ConfDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
+            method=method,
             session=session,
             **kwargs,
         )

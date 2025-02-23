@@ -26,6 +26,7 @@ class AgentRpc(Protocol):
     async def AddSubscription(self, req: _pb2.AddSubscriptionRequest, ctx: ServiceContext) -> _pb2.AddSubscriptionResponse: ...
     async def RemoveSubscription(self, req: _pb2.RemoveSubscriptionRequest, ctx: ServiceContext) -> _pb2.RemoveSubscriptionResponse: ...
     async def GetSubscriptions(self, req: _pb2.GetSubscriptionsRequest, ctx: ServiceContext) -> _pb2.GetSubscriptionsResponse: ...
+    async def SendMessage(self, req: _pb2.SendMessageRequest, ctx: ServiceContext) -> _pb2.SendMessageResponse: ...
 
 
 class AgentRpcServer(ConnecpyServer):
@@ -39,6 +40,7 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "OpenChannel"),
                 input=_pb2.Message,
                 output=_pb2.Message,
+                allowed_methods=("POST",),
             ),
             "OpenControlChannel": Endpoint[_pb2.ControlMessage, _pb2.ControlMessage](
                 service_name="AgentRpc",
@@ -46,6 +48,7 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "OpenControlChannel"),
                 input=_pb2.ControlMessage,
                 output=_pb2.ControlMessage,
+                allowed_methods=("POST",),
             ),
             "RegisterAgent": Endpoint[_pb2.RegisterAgentTypeRequest, _pb2.RegisterAgentTypeResponse](
                 service_name="AgentRpc",
@@ -53,6 +56,7 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "RegisterAgent"),
                 input=_pb2.RegisterAgentTypeRequest,
                 output=_pb2.RegisterAgentTypeResponse,
+                allowed_methods=("POST",),
             ),
             "AddSubscription": Endpoint[_pb2.AddSubscriptionRequest, _pb2.AddSubscriptionResponse](
                 service_name="AgentRpc",
@@ -60,6 +64,7 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "AddSubscription"),
                 input=_pb2.AddSubscriptionRequest,
                 output=_pb2.AddSubscriptionResponse,
+                allowed_methods=("POST",),
             ),
             "RemoveSubscription": Endpoint[_pb2.RemoveSubscriptionRequest, _pb2.RemoveSubscriptionResponse](
                 service_name="AgentRpc",
@@ -67,6 +72,7 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "RemoveSubscription"),
                 input=_pb2.RemoveSubscriptionRequest,
                 output=_pb2.RemoveSubscriptionResponse,
+                allowed_methods=("POST",),
             ),
             "GetSubscriptions": Endpoint[_pb2.GetSubscriptionsRequest, _pb2.GetSubscriptionsResponse](
                 service_name="AgentRpc",
@@ -74,6 +80,15 @@ class AgentRpcServer(ConnecpyServer):
                 function=getattr(service, "GetSubscriptions"),
                 input=_pb2.GetSubscriptionsRequest,
                 output=_pb2.GetSubscriptionsResponse,
+                allowed_methods=("POST",),
+            ),
+            "SendMessage": Endpoint[_pb2.SendMessageRequest, _pb2.SendMessageResponse](
+                service_name="AgentRpc",
+                name="SendMessage",
+                function=getattr(service, "SendMessage"),
+                input=_pb2.SendMessageRequest,
+                output=_pb2.SendMessageResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -88,6 +103,7 @@ class AgentRpcSync(Protocol):
     def AddSubscription(self, req: _pb2.AddSubscriptionRequest, ctx: ServiceContext) -> _pb2.AddSubscriptionResponse: ...
     def RemoveSubscription(self, req: _pb2.RemoveSubscriptionRequest, ctx: ServiceContext) -> _pb2.RemoveSubscriptionResponse: ...
     def GetSubscriptions(self, req: _pb2.GetSubscriptionsRequest, ctx: ServiceContext) -> _pb2.GetSubscriptionsResponse: ...
+    def SendMessage(self, req: _pb2.SendMessageRequest, ctx: ServiceContext) -> _pb2.SendMessageResponse: ...
 
 
 class AgentRpcServerSync(ConnecpyServer):
@@ -101,6 +117,7 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "OpenChannel"),
                 input=_pb2.Message,
                 output=_pb2.Message,
+                allowed_methods=("POST",),
             ),
             "OpenControlChannel": Endpoint[_pb2.ControlMessage, _pb2.ControlMessage](
                 service_name="AgentRpc",
@@ -108,6 +125,7 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "OpenControlChannel"),
                 input=_pb2.ControlMessage,
                 output=_pb2.ControlMessage,
+                allowed_methods=("POST",),
             ),
             "RegisterAgent": Endpoint[_pb2.RegisterAgentTypeRequest, _pb2.RegisterAgentTypeResponse](
                 service_name="AgentRpc",
@@ -115,6 +133,7 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "RegisterAgent"),
                 input=_pb2.RegisterAgentTypeRequest,
                 output=_pb2.RegisterAgentTypeResponse,
+                allowed_methods=("POST",),
             ),
             "AddSubscription": Endpoint[_pb2.AddSubscriptionRequest, _pb2.AddSubscriptionResponse](
                 service_name="AgentRpc",
@@ -122,6 +141,7 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "AddSubscription"),
                 input=_pb2.AddSubscriptionRequest,
                 output=_pb2.AddSubscriptionResponse,
+                allowed_methods=("POST",),
             ),
             "RemoveSubscription": Endpoint[_pb2.RemoveSubscriptionRequest, _pb2.RemoveSubscriptionResponse](
                 service_name="AgentRpc",
@@ -129,6 +149,7 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "RemoveSubscription"),
                 input=_pb2.RemoveSubscriptionRequest,
                 output=_pb2.RemoveSubscriptionResponse,
+                allowed_methods=("POST",),
             ),
             "GetSubscriptions": Endpoint[_pb2.GetSubscriptionsRequest, _pb2.GetSubscriptionsResponse](
                 service_name="AgentRpc",
@@ -136,6 +157,15 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "GetSubscriptions"),
                 input=_pb2.GetSubscriptionsRequest,
                 output=_pb2.GetSubscriptionsResponse,
+                allowed_methods=("POST",),
+            ),
+            "SendMessage": Endpoint[_pb2.SendMessageRequest, _pb2.SendMessageResponse](
+                service_name="AgentRpc",
+                name="SendMessage",
+                function=getattr(service, "SendMessage"),
+                input=_pb2.SendMessageRequest,
+                output=_pb2.SendMessageResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -152,11 +182,13 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.Message:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/OpenChannel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Message,
+            method=method,
             **kwargs,
         )
 
@@ -168,11 +200,13 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.ControlMessage:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/OpenControlChannel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ControlMessage,
+            method=method,
             **kwargs,
         )
 
@@ -184,11 +218,13 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.RegisterAgentTypeResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/RegisterAgent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RegisterAgentTypeResponse,
+            method=method,
             **kwargs,
         )
 
@@ -200,11 +236,13 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.AddSubscriptionResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/AddSubscription",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AddSubscriptionResponse,
+            method=method,
             **kwargs,
         )
 
@@ -216,11 +254,13 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.RemoveSubscriptionResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/RemoveSubscription",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RemoveSubscriptionResponse,
+            method=method,
             **kwargs,
         )
 
@@ -232,11 +272,31 @@ class AgentRpcClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GetSubscriptionsResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/GetSubscriptions",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetSubscriptionsResponse,
+            method=method,
+            **kwargs,
+        )
+
+    def SendMessage(
+        self,
+        *,
+        request: _pb2.SendMessageRequest,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.SendMessageResponse:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/agents.AgentRpc/SendMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.SendMessageResponse,
+            method=method,
             **kwargs,
         )
 
@@ -251,11 +311,13 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.Message:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/OpenChannel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Message,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -269,11 +331,13 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.ControlMessage:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/OpenControlChannel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ControlMessage,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -287,11 +351,13 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.RegisterAgentTypeResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/RegisterAgent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RegisterAgentTypeResponse,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -305,11 +371,13 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.AddSubscriptionResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/AddSubscription",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AddSubscriptionResponse,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -323,11 +391,13 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.RemoveSubscriptionResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/RemoveSubscription",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RemoveSubscriptionResponse,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -341,11 +411,33 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GetSubscriptionsResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/agents.AgentRpc/GetSubscriptions",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetSubscriptionsResponse,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def SendMessage(
+        self,
+        *,
+        request: _pb2.SendMessageRequest,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.SendMessageResponse:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/agents.AgentRpc/SendMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.SendMessageResponse,
+            method=method,
             session=session,
             **kwargs,
         )

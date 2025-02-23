@@ -34,6 +34,7 @@ class MtCliServiceServer(ConnecpyServer):
                 function=getattr(service, "CliCommandTemplates"),
                 input=_pb2.ListCliReq,
                 output=_pb2.ListCliRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -56,6 +57,7 @@ class MtCliServiceServerSync(ConnecpyServer):
                 function=getattr(service, "CliCommandTemplates"),
                 input=_pb2.ListCliReq,
                 output=_pb2.ListCliRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -72,11 +74,13 @@ class MtCliServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.ListCliRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.MtCliService/CliCommandTemplates",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ListCliRes,
+            method=method,
             **kwargs,
         )
 
@@ -91,11 +95,13 @@ class AsyncMtCliServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.ListCliRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.MtCliService/CliCommandTemplates",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ListCliRes,
+            method=method,
             session=session,
             **kwargs,
         )

@@ -36,6 +36,7 @@ class AgServiceServer(ConnecpyServer):
                 function=getattr(service, "TeamGet"),
                 input=_pb2.TeamGetRequest,
                 output=_pb2.TeamGetReply,
+                allowed_methods=("POST",),
             ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -43,6 +44,7 @@ class AgServiceServer(ConnecpyServer):
                 function=getattr(service, "Greet"),
                 input=_pb2.GreetRequest,
                 output=_pb2.GreetResponse,
+                allowed_methods=("POST",),
             ),
             "Greet2": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -50,6 +52,7 @@ class AgServiceServer(ConnecpyServer):
                 function=getattr(service, "Greet2"),
                 input=_pb2.GreetRequest,
                 output=_pb2.GreetResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -74,6 +77,7 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "TeamGet"),
                 input=_pb2.TeamGetRequest,
                 output=_pb2.TeamGetReply,
+                allowed_methods=("POST",),
             ),
             "Greet": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -81,6 +85,7 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "Greet"),
                 input=_pb2.GreetRequest,
                 output=_pb2.GreetResponse,
+                allowed_methods=("POST",),
             ),
             "Greet2": Endpoint[_pb2.GreetRequest, _pb2.GreetResponse](
                 service_name="AgService",
@@ -88,6 +93,7 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "Greet2"),
                 input=_pb2.GreetRequest,
                 output=_pb2.GreetResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -104,11 +110,13 @@ class AgServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.TeamGetReply:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
+            method=method,
             **kwargs,
         )
 
@@ -120,11 +128,13 @@ class AgServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GreetResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
+            method=method,
             **kwargs,
         )
 
@@ -136,11 +146,13 @@ class AgServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GreetResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
+            method=method,
             **kwargs,
         )
 
@@ -155,11 +167,13 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.TeamGetReply:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/TeamGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TeamGetReply,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -173,11 +187,13 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GreetResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -191,11 +207,13 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GreetResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/Greet2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GreetResponse,
+            method=method,
             session=session,
             **kwargs,
         )

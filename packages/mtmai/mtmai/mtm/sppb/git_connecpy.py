@@ -39,6 +39,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitList"),
                 input=_pb2.CommontListReq,
                 output=_pb2.CommontListRes,
+                allowed_methods=("POST",),
             ),
             "GitGet": Endpoint[_pb2.GitGetReq, _pb2.GitInfo](
                 service_name="GitService",
@@ -46,6 +47,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitGet"),
                 input=_pb2.GitGetReq,
                 output=_pb2.GitInfo,
+                allowed_methods=("POST",),
             ),
             "GitPull": Endpoint[_pb2.GitPullReq, _pb2.GitPullRes](
                 service_name="GitService",
@@ -53,6 +55,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitPull"),
                 input=_pb2.GitPullReq,
                 output=_pb2.GitPullRes,
+                allowed_methods=("POST",),
             ),
             "GitSetup": Endpoint[_pb2.GitSetupReq, _pb2.GitSetupRes](
                 service_name="GitService",
@@ -60,6 +63,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitSetup"),
                 input=_pb2.GitSetupReq,
                 output=_pb2.GitSetupRes,
+                allowed_methods=("POST",),
             ),
             "GitStart": Endpoint[_pb2.GitStartReq, _pb2.GitStartRes](
                 service_name="GitService",
@@ -67,6 +71,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitStart"),
                 input=_pb2.GitStartReq,
                 output=_pb2.GitStartRes,
+                allowed_methods=("POST",),
             ),
             "GitStop": Endpoint[_pb2.GitStopReq, _pb2.GitStopRes](
                 service_name="GitService",
@@ -74,6 +79,7 @@ class GitServiceServer(ConnecpyServer):
                 function=getattr(service, "GitStop"),
                 input=_pb2.GitStopReq,
                 output=_pb2.GitStopRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -101,6 +107,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitList"),
                 input=_pb2.CommontListReq,
                 output=_pb2.CommontListRes,
+                allowed_methods=("POST",),
             ),
             "GitGet": Endpoint[_pb2.GitGetReq, _pb2.GitInfo](
                 service_name="GitService",
@@ -108,6 +115,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitGet"),
                 input=_pb2.GitGetReq,
                 output=_pb2.GitInfo,
+                allowed_methods=("POST",),
             ),
             "GitPull": Endpoint[_pb2.GitPullReq, _pb2.GitPullRes](
                 service_name="GitService",
@@ -115,6 +123,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitPull"),
                 input=_pb2.GitPullReq,
                 output=_pb2.GitPullRes,
+                allowed_methods=("POST",),
             ),
             "GitSetup": Endpoint[_pb2.GitSetupReq, _pb2.GitSetupRes](
                 service_name="GitService",
@@ -122,6 +131,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitSetup"),
                 input=_pb2.GitSetupReq,
                 output=_pb2.GitSetupRes,
+                allowed_methods=("POST",),
             ),
             "GitStart": Endpoint[_pb2.GitStartReq, _pb2.GitStartRes](
                 service_name="GitService",
@@ -129,6 +139,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitStart"),
                 input=_pb2.GitStartReq,
                 output=_pb2.GitStartRes,
+                allowed_methods=("POST",),
             ),
             "GitStop": Endpoint[_pb2.GitStopReq, _pb2.GitStopRes](
                 service_name="GitService",
@@ -136,6 +147,7 @@ class GitServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GitStop"),
                 input=_pb2.GitStopReq,
                 output=_pb2.GitStopRes,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -152,11 +164,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.CommontListRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
+            method=method,
             **kwargs,
         )
 
@@ -168,11 +182,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GitInfo:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitInfo,
+            method=method,
             **kwargs,
         )
 
@@ -184,11 +200,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GitPullRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitPull",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitPullRes,
+            method=method,
             **kwargs,
         )
 
@@ -200,11 +218,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GitSetupRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitSetup",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitSetupRes,
+            method=method,
             **kwargs,
         )
 
@@ -216,11 +236,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GitStartRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitStart",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStartRes,
+            method=method,
             **kwargs,
         )
 
@@ -232,11 +254,13 @@ class GitServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.GitStopRes:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitStop",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStopRes,
+            method=method,
             **kwargs,
         )
 
@@ -251,11 +275,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.CommontListRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -269,11 +295,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GitInfo:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitInfo,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -287,11 +315,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GitPullRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitPull",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitPullRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -305,11 +335,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GitSetupRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitSetup",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitSetupRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -323,11 +355,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GitStartRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitStart",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStartRes,
+            method=method,
             session=session,
             **kwargs,
         )
@@ -341,11 +375,13 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.GitStopRes:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/sppb.GitService/GitStop",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStopRes,
+            method=method,
             session=session,
             **kwargs,
         )
