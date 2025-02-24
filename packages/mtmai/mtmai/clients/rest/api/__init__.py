@@ -32,7 +32,6 @@ from mtmai.clients.rest.api.env_api import EnvApi
 from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.galleries_api import GalleriesApi
 from mtmai.clients.rest.api.hf_api import HfApi
-from mtmai.clients.rest.api.kv_api import KvApi
 from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api.platform_api import PlatformApi

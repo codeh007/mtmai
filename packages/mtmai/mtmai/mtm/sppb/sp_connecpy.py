@@ -46,7 +46,7 @@ class SpService(Protocol):
 class SpServiceServer(ConnecpyServer):
     def __init__(self, *, service: SpService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.SpService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.SpService"
         self._endpoints = {
             "SpProjectList": Endpoint[_pb2.SpProjectListReq, _pb2.SpProjectListReply](
                 service_name="SpService",
@@ -219,7 +219,7 @@ class SpServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.SpService"
+        return "mtmai.mtm.sppb.SpService"
 
 
 class SpServiceSync(Protocol):
@@ -249,7 +249,7 @@ class SpServiceSync(Protocol):
 class SpServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: SpServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.SpService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.SpService"
         self._endpoints = {
             "SpProjectList": Endpoint[_pb2.SpProjectListReq, _pb2.SpProjectListReply](
                 service_name="SpService",
@@ -422,7 +422,7 @@ class SpServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.SpService"
+        return "mtmai.mtm.sppb.SpService"
 
 
 class SpServiceClient(ConnecpyClient):
@@ -436,7 +436,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpProjectListReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProjectListReply,
@@ -454,7 +454,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpProject:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProject,
@@ -472,7 +472,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -490,7 +490,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -508,7 +508,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -526,7 +526,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectRun",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectRun",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -544,7 +544,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectVisit",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectVisit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -562,7 +562,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectReload",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectReload",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -580,7 +580,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpRouteListReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRouteListReply,
@@ -598,7 +598,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpRoute:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRoute,
@@ -616,7 +616,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -634,7 +634,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -652,7 +652,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -670,7 +670,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpContentmodiListReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodiListReply,
@@ -688,7 +688,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpContentmodi:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodi,
@@ -706,7 +706,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -724,7 +724,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -742,7 +742,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -760,7 +760,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.SpOption:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpOptionGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpOptionGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpOption,
@@ -778,7 +778,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpOptionSave",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpOptionSave",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -796,7 +796,7 @@ class SpServiceClient(ConnecpyClient):
     ) -> _pb2.Sp2FetchRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/Sp2Fetch",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/Sp2Fetch",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Sp2FetchRes,
@@ -817,7 +817,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpProjectListReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProjectListReply,
@@ -837,7 +837,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpProject:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpProject,
@@ -857,7 +857,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -877,7 +877,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -897,7 +897,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -917,7 +917,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectRun",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectRun",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -937,7 +937,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectVisit",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectVisit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -957,7 +957,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpProjectReload",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpProjectReload",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -977,7 +977,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpRouteListReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRouteListReply,
@@ -997,7 +997,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpRoute:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpRoute,
@@ -1017,7 +1017,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1037,7 +1037,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1057,7 +1057,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpRouteDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpRouteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1077,7 +1077,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpContentmodiListReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodiListReply,
@@ -1097,7 +1097,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpContentmodi:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpContentmodi,
@@ -1117,7 +1117,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1137,7 +1137,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1157,7 +1157,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpContentmodiDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpContentmodiDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1177,7 +1177,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SpOption:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpOptionGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpOptionGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SpOption,
@@ -1197,7 +1197,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/SpOptionSave",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/SpOptionSave",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1217,7 +1217,7 @@ class AsyncSpServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Sp2FetchRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.SpService/Sp2Fetch",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.SpService/Sp2Fetch",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Sp2FetchRes,

@@ -16,27 +16,27 @@ class WorkflowServiceStub(object):
             channel: A grpc.Channel.
         """
         self.PutWorkflow = channel.unary_unary(
-                '/WorkflowService/PutWorkflow',
+                '/mtmai.mtm.sppb.WorkflowService/PutWorkflow',
                 request_serializer=mtm_dot_sppb_dot_workflows__pb2.PutWorkflowRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_workflows__pb2.WorkflowVersion.FromString,
                 _registered_method=True)
         self.ScheduleWorkflow = channel.unary_unary(
-                '/WorkflowService/ScheduleWorkflow',
+                '/mtmai.mtm.sppb.WorkflowService/ScheduleWorkflow',
                 request_serializer=mtm_dot_sppb_dot_workflows__pb2.ScheduleWorkflowRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_workflows__pb2.WorkflowVersion.FromString,
                 _registered_method=True)
         self.TriggerWorkflow = channel.unary_unary(
-                '/WorkflowService/TriggerWorkflow',
+                '/mtmai.mtm.sppb.WorkflowService/TriggerWorkflow',
                 request_serializer=mtm_dot_sppb_dot_workflows__pb2.TriggerWorkflowRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_workflows__pb2.TriggerWorkflowResponse.FromString,
                 _registered_method=True)
         self.BulkTriggerWorkflow = channel.unary_unary(
-                '/WorkflowService/BulkTriggerWorkflow',
+                '/mtmai.mtm.sppb.WorkflowService/BulkTriggerWorkflow',
                 request_serializer=mtm_dot_sppb_dot_workflows__pb2.BulkTriggerWorkflowRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_workflows__pb2.BulkTriggerWorkflowResponse.FromString,
                 _registered_method=True)
         self.PutRateLimit = channel.unary_unary(
-                '/WorkflowService/PutRateLimit',
+                '/mtmai.mtm.sppb.WorkflowService/PutRateLimit',
                 request_serializer=mtm_dot_sppb_dot_workflows__pb2.PutRateLimitRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_workflows__pb2.PutRateLimitResponse.FromString,
                 _registered_method=True)
@@ -106,9 +106,9 @@ def add_WorkflowServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'WorkflowService', rpc_method_handlers)
+            'mtmai.mtm.sppb.WorkflowService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('WorkflowService', rpc_method_handlers)
+    server.add_registered_method_handlers('mtmai.mtm.sppb.WorkflowService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -130,7 +130,7 @@ class WorkflowService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/WorkflowService/PutWorkflow',
+            '/mtmai.mtm.sppb.WorkflowService/PutWorkflow',
             mtm_dot_sppb_dot_workflows__pb2.PutWorkflowRequest.SerializeToString,
             mtm_dot_sppb_dot_workflows__pb2.WorkflowVersion.FromString,
             options,
@@ -157,7 +157,7 @@ class WorkflowService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/WorkflowService/ScheduleWorkflow',
+            '/mtmai.mtm.sppb.WorkflowService/ScheduleWorkflow',
             mtm_dot_sppb_dot_workflows__pb2.ScheduleWorkflowRequest.SerializeToString,
             mtm_dot_sppb_dot_workflows__pb2.WorkflowVersion.FromString,
             options,
@@ -184,7 +184,7 @@ class WorkflowService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/WorkflowService/TriggerWorkflow',
+            '/mtmai.mtm.sppb.WorkflowService/TriggerWorkflow',
             mtm_dot_sppb_dot_workflows__pb2.TriggerWorkflowRequest.SerializeToString,
             mtm_dot_sppb_dot_workflows__pb2.TriggerWorkflowResponse.FromString,
             options,
@@ -211,7 +211,7 @@ class WorkflowService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/WorkflowService/BulkTriggerWorkflow',
+            '/mtmai.mtm.sppb.WorkflowService/BulkTriggerWorkflow',
             mtm_dot_sppb_dot_workflows__pb2.BulkTriggerWorkflowRequest.SerializeToString,
             mtm_dot_sppb_dot_workflows__pb2.BulkTriggerWorkflowResponse.FromString,
             options,
@@ -238,7 +238,7 @@ class WorkflowService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/WorkflowService/PutRateLimit',
+            '/mtmai.mtm.sppb.WorkflowService/PutRateLimit',
             mtm_dot_sppb_dot_workflows__pb2.PutRateLimitRequest.SerializeToString,
             mtm_dot_sppb_dot_workflows__pb2.PutRateLimitResponse.FromString,
             options,

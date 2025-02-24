@@ -16,27 +16,27 @@ class ConfServiceStub(object):
             channel: A grpc.Channel.
         """
         self.ConfList = channel.unary_unary(
-                '/sppb.ConfService/ConfList',
+                '/mtmai.mtm.sppb.ConfService/ConfList',
                 request_serializer=mtm_dot_sppb_dot_conf__pb2.ConfListReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_conf__pb2.ConfListRes.FromString,
                 _registered_method=True)
         self.ConfGet = channel.unary_unary(
-                '/sppb.ConfService/ConfGet',
+                '/mtmai.mtm.sppb.ConfService/ConfGet',
                 request_serializer=mtm_dot_sppb_dot_conf__pb2.ConfGetReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_conf__pb2.ConfGetRes.FromString,
                 _registered_method=True)
         self.ConfCreate = channel.unary_unary(
-                '/sppb.ConfService/ConfCreate',
+                '/mtmai.mtm.sppb.ConfService/ConfCreate',
                 request_serializer=mtm_dot_sppb_dot_conf__pb2.ConfCreateReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.ConfUpdate = channel.unary_unary(
-                '/sppb.ConfService/ConfUpdate',
+                '/mtmai.mtm.sppb.ConfService/ConfUpdate',
                 request_serializer=mtm_dot_sppb_dot_conf__pb2.ConfUpdateReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.ConfDelete = channel.unary_unary(
-                '/sppb.ConfService/ConfDelete',
+                '/mtmai.mtm.sppb.ConfService/ConfDelete',
                 request_serializer=mtm_dot_sppb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
@@ -105,9 +105,9 @@ def add_ConfServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'sppb.ConfService', rpc_method_handlers)
+            'mtmai.mtm.sppb.ConfService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('sppb.ConfService', rpc_method_handlers)
+    server.add_registered_method_handlers('mtmai.mtm.sppb.ConfService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -128,7 +128,7 @@ class ConfService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.ConfService/ConfList',
+            '/mtmai.mtm.sppb.ConfService/ConfList',
             mtm_dot_sppb_dot_conf__pb2.ConfListReq.SerializeToString,
             mtm_dot_sppb_dot_conf__pb2.ConfListRes.FromString,
             options,
@@ -155,7 +155,7 @@ class ConfService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.ConfService/ConfGet',
+            '/mtmai.mtm.sppb.ConfService/ConfGet',
             mtm_dot_sppb_dot_conf__pb2.ConfGetReq.SerializeToString,
             mtm_dot_sppb_dot_conf__pb2.ConfGetRes.FromString,
             options,
@@ -182,7 +182,7 @@ class ConfService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.ConfService/ConfCreate',
+            '/mtmai.mtm.sppb.ConfService/ConfCreate',
             mtm_dot_sppb_dot_conf__pb2.ConfCreateReq.SerializeToString,
             mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
             options,
@@ -209,7 +209,7 @@ class ConfService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.ConfService/ConfUpdate',
+            '/mtmai.mtm.sppb.ConfService/ConfUpdate',
             mtm_dot_sppb_dot_conf__pb2.ConfUpdateReq.SerializeToString,
             mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
             options,
@@ -236,7 +236,7 @@ class ConfService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.ConfService/ConfDelete',
+            '/mtmai.mtm.sppb.ConfService/ConfDelete',
             mtm_dot_sppb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
             mtm_dot_sppb_dot_mtm__pb2.Result.FromString,
             options,

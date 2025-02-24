@@ -6,8 +6,7 @@ from mtm.sppb import ag_pb2 as mtm_dot_sppb_dot_ag__pb2
 
 
 class AgServiceStub(object):
-    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -25,16 +24,20 @@ class AgServiceStub(object):
                 request_serializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_ag__pb2.GreetResponse.FromString,
                 _registered_method=True)
+        self.ComponentList = channel.unary_unary(
+                '/mtmai.mtm.sppb.AgService/ComponentList',
+                request_serializer=mtm_dot_sppb_dot_ag__pb2.ComponentListReq.SerializeToString,
+                response_deserializer=mtm_dot_sppb_dot_ag__pb2.ComponentListRes.FromString,
+                _registered_method=True)
         self.GetComponent = channel.unary_unary(
                 '/mtmai.mtm.sppb.AgService/GetComponent',
-                request_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
-                response_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.FromString,
+                request_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReq.SerializeToString,
+                response_deserializer=mtm_dot_sppb_dot_ag__pb2.Component.FromString,
                 _registered_method=True)
 
 
 class AgServiceServicer(object):
-    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def Greet(self, request_iterator, context):
         """demos
@@ -49,9 +52,15 @@ class AgServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetComponent(self, request, context):
-        """team
+    def ComponentList(self, request, context):
+        """component
         """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetComponent(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -69,10 +78,15 @@ def add_AgServiceServicer_to_server(servicer, server):
                     request_deserializer=mtm_dot_sppb_dot_ag__pb2.GreetRequest.FromString,
                     response_serializer=mtm_dot_sppb_dot_ag__pb2.GreetResponse.SerializeToString,
             ),
+            'ComponentList': grpc.unary_unary_rpc_method_handler(
+                    servicer.ComponentList,
+                    request_deserializer=mtm_dot_sppb_dot_ag__pb2.ComponentListReq.FromString,
+                    response_serializer=mtm_dot_sppb_dot_ag__pb2.ComponentListRes.SerializeToString,
+            ),
             'GetComponent': grpc.unary_unary_rpc_method_handler(
                     servicer.GetComponent,
-                    request_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.FromString,
-                    response_serializer=mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.SerializeToString,
+                    request_deserializer=mtm_dot_sppb_dot_ag__pb2.GetComponentReq.FromString,
+                    response_serializer=mtm_dot_sppb_dot_ag__pb2.Component.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -83,8 +97,7 @@ def add_AgServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AgService(object):
-    """rpc TeamGet(TeamGetRequest) returns (TeamGetReply) {}
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def Greet(request_iterator,
@@ -141,6 +154,33 @@ class AgService(object):
             _registered_method=True)
 
     @staticmethod
+    def ComponentList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mtmai.mtm.sppb.AgService/ComponentList',
+            mtm_dot_sppb_dot_ag__pb2.ComponentListReq.SerializeToString,
+            mtm_dot_sppb_dot_ag__pb2.ComponentListRes.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def GetComponent(request,
             target,
             options=(),
@@ -155,8 +195,8 @@ class AgService(object):
             request,
             target,
             '/mtmai.mtm.sppb.AgService/GetComponent',
-            mtm_dot_sppb_dot_ag__pb2.GetComponentRequest.SerializeToString,
-            mtm_dot_sppb_dot_ag__pb2.GetComponentResponse.FromString,
+            mtm_dot_sppb_dot_ag__pb2.GetComponentReq.SerializeToString,
+            mtm_dot_sppb_dot_ag__pb2.Component.FromString,
             options,
             channel_credentials,
             insecure,

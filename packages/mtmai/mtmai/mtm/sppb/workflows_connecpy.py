@@ -30,7 +30,7 @@ class WorkflowService(Protocol):
 class WorkflowServiceServer(ConnecpyServer):
     def __init__(self, *, service: WorkflowService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/.WorkflowService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService"
         self._endpoints = {
             "PutWorkflow": Endpoint[_pb2.PutWorkflowRequest, _pb2.WorkflowVersion](
                 service_name="WorkflowService",
@@ -75,7 +75,7 @@ class WorkflowServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return ".WorkflowService"
+        return "mtmai.mtm.sppb.WorkflowService"
 
 
 class WorkflowServiceSync(Protocol):
@@ -89,7 +89,7 @@ class WorkflowServiceSync(Protocol):
 class WorkflowServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: WorkflowServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/.WorkflowService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService"
         self._endpoints = {
             "PutWorkflow": Endpoint[_pb2.PutWorkflowRequest, _pb2.WorkflowVersion](
                 service_name="WorkflowService",
@@ -134,7 +134,7 @@ class WorkflowServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return ".WorkflowService"
+        return "mtmai.mtm.sppb.WorkflowService"
 
 
 class WorkflowServiceClient(ConnecpyClient):
@@ -148,7 +148,7 @@ class WorkflowServiceClient(ConnecpyClient):
     ) -> _pb2.WorkflowVersion:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/PutWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/PutWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowVersion,
@@ -166,7 +166,7 @@ class WorkflowServiceClient(ConnecpyClient):
     ) -> _pb2.WorkflowVersion:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/ScheduleWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/ScheduleWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowVersion,
@@ -184,7 +184,7 @@ class WorkflowServiceClient(ConnecpyClient):
     ) -> _pb2.TriggerWorkflowResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/TriggerWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/TriggerWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TriggerWorkflowResponse,
@@ -202,7 +202,7 @@ class WorkflowServiceClient(ConnecpyClient):
     ) -> _pb2.BulkTriggerWorkflowResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/BulkTriggerWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/BulkTriggerWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BulkTriggerWorkflowResponse,
@@ -220,7 +220,7 @@ class WorkflowServiceClient(ConnecpyClient):
     ) -> _pb2.PutRateLimitResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/PutRateLimit",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/PutRateLimit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.PutRateLimitResponse,
@@ -241,7 +241,7 @@ class AsyncWorkflowServiceClient(AsyncConnecpyClient):
     ) -> _pb2.WorkflowVersion:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/PutWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/PutWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowVersion,
@@ -261,7 +261,7 @@ class AsyncWorkflowServiceClient(AsyncConnecpyClient):
     ) -> _pb2.WorkflowVersion:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/ScheduleWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/ScheduleWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowVersion,
@@ -281,7 +281,7 @@ class AsyncWorkflowServiceClient(AsyncConnecpyClient):
     ) -> _pb2.TriggerWorkflowResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/TriggerWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/TriggerWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.TriggerWorkflowResponse,
@@ -301,7 +301,7 @@ class AsyncWorkflowServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BulkTriggerWorkflowResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/BulkTriggerWorkflow",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/BulkTriggerWorkflow",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BulkTriggerWorkflowResponse,
@@ -321,7 +321,7 @@ class AsyncWorkflowServiceClient(AsyncConnecpyClient):
     ) -> _pb2.PutRateLimitResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.WorkflowService/PutRateLimit",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.WorkflowService/PutRateLimit",
             ctx=ctx,
             request=request,
             response_obj=_pb2.PutRateLimitResponse,

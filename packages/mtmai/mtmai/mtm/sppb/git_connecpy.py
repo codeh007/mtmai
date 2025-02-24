@@ -31,7 +31,7 @@ class GitService(Protocol):
 class GitServiceServer(ConnecpyServer):
     def __init__(self, *, service: GitService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.GitService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.GitService"
         self._endpoints = {
             "GitList": Endpoint[_pb2.CommontListReq, _pb2.CommontListRes](
                 service_name="GitService",
@@ -84,7 +84,7 @@ class GitServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.GitService"
+        return "mtmai.mtm.sppb.GitService"
 
 
 class GitServiceSync(Protocol):
@@ -99,7 +99,7 @@ class GitServiceSync(Protocol):
 class GitServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: GitServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.GitService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.GitService"
         self._endpoints = {
             "GitList": Endpoint[_pb2.CommontListReq, _pb2.CommontListRes](
                 service_name="GitService",
@@ -152,7 +152,7 @@ class GitServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.GitService"
+        return "mtmai.mtm.sppb.GitService"
 
 
 class GitServiceClient(ConnecpyClient):
@@ -166,7 +166,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -184,7 +184,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.GitInfo:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitInfo,
@@ -202,7 +202,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.GitPullRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitPull",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitPull",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitPullRes,
@@ -220,7 +220,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.GitSetupRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitSetup",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitSetup",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitSetupRes,
@@ -238,7 +238,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.GitStartRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitStart",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitStart",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStartRes,
@@ -256,7 +256,7 @@ class GitServiceClient(ConnecpyClient):
     ) -> _pb2.GitStopRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitStop",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitStop",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStopRes,
@@ -277,7 +277,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -297,7 +297,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GitInfo:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitInfo,
@@ -317,7 +317,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GitPullRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitPull",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitPull",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitPullRes,
@@ -337,7 +337,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GitSetupRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitSetup",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitSetup",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitSetupRes,
@@ -357,7 +357,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GitStartRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitStart",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitStart",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStartRes,
@@ -377,7 +377,7 @@ class AsyncGitServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GitStopRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.GitService/GitStop",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.GitService/GitStop",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GitStopRes,

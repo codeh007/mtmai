@@ -22,7 +22,8 @@ _sym_db = symbol_database.Default()
 class AgService(Protocol):
     async def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     async def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
-    async def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentResponse: ...
+    async def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
+    async def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
 
 
 class AgServiceServer(ConnecpyServer):
@@ -46,12 +47,20 @@ class AgServiceServer(ConnecpyServer):
                 output=_pb2.GreetResponse,
                 allowed_methods=("POST",),
             ),
-            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentResponse](
+            "ComponentList": Endpoint[_pb2.ComponentListReq, _pb2.ComponentListRes](
+                service_name="AgService",
+                name="ComponentList",
+                function=getattr(service, "ComponentList"),
+                input=_pb2.ComponentListReq,
+                output=_pb2.ComponentListRes,
+                allowed_methods=("POST",),
+            ),
+            "GetComponent": Endpoint[_pb2.GetComponentReq, _pb2.Component](
                 service_name="AgService",
                 name="GetComponent",
                 function=getattr(service, "GetComponent"),
-                input=_pb2.GetComponentRequest,
-                output=_pb2.GetComponentResponse,
+                input=_pb2.GetComponentReq,
+                output=_pb2.Component,
                 allowed_methods=("POST",),
             ),
         }
@@ -63,7 +72,8 @@ class AgServiceServer(ConnecpyServer):
 class AgServiceSync(Protocol):
     def Greet(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
-    def GetComponent(self, req: _pb2.GetComponentRequest, ctx: ServiceContext) -> _pb2.GetComponentResponse: ...
+    def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
+    def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
 
 
 class AgServiceServerSync(ConnecpyServer):
@@ -87,12 +97,20 @@ class AgServiceServerSync(ConnecpyServer):
                 output=_pb2.GreetResponse,
                 allowed_methods=("POST",),
             ),
-            "GetComponent": Endpoint[_pb2.GetComponentRequest, _pb2.GetComponentResponse](
+            "ComponentList": Endpoint[_pb2.ComponentListReq, _pb2.ComponentListRes](
+                service_name="AgService",
+                name="ComponentList",
+                function=getattr(service, "ComponentList"),
+                input=_pb2.ComponentListReq,
+                output=_pb2.ComponentListRes,
+                allowed_methods=("POST",),
+            ),
+            "GetComponent": Endpoint[_pb2.GetComponentReq, _pb2.Component](
                 service_name="AgService",
                 name="GetComponent",
                 function=getattr(service, "GetComponent"),
-                input=_pb2.GetComponentRequest,
-                output=_pb2.GetComponentResponse,
+                input=_pb2.GetComponentReq,
+                output=_pb2.Component,
                 allowed_methods=("POST",),
             ),
         }
@@ -138,20 +156,38 @@ class AgServiceClient(ConnecpyClient):
             **kwargs,
         )
 
-    def GetComponent(
+    def ComponentList(
         self,
         *,
-        request: _pb2.GetComponentRequest,
+        request: _pb2.ComponentListReq,
         ctx: ClientContext,
         server_path_prefix: str = "",
         **kwargs,
-    ) -> _pb2.GetComponentResponse:
+    ) -> _pb2.ComponentListRes:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/ComponentList",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ComponentListRes,
+            method=method,
+            **kwargs,
+        )
+
+    def GetComponent(
+        self,
+        *,
+        request: _pb2.GetComponentReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.Component:
         method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/GetComponent",
             ctx=ctx,
             request=request,
-            response_obj=_pb2.GetComponentResponse,
+            response_obj=_pb2.Component,
             method=method,
             **kwargs,
         )
@@ -198,21 +234,41 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
             **kwargs,
         )
 
-    async def GetComponent(
+    async def ComponentList(
         self,
         *,
-        request: _pb2.GetComponentRequest,
+        request: _pb2.ComponentListReq,
         ctx: ClientContext,
         server_path_prefix: str = "",
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
-    ) -> _pb2.GetComponentResponse:
+    ) -> _pb2.ComponentListRes:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/ComponentList",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ComponentListRes,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def GetComponent(
+        self,
+        *,
+        request: _pb2.GetComponentReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.Component:
         method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/mtmai.mtm.sppb.AgService/GetComponent",
             ctx=ctx,
             request=request,
-            response_obj=_pb2.GetComponentResponse,
+            response_obj=_pb2.Component,
             method=method,
             session=session,
             **kwargs,

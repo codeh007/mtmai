@@ -30,7 +30,7 @@ class ConfService(Protocol):
 class ConfServiceServer(ConnecpyServer):
     def __init__(self, *, service: ConfService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.ConfService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.ConfService"
         self._endpoints = {
             "ConfList": Endpoint[_pb2.ConfListReq, _pb2.ConfListRes](
                 service_name="ConfService",
@@ -75,7 +75,7 @@ class ConfServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.ConfService"
+        return "mtmai.mtm.sppb.ConfService"
 
 
 class ConfServiceSync(Protocol):
@@ -89,7 +89,7 @@ class ConfServiceSync(Protocol):
 class ConfServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: ConfServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.ConfService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.ConfService"
         self._endpoints = {
             "ConfList": Endpoint[_pb2.ConfListReq, _pb2.ConfListRes](
                 service_name="ConfService",
@@ -134,7 +134,7 @@ class ConfServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.ConfService"
+        return "mtmai.mtm.sppb.ConfService"
 
 
 class ConfServiceClient(ConnecpyClient):
@@ -148,7 +148,7 @@ class ConfServiceClient(ConnecpyClient):
     ) -> _pb2.ConfListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfListRes,
@@ -166,7 +166,7 @@ class ConfServiceClient(ConnecpyClient):
     ) -> _pb2.ConfGetRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfGetRes,
@@ -184,7 +184,7 @@ class ConfServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -202,7 +202,7 @@ class ConfServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -220,7 +220,7 @@ class ConfServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -241,7 +241,7 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
     ) -> _pb2.ConfListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfListRes,
@@ -261,7 +261,7 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
     ) -> _pb2.ConfGetRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ConfGetRes,
@@ -281,7 +281,7 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -301,7 +301,7 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -321,7 +321,7 @@ class AsyncConfServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.ConfService/ConfDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.ConfService/ConfDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,

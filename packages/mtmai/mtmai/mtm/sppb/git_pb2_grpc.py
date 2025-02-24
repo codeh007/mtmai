@@ -16,32 +16,32 @@ class GitServiceStub(object):
             channel: A grpc.Channel.
         """
         self.GitList = channel.unary_unary(
-                '/sppb.GitService/GitList',
+                '/mtmai.mtm.sppb.GitService/GitList',
                 request_serializer=mtm_dot_sppb_dot_mtm__pb2.CommontListReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_mtm__pb2.CommontListRes.FromString,
                 _registered_method=True)
         self.GitGet = channel.unary_unary(
-                '/sppb.GitService/GitGet',
+                '/mtmai.mtm.sppb.GitService/GitGet',
                 request_serializer=mtm_dot_sppb_dot_git__pb2.GitGetReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_git__pb2.GitInfo.FromString,
                 _registered_method=True)
         self.GitPull = channel.unary_unary(
-                '/sppb.GitService/GitPull',
+                '/mtmai.mtm.sppb.GitService/GitPull',
                 request_serializer=mtm_dot_sppb_dot_git__pb2.GitPullReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_git__pb2.GitPullRes.FromString,
                 _registered_method=True)
         self.GitSetup = channel.unary_unary(
-                '/sppb.GitService/GitSetup',
+                '/mtmai.mtm.sppb.GitService/GitSetup',
                 request_serializer=mtm_dot_sppb_dot_git__pb2.GitSetupReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_git__pb2.GitSetupRes.FromString,
                 _registered_method=True)
         self.GitStart = channel.unary_unary(
-                '/sppb.GitService/GitStart',
+                '/mtmai.mtm.sppb.GitService/GitStart',
                 request_serializer=mtm_dot_sppb_dot_git__pb2.GitStartReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_git__pb2.GitStartRes.FromString,
                 _registered_method=True)
         self.GitStop = channel.unary_unary(
-                '/sppb.GitService/GitStop',
+                '/mtmai.mtm.sppb.GitService/GitStop',
                 request_serializer=mtm_dot_sppb_dot_git__pb2.GitStopReq.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_git__pb2.GitStopRes.FromString,
                 _registered_method=True)
@@ -122,9 +122,9 @@ def add_GitServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'sppb.GitService', rpc_method_handlers)
+            'mtmai.mtm.sppb.GitService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('sppb.GitService', rpc_method_handlers)
+    server.add_registered_method_handlers('mtmai.mtm.sppb.GitService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -145,7 +145,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitList',
+            '/mtmai.mtm.sppb.GitService/GitList',
             mtm_dot_sppb_dot_mtm__pb2.CommontListReq.SerializeToString,
             mtm_dot_sppb_dot_mtm__pb2.CommontListRes.FromString,
             options,
@@ -172,7 +172,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitGet',
+            '/mtmai.mtm.sppb.GitService/GitGet',
             mtm_dot_sppb_dot_git__pb2.GitGetReq.SerializeToString,
             mtm_dot_sppb_dot_git__pb2.GitInfo.FromString,
             options,
@@ -199,7 +199,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitPull',
+            '/mtmai.mtm.sppb.GitService/GitPull',
             mtm_dot_sppb_dot_git__pb2.GitPullReq.SerializeToString,
             mtm_dot_sppb_dot_git__pb2.GitPullRes.FromString,
             options,
@@ -226,7 +226,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitSetup',
+            '/mtmai.mtm.sppb.GitService/GitSetup',
             mtm_dot_sppb_dot_git__pb2.GitSetupReq.SerializeToString,
             mtm_dot_sppb_dot_git__pb2.GitSetupRes.FromString,
             options,
@@ -253,7 +253,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitStart',
+            '/mtmai.mtm.sppb.GitService/GitStart',
             mtm_dot_sppb_dot_git__pb2.GitStartReq.SerializeToString,
             mtm_dot_sppb_dot_git__pb2.GitStartRes.FromString,
             options,
@@ -280,7 +280,7 @@ class GitService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/sppb.GitService/GitStop',
+            '/mtmai.mtm.sppb.GitService/GitStop',
             mtm_dot_sppb_dot_git__pb2.GitStopReq.SerializeToString,
             mtm_dot_sppb_dot_git__pb2.GitStopRes.FromString,
             options,

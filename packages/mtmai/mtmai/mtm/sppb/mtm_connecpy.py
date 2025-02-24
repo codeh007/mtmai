@@ -64,7 +64,7 @@ class MtmService(Protocol):
 class MtmServiceServer(ConnecpyServer):
     def __init__(self, *, service: MtmService, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.MtmService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.MtmService"
         self._endpoints = {
             "Oauth2LoginHook": Endpoint[_pb2.Oauth2LoginHookRequest, _pb2.AuthToken](
                 service_name="MtmService",
@@ -381,7 +381,7 @@ class MtmServiceServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.MtmService"
+        return "mtmai.mtm.sppb.MtmService"
 
 
 class MtmServiceSync(Protocol):
@@ -429,7 +429,7 @@ class MtmServiceSync(Protocol):
 class MtmServiceServerSync(ConnecpyServer):
     def __init__(self, *, service: MtmServiceSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/sppb.MtmService"
+        self._prefix = f"{server_path_prefix}/mtmai.mtm.sppb.MtmService"
         self._endpoints = {
             "Oauth2LoginHook": Endpoint[_pb2.Oauth2LoginHookRequest, _pb2.AuthToken](
                 service_name="MtmService",
@@ -746,7 +746,7 @@ class MtmServiceServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return "sppb.MtmService"
+        return "mtmai.mtm.sppb.MtmService"
 
 
 class MtmServiceClient(ConnecpyClient):
@@ -760,7 +760,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.AuthToken:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Oauth2LoginHook",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Oauth2LoginHook",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AuthToken,
@@ -778,7 +778,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.LoginReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Login",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Login",
             ctx=ctx,
             request=request,
             response_obj=_pb2.LoginReply,
@@ -796,7 +796,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.RegisterReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Register",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Register",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RegisterReply,
@@ -814,7 +814,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.GetMetaRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/GetMeta",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/GetMeta",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetMetaRes,
@@ -832,7 +832,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.PullLogRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/PullLogs",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/PullLogs",
             ctx=ctx,
             request=request,
             response_obj=_pb2.PullLogRes,
@@ -850,7 +850,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.MtmServerListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/MtmServerList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/MtmServerList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.MtmServerListRes,
@@ -868,7 +868,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.ServiceMetaRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ServiceMeta",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ServiceMeta",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ServiceMetaRes,
@@ -886,7 +886,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Search",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Search",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -904,7 +904,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.SlugRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SlugPage",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SlugPage",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SlugRes,
@@ -922,7 +922,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.UserinfoRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Userinfo",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Userinfo",
             ctx=ctx,
             request=request,
             response_obj=_pb2.UserinfoRes,
@@ -940,7 +940,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -958,7 +958,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogPost:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogPost,
@@ -976,7 +976,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -994,7 +994,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1012,7 +1012,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1030,7 +1030,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogPost:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostImport",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostImport",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogPost,
@@ -1048,7 +1048,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogCategorieListReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieListReply,
@@ -1066,7 +1066,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogCategorie:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorie,
@@ -1084,7 +1084,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogCategorieCreateReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieCreateReply,
@@ -1102,7 +1102,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.BlogCategorieUpdateReqply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieUpdateReqply,
@@ -1120,7 +1120,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1138,7 +1138,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogClean",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogClean",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1156,7 +1156,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -1174,7 +1174,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Site:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Site,
@@ -1192,7 +1192,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.SiteCreateRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteCreateRes,
@@ -1210,7 +1210,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1228,7 +1228,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1246,7 +1246,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteImport",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteImport",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1264,7 +1264,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.SiteSetupCftunnelReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteSetupCftunnel",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteSetupCftunnel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteSetupCftunnelReply,
@@ -1282,7 +1282,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.SiteHostListReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteHostListReply,
@@ -1300,7 +1300,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.SiteHost:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteHost,
@@ -1318,7 +1318,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1336,7 +1336,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1354,7 +1354,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1372,7 +1372,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -1390,7 +1390,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.FormSchema:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.FormSchema,
@@ -1408,7 +1408,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.FormSchema:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.FormSchema,
@@ -1426,7 +1426,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.ArtContentClassifyReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ArtContentClassify",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ArtContentClassify",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ArtContentClassifyReply,
@@ -1444,7 +1444,7 @@ class MtmServiceClient(ConnecpyClient):
     ) -> _pb2.ArtRewriteReply:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ArtRewrite",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ArtRewrite",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ArtRewriteReply,
@@ -1465,7 +1465,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.AuthToken:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Oauth2LoginHook",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Oauth2LoginHook",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AuthToken,
@@ -1485,7 +1485,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.LoginReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Login",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Login",
             ctx=ctx,
             request=request,
             response_obj=_pb2.LoginReply,
@@ -1505,7 +1505,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.RegisterReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Register",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Register",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RegisterReply,
@@ -1525,7 +1525,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.GetMetaRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/GetMeta",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/GetMeta",
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetMetaRes,
@@ -1545,7 +1545,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.PullLogRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/PullLogs",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/PullLogs",
             ctx=ctx,
             request=request,
             response_obj=_pb2.PullLogRes,
@@ -1565,7 +1565,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.MtmServerListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/MtmServerList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/MtmServerList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.MtmServerListRes,
@@ -1585,7 +1585,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.ServiceMetaRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ServiceMeta",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ServiceMeta",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ServiceMetaRes,
@@ -1605,7 +1605,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Search",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Search",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -1625,7 +1625,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SlugRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SlugPage",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SlugPage",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SlugRes,
@@ -1645,7 +1645,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.UserinfoRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/Userinfo",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/Userinfo",
             ctx=ctx,
             request=request,
             response_obj=_pb2.UserinfoRes,
@@ -1665,7 +1665,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -1685,7 +1685,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogPost:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogPost,
@@ -1705,7 +1705,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1725,7 +1725,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1745,7 +1745,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1765,7 +1765,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogPost:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogPostImport",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogPostImport",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogPost,
@@ -1785,7 +1785,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogCategorieListReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieListReply,
@@ -1805,7 +1805,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogCategorie:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorie,
@@ -1825,7 +1825,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogCategorieCreateReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieCreateReply,
@@ -1845,7 +1845,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.BlogCategorieUpdateReqply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.BlogCategorieUpdateReqply,
@@ -1865,7 +1865,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogCategorieDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogCategorieDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1885,7 +1885,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/BlogClean",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/BlogClean",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1905,7 +1905,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -1925,7 +1925,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Site:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Site,
@@ -1945,7 +1945,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SiteCreateRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteCreateRes,
@@ -1965,7 +1965,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -1985,7 +1985,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -2005,7 +2005,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteImport",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteImport",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -2025,7 +2025,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SiteSetupCftunnelReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteSetupCftunnel",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteSetupCftunnel",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteSetupCftunnelReply,
@@ -2045,7 +2045,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SiteHostListReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteHostListReply,
@@ -2065,7 +2065,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.SiteHost:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.SiteHost,
@@ -2085,7 +2085,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -2105,7 +2105,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostUpdate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostUpdate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -2125,7 +2125,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.Result:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/SiteHostDelete",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/SiteHostDelete",
             ctx=ctx,
             request=request,
             response_obj=_pb2.Result,
@@ -2145,7 +2145,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.CommontListRes:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormList",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormList",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CommontListRes,
@@ -2165,7 +2165,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.FormSchema:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormGet",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormGet",
             ctx=ctx,
             request=request,
             response_obj=_pb2.FormSchema,
@@ -2185,7 +2185,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.FormSchema:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/FormCreate",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/FormCreate",
             ctx=ctx,
             request=request,
             response_obj=_pb2.FormSchema,
@@ -2205,7 +2205,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.ArtContentClassifyReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ArtContentClassify",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ArtContentClassify",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ArtContentClassifyReply,
@@ -2225,7 +2225,7 @@ class AsyncMtmServiceClient(AsyncConnecpyClient):
     ) -> _pb2.ArtRewriteReply:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/sppb.MtmService/ArtRewrite",
+            url=f"{server_path_prefix}/mtmai.mtm.sppb.MtmService/ArtRewrite",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ArtRewriteReply,
