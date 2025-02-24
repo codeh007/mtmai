@@ -6,13 +6,13 @@ import grpc
 from loguru import logger
 
 from mtmai.clients.connection import new_conn
-from mtmai.contracts.dispatcher_pb2 import (
+from mtmai.mtmpb.dispatcher_pb2 import (
     RESOURCE_TYPE_STEP_RUN,
     RESOURCE_TYPE_WORKFLOW_RUN,
     ResourceEventType,
     SubscribeToWorkflowEventsRequest,
 )
-from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
+from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 
 from .loader import ClientConfig
 from .mtlibs.hatchet_utils import get_metadata

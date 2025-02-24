@@ -24,177 +24,177 @@ class MtmServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Oauth2LoginHook = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/Oauth2LoginHook',
+                '/mtmai.mtmpb.MtmService/Oauth2LoginHook',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Oauth2LoginHookRequest.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.AuthToken.FromString,
                 _registered_method=True)
         self.Login = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/Login',
+                '/mtmai.mtmpb.MtmService/Login',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.LoginReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.LoginReply.FromString,
                 _registered_method=True)
         self.Register = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/Register',
+                '/mtmai.mtmpb.MtmService/Register',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.RegisterReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.RegisterReply.FromString,
                 _registered_method=True)
         self.GetMeta = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/GetMeta',
+                '/mtmai.mtmpb.MtmService/GetMeta',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.GetMetaReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.GetMetaRes.FromString,
                 _registered_method=True)
         self.PullLogs = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/PullLogs',
+                '/mtmai.mtmpb.MtmService/PullLogs',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.PullLogReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.PullLogRes.FromString,
                 _registered_method=True)
         self.MtmServerList = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/MtmServerList',
+                '/mtmai.mtmpb.MtmService/MtmServerList',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.MtmServerListReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.MtmServerListRes.FromString,
                 _registered_method=True)
         self.ServiceMeta = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/ServiceMeta',
+                '/mtmai.mtmpb.MtmService/ServiceMeta',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ServiceMetaReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ServiceMetaRes.FromString,
                 _registered_method=True)
         self.SlugPage = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SlugPage',
+                '/mtmai.mtmpb.MtmService/SlugPage',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SlugReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.SlugRes.FromString,
                 _registered_method=True)
         self.Userinfo = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/Userinfo',
+                '/mtmai.mtmpb.MtmService/Userinfo',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Empty.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.UserinfoRes.FromString,
                 _registered_method=True)
         self.BlogPostGet = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogPostGet',
+                '/mtmai.mtmpb.MtmService/BlogPostGet',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostGetReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPost.FromString,
                 _registered_method=True)
         self.BlogPostCreate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogPostCreate',
+                '/mtmai.mtmpb.MtmService/BlogPostCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostCreateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.BlogPostUpdate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogPostUpdate',
+                '/mtmai.mtmpb.MtmService/BlogPostUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostUpdateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.BlogPostDelete = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogPostDelete',
+                '/mtmai.mtmpb.MtmService/BlogPostDelete',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.BlogPostImport = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogPostImport',
+                '/mtmai.mtmpb.MtmService/BlogPostImport',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostImportReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogPost.FromString,
                 _registered_method=True)
         self.BlogCategorieList = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogCategorieList',
+                '/mtmai.mtmpb.MtmService/BlogCategorieList',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieListReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieListReply.FromString,
                 _registered_method=True)
         self.BlogCategorieGet = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogCategorieGet',
+                '/mtmai.mtmpb.MtmService/BlogCategorieGet',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieGetReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorie.FromString,
                 _registered_method=True)
         self.BlogCategorieCreate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogCategorieCreate',
+                '/mtmai.mtmpb.MtmService/BlogCategorieCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieCreateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieCreateReply.FromString,
                 _registered_method=True)
         self.BlogCategorieUpdate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogCategorieUpdate',
+                '/mtmai.mtmpb.MtmService/BlogCategorieUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieUpdateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieUpdateReqply.FromString,
                 _registered_method=True)
         self.BlogCategorieDelete = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogCategorieDelete',
+                '/mtmai.mtmpb.MtmService/BlogCategorieDelete',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.BlogClean = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/BlogClean',
+                '/mtmai.mtmpb.MtmService/BlogClean',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.BlogCleanReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteGet = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteGet',
+                '/mtmai.mtmpb.MtmService/SiteGet',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteGetReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Site.FromString,
                 _registered_method=True)
         self.SiteCreate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteCreate',
+                '/mtmai.mtmpb.MtmService/SiteCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteCreateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteCreateRes.FromString,
                 _registered_method=True)
         self.SiteUpdate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteUpdate',
+                '/mtmai.mtmpb.MtmService/SiteUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteUpdateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteDelete = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteDelete',
+                '/mtmai.mtmpb.MtmService/SiteDelete',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteImport = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteImport',
+                '/mtmai.mtmpb.MtmService/SiteImport',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteImportReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteSetupCftunnel = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteSetupCftunnel',
+                '/mtmai.mtmpb.MtmService/SiteSetupCftunnel',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteSetupCftunnelReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteSetupCftunnelReply.FromString,
                 _registered_method=True)
         self.SiteHostList = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteHostList',
+                '/mtmai.mtmpb.MtmService/SiteHostList',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostListReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostListReply.FromString,
                 _registered_method=True)
         self.SiteHostGet = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteHostGet',
+                '/mtmai.mtmpb.MtmService/SiteHostGet',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostGetReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHost.FromString,
                 _registered_method=True)
         self.SiteHostCreate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteHostCreate',
+                '/mtmai.mtmpb.MtmService/SiteHostCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostCreateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteHostUpdate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteHostUpdate',
+                '/mtmai.mtmpb.MtmService/SiteHostUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostUpdateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.SiteHostDelete = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/SiteHostDelete',
+                '/mtmai.mtmpb.MtmService/SiteHostDelete',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
                 _registered_method=True)
         self.FormGet = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/FormGet',
+                '/mtmai.mtmpb.MtmService/FormGet',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.FormGetReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.FormSchema.FromString,
                 _registered_method=True)
         self.FormCreate = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/FormCreate',
+                '/mtmai.mtmpb.MtmService/FormCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.FormCreateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.FormSchema.FromString,
                 _registered_method=True)
         self.ArtContentClassify = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/ArtContentClassify',
+                '/mtmai.mtmpb.MtmService/ArtContentClassify',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ArtContentClassifyReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ArtContentClassifyReply.FromString,
                 _registered_method=True)
         self.ArtRewrite = channel.unary_unary(
-                '/mtmai.mtmpb.sppb.MtmService/ArtRewrite',
+                '/mtmai.mtmpb.MtmService/ArtRewrite',
                 request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ArtRewriteReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ArtRewriteReply.FromString,
                 _registered_method=True)
@@ -620,9 +620,9 @@ def add_MtmServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'mtmai.mtmpb.sppb.MtmService', rpc_method_handlers)
+            'mtmai.mtmpb.MtmService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('mtmai.mtmpb.sppb.MtmService', rpc_method_handlers)
+    server.add_registered_method_handlers('mtmai.mtmpb.MtmService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -652,7 +652,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/Oauth2LoginHook',
+            '/mtmai.mtmpb.MtmService/Oauth2LoginHook',
             mtmai_dot_mtmpb_dot_sppb__pb2.Oauth2LoginHookRequest.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.AuthToken.FromString,
             options,
@@ -679,7 +679,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/Login',
+            '/mtmai.mtmpb.MtmService/Login',
             mtmai_dot_mtmpb_dot_sppb__pb2.LoginReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.LoginReply.FromString,
             options,
@@ -706,7 +706,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/Register',
+            '/mtmai.mtmpb.MtmService/Register',
             mtmai_dot_mtmpb_dot_sppb__pb2.RegisterReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.RegisterReply.FromString,
             options,
@@ -733,7 +733,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/GetMeta',
+            '/mtmai.mtmpb.MtmService/GetMeta',
             mtmai_dot_mtmpb_dot_sppb__pb2.GetMetaReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.GetMetaRes.FromString,
             options,
@@ -760,7 +760,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/PullLogs',
+            '/mtmai.mtmpb.MtmService/PullLogs',
             mtmai_dot_mtmpb_dot_sppb__pb2.PullLogReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.PullLogRes.FromString,
             options,
@@ -787,7 +787,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/MtmServerList',
+            '/mtmai.mtmpb.MtmService/MtmServerList',
             mtmai_dot_mtmpb_dot_sppb__pb2.MtmServerListReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.MtmServerListRes.FromString,
             options,
@@ -814,7 +814,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/ServiceMeta',
+            '/mtmai.mtmpb.MtmService/ServiceMeta',
             mtmai_dot_mtmpb_dot_sppb__pb2.ServiceMetaReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.ServiceMetaRes.FromString,
             options,
@@ -841,7 +841,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SlugPage',
+            '/mtmai.mtmpb.MtmService/SlugPage',
             mtmai_dot_mtmpb_dot_sppb__pb2.SlugReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.SlugRes.FromString,
             options,
@@ -868,7 +868,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/Userinfo',
+            '/mtmai.mtmpb.MtmService/Userinfo',
             mtmai_dot_mtmpb_dot_sppb__pb2.Empty.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.UserinfoRes.FromString,
             options,
@@ -895,7 +895,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogPostGet',
+            '/mtmai.mtmpb.MtmService/BlogPostGet',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostGetReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPost.FromString,
             options,
@@ -922,7 +922,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogPostCreate',
+            '/mtmai.mtmpb.MtmService/BlogPostCreate',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostCreateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -949,7 +949,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogPostUpdate',
+            '/mtmai.mtmpb.MtmService/BlogPostUpdate',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostUpdateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -976,7 +976,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogPostDelete',
+            '/mtmai.mtmpb.MtmService/BlogPostDelete',
             mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1003,7 +1003,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogPostImport',
+            '/mtmai.mtmpb.MtmService/BlogPostImport',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPostImportReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogPost.FromString,
             options,
@@ -1030,7 +1030,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogCategorieList',
+            '/mtmai.mtmpb.MtmService/BlogCategorieList',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieListReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieListReply.FromString,
             options,
@@ -1057,7 +1057,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogCategorieGet',
+            '/mtmai.mtmpb.MtmService/BlogCategorieGet',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieGetReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorie.FromString,
             options,
@@ -1084,7 +1084,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogCategorieCreate',
+            '/mtmai.mtmpb.MtmService/BlogCategorieCreate',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieCreateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieCreateReply.FromString,
             options,
@@ -1111,7 +1111,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogCategorieUpdate',
+            '/mtmai.mtmpb.MtmService/BlogCategorieUpdate',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieUpdateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCategorieUpdateReqply.FromString,
             options,
@@ -1138,7 +1138,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogCategorieDelete',
+            '/mtmai.mtmpb.MtmService/BlogCategorieDelete',
             mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1165,7 +1165,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/BlogClean',
+            '/mtmai.mtmpb.MtmService/BlogClean',
             mtmai_dot_mtmpb_dot_sppb__pb2.BlogCleanReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1192,7 +1192,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteGet',
+            '/mtmai.mtmpb.MtmService/SiteGet',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteGetReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Site.FromString,
             options,
@@ -1219,7 +1219,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteCreate',
+            '/mtmai.mtmpb.MtmService/SiteCreate',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteCreateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteCreateRes.FromString,
             options,
@@ -1246,7 +1246,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteUpdate',
+            '/mtmai.mtmpb.MtmService/SiteUpdate',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteUpdateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1273,7 +1273,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteDelete',
+            '/mtmai.mtmpb.MtmService/SiteDelete',
             mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1300,7 +1300,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteImport',
+            '/mtmai.mtmpb.MtmService/SiteImport',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteImportReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1327,7 +1327,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteSetupCftunnel',
+            '/mtmai.mtmpb.MtmService/SiteSetupCftunnel',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteSetupCftunnelReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteSetupCftunnelReply.FromString,
             options,
@@ -1354,7 +1354,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteHostList',
+            '/mtmai.mtmpb.MtmService/SiteHostList',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostListReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostListReply.FromString,
             options,
@@ -1381,7 +1381,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteHostGet',
+            '/mtmai.mtmpb.MtmService/SiteHostGet',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostGetReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHost.FromString,
             options,
@@ -1408,7 +1408,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteHostCreate',
+            '/mtmai.mtmpb.MtmService/SiteHostCreate',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostCreateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1435,7 +1435,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteHostUpdate',
+            '/mtmai.mtmpb.MtmService/SiteHostUpdate',
             mtmai_dot_mtmpb_dot_sppb__pb2.SiteHostUpdateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1462,7 +1462,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/SiteHostDelete',
+            '/mtmai.mtmpb.MtmService/SiteHostDelete',
             mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
             options,
@@ -1489,7 +1489,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/FormGet',
+            '/mtmai.mtmpb.MtmService/FormGet',
             mtmai_dot_mtmpb_dot_sppb__pb2.FormGetReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.FormSchema.FromString,
             options,
@@ -1516,7 +1516,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/FormCreate',
+            '/mtmai.mtmpb.MtmService/FormCreate',
             mtmai_dot_mtmpb_dot_sppb__pb2.FormCreateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.FormSchema.FromString,
             options,
@@ -1543,7 +1543,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/ArtContentClassify',
+            '/mtmai.mtmpb.MtmService/ArtContentClassify',
             mtmai_dot_mtmpb_dot_sppb__pb2.ArtContentClassifyReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.ArtContentClassifyReply.FromString,
             options,
@@ -1570,7 +1570,7 @@ class MtmService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.sppb.MtmService/ArtRewrite',
+            '/mtmai.mtmpb.MtmService/ArtRewrite',
             mtmai_dot_mtmpb_dot_sppb__pb2.ArtRewriteReq.SerializeToString,
             mtmai_dot_mtmpb_dot_sppb__pb2.ArtRewriteReply.FromString,
             options,

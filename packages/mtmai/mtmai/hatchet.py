@@ -9,17 +9,17 @@ from mtmai.clients.client import Client, new_client, new_client_raw
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
-from mtmai.contracts.workflows_pb2 import (
-    ConcurrencyLimitStrategy,
-    CreateStepRateLimit,
-    DesiredWorkerLabels,
-    StickyStrategy,
-)
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
+from mtmai.mtmpb.workflows_pb2 import (
+    ConcurrencyLimitStrategy,
+    CreateStepRateLimit,
+    DesiredWorkerLabels,
+    StickyStrategy,
+)
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker

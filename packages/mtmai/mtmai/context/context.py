@@ -17,9 +17,9 @@ from mtmai.clients.admin import (
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
 from mtmai.context.worker_context import WorkerContext
-from mtmai.contracts.dispatcher_pb2 import OverridesData
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.types import WorkflowValidator
+from mtmai.mtmpb.dispatcher_pb2 import OverridesData
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener

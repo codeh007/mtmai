@@ -13,7 +13,7 @@ from typing import (
 from loguru import logger
 from pydantic import BaseModel
 
-from mtmai.contracts.workflows_pb2 import (
+from mtmai.mtmpb.workflows_pb2 import (
     ConcurrencyLimitStrategy,
     CreateWorkflowJobOpts,
     CreateWorkflowStepOpts,

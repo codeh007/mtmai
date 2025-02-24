@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15mtmai/mtmpb/cli.proto\x12\rmtmai.mtm.cli\"P\n\x0e\x43liCommandItem\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n\x07\x63mdLine\x18\x02 \x01(\tR\x07\x63mdLine\x12\x14\n\x05label\x18\x03 \x01(\tR\x05label\"\x0c\n\nListCliReq\"W\n\nListCliRes\x12\x33\n\x05items\x18\x01 \x03(\x0b\x32\x1d.mtmai.mtm.cli.CliCommandItemR\x05items\x12\x14\n\x05\x63ount\x18\x02 \x01(\rR\x05\x63ount2]\n\x0cMtCliService\x12M\n\x13\x43liCommandTemplates\x12\x19.mtmai.mtm.cli.ListCliReq\x1a\x19.mtmai.mtm.cli.ListCliRes\"\x00\x42\x9a\x01\n\x11\x63om.mtmai.mtm.cliB\x08\x43liProtoP\x01Z%github.com/codeh007/gomtm/mtm/cli;cli\xa2\x02\x03MMC\xaa\x02\rMtmai.Mtm.Cli\xca\x02\rMtmai\\Mtm\\Cli\xe2\x02\x19Mtmai\\Mtm\\Cli\\GPBMetadata\xea\x02\x0fMtmai::Mtm::Clib\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15mtmai/mtmpb/cli.proto\x12\rmtmai.mtm.cli\"P\n\x0e\x43liCommandItem\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n\x07\x63mdLine\x18\x02 \x01(\tR\x07\x63mdLine\x12\x14\n\x05label\x18\x03 \x01(\tR\x05label\"\x0c\n\nListCliReq\"W\n\nListCliRes\x12\x33\n\x05items\x18\x01 \x03(\x0b\x32\x1d.mtmai.mtm.cli.CliCommandItemR\x05items\x12\x14\n\x05\x63ount\x18\x02 \x01(\rR\x05\x63ount2]\n\x0cMtCliService\x12M\n\x13\x43liCommandTemplates\x12\x19.mtmai.mtm.cli.ListCliReq\x1a\x19.mtmai.mtm.cli.ListCliRes\"\x00\x42\xa9\x01\n\x11\x63om.mtmai.mtm.cliB\x08\x43liProtoP\x01Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\xa2\x02\x03MMC\xaa\x02\rMtmai.Mtm.Cli\xca\x02\rMtmai\\Mtm\\Cli\xe2\x02\x19Mtmai\\Mtm\\Cli\\GPBMetadata\xea\x02\x0fMtmai::Mtm::Clib\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mtmai.mtmpb.cli_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n\021com.mtmai.mtm.cliB\010CliProtoP\001Z%github.com/codeh007/gomtm/mtm/cli;cli\242\002\003MMC\252\002\rMtmai.Mtm.Cli\312\002\rMtmai\\Mtm\\Cli\342\002\031Mtmai\\Mtm\\Cli\\GPBMetadata\352\002\017Mtmai::Mtm::Cli'
+  _globals['DESCRIPTOR']._serialized_options = b'\n\021com.mtmai.mtm.cliB\010CliProtoP\001Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\242\002\003MMC\252\002\rMtmai.Mtm.Cli\312\002\rMtmai\\Mtm\\Cli\342\002\031Mtmai\\Mtm\\Cli\\GPBMetadata\352\002\017Mtmai::Mtm::Cli'
   _globals['_CLICOMMANDITEM']._serialized_start=40
   _globals['_CLICOMMANDITEM']._serialized_end=120
   _globals['_LISTCLIREQ']._serialized_start=122

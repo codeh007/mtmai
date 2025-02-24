@@ -9,7 +9,11 @@ from grpc._cython import cygrpc
 from loguru import logger
 from mtmai.clients.connection import new_conn
 from mtmai.clients.events import proto_timestamp_now
-from mtmai.contracts.dispatcher_pb2 import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.backoff import exp_backoff_sleep
+from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
+from mtmai.mtlibs.serialization import flatten
+from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
     AssignedAction,
     HeartbeatRequest,
@@ -17,11 +21,7 @@ from mtmai.contracts.dispatcher_pb2 import (
     WorkerListenRequest,
     WorkerUnsubscribeRequest,
 )
-from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.backoff import exp_backoff_sleep
-from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
-from mtmai.mtlibs.serialization import flatten
+from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
 
 DEFAULT_ACTION_TIMEOUT = 600  # seconds

@@ -4,7 +4,8 @@ from typing import Callable, Dict, Generic, List, Optional, TypedDict, TypeVar, 
 from loguru import logger
 
 from mtmai.context.context import Context
-from mtmai.contracts.workflows_pb2 import (
+from mtmai.models._types import DesiredWorkerLabel, RateLimit
+from mtmai.mtmpb.workflows_pb2 import (
     ConcurrencyLimitStrategy,
     CreateStepRateLimit,
     CreateWorkflowJobOpts,
@@ -15,7 +16,6 @@ from mtmai.contracts.workflows_pb2 import (
     WorkflowConcurrencyOpts,
     WorkflowKind,
 )
-from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.workflow_run import RunRef
 
 T = TypeVar("T")

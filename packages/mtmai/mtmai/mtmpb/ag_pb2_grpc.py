@@ -15,22 +15,22 @@ class AgServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Greet = channel.stream_unary(
-                '/mtmai.mtmpb.ag.AgService/Greet',
+                '/mtmai.mtmpb.AgService/Greet',
                 request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.GreetRequest.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.GreetResponse.FromString,
                 _registered_method=True)
         self.Greet2 = channel.unary_stream(
-                '/mtmai.mtmpb.ag.AgService/Greet2',
+                '/mtmai.mtmpb.AgService/Greet2',
                 request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.GreetRequest.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.GreetResponse.FromString,
                 _registered_method=True)
         self.ComponentList = channel.unary_unary(
-                '/mtmai.mtmpb.ag.AgService/ComponentList',
+                '/mtmai.mtmpb.AgService/ComponentList',
                 request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.ComponentListReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.ComponentListRes.FromString,
                 _registered_method=True)
         self.GetComponent = channel.unary_unary(
-                '/mtmai.mtmpb.ag.AgService/GetComponent',
+                '/mtmai.mtmpb.AgService/GetComponent',
                 request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.GetComponentReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.Component.FromString,
                 _registered_method=True)
@@ -90,9 +90,9 @@ def add_AgServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'mtmai.mtmpb.ag.AgService', rpc_method_handlers)
+            'mtmai.mtmpb.AgService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('mtmai.mtmpb.ag.AgService', rpc_method_handlers)
+    server.add_registered_method_handlers('mtmai.mtmpb.AgService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -113,7 +113,7 @@ class AgService(object):
         return grpc.experimental.stream_unary(
             request_iterator,
             target,
-            '/mtmai.mtmpb.ag.AgService/Greet',
+            '/mtmai.mtmpb.AgService/Greet',
             mtmai_dot_mtmpb_dot_ag__pb2.GreetRequest.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.GreetResponse.FromString,
             options,
@@ -140,7 +140,7 @@ class AgService(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            '/mtmai.mtmpb.ag.AgService/Greet2',
+            '/mtmai.mtmpb.AgService/Greet2',
             mtmai_dot_mtmpb_dot_ag__pb2.GreetRequest.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.GreetResponse.FromString,
             options,
@@ -167,7 +167,7 @@ class AgService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.ag.AgService/ComponentList',
+            '/mtmai.mtmpb.AgService/ComponentList',
             mtmai_dot_mtmpb_dot_ag__pb2.ComponentListReq.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.ComponentListRes.FromString,
             options,
@@ -194,7 +194,7 @@ class AgService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mtmai.mtmpb.ag.AgService/GetComponent',
+            '/mtmai.mtmpb.AgService/GetComponent',
             mtmai_dot_mtmpb_dot_ag__pb2.GetComponentReq.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.Component.FromString,
             options,

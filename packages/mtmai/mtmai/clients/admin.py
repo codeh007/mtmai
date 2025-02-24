@@ -5,7 +5,9 @@ from typing import Any, Callable, Dict, List, Optional, TypedDict, TypeVar, Unio
 import grpc
 from google.protobuf import timestamp_pb2
 from mtmai.clients.connection import new_conn
-from mtmai.contracts.workflows_pb2 import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.mtmpb.workflows_pb2 import (
     BulkTriggerWorkflowRequest,
     BulkTriggerWorkflowResponse,
     CreateWorkflowVersionOpts,
@@ -17,9 +19,7 @@ from mtmai.contracts.workflows_pb2 import (
     TriggerWorkflowResponse,
     WorkflowVersion,
 )
-from mtmai.contracts.workflows_pb2_grpc import WorkflowServiceStub
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.mtmpb.workflows_pb2_grpc import WorkflowServiceStub
 from mtmai.run_event_listener import new_listener
 from mtmai.workflow import WorkflowMeta
 from mtmai.workflow_listener import PooledWorkflowRunListener

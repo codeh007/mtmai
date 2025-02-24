@@ -15,7 +15,11 @@ from mtmai.clients.admin import new_admin
 from mtmai.clients.client import new_client_raw
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
-from mtmai.contracts.dispatcher_pb2 import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.callable import DurableContext
+from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
+from mtmai.mtlibs.types import WorkflowValidator
+from mtmai.mtmpb.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_COMPLETED,
     GROUP_KEY_EVENT_TYPE_FAILED,
     GROUP_KEY_EVENT_TYPE_STARTED,
@@ -24,10 +28,6 @@ from mtmai.contracts.dispatcher_pb2 import (
     STEP_EVENT_TYPE_STARTED,
     ActionType,
 )
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.callable import DurableContext
-from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
-from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.run_event_listener import new_listener
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action

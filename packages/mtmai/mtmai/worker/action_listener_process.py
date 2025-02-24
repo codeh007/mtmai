@@ -7,13 +7,13 @@ from typing import Any, List, Mapping, Optional
 
 import grpc
 from loguru import logger
-from mtmai.contracts.dispatcher_pb2 import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.backoff import exp_backoff_sleep
+from mtmai.mtmpb.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_STARTED,
     STEP_EVENT_TYPE_STARTED,
     ActionType,
 )
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import (
     ActionListener,

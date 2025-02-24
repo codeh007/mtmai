@@ -8,12 +8,9 @@ from grpc._cython import cygrpc
 from loguru import logger
 
 from mtmai.clients.connection import new_conn
-from mtmai.contracts.dispatcher_pb2 import (
-    SubscribeToWorkflowRunsRequest,
-    WorkflowRunEvent,
-)
-from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
 from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
+from mtmai.mtmpb.dispatcher_pb2 import SubscribeToWorkflowRunsRequest, WorkflowRunEvent
+from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 
 from .loader import ClientConfig
 

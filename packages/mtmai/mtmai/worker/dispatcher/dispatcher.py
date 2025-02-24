@@ -2,7 +2,9 @@ from typing import Any, cast
 
 from google.protobuf.timestamp_pb2 import Timestamp
 from mtmai.clients.connection import new_conn
-from mtmai.contracts.dispatcher_pb2 import (
+from mtmai.loader import ClientConfig
+from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.mtmpb.dispatcher_pb2 import (
     STEP_EVENT_TYPE_COMPLETED,
     STEP_EVENT_TYPE_FAILED,
     ActionEventResponse,
@@ -18,9 +20,7 @@ from mtmai.contracts.dispatcher_pb2 import (
     WorkerRegisterRequest,
     WorkerRegisterResponse,
 )
-from mtmai.contracts.dispatcher_pb2_grpc import DispatcherStub
-from mtmai.loader import ClientConfig
-from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 from mtmai.worker.dispatcher.action_listener import (
     Action,
     ActionListener,

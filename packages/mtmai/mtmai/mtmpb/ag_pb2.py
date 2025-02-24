@@ -26,32 +26,32 @@ from google.protobuf import descriptor_pb2 as google_dot_protobuf_dot_descriptor
 from mtmai.mtmpb import sppb_pb2 as mtmai_dot_mtmpb_dot_sppb__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14mtmai/mtmpb/ag.proto\x12\x0emtmai.mtmpb.ag\x1a google/protobuf/descriptor.proto\x1a\x16mtmai/mtmpb/sppb.proto\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting\"\x9b\x01\n\rAgentRunInput\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x15\n\x06run_id\x18\x02 \x01(\tR\x05runId\x12\x18\n\x07\x63ontent\x18\x03 \x01(\tR\x07\x63ontent\x12\x1e\n\x0brun_step_id\x18\x04 \x01(\tR\trunStepId\x12\x1c\n\tsessionId\x18\x05 \x01(\tR\tsessionId\"Q\n\x0fGetComponentReq\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12!\n\x0c\x63omponent_id\x18\x03 \x01(\tR\x0b\x63omponentId\"L\n\x10\x43omponentListReq\x12\x38\n\nPagination\x18\x01 \x01(\x0b\x32\x18.mtmai.mtmpb.sppb.PagingR\nPagination\"L\n\tComponent\x12!\n\x0c\x63omponent_id\x18\x01 \x01(\tR\x0b\x63omponentId\x12\x1c\n\tcomponent\x18\x02 \x01(\x0cR\tcomponent\"\x93\x01\n\x10\x43omponentListRes\x12\x38\n\nPagination\x18\x01 \x01(\x0b\x32\x18.mtmai.mtmpb.sppb.PagingR\nPagination\x12/\n\x05items\x18\x02 \x03(\x0b\x32\x19.mtmai.mtmpb.ag.ComponentR\x05items\x12\x14\n\x05Total\x18\x03 \x01(\x05R\x05Total2\xc5\x02\n\tAgService\x12H\n\x05Greet\x12\x1c.mtmai.mtmpb.ag.GreetRequest\x1a\x1d.mtmai.mtmpb.ag.GreetResponse\"\x00(\x01\x12I\n\x06Greet2\x12\x1c.mtmai.mtmpb.ag.GreetRequest\x1a\x1d.mtmai.mtmpb.ag.GreetResponse\"\x00\x30\x01\x12U\n\rComponentList\x12 .mtmai.mtmpb.ag.ComponentListReq\x1a .mtmai.mtmpb.ag.ComponentListRes\"\x00\x12L\n\x0cGetComponent\x12\x1f.mtmai.mtmpb.ag.GetComponentReq\x1a\x19.mtmai.mtmpb.ag.Component\"\x00\x42\x9c\x01\n\x12\x63om.mtmai.mtmpb.agB\x07\x41gProtoP\x01Z#github.com/codeh007/gomtm/mtm/ag;ag\xa2\x02\x03MMA\xaa\x02\x0eMtmai.Mtmpb.Ag\xca\x02\x0eMtmai\\Mtmpb\\Ag\xe2\x02\x1aMtmai\\Mtmpb\\Ag\\GPBMetadata\xea\x02\x10Mtmai::Mtmpb::Agb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14mtmai/mtmpb/ag.proto\x12\x0bmtmai.mtmpb\x1a google/protobuf/descriptor.proto\x1a\x16mtmai/mtmpb/sppb.proto\"(\n\x12\x44\x65moStream1Request\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"&\n\x10\x44\x65moStream1Reply\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"+\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting\"\x9b\x01\n\rAgentRunInput\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12\x15\n\x06run_id\x18\x02 \x01(\tR\x05runId\x12\x18\n\x07\x63ontent\x18\x03 \x01(\tR\x07\x63ontent\x12\x1e\n\x0brun_step_id\x18\x04 \x01(\tR\trunStepId\x12\x1c\n\tsessionId\x18\x05 \x01(\tR\tsessionId\"Q\n\x0fGetComponentReq\x12\x1b\n\ttenant_id\x18\x01 \x01(\tR\x08tenantId\x12!\n\x0c\x63omponent_id\x18\x03 \x01(\tR\x0b\x63omponentId\"G\n\x10\x43omponentListReq\x12\x33\n\nPagination\x18\x01 \x01(\x0b\x32\x13.mtmai.mtmpb.PagingR\nPagination\"L\n\tComponent\x12!\n\x0c\x63omponent_id\x18\x01 \x01(\tR\x0b\x63omponentId\x12\x1c\n\tcomponent\x18\x02 \x01(\x0cR\tcomponent\"\x8b\x01\n\x10\x43omponentListRes\x12\x33\n\nPagination\x18\x01 \x01(\x0b\x32\x13.mtmai.mtmpb.PagingR\nPagination\x12,\n\x05items\x18\x02 \x03(\x0b\x32\x16.mtmai.mtmpb.ComponentR\x05items\x12\x14\n\x05Total\x18\x03 \x01(\x05R\x05Total2\xad\x02\n\tAgService\x12\x42\n\x05Greet\x12\x19.mtmai.mtmpb.GreetRequest\x1a\x1a.mtmai.mtmpb.GreetResponse\"\x00(\x01\x12\x43\n\x06Greet2\x12\x19.mtmai.mtmpb.GreetRequest\x1a\x1a.mtmai.mtmpb.GreetResponse\"\x00\x30\x01\x12O\n\rComponentList\x12\x1d.mtmai.mtmpb.ComponentListReq\x1a\x1d.mtmai.mtmpb.ComponentListRes\"\x00\x12\x46\n\x0cGetComponent\x12\x1c.mtmai.mtmpb.GetComponentReq\x1a\x16.mtmai.mtmpb.Component\"\x00\x42\x9d\x01\n\x0f\x63om.mtmai.mtmpbB\x07\x41gProtoP\x01Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\xa2\x02\x03MMX\xaa\x02\x0bMtmai.Mtmpb\xca\x02\x0bMtmai\\Mtmpb\xe2\x02\x17Mtmai\\Mtmpb\\GPBMetadata\xea\x02\x0cMtmai::Mtmpbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mtmai.mtmpb.ag_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n\022com.mtmai.mtmpb.agB\007AgProtoP\001Z#github.com/codeh007/gomtm/mtm/ag;ag\242\002\003MMA\252\002\016Mtmai.Mtmpb.Ag\312\002\016Mtmai\\Mtmpb\\Ag\342\002\032Mtmai\\Mtmpb\\Ag\\GPBMetadata\352\002\020Mtmai::Mtmpb::Ag'
-  _globals['_DEMOSTREAM1REQUEST']._serialized_start=98
-  _globals['_DEMOSTREAM1REQUEST']._serialized_end=138
-  _globals['_DEMOSTREAM1REPLY']._serialized_start=140
-  _globals['_DEMOSTREAM1REPLY']._serialized_end=178
-  _globals['_GREETREQUEST']._serialized_start=180
-  _globals['_GREETREQUEST']._serialized_end=214
-  _globals['_GREETRESPONSE']._serialized_start=216
-  _globals['_GREETRESPONSE']._serialized_end=259
-  _globals['_AGENTRUNINPUT']._serialized_start=262
-  _globals['_AGENTRUNINPUT']._serialized_end=417
-  _globals['_GETCOMPONENTREQ']._serialized_start=419
-  _globals['_GETCOMPONENTREQ']._serialized_end=500
-  _globals['_COMPONENTLISTREQ']._serialized_start=502
-  _globals['_COMPONENTLISTREQ']._serialized_end=578
-  _globals['_COMPONENT']._serialized_start=580
-  _globals['_COMPONENT']._serialized_end=656
-  _globals['_COMPONENTLISTRES']._serialized_start=659
-  _globals['_COMPONENTLISTRES']._serialized_end=806
-  _globals['_AGSERVICE']._serialized_start=809
-  _globals['_AGSERVICE']._serialized_end=1134
+  _globals['DESCRIPTOR']._serialized_options = b'\n\017com.mtmai.mtmpbB\007AgProtoP\001Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\242\002\003MMX\252\002\013Mtmai.Mtmpb\312\002\013Mtmai\\Mtmpb\342\002\027Mtmai\\Mtmpb\\GPBMetadata\352\002\014Mtmai::Mtmpb'
+  _globals['_DEMOSTREAM1REQUEST']._serialized_start=95
+  _globals['_DEMOSTREAM1REQUEST']._serialized_end=135
+  _globals['_DEMOSTREAM1REPLY']._serialized_start=137
+  _globals['_DEMOSTREAM1REPLY']._serialized_end=175
+  _globals['_GREETREQUEST']._serialized_start=177
+  _globals['_GREETREQUEST']._serialized_end=211
+  _globals['_GREETRESPONSE']._serialized_start=213
+  _globals['_GREETRESPONSE']._serialized_end=256
+  _globals['_AGENTRUNINPUT']._serialized_start=259
+  _globals['_AGENTRUNINPUT']._serialized_end=414
+  _globals['_GETCOMPONENTREQ']._serialized_start=416
+  _globals['_GETCOMPONENTREQ']._serialized_end=497
+  _globals['_COMPONENTLISTREQ']._serialized_start=499
+  _globals['_COMPONENTLISTREQ']._serialized_end=570
+  _globals['_COMPONENT']._serialized_start=572
+  _globals['_COMPONENT']._serialized_end=648
+  _globals['_COMPONENTLISTRES']._serialized_start=651
+  _globals['_COMPONENTLISTRES']._serialized_end=790
+  _globals['_AGSERVICE']._serialized_start=793
+  _globals['_AGSERVICE']._serialized_end=1094
 # @@protoc_insertion_point(module_scope)

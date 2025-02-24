@@ -15,10 +15,10 @@ from typing import Any, Callable, TypeVar, get_type_hints
 from loguru import logger
 from mtmai.clients.client import Client, new_client_raw
 from mtmai.context.context import Context
-from mtmai.contracts.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtlibs.typing import is_basemodel_subclass
+from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
