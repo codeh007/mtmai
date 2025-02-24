@@ -65,6 +65,7 @@ from autogen_core._telemetry import (
     TraceHelper,
     get_telemetry_grpc_metadata,
 )
+from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
 from autogenstudio.datamodel import LLMCallEventMessage
@@ -95,7 +96,6 @@ from ..clients.rest.models.mt_component import MtComponent
 from ..clients.rest_client import AsyncRestApi
 from ..mtlibs.id import generate_uuid
 from ..mtm_client import MtmClient
-from . import _constants
 
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")

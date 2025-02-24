@@ -1,9 +1,9 @@
 import asyncio
 
 import typer
-from agents.worker_agent.worker_agent import WorkerAgent
 
 import mtmai.core.bootstraps as bootstraps
+from mtmai.agents.worker_agent.worker_agent import WorkerAgent
 
 bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
@@ -19,6 +19,13 @@ def main(ctx: typer.Context):
 @app.command()
 def run():
     asyncio.run(WorkerAgent().run(task="Hello, world!"))
+
+
+@app.command()
+def host():
+    import mtmai.runtimes.grpc_host as grpc_host
+
+    asyncio.run(grpc_host.run_ag_grpc_host())
 
 
 if __name__ == "__main__":
