@@ -1,4 +1,5 @@
 import httpx
+from mtmpb import events_connecpy
 
 from mtmai.mtmpb import ag_connecpy
 
@@ -9,4 +10,9 @@ class MtmClient:
             base_url=url,
             timeout=timeout_s,
         )
-        self.ag = ag_connecpy.AsyncAgServiceClient(url, session=self.session)
+        self.ag = ag_connecpy.AsyncAgServiceClient(
+            url, session=self.session, timeout=timeout_s
+        )
+        self.events = events_connecpy.AsyncEventsServiceClient(
+            url, session=self.session, timeout=timeout_s
+        )

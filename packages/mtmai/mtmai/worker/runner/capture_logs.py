@@ -37,16 +37,16 @@ class CustomLogHandler(logging.StreamHandler):
         self.logger_thread_pool = ThreadPoolExecutor(max_workers=1)
         self.event_client = event_client
 
-    def _log(self, line: str, step_run_id: str | None):
+    async def _log(self, line: str, step_run_id: str | None):
         try:
             if not step_run_id:
                 return
 
-            self.event_client.log(message=line, step_run_id=step_run_id)
+            await self.event_client.log(message=line, step_run_id=step_run_id)
         except Exception as e:
-            logger.error(f"Error logging: {e}")
+            logger.error(f"Error logging: {str(e)}")
 
-    def emit(self, record):
+    async def emit(self, record):
         super().emit(record)
 
         log_entry = self.format(record)

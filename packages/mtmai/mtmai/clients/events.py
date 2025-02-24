@@ -4,7 +4,9 @@ import json
 from typing import Any, Dict, List, Optional, TypedDict
 
 import grpc
+from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
+from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
 from mtmai.mtmpb.events_pb2 import (
@@ -15,6 +17,10 @@ from mtmai.mtmpb.events_pb2 import (
     PutStreamEventRequest,
 )
 from mtmai.mtmpb.events_pb2_grpc import EventsServiceStub
+
+from ..mtm_client import MtmClient
+
+mtmclient_path_prefix = "/mtmapi"
 
 
 def new_event(conn, config: ClientConfig):
@@ -51,7 +57,14 @@ class EventClient:
     def __init__(self, client: EventsServiceStub, config: ClientConfig):
         self.client = client
         self.token = config.token
+        self.client_context = ClientContext(
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "X-Tid": config.tenant_id,
+            }
+        )
         self.namespace = config.namespace
+        self.mtm_client = MtmClient(settings.GOMTM_URL)
 
     async def async_push(
         self, event_key, payload, options: Optional[PushEventOptions] = None
@@ -154,7 +167,7 @@ class EventClient:
         except grpc.RpcError as e:
             raise ValueError(f"gRPC error: {e}")
 
-    def log(self, message: str, step_run_id: str):
+    async def log(self, message: str, step_run_id: str):
         try:
             request = PutLogRequest(
                 stepRunId=step_run_id,
@@ -162,11 +175,23 @@ class EventClient:
                 message=message,
             )
 
-            self.client.PutLog(request, metadata=get_metadata(self.token))
-        except Exception as e:
-            raise ValueError(f"Error logging: {e}")
+            # self.client.PutLog(request, metadata=get_metadata(self.token))
 
-    def stream(self, data: str | bytes, step_run_id: str):
+            # cx = ClientContext(
+            #     headers={
+            #         "Authorization": f"Bearer {self.token}",
+            #     }
+            # )
+            await self.mtm_client.events.PutLog(
+                ctx=self.self.client_context,
+                request=request,
+                server_path_prefix=mtmclient_path_prefix,
+            )
+
+        except Exception as e:
+            raise ValueError(f"Error logging: {str(e)}")
+
+    async def stream(self, data: str | bytes, step_run_id: str):
         try:
             if isinstance(data, str):
                 data_bytes = data.encode("utf-8")
@@ -180,6 +205,11 @@ class EventClient:
                 createdAt=proto_timestamp_now(),
                 message=data_bytes,
             )
-            self.client.PutStreamEvent(request, metadata=get_metadata(self.token))
+            # self.client.PutStreamEvent(request, metadata=get_metadata(self.token))
+            await self.mtm_client.events.PutStreamEvent(
+                ctx=self.client_context,
+                server_path_prefix=mtmclient_path_prefix,
+                request=request,
+            )
         except Exception as e:
-            raise ValueError(f"Error putting stream event: {e}")
+            raise ValueError(f"Error putting stream event: {str(e)}")

@@ -335,15 +335,15 @@ class Context(BaseContext):
 
         return default
 
-    def _log(self, line: str) -> tuple[bool, Exception | None]:
+    async def _log(self, line: str) -> tuple[bool, Exception | None]:
         try:
-            self.event_client.log(message=line, step_run_id=self.stepRunId)
+            await self.event_client.log(message=line, step_run_id=self.stepRunId)
             return True, None
         except Exception as e:
             # we don't want to raise an exception here, as it will kill the log thread
             return False, e
 
-    def log(self, line: Any, raise_on_error: bool = False) -> None:
+    async def log(self, line: Any, raise_on_error: bool = False) -> None:
         if self.stepRunId == "":
             return
 
@@ -376,13 +376,13 @@ class Context(BaseContext):
     def release_slot(self) -> None:
         return self.dispatcher_client.release_slot(self.stepRunId)
 
-    def _put_stream(self, data: str | bytes) -> None:
+    async def _put_stream(self, data: str | bytes) -> None:
         try:
-            self.event_client.stream(data=data, step_run_id=self.stepRunId)
+            await self.event_client.stream(data=data, step_run_id=self.stepRunId)
         except Exception as e:
             logger.error(f"Error putting stream event: {e}")
 
-    def put_stream(self, data: str | bytes | dict | BaseModel) -> None:
+    async def put_stream(self, data: str | bytes | dict | BaseModel) -> None:
         if self.stepRunId == "":
             return
 

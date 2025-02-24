@@ -909,8 +909,8 @@ class MtmWorkerRuntime(AgentRuntime):
                                 stepRunId=message.step_run_id,
                             ),
                         )
-                        self.wfapp.event.stream(
-                            "hello1await111111111111", step_run_id=message.step_run_id
+                        await self.wfapp.event.stream(
+                            "hello1await22222222", step_run_id=message.step_run_id
                         )
                     else:
                         logger.warn(f"worker Agent 消息没有content: {event}")
