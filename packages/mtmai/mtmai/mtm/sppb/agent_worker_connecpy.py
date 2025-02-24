@@ -26,7 +26,6 @@ class AgentRpc(Protocol):
     async def AddSubscription(self, req: _pb2.AddSubscriptionRequest, ctx: ServiceContext) -> _pb2.AddSubscriptionResponse: ...
     async def RemoveSubscription(self, req: _pb2.RemoveSubscriptionRequest, ctx: ServiceContext) -> _pb2.RemoveSubscriptionResponse: ...
     async def GetSubscriptions(self, req: _pb2.GetSubscriptionsRequest, ctx: ServiceContext) -> _pb2.GetSubscriptionsResponse: ...
-    async def SendMessage(self, req: _pb2.SendMessageRequest, ctx: ServiceContext) -> _pb2.SendMessageResponse: ...
 
 
 class AgentRpcServer(ConnecpyServer):
@@ -82,14 +81,6 @@ class AgentRpcServer(ConnecpyServer):
                 output=_pb2.GetSubscriptionsResponse,
                 allowed_methods=("POST",),
             ),
-            "SendMessage": Endpoint[_pb2.SendMessageRequest, _pb2.SendMessageResponse](
-                service_name="AgentRpc",
-                name="SendMessage",
-                function=getattr(service, "SendMessage"),
-                input=_pb2.SendMessageRequest,
-                output=_pb2.SendMessageResponse,
-                allowed_methods=("POST",),
-            ),
         }
 
     def serviceName(self):
@@ -103,7 +94,6 @@ class AgentRpcSync(Protocol):
     def AddSubscription(self, req: _pb2.AddSubscriptionRequest, ctx: ServiceContext) -> _pb2.AddSubscriptionResponse: ...
     def RemoveSubscription(self, req: _pb2.RemoveSubscriptionRequest, ctx: ServiceContext) -> _pb2.RemoveSubscriptionResponse: ...
     def GetSubscriptions(self, req: _pb2.GetSubscriptionsRequest, ctx: ServiceContext) -> _pb2.GetSubscriptionsResponse: ...
-    def SendMessage(self, req: _pb2.SendMessageRequest, ctx: ServiceContext) -> _pb2.SendMessageResponse: ...
 
 
 class AgentRpcServerSync(ConnecpyServer):
@@ -157,14 +147,6 @@ class AgentRpcServerSync(ConnecpyServer):
                 function=getattr(service, "GetSubscriptions"),
                 input=_pb2.GetSubscriptionsRequest,
                 output=_pb2.GetSubscriptionsResponse,
-                allowed_methods=("POST",),
-            ),
-            "SendMessage": Endpoint[_pb2.SendMessageRequest, _pb2.SendMessageResponse](
-                service_name="AgentRpc",
-                name="SendMessage",
-                function=getattr(service, "SendMessage"),
-                input=_pb2.SendMessageRequest,
-                output=_pb2.SendMessageResponse,
                 allowed_methods=("POST",),
             ),
         }
@@ -278,24 +260,6 @@ class AgentRpcClient(ConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetSubscriptionsResponse,
-            method=method,
-            **kwargs,
-        )
-
-    def SendMessage(
-        self,
-        *,
-        request: _pb2.SendMessageRequest,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        **kwargs,
-    ) -> _pb2.SendMessageResponse:
-        method = "POST"
-        return self._make_request(
-            url=f"{server_path_prefix}/agents.AgentRpc/SendMessage",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.SendMessageResponse,
             method=method,
             **kwargs,
         )
@@ -417,26 +381,6 @@ class AsyncAgentRpcClient(AsyncConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.GetSubscriptionsResponse,
-            method=method,
-            session=session,
-            **kwargs,
-        )
-
-    async def SendMessage(
-        self,
-        *,
-        request: _pb2.SendMessageRequest,
-        ctx: ClientContext,
-        server_path_prefix: str = "",
-        session: Union[httpx.AsyncClient, None] = None,
-        **kwargs,
-    ) -> _pb2.SendMessageResponse:
-        method = "POST"
-        return await self._make_request(
-            url=f"{server_path_prefix}/agents.AgentRpc/SendMessage",
-            ctx=ctx,
-            request=request,
-            response_obj=_pb2.SendMessageResponse,
             method=method,
             session=session,
             **kwargs,

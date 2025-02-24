@@ -44,11 +44,6 @@ class AgentRpcStub(object):
                 request_serializer=mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsRequest.SerializeToString,
                 response_deserializer=mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsResponse.FromString,
                 _registered_method=True)
-        self.SendMessage = channel.unary_unary(
-                '/agents.AgentRpc/SendMessage',
-                request_serializer=mtm_dot_sppb_dot_agent__worker__pb2.SendMessageRequest.SerializeToString,
-                response_deserializer=mtm_dot_sppb_dot_agent__worker__pb2.SendMessageResponse.FromString,
-                _registered_method=True)
 
 
 class AgentRpcServicer(object):
@@ -90,13 +85,6 @@ class AgentRpcServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def SendMessage(self, request, context):
-        """新增
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_AgentRpcServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -129,11 +117,6 @@ def add_AgentRpcServicer_to_server(servicer, server):
                     servicer.GetSubscriptions,
                     request_deserializer=mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsRequest.FromString,
                     response_serializer=mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsResponse.SerializeToString,
-            ),
-            'SendMessage': grpc.unary_unary_rpc_method_handler(
-                    servicer.SendMessage,
-                    request_deserializer=mtm_dot_sppb_dot_agent__worker__pb2.SendMessageRequest.FromString,
-                    response_serializer=mtm_dot_sppb_dot_agent__worker__pb2.SendMessageResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -298,33 +281,6 @@ class AgentRpc(object):
             '/agents.AgentRpc/GetSubscriptions',
             mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsRequest.SerializeToString,
             mtm_dot_sppb_dot_agent__worker__pb2.GetSubscriptionsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def SendMessage(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/agents.AgentRpc/SendMessage',
-            mtm_dot_sppb_dot_agent__worker__pb2.SendMessageRequest.SerializeToString,
-            mtm_dot_sppb_dot_agent__worker__pb2.SendMessageResponse.FromString,
             options,
             channel_credentials,
             insecure,

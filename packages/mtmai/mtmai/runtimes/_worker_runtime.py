@@ -852,7 +852,7 @@ class GrpcWorkerAgentRuntime(AgentRuntime):
 
         team_comp_data = await self.mtm_client.ag.GetComponent(
             ctx=ClientContext(),
-            request=ag_pb2.GetComponentRequest(
+            request=ag_pb2.GetComponentReq(
                 tenant_id=message.tenant_id, component_id=message.team_id
             ),
         )
