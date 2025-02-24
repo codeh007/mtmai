@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, TypedDict, TypeVar, Union
 
 import grpc
-from clients.connection import new_conn
 from google.protobuf import timestamp_pb2
+from mtmai.clients.connection import new_conn
 from mtmai.contracts.workflows_pb2 import (
     BulkTriggerWorkflowRequest,
     BulkTriggerWorkflowResponse,

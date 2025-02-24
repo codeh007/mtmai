@@ -14,10 +14,11 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
-from mtlibs import mtutils
-from mtlibs.mtutils import ranstr
-from mtlibs.process_helper import exec, is_tool
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+from mtmai.mtlibs import mtutils
+from mtmai.mtlibs.mtutils import ranstr
+from mtmai.mtlibs.process_helper import exec, is_tool
 
 logger = logging.getLogger()
 

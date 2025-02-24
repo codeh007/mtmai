@@ -1,5 +1,6 @@
 import httpx
-from mtm.sppb import ag_connecpy
+
+from mtmai.mtmpb import ag_connecpy
 
 
 class MtmClient:

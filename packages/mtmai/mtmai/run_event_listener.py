@@ -3,9 +3,9 @@ import json
 from typing import AsyncGenerator
 
 import grpc
-from clients.connection import new_conn
 from loguru import logger
 
+from mtmai.clients.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
     RESOURCE_TYPE_STEP_RUN,
     RESOURCE_TYPE_WORKFLOW_RUN,

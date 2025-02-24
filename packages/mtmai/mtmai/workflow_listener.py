@@ -4,10 +4,10 @@ from collections.abc import AsyncIterator
 from typing import AsyncGenerator
 
 import grpc
-from clients.connection import new_conn
 from grpc._cython import cygrpc
 from loguru import logger
 
+from mtmai.clients.connection import new_conn
 from mtmai.contracts.dispatcher_pb2 import (
     SubscribeToWorkflowRunsRequest,
     WorkflowRunEvent,

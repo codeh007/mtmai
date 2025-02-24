@@ -106,9 +106,9 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         # self._runtime = SingleThreadedAgentRuntime()
 
         # 使用远程gomtm runtime
-        from mtmai.runtimes._worker_runtime import GrpcWorkerAgentRuntime
+        from mtmai.runtimes._worker_runtime import MtmWorkerRuntime
 
-        grpc_runtime = GrpcWorkerAgentRuntime()
+        grpc_runtime = MtmWorkerRuntime()
         self._runtime = grpc_runtime
         # for serializer_type in attrs(serializer_types):
         # self._runtime.add_message_serializer(

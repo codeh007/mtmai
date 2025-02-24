@@ -33,9 +33,9 @@ python_client_gen(){
     mkdir -p $GRPC_OUT
     echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
     # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/mtm/sppb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/mtm/sppb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/mtm/sppb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} workflows.proto
+    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
+    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
+    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} workflows.proto
     echo "阶段2: 修正grpc相对导入: ${GRPC_OUT}"
     OSTYPE=${OSTYPE:-"linux"}
     if [[ "$OSTYPE" == "darwin"* ]]; then

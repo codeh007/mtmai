@@ -4,10 +4,10 @@ from logging import Logger
 from typing import Callable
 
 import grpc
-from clients.admin import AdminClient, new_admin
-from clients.connection import new_conn
-from clients.events import EventClient, new_event
-from clients.rest_client import AsyncRestApi, RestApi
+from mtmai.clients.admin import AdminClient, new_admin
+from mtmai.clients.connection import new_conn
+from mtmai.clients.events import EventClient, new_event
+from mtmai.clients.rest_client import AsyncRestApi, RestApi
 from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.run_event_listener import RunEventListenerClient

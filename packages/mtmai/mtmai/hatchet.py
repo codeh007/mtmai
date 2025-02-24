@@ -1,14 +1,13 @@
 import asyncio
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
-from clients.admin import AdminClient
-from clients.client import Client, new_client, new_client_raw
-from clients.events import EventClient
-from clients.rest_client import RestApi
-from mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
+from mtmai.clients.admin import AdminClient
+from mtmai.clients.client import Client, new_client, new_client_raw
+from mtmai.clients.events import EventClient
+from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
 from mtmai.contracts.workflows_pb2 import (
     ConcurrencyLimitStrategy,
@@ -20,6 +19,7 @@ from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
+from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker

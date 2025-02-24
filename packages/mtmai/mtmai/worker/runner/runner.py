@@ -10,10 +10,9 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
-from clients.admin import new_admin
-from clients.client import new_client_raw
 from loguru import logger
-from mtlibs.types import WorkflowValidator
+from mtmai.clients.admin import new_admin
+from mtmai.clients.client import new_client_raw
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.contracts.dispatcher_pb2 import (
@@ -26,17 +25,17 @@ from mtmai.contracts.dispatcher_pb2 import (
     ActionType,
 )
 from mtmai.loader import ClientConfig
+from mtmai.mtlibs.callable import DurableContext
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
+from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.run_event_listener import new_listener
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
+from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
-from worker.runner.capture_logs import copy_context_vars, sr, wr
-
-from ...mtlibs.callable import DurableContext
 
 
 class WorkerStatus(Enum):

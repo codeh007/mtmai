@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator, List, Optional
 
 import grpc
-from clients.connection import new_conn
 from grpc._cython import cygrpc
 from loguru import logger
+from mtmai.clients.connection import new_conn
 from mtmai.clients.events import proto_timestamp_now
 from mtmai.contracts.dispatcher_pb2 import (
     ActionType,

@@ -3,14 +3,14 @@ from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
 
-from clients.client import Client, new_client_raw
 from loguru import logger
-from mtlibs.types import WorkflowValidator
+from mtmai.clients.client import Client, new_client_raw
 from mtmai.context.context import Context
 from mtmai.loader import ClientConfig
+from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.worker.dispatcher.action_listener import Action
+from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
-from worker.runner.capture_logs import capture_logs
 
 STOP_LOOP = "STOP_LOOP"
 

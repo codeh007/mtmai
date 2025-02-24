@@ -70,13 +70,13 @@ from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
 from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from google.protobuf import any_pb2
-from mtm.sppb import ag_pb2
 from mtmai import loader
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.context.context import Context, set_api_token_context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
+from mtmai.mtmpb import ag_pb2
 from opentelemetry.trace import TracerProvider
 
 from ..agents.model_client import MtmOpenAIChatCompletionClient
@@ -118,7 +118,7 @@ class QueueAsyncIterable(AsyncIterator[Any], AsyncIterable[Any]):
         return self
 
 
-class GrpcWorkerAgentRuntime(AgentRuntime):
+class MtmWorkerRuntime(AgentRuntime):
     # TODO: Needs to handle agent close() call
     def __init__(
         self,
