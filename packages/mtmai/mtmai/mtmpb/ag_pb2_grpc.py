@@ -34,6 +34,11 @@ class AgServiceStub(object):
                 request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.GetComponentReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.Component.FromString,
                 _registered_method=True)
+        self.ListChatMessage = channel.unary_unary(
+                '/mtmai.mtmpb.AgService/ListChatMessage',
+                request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageListReq.SerializeToString,
+                response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageList.FromString,
+                _registered_method=True)
 
 
 class AgServiceServicer(object):
@@ -65,6 +70,13 @@ class AgServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListChatMessage(self, request, context):
+        """chat messages
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AgServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -87,6 +99,11 @@ def add_AgServiceServicer_to_server(servicer, server):
                     servicer.GetComponent,
                     request_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.GetComponentReq.FromString,
                     response_serializer=mtmai_dot_mtmpb_dot_ag__pb2.Component.SerializeToString,
+            ),
+            'ListChatMessage': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListChatMessage,
+                    request_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageListReq.FromString,
+                    response_serializer=mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageList.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -197,6 +214,33 @@ class AgService(object):
             '/mtmai.mtmpb.AgService/GetComponent',
             mtmai_dot_mtmpb_dot_ag__pb2.GetComponentReq.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.Component.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListChatMessage(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mtmai.mtmpb.AgService/ListChatMessage',
+            mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageListReq.SerializeToString,
+            mtmai_dot_mtmpb_dot_ag__pb2.ChatMessageList.FromString,
             options,
             channel_credentials,
             insecure,

@@ -24,6 +24,7 @@ class AgService(Protocol):
     async def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     async def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
     async def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
+    async def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
 
 
 class AgServiceServer(ConnecpyServer):
@@ -63,6 +64,14 @@ class AgServiceServer(ConnecpyServer):
                 output=_pb2.Component,
                 allowed_methods=("POST",),
             ),
+            "ListChatMessage": Endpoint[_pb2.ChatMessageListReq, _pb2.ChatMessageList](
+                service_name="AgService",
+                name="ListChatMessage",
+                function=getattr(service, "ListChatMessage"),
+                input=_pb2.ChatMessageListReq,
+                output=_pb2.ChatMessageList,
+                allowed_methods=("POST",),
+            ),
         }
 
     def serviceName(self):
@@ -74,6 +83,7 @@ class AgServiceSync(Protocol):
     def Greet2(self, req: _pb2.GreetRequest, ctx: ServiceContext) -> _pb2.GreetResponse: ...
     def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
     def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
+    def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
 
 
 class AgServiceServerSync(ConnecpyServer):
@@ -111,6 +121,14 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "GetComponent"),
                 input=_pb2.GetComponentReq,
                 output=_pb2.Component,
+                allowed_methods=("POST",),
+            ),
+            "ListChatMessage": Endpoint[_pb2.ChatMessageListReq, _pb2.ChatMessageList](
+                service_name="AgService",
+                name="ListChatMessage",
+                function=getattr(service, "ListChatMessage"),
+                input=_pb2.ChatMessageListReq,
+                output=_pb2.ChatMessageList,
                 allowed_methods=("POST",),
             ),
         }
@@ -192,6 +210,24 @@ class AgServiceClient(ConnecpyClient):
             **kwargs,
         )
 
+    def ListChatMessage(
+        self,
+        *,
+        request: _pb2.ChatMessageListReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.ChatMessageList:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/ListChatMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ChatMessageList,
+            method=method,
+            **kwargs,
+        )
+
 
 class AsyncAgServiceClient(AsyncConnecpyClient):
     async def Greet(
@@ -269,6 +305,26 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.Component,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def ListChatMessage(
+        self,
+        *,
+        request: _pb2.ChatMessageListReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.ChatMessageList:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/ListChatMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ChatMessageList,
             method=method,
             session=session,
             **kwargs,
