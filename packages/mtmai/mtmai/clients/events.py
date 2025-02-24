@@ -174,16 +174,8 @@ class EventClient:
                 createdAt=proto_timestamp_now(),
                 message=message,
             )
-
-            # self.client.PutLog(request, metadata=get_metadata(self.token))
-
-            # cx = ClientContext(
-            #     headers={
-            #         "Authorization": f"Bearer {self.token}",
-            #     }
-            # )
             await self.mtm_client.events.PutLog(
-                ctx=self.self.client_context,
+                ctx=self.client_context,
                 request=request,
                 server_path_prefix=mtmclient_path_prefix,
             )
@@ -205,7 +197,6 @@ class EventClient:
                 createdAt=proto_timestamp_now(),
                 message=data_bytes,
             )
-            # self.client.PutStreamEvent(request, metadata=get_metadata(self.token))
             await self.mtm_client.events.PutStreamEvent(
                 ctx=self.client_context,
                 server_path_prefix=mtmclient_path_prefix,
