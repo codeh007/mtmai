@@ -29,22 +29,22 @@ python_client_gen(){
 
     rm -rf $tmp_dir
 
-    GRPC_OUT=${GEN_DIR}/contracts
-    mkdir -p $GRPC_OUT
-    echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
-    # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
-    python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} workflows.proto
-    echo "阶段2: 修正grpc相对导入: ${GRPC_OUT}"
-    OSTYPE=${OSTYPE:-"linux"}
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        find ${GRPC_OUT} -type f -name '*_grpc.py' -print0 | xargs -0 sed -i '' 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
-    else
-        # Linux and others
-        find ${GRPC_OUT} -type f -name '*_grpc.py' -print0 | xargs -0 sed -i 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
-    fi
-    echo "修正grpc相对导入 完成"
+    # GRPC_OUT=${GEN_DIR}/contracts
+    # mkdir -p $GRPC_OUT
+    # echo "生成 python grpc, GRPC_OUT:${GRPC_OUT} "
+    # # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/api-contracts/dispatcher --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
+    # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} dispatcher.proto
+    # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} events.proto
+    # python -m grpc_tools.protoc --proto_path=${PROJECT_DIR}/proto/mtmai/mtmpb --python_out=${GRPC_OUT} --pyi_out=${GRPC_OUT} --grpc_python_out=${GRPC_OUT} workflows.proto
+    # echo "阶段2: 修正grpc相对导入: ${GRPC_OUT}"
+    # OSTYPE=${OSTYPE:-"linux"}
+    # if [[ "$OSTYPE" == "darwin"* ]]; then
+    #     # macOS
+    #     find ${GRPC_OUT} -type f -name '*_grpc.py' -print0 | xargs -0 sed -i '' 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
+    # else
+    #     # Linux and others
+    #     find ${GRPC_OUT} -type f -name '*_grpc.py' -print0 | xargs -0 sed -i 's/^import \([^ ]*\)_pb2/from . import \1_pb2/'
+    # fi
+    # echo "修正grpc相对导入 完成"
 }
 python_client_gen
