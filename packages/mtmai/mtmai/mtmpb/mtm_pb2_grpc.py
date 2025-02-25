@@ -6,16 +6,7 @@ from mtmai.mtmpb import mtm_pb2 as mtmai_dot_mtmpb_dot_mtm__pb2
 
 
 class MtmServiceStub(object):
-    """import "buf/validate/validate.proto";
-
-    message UserDemo123 {
-    string uuid = 1;
-    string full_name = 2 [ (buf.validate.field).string.min_len = 1 ];
-    int64 birth_year = 3 [ (buf.validate.field).int64.gt = 1900 ];
-    optional uint32 salary = 4 [ (buf.validate.field).uint32.gt = 0 ];
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -201,16 +192,7 @@ class MtmServiceStub(object):
 
 
 class MtmServiceServicer(object):
-    """import "buf/validate/validate.proto";
-
-    message UserDemo123 {
-    string uuid = 1;
-    string full_name = 2 [ (buf.validate.field).string.min_len = 1 ];
-    int64 birth_year = 3 [ (buf.validate.field).int64.gt = 1900 ];
-    optional uint32 salary = 4 [ (buf.validate.field).uint32.gt = 0 ];
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def Oauth2LoginHook(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -627,16 +609,7 @@ def add_MtmServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class MtmService(object):
-    """import "buf/validate/validate.proto";
-
-    message UserDemo123 {
-    string uuid = 1;
-    string full_name = 2 [ (buf.validate.field).string.min_len = 1 ];
-    int64 birth_year = 3 [ (buf.validate.field).int64.gt = 1900 ];
-    optional uint32 salary = 4 [ (buf.validate.field).uint32.gt = 0 ];
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def Oauth2LoginHook(request,
