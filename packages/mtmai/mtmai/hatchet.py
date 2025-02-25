@@ -1,6 +1,9 @@
 import asyncio
+import json
+from pathlib import Path
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
+from aiofiles import os
 from connecpy.context import ClientContext
 from loguru import logger
 from pydantic import BaseModel
@@ -17,6 +20,7 @@ from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
+from mtmai.mtmpb.mtm_connecpy import AsyncMtmServiceClient
 from mtmai.mtmpb.workflows_pb2 import (
     ConcurrencyLimitStrategy,
     CreateStepRateLimit,
@@ -28,10 +32,10 @@ from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 
-from .mtmpb.mtm_connecpy import AsyncMtmServiceClient
-
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
+
+credentials_file = "~/.mtm/credentials.json"
 
 
 def workflow(
@@ -274,18 +278,30 @@ class HatchetV1:
     async def boot(self):
         logger.debug("boot =========================")
         if not self.config.token:
-            logger.info("login required")
-            email = input("email:")
-            password = input("password:")
-            self.config.token = f"{email}:{password}"
-            resp = await self.mtm.Login(
-                ctx=ClientContext(),
-                request=_pb2.LoginReq(username=email, password=password),
-            )
-            if resp.access_token:
-                self.config.token = resp.access_token
+            # try load local credentials
+            if await os.path.exists(credentials_file):
+                with open(credentials_file, "r") as f:
+                    credentials = json.load(f)
+                    self.config.token = credentials["token"]
             else:
-                raise Exception("login failed")
+                logger.info("login required")
+                email = input("email:")
+                password = input("password:")
+                self.config.token = f"{email}:{password}"
+                resp = await self.mtm.Login(
+                    ctx=ClientContext(),
+                    request=_pb2.LoginReq(username=email, password=password),
+                )
+                if resp.access_token:
+                    self.config.token = resp.access_token
+                    await self.save_credentials(resp.access_token)
+                else:
+                    raise Exception("login failed")
+
+    async def save_credentials(self, token: str):
+        Path(credentials_file).parent.mkdir(parents=True, exist_ok=True)
+        with open(credentials_file, "w") as f:
+            f.write(json.dumps({"token": token}))
 
     def worker(
         self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}
