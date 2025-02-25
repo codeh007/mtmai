@@ -8,7 +8,7 @@ from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
 from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
-from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
+from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
     Event,
@@ -55,11 +55,9 @@ class BulkPushEventWithMetadata(TypedDict):
 
 class EventClient:
     def __init__(self, client: EventsServiceStub, config: ClientConfig):
-        self.client = client
-        self.token = config.token
         self.client_context = ClientContext(
             headers={
-                "Authorization": f"Bearer {self.token}",
+                "Authorization": f"Bearer {config.token}",
                 "X-Tid": config.tenant_id,
             }
         )
@@ -81,7 +79,7 @@ class EventClient:
         return await asyncio.to_thread(self.bulk_push, events=events, options=options)
 
     @tenacity_retry
-    def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
+    async def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
         namespace = self.namespace
 
         if (
@@ -113,12 +111,17 @@ class EventClient:
         )
 
         try:
-            return self.client.Push(request, metadata=get_metadata(self.token))
+            # return self.client.Push(request, metadata=get_metadata(self.token))
+            return await self.mtm_client.events.Push(
+                ctx=self.client_context,
+                request=request,
+                server_path_prefix=mtmclient_path_prefix,
+            )
         except grpc.RpcError as e:
             raise ValueError(f"gRPC error: {e}")
 
     @tenacity_retry
-    def bulk_push(
+    async def bulk_push(
         self,
         events: List[BulkPushEventWithMetadata],
         options: BulkPushEventOptions = None,
@@ -160,8 +163,10 @@ class EventClient:
         bulk_request = BulkPushEventRequest(events=bulk_events)
 
         try:
-            response = self.client.BulkPush(
-                bulk_request, metadata=get_metadata(self.token)
+            response = await self.mtm_client.events.BulkPush(
+                ctx=self.client_context,
+                request=bulk_request,
+                server_path_prefix=mtmclient_path_prefix,
             )
             return response.events
         except grpc.RpcError as e:
