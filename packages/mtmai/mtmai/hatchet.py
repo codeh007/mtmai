@@ -282,7 +282,10 @@ class HatchetV1:
                 ctx=ClientContext(),
                 request=_pb2.LoginReq(username=email, password=password),
             )
-            logger.info(f"login success: {resp}")
+            if resp.access_token:
+                self.config.token = resp.access_token
+            else:
+                raise Exception("login failed")
 
     def worker(
         self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}

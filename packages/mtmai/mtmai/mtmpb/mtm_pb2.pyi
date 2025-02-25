@@ -132,12 +132,10 @@ class MtmError(_message.Message):
     def __init__(self, err_code: _Optional[str] = ..., err_message: _Optional[str] = ...) -> None: ...
 
 class LoginReply(_message.Message):
-    __slots__ = ("error", "access_token")
-    ERROR_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("access_token",)
     ACCESS_TOKEN_FIELD_NUMBER: _ClassVar[int]
-    error: MtmError
     access_token: str
-    def __init__(self, error: _Optional[_Union[MtmError, _Mapping]] = ..., access_token: _Optional[str] = ...) -> None: ...
+    def __init__(self, access_token: _Optional[str] = ...) -> None: ...
 
 class User(_message.Message):
     __slots__ = ("id", "email", "username")
