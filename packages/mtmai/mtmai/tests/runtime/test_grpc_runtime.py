@@ -3,9 +3,9 @@ import os
 import pytest
 from autogen_core import AgentId, AgentInstantiationContext, AgentType
 from dotenv import load_dotenv
-from mtmai.runtimes._worker_runtime import MtmWorkerRuntime
 from mtmai.tests.autogen_test_utils import CascadingAgent, NoopAgent
 from mtmai.tests.autogen_test_utils.telemetry_test_utils import MyTestExporter
+from worker._worker_runtime import MtmWorkerRuntime
 
 test_exporter = MyTestExporter()
 

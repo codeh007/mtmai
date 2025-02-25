@@ -25,6 +25,8 @@ from mtmai.workflow import WorkflowMeta
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import RunRef, WorkflowRunRef
 
+T = TypeVar("T")
+
 
 def new_admin(config: ClientConfig):
     return AdminClient(config)
@@ -147,9 +149,6 @@ class AdminClientBase:
             input=json.dumps(input),
             **(options or {}),
         )
-
-
-T = TypeVar("T")
 
 
 class AdminClientAioImpl(AdminClientBase):

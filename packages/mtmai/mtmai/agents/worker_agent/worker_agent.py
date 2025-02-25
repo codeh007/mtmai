@@ -106,7 +106,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         # self._runtime = SingleThreadedAgentRuntime()
 
         # 使用远程gomtm runtime
-        from mtmai.runtimes._worker_runtime import MtmWorkerRuntime
+        from worker._worker_runtime import MtmWorkerRuntime
 
         grpc_runtime = MtmWorkerRuntime()
         self._runtime = grpc_runtime
