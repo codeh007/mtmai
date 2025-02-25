@@ -8,7 +8,8 @@ from loguru import logger
 from mtmai._version import version
 from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
-from mtmai.middleware import AuthMiddleware
+
+# from mtmai.middleware import AuthMiddleware
 
 
 def build_app():
@@ -119,7 +120,7 @@ def build_app():
             allow_methods=["*"],
             allow_headers=["*", "x-chainlit-client-type"],
         )
-        app.add_middleware(AuthMiddleware)
+        # app.add_middleware(AuthMiddleware)
 
     from .gradio_app import mount_gradio_app
 
