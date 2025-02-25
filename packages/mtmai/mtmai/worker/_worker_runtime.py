@@ -10,59 +10,25 @@ import uuid
 import warnings
 from asyncio import Future, Task
 from collections import defaultdict
-from typing import (
-    Any,
-    AsyncIterable,
-    AsyncIterator,
-    Awaitable,
-    Callable,
-    DefaultDict,
-    Dict,
-    List,
-    Literal,
-    Mapping,
-    ParamSpec,
-    Sequence,
-    Set,
-    Type,
-    TypedDict,
-    TypeVar,
-    cast,
-)
+from typing import (Any, AsyncIterable, AsyncIterator, Awaitable, Callable,
+                    DefaultDict, Dict, List, Literal, Mapping, ParamSpec,
+                    Sequence, Set, Type, TypedDict, TypeVar, cast)
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import (
-    HandoffMessage,
-    MultiModalMessage,
-    StopMessage,
-    TextMessage,
-    ToolCallExecutionEvent,
-    ToolCallRequestEvent,
-)
-from autogen_core import (
-    JSON_DATA_CONTENT_TYPE,
-    PROTOBUF_DATA_CONTENT_TYPE,
-    Agent,
-    AgentId,
-    AgentInstantiationContext,
-    AgentMetadata,
-    AgentRuntime,
-    AgentType,
-    CancellationToken,
-    MessageContext,
-    MessageHandlerContext,
-    MessageSerializer,
-    SingleThreadedAgentRuntime,
-    Subscription,
-    TopicId,
-)
+from autogen_agentchat.messages import (HandoffMessage, MultiModalMessage,
+                                        StopMessage, TextMessage,
+                                        ToolCallExecutionEvent,
+                                        ToolCallRequestEvent)
+from autogen_core import (JSON_DATA_CONTENT_TYPE, PROTOBUF_DATA_CONTENT_TYPE,
+                          Agent, AgentId, AgentInstantiationContext,
+                          AgentMetadata, AgentRuntime, AgentType,
+                          CancellationToken, MessageContext,
+                          MessageHandlerContext, MessageSerializer,
+                          SingleThreadedAgentRuntime, Subscription, TopicId)
 from autogen_core._runtime_impl_helpers import SubscriptionManager, get_impl
 from autogen_core._serialization import SerializationRegistry
-from autogen_core._telemetry import (
-    MessageRuntimeTracingConfig,
-    TraceHelper,
-    get_telemetry_grpc_metadata,
-)
+from autogen_core._telemetry import (MessageRuntimeTracingConfig, TraceHelper,
+                                     get_telemetry_grpc_metadata)
 from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
@@ -70,10 +36,14 @@ from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from google.protobuf import any_pb2
 from loguru import logger
+from opentelemetry.trace import TracerProvider
+
 from mtmai import loader
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
-from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
+from mtmai.agents.team_builder.article_gen_teambuilder import \
+    ArticleGenTeamBuilder
+from mtmai.agents.team_builder.assisant_team_builder import \
+    AssistantTeamBuilder
 from mtmai.agents.team_builder.m1_web_builder import M1WebTeamBuilder
 from mtmai.agents.team_builder.swram_team_builder import SwramTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
@@ -88,7 +58,6 @@ from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
-from opentelemetry.trace import TracerProvider
 
 # logger = logging.getLogger("autogen_core")
 # event_logger = logging.getLogger("autogen_core.events")
@@ -980,13 +949,13 @@ class MtmWorkerRuntime(AgentRuntime):
     async def tenant_reset_teams(self, tenant_id: str):
         logger.info(f"TenantAgent 重置租户信息: {tenant_id}")
         results = []
-        teams_list = await self.gomtmapi.coms_api.coms_list(
+        teams_list = await self.wfapp.rest.aio.coms_api.coms_list(
             tenant=tenant_id, label="default"
         )
         if teams_list.rows and len(teams_list.rows) > 0:
             logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
             results.append(teams_list.rows[0])
-        defaultModel = await self.gomtmapi.model_api.model_get(
+        defaultModel = await self.wfapp.rest.aio.model_api.model_get(
             tenant=tenant_id, model="default"
         )
         model_dict = defaultModel.config.model_dump()
@@ -1007,7 +976,7 @@ class MtmWorkerRuntime(AgentRuntime):
             logger.info(f"create team for tenant {tenant_id}")
             team_comp = await team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
-            new_team = await self.gomtmapi.coms_api.coms_upsert(
+            new_team = await self.wfapp.rest.aio.coms_api.coms_upsert(
                 tenant=tenant_id,
                 com=generate_uuid(),
                 mt_component=MtComponent(
@@ -1031,7 +1000,7 @@ class MtmWorkerRuntime(AgentRuntime):
                 if hasattr(agent, "close"):
                     await agent.close()
         state = await team.save_state()
-        await self.gomtmapi.ag_state_api.ag_state_upsert(
+        await self.wfapp.rest.aio.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
                 componentId=team_id,
@@ -1041,7 +1010,7 @@ class MtmWorkerRuntime(AgentRuntime):
         )
 
     async def handle_message_create(self, message: ChatMessageUpsert) -> None:
-        await self.gomtmapi.chat_api.chat_message_upsert(
+        await self.wfapp.rest.aio.chat_api.chat_message_upsert(
             tenant=message.tenant_id,
             chat_message_upsert=message.model_dump(),
         )

@@ -5672,7 +5672,9 @@ class TenantApi:
 
         # authentication setting
         _auth_settings: List[str] = [
-            'cookieAuth'
+            'basicAuth', 
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(

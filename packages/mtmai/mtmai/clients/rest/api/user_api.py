@@ -59,7 +59,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> UserTenantMembershipsList:
-        """List tenant memberships
+        """tenant_memberships_list
 
         Lists all tenant memberships for the current user
 
@@ -124,7 +124,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[UserTenantMembershipsList]:
-        """List tenant memberships
+        """tenant_memberships_list
 
         Lists all tenant memberships for the current user
 
@@ -189,7 +189,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """List tenant memberships
+        """tenant_memberships_list
 
         Lists all tenant memberships for the current user
 
@@ -274,7 +274,9 @@ class UserApi:
 
         # authentication setting
         _auth_settings: List[str] = [
-            'cookieAuth'
+            'basicAuth', 
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(
@@ -2300,7 +2302,9 @@ class UserApi:
 
         # authentication setting
         _auth_settings: List[str] = [
-            'cookieAuth'
+            'basicAuth', 
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(
@@ -2822,7 +2826,9 @@ class UserApi:
 
         # authentication setting
         _auth_settings: List[str] = [
-            'cookieAuth'
+            'basicAuth', 
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(
@@ -2860,7 +2866,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> None:
-        """Start OAuth flow
+        """user_update_slack_oauth_start
 
         Starts the OAuth flow
 
@@ -2927,7 +2933,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[None]:
-        """Start OAuth flow
+        """user_update_slack_oauth_start
 
         Starts the OAuth flow
 
@@ -2994,7 +3000,7 @@ class UserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Start OAuth flow
+        """user_update_slack_oauth_start
 
         Starts the OAuth flow
 
@@ -3076,7 +3082,9 @@ class UserApi:
 
         # authentication setting
         _auth_settings: List[str] = [
-            'cookieAuth'
+            'basicAuth', 
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(

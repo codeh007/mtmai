@@ -21,12 +21,9 @@ from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from mtmai.mtmpb.mtm_connecpy import AsyncMtmServiceClient
-from mtmai.mtmpb.workflows_pb2 import (
-    ConcurrencyLimitStrategy,
-    CreateStepRateLimit,
-    DesiredWorkerLabels,
-    StickyStrategy,
-)
+from mtmai.mtmpb.workflows_pb2 import (ConcurrencyLimitStrategy,
+                                       CreateStepRateLimit,
+                                       DesiredWorkerLabels, StickyStrategy)
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
@@ -228,6 +225,7 @@ class HatchetV1:
             self._client = Client.from_config(config, debug)
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
+        self.debug = debug
 
     @property
     @deprecated(
@@ -294,14 +292,21 @@ class HatchetV1:
                 )
                 if resp.access_token:
                     self.config.token = resp.access_token
-                    await self.save_credentials(resp.access_token)
+                    await self.save_credentials(self.config.token)
                 else:
                     raise Exception("login failed")
+        self._client = Client.from_config(self.config, debug=self.debug)
+        self.config.tenant_id = await self.load_default_tenant()
+        self._client = Client.from_config(self.config, debug=self.debug)
 
     async def save_credentials(self, token: str):
         Path(credentials_file).parent.mkdir(parents=True, exist_ok=True)
         with open(credentials_file, "w") as f:
             f.write(json.dumps({"token": token}))
+
+    async def load_default_tenant(self):
+        resp = await self._client.rest.aio.user_api.tenant_memberships_list()
+        return resp.rows[0].tenant.metadata.id
 
     def worker(
         self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}
