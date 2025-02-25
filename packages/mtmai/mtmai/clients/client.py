@@ -16,6 +16,7 @@ from mtmai.mtmpb import ag_connecpy, events_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from mtmai.workflow_listener import PooledWorkflowRunListener
+from mtmpb import mtm_connecpy
 
 
 class Client:
@@ -129,6 +130,9 @@ class Client:
             gomtm_api_url, session=self.session, timeout=self.default_client_timeout
         )
         self.events = events_connecpy.AsyncEventsServiceClient(
+            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+        )
+        self.mtm = mtm_connecpy.AsyncMtmServiceClient(
             gomtm_api_url, session=self.session, timeout=self.default_client_timeout
         )
 

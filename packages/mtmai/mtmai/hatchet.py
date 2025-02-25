@@ -1,10 +1,12 @@
 import asyncio
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
+from connecpy.context import ClientContext
 from loguru import logger
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
+import mtmai.mtmpb.mtm_pb2 as _pb2
 from mtmai.clients.admin import AdminClient
 from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
@@ -25,6 +27,8 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
+
+from .mtmpb.mtm_connecpy import AsyncMtmServiceClient
 
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
@@ -244,6 +248,10 @@ class HatchetV1:
         return self._client.rest
 
     @property
+    def mtm(self) -> AsyncMtmServiceClient:
+        return self._client.mtm
+
+    @property
     def listener(self) -> RunEventListenerClient:
         return self._client.listener
 
@@ -270,6 +278,11 @@ class HatchetV1:
             email = input("email:")
             password = input("password:")
             self.config.token = f"{email}:{password}"
+            resp = await self.mtm.Login(
+                ctx=ClientContext(),
+                request=_pb2.LoginReq(username=email, password=password),
+            )
+            logger.info(f"login success: {resp}")
 
     def worker(
         self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}

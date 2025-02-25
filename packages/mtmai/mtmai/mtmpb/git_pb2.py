@@ -22,10 +22,10 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from mtmai.mtmpb import sppb_pb2 as mtmai_dot_mtmpb_dot_sppb__pb2
+from mtmai.mtmpb import mtm_pb2 as mtmai_dot_mtmpb_dot_mtm__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15mtmai/mtmpb/git.proto\x12\x0fmtmai.mtmpb.git\x1a\x16mtmai/mtmpb/sppb.proto\"\x1c\n\nGitPullReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x1d\n\x0bGitSetupReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\r\n\x0bGitSetupRes\"\x0c\n\nGitPullRes\"!\n\tGitGetReq\x12\x14\n\x05slugs\x18\x01 \x01(\tR\x05slugs\"\x19\n\x07GitInfo\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x1d\n\x0bGitStartReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\r\n\x0bGitStartRes\"\x1c\n\nGitStopReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x0c\n\nGitStopRes2\xf0\x02\n\nGitService\x12@\n\x06GitGet\x12\x1a.mtmai.mtmpb.git.GitGetReq\x1a\x18.mtmai.mtmpb.git.GitInfo\"\x00\x12\x45\n\x07GitPull\x12\x1b.mtmai.mtmpb.git.GitPullReq\x1a\x1b.mtmai.mtmpb.git.GitPullRes\"\x00\x12H\n\x08GitSetup\x12\x1c.mtmai.mtmpb.git.GitSetupReq\x1a\x1c.mtmai.mtmpb.git.GitSetupRes\"\x00\x12H\n\x08GitStart\x12\x1c.mtmai.mtmpb.git.GitStartReq\x1a\x1c.mtmai.mtmpb.git.GitStartRes\"\x00\x12\x45\n\x07GitStop\x12\x1b.mtmai.mtmpb.git.GitStopReq\x1a\x1b.mtmai.mtmpb.git.GitStopRes\"\x00\x42\xb3\x01\n\x13\x63om.mtmai.mtmpb.gitB\x08GitProtoP\x01Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\xa2\x02\x03MMG\xaa\x02\x0fMtmai.Mtmpb.Git\xca\x02\x0fMtmai\\Mtmpb\\Git\xe2\x02\x1bMtmai\\Mtmpb\\Git\\GPBMetadata\xea\x02\x11Mtmai::Mtmpb::Gitb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15mtmai/mtmpb/git.proto\x12\x0fmtmai.mtmpb.git\x1a\x15mtmai/mtmpb/mtm.proto\"\x1c\n\nGitPullReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x1d\n\x0bGitSetupReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\r\n\x0bGitSetupRes\"\x0c\n\nGitPullRes\"!\n\tGitGetReq\x12\x14\n\x05slugs\x18\x01 \x01(\tR\x05slugs\"\x19\n\x07GitInfo\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x1d\n\x0bGitStartReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\r\n\x0bGitStartRes\"\x1c\n\nGitStopReq\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\"\x0c\n\nGitStopRes2\xf0\x02\n\nGitService\x12@\n\x06GitGet\x12\x1a.mtmai.mtmpb.git.GitGetReq\x1a\x18.mtmai.mtmpb.git.GitInfo\"\x00\x12\x45\n\x07GitPull\x12\x1b.mtmai.mtmpb.git.GitPullReq\x1a\x1b.mtmai.mtmpb.git.GitPullRes\"\x00\x12H\n\x08GitSetup\x12\x1c.mtmai.mtmpb.git.GitSetupReq\x1a\x1c.mtmai.mtmpb.git.GitSetupRes\"\x00\x12H\n\x08GitStart\x12\x1c.mtmai.mtmpb.git.GitStartReq\x1a\x1c.mtmai.mtmpb.git.GitStartRes\"\x00\x12\x45\n\x07GitStop\x12\x1b.mtmai.mtmpb.git.GitStopReq\x1a\x1b.mtmai.mtmpb.git.GitStopRes\"\x00\x42\xb3\x01\n\x13\x63om.mtmai.mtmpb.gitB\x08GitProtoP\x01Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\xa2\x02\x03MMG\xaa\x02\x0fMtmai.Mtmpb.Git\xca\x02\x0fMtmai\\Mtmpb\\Git\xe2\x02\x1bMtmai\\Mtmpb\\Git\\GPBMetadata\xea\x02\x11Mtmai::Mtmpb::Gitb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,26 +33,26 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mtmai.mtmpb.git_pb2', _glob
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\023com.mtmai.mtmpb.gitB\010GitProtoP\001Z4github.com/codeh007/gomtm/mtm/sppb/mtmai/mtmpb;mtmpb\242\002\003MMG\252\002\017Mtmai.Mtmpb.Git\312\002\017Mtmai\\Mtmpb\\Git\342\002\033Mtmai\\Mtmpb\\Git\\GPBMetadata\352\002\021Mtmai::Mtmpb::Git'
-  _globals['_GITPULLREQ']._serialized_start=66
-  _globals['_GITPULLREQ']._serialized_end=94
-  _globals['_GITSETUPREQ']._serialized_start=96
-  _globals['_GITSETUPREQ']._serialized_end=125
-  _globals['_GITSETUPRES']._serialized_start=127
-  _globals['_GITSETUPRES']._serialized_end=140
-  _globals['_GITPULLRES']._serialized_start=142
-  _globals['_GITPULLRES']._serialized_end=154
-  _globals['_GITGETREQ']._serialized_start=156
-  _globals['_GITGETREQ']._serialized_end=189
-  _globals['_GITINFO']._serialized_start=191
-  _globals['_GITINFO']._serialized_end=216
-  _globals['_GITSTARTREQ']._serialized_start=218
-  _globals['_GITSTARTREQ']._serialized_end=247
-  _globals['_GITSTARTRES']._serialized_start=249
-  _globals['_GITSTARTRES']._serialized_end=262
-  _globals['_GITSTOPREQ']._serialized_start=264
-  _globals['_GITSTOPREQ']._serialized_end=292
-  _globals['_GITSTOPRES']._serialized_start=294
-  _globals['_GITSTOPRES']._serialized_end=306
-  _globals['_GITSERVICE']._serialized_start=309
-  _globals['_GITSERVICE']._serialized_end=677
+  _globals['_GITPULLREQ']._serialized_start=65
+  _globals['_GITPULLREQ']._serialized_end=93
+  _globals['_GITSETUPREQ']._serialized_start=95
+  _globals['_GITSETUPREQ']._serialized_end=124
+  _globals['_GITSETUPRES']._serialized_start=126
+  _globals['_GITSETUPRES']._serialized_end=139
+  _globals['_GITPULLRES']._serialized_start=141
+  _globals['_GITPULLRES']._serialized_end=153
+  _globals['_GITGETREQ']._serialized_start=155
+  _globals['_GITGETREQ']._serialized_end=188
+  _globals['_GITINFO']._serialized_start=190
+  _globals['_GITINFO']._serialized_end=215
+  _globals['_GITSTARTREQ']._serialized_start=217
+  _globals['_GITSTARTREQ']._serialized_end=246
+  _globals['_GITSTARTRES']._serialized_start=248
+  _globals['_GITSTARTRES']._serialized_end=261
+  _globals['_GITSTOPREQ']._serialized_start=263
+  _globals['_GITSTOPREQ']._serialized_end=291
+  _globals['_GITSTOPRES']._serialized_start=293
+  _globals['_GITSTOPRES']._serialized_end=305
+  _globals['_GITSERVICE']._serialized_start=308
+  _globals['_GITSERVICE']._serialized_end=676
 # @@protoc_insertion_point(module_scope)

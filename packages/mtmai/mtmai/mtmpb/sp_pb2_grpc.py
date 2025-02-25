@@ -2,8 +2,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+from mtmai.mtmpb import mtm_pb2 as mtmai_dot_mtmpb_dot_mtm__pb2
 from mtmai.mtmpb import sp_pb2 as mtmai_dot_mtmpb_dot_sp__pb2
-from mtmai.mtmpb import sppb_pb2 as mtmai_dot_mtmpb_dot_sppb__pb2
 
 
 class SpServiceStub(object):
@@ -28,32 +28,32 @@ class SpServiceStub(object):
         self.SpProjectCreate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectCreateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpProjectUpdate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectUpdateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpProjectDelete = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectDelete',
-                request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                request_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpProjectRun = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectRun',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectRunReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpProjectVisit = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectVisit',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectVisitReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpProjectReload = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpProjectReload',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectReloadReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpRouteList = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpRouteList',
@@ -68,17 +68,17 @@ class SpServiceStub(object):
         self.SpRouteCreate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpRouteCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpRouteCreateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpRouteUpdate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpRouteUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpRouteUpdateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpRouteDelete = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpRouteDelete',
-                request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                request_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpContentmodiList = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpContentmodiList',
@@ -93,17 +93,17 @@ class SpServiceStub(object):
         self.SpContentmodiCreate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpContentmodiCreate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiCreateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpContentmodiUpdate = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpContentmodiUpdate',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiUpdateReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpContentmodiDelete = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpContentmodiDelete',
-                request_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                request_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.SpOptionGet = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpOptionGet',
@@ -113,7 +113,7 @@ class SpServiceStub(object):
         self.SpOptionSave = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/SpOptionSave',
                 request_serializer=mtmai_dot_mtmpb_dot_sp__pb2.SpOption.SerializeToString,
-                response_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+                response_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
                 _registered_method=True)
         self.Sp2Fetch = channel.unary_unary(
                 '/mtmai.mtmpb.SpService/Sp2Fetch',
@@ -272,32 +272,32 @@ def add_SpServiceServicer_to_server(servicer, server):
             'SpProjectCreate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectCreate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectCreateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpProjectUpdate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectUpdate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectUpdateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpProjectDelete': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectDelete,
-                    request_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    request_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.FromString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpProjectRun': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectRun,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectRunReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpProjectVisit': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectVisit,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectVisitReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpProjectReload': grpc.unary_unary_rpc_method_handler(
                     servicer.SpProjectReload,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpProjectReloadReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpRouteList': grpc.unary_unary_rpc_method_handler(
                     servicer.SpRouteList,
@@ -312,17 +312,17 @@ def add_SpServiceServicer_to_server(servicer, server):
             'SpRouteCreate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpRouteCreate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpRouteCreateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpRouteUpdate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpRouteUpdate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpRouteUpdateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpRouteDelete': grpc.unary_unary_rpc_method_handler(
                     servicer.SpRouteDelete,
-                    request_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    request_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.FromString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpContentmodiList': grpc.unary_unary_rpc_method_handler(
                     servicer.SpContentmodiList,
@@ -337,17 +337,17 @@ def add_SpServiceServicer_to_server(servicer, server):
             'SpContentmodiCreate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpContentmodiCreate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiCreateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpContentmodiUpdate': grpc.unary_unary_rpc_method_handler(
                     servicer.SpContentmodiUpdate,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiUpdateReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpContentmodiDelete': grpc.unary_unary_rpc_method_handler(
                     servicer.SpContentmodiDelete,
-                    request_deserializer=mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    request_deserializer=mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.FromString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'SpOptionGet': grpc.unary_unary_rpc_method_handler(
                     servicer.SpOptionGet,
@@ -357,7 +357,7 @@ def add_SpServiceServicer_to_server(servicer, server):
             'SpOptionSave': grpc.unary_unary_rpc_method_handler(
                     servicer.SpOptionSave,
                     request_deserializer=mtmai_dot_mtmpb_dot_sp__pb2.SpOption.FromString,
-                    response_serializer=mtmai_dot_mtmpb_dot_sppb__pb2.Result.SerializeToString,
+                    response_serializer=mtmai_dot_mtmpb_dot_mtm__pb2.Result.SerializeToString,
             ),
             'Sp2Fetch': grpc.unary_unary_rpc_method_handler(
                     servicer.Sp2Fetch,
@@ -445,7 +445,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpProjectCreate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpProjectCreateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -472,7 +472,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpProjectUpdate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpProjectUpdateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -498,8 +498,8 @@ class SpService(object):
             request,
             target,
             '/mtmai.mtmpb.SpService/SpProjectDelete',
-            mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -526,7 +526,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpProjectRun',
             mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectRunReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -553,7 +553,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpProjectVisit',
             mtmai_dot_mtmpb_dot_sp__pb2.SpiderProjectVisitReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -580,7 +580,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpProjectReload',
             mtmai_dot_mtmpb_dot_sp__pb2.SpProjectReloadReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -661,7 +661,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpRouteCreate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpRouteCreateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -688,7 +688,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpRouteUpdate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpRouteUpdateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -714,8 +714,8 @@ class SpService(object):
             request,
             target,
             '/mtmai.mtmpb.SpService/SpRouteDelete',
-            mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -796,7 +796,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpContentmodiCreate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiCreateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -823,7 +823,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpContentmodiUpdate',
             mtmai_dot_mtmpb_dot_sp__pb2.SpContentmodiUpdateReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -849,8 +849,8 @@ class SpService(object):
             request,
             target,
             '/mtmai.mtmpb.SpService/SpContentmodiDelete',
-            mtmai_dot_mtmpb_dot_sppb__pb2.ResDeleteReq.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.ResDeleteReq.SerializeToString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
@@ -904,7 +904,7 @@ class SpService(object):
             target,
             '/mtmai.mtmpb.SpService/SpOptionSave',
             mtmai_dot_mtmpb_dot_sp__pb2.SpOption.SerializeToString,
-            mtmai_dot_mtmpb_dot_sppb__pb2.Result.FromString,
+            mtmai_dot_mtmpb_dot_mtm__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,
