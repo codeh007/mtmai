@@ -149,17 +149,6 @@ class MtmWorkerRuntime(AgentRuntime):
             )
 
         self._payload_serialization_format = payload_serialization_format
-        # self.api_client = ApiClient(
-        #     configuration=Configuration(
-        #         host=settings.GOMTM_URL,
-        #     )
-        # )
-        # self.mtm_client = MtmClient(settings.GOMTM_URL)
-        # self.client = Client.from_config(
-        #     config=ClientConfig(
-        #         server_url=settings.GOMTM_URL,
-        #     )
-        # )
         self._runtime = SingleThreadedAgentRuntime(
             tracer_provider=tracer_provider,
             # payload_serialization_format=self._payload_serialization_format,
@@ -168,13 +157,13 @@ class MtmWorkerRuntime(AgentRuntime):
     async def start(self) -> None:
         """Start the runtime in a background task."""
         if self._running:
-            raise ValueError("Runtime is already running.")
+            raise ValueError("runtime is already running.")
         logger.info(f"gomtm runtime start: {settings.GOMTM_URL}")
         self._runtime.start()
         self._running = True
 
         await self._init_ingestor()
-        logger.info(f"(Gomtm)Runtime started with apiurl: {self.api_url}")
+        logger.info(f"(Gomtm) runtime started with apiurl: {self.api_url}")
 
     def _raise_on_exception(self, task: Task[Any]) -> None:
         exception = task.exception()

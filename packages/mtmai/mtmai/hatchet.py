@@ -35,7 +35,8 @@ from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
 
-credentials_file = "~/.mtm/credentials.json"
+config_dir = Path.home().joinpath(".mtm")
+credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
 
 
 def workflow(
@@ -276,7 +277,6 @@ class HatchetV1:
     on_failure_step = staticmethod(on_failure_step)
 
     async def boot(self):
-        logger.debug("boot =========================")
         if not self.config.token:
             # try load local credentials
             if await os.path.exists(credentials_file):
