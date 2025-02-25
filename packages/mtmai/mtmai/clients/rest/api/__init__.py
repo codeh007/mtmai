@@ -3,7 +3,6 @@
 # import apis into api package
 from mtmai.clients.rest.api.api_token_api import APITokenApi
 from mtmai.clients.rest.api.event_api import EventApi
-from mtmai.clients.rest.api.github_api import GithubApi
 from mtmai.clients.rest.api.healthcheck_api import HealthcheckApi
 from mtmai.clients.rest.api.log_api import LogApi
 from mtmai.clients.rest.api.metadata_api import MetadataApi
