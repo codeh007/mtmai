@@ -782,7 +782,7 @@ class MtmWorkerRuntime(AgentRuntime):
             logger.info(f"get team component: {tenant_teams}")
             message.team_id = tenant_teams[0].metadata.id
 
-        team_comp_data = await self.mtm_client.ag.GetComponent(
+        team_comp_data = await self.wfapp._client.ag.GetComponent(
             ctx=ClientContext(),
             request=ag_pb2.GetComponentReq(
                 tenant_id=message.tenant_id, component_id=message.team_id

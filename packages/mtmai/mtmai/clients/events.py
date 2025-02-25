@@ -6,28 +6,16 @@ from typing import Any, Dict, List, Optional, TypedDict
 import grpc
 from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
+from mtmpb import events_connecpy
+
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
-from mtmai.mtmpb.events_pb2 import (
-    BulkPushEventRequest,
-    Event,
-    PushEventRequest,
-    PutLogRequest,
-    PutStreamEventRequest,
-)
+from mtmai.mtmpb.events_pb2 import (BulkPushEventRequest, Event,
+                                    PushEventRequest, PutLogRequest,
+                                    PutStreamEventRequest)
 from mtmai.mtmpb.events_pb2_grpc import EventsServiceStub
 
-# from ..mtm_client import MtmClient
-
 mtmclient_path_prefix = "/mtmapi"
-
-
-def new_event(conn, config: ClientConfig):
-    return EventClient(
-        client=EventsServiceStub(conn),
-        config=config,
-    )
-
 
 def proto_timestamp_now():
     t = datetime.datetime.now().timestamp()
@@ -53,7 +41,9 @@ class BulkPushEventWithMetadata(TypedDict):
 
 
 class EventClient:
-    def __init__(self, client: EventsServiceStub, config: ClientConfig):
+    def __init__(self,
+                 config: ClientConfig,
+                 eventService: events_connecpy.AsyncEventsServiceClient):
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {config.token}",
@@ -61,8 +51,7 @@ class EventClient:
             }
         )
         self.namespace = config.namespace
-        # self.mtm_client = MtmClient(settings.GOMTM_URL)
-        self.client = client
+        self.eventService = eventService
 
     async def async_push(
         self, event_key, payload, options: Optional[PushEventOptions] = None
@@ -112,7 +101,7 @@ class EventClient:
 
         try:
             # return self.client.Push(request, metadata=get_metadata(self.token))
-            return await self.client.events.Push(
+            return await self.eventService.Push(
                 ctx=self.client_context,
                 request=request,
                 server_path_prefix=mtmclient_path_prefix,
@@ -163,7 +152,7 @@ class EventClient:
         bulk_request = BulkPushEventRequest(events=bulk_events)
 
         try:
-            response = await self.mtm_client.events.BulkPush(
+            response = await self.eventService.BulkPush(
                 ctx=self.client_context,
                 request=bulk_request,
                 server_path_prefix=mtmclient_path_prefix,
@@ -179,7 +168,7 @@ class EventClient:
                 createdAt=proto_timestamp_now(),
                 message=message,
             )
-            await self.mtm_client.events.PutLog(
+            await self.eventService.PutLog(
                 ctx=self.client_context,
                 request=request,
                 server_path_prefix=mtmclient_path_prefix,
@@ -202,7 +191,7 @@ class EventClient:
                 createdAt=proto_timestamp_now(),
                 message=data_bytes,
             )
-            await self.mtm_client.events.PutStreamEvent(
+            await self.eventService.PutStreamEvent(
                 ctx=self.client_context,
                 server_path_prefix=mtmclient_path_prefix,
                 request=request,
