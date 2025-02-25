@@ -4,7 +4,6 @@ import asyncio
 import inspect
 import json
 import logging
-import os
 import signal
 import sys
 import uuid
@@ -30,7 +29,6 @@ from typing import (
     TypeVar,
     cast,
 )
-from urllib.parse import urlparse
 
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
@@ -85,7 +83,7 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.context.context import Context, set_api_token_context
+from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
@@ -774,44 +772,17 @@ class MtmWorkerRuntime(AgentRuntime):
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
-                # workerConfig = (
-                #     await self.client.rest.aio.mtmai_api.mtmai_worker_config()
-                # )
-                os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
-                # os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
-                os.environ["DISPLAY"] = ":1"
-                config_loader = loader.ConfigLoader(".")
-
-                api_url = urlparse(settings.GOMTM_URL)
-                grpc_host_port = f"{api_url.hostname}:{api_url.port}"
-                clientConfig = config_loader.load_client_config(
-                    loader.ClientConfig(
-                        server_url=settings.GOMTM_URL,
-                        host_port=grpc_host_port,
-                        tls_config=loader.ClientTLSConfig(
-                            tls_strategy="none",
-                            cert_file="None",
-                            key_file="None",
-                            ca_file="None",
-                            server_name="localhost",
-                        ),
-                        # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-                        # logger=logger,
-                    )
-                )
-                token = clientConfig.token
-                set_api_token_context(token)
-                # self.gomtmapi = AsyncRestApi(
-                #     host=settings.GOMTM_URL,
-                #     api_key=workerConfig.token,
-                #     tenant_id=clientConfig.tenant_id,
-                # )
-
                 self.wfapp = Hatchet.from_config(
-                    clientConfig,
+                    loader.ConfigLoader().load_client_config(
+                        loader.ClientConfig(
+                            server_url=settings.GOMTM_URL,
+                            # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+                            # logger=logger,
+                        )
+                    ),
                     debug=True,
                 )
-                self.client = self.wfapp.client
+                await self.wfapp.boot()
 
                 self.worker = self.wfapp.worker(settings.WORKER_NAME)
                 await self.setup_hatchet_workflows()
@@ -823,6 +794,7 @@ class MtmWorkerRuntime(AgentRuntime):
                 if i == maxRetry - 1:
                     sys.exit(1)
                 logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
+                # raise e
                 await asyncio.sleep(settings.WORKER_INTERVAL)
         # 非阻塞启动(注意: eventloop, 如果嵌套了,可能会莫名其妙的退出)
         # self.worker.setup_loop(asyncio.new_event_loop())

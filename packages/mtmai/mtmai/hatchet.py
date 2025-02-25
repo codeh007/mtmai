@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
+from loguru import logger
 from pydantic import BaseModel
 from typing_extensions import deprecated
 
@@ -184,21 +185,6 @@ class HatchetRest:
 
 
 class HatchetV1:
-    """
-    Main client for interacting with the Hatchet SDK.
-
-    This class provides access to various client interfaces and utility methods
-    for working with Hatchet workers, workflows, and steps.
-
-    Attributes:
-        cron (CronClient): Interface for cron trigger operations.
-
-        admin (AdminClient): Interface for administrative operations.
-        dispatcher (DispatcherClient): Interface for dispatching operations.
-        event (EventClient): Interface for event-related operations.
-        rest (RestApi): Interface for REST API operations.
-    """
-
     _client: Client
     cron: CronClient
     scheduled: ScheduledClient
@@ -277,6 +263,14 @@ class HatchetV1:
 
     on_failure_step = staticmethod(on_failure_step)
 
+    async def boot(self):
+        logger.debug("boot =========================")
+        if not self.config.token:
+            logger.info("login required")
+            email = input("email:")
+            password = input("password:")
+            self.config.token = f"{email}:{password}"
+
     def worker(
         self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}
     ) -> Worker:
@@ -293,9 +287,6 @@ class HatchetV1:
             debug=self._client.debug,
             owned_loop=loop is None,
         )
-
-
-# T = TypeVar("T")
 
 
 def concurrency(

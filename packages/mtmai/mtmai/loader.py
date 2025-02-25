@@ -4,7 +4,8 @@ from typing import Dict, Optional
 
 import yaml
 
-from mtmai.mtlibs.hatchet_utils import get_addresses_from_jwt, get_tenant_id_from_jwt
+from mtmai.core.config import settings
+from mtmai.mtlibs.hatchet_utils import get_tenant_id_from_jwt
 
 
 class ClientTLSConfig:
@@ -32,7 +33,7 @@ class ClientConfig:
         tls_config: ClientTLSConfig = None,
         token: str = None,
         host_port: str = "localhost:7070",
-        server_url: str = "https://app.dev.hatchet-tools.com",
+        server_url: str = None,
         namespace: str = None,
         listener_v2_timeout: int = None,
         logger: Logger = None,
@@ -69,10 +70,12 @@ class ClientConfig:
         self.namespace = self.namespace.lower()
 
         self.listener_v2_timeout = listener_v2_timeout
+        if not self.server_url:
+            self.server_url = settings.GOMTM_URL
 
 
 class ConfigLoader:
-    def __init__(self, directory: str):
+    def __init__(self, directory: str = "."):
         self.directory = directory
 
     def load_client_config(self, defaults: ClientConfig) -> ClientConfig:
@@ -102,13 +105,13 @@ class ConfigLoader:
         )
         listener_v2_timeout = int(listener_v2_timeout) if listener_v2_timeout else None
 
-        if not token:
-            raise ValueError(
-                "Token must be set via HATCHET_CLIENT_TOKEN environment variable"
-            )
+        # if not token:
+        #     raise ValueError(
+        #         "Token must be set via HATCHET_CLIENT_TOKEN environment variable"
+        #     )
 
-        host_port = get_config_value("hostPort", "HATCHET_CLIENT_HOST_PORT")
-        server_url: str | None = None
+        # host_port = get_config_value("hostPort", "HATCHET_CLIENT_HOST_PORT")
+        # server_url: str | None = None
 
         grpc_max_recv_message_length = get_config_value(
             "grpc_max_recv_message_length",
@@ -125,15 +128,17 @@ class ConfigLoader:
         if grpc_max_send_message_length:
             grpc_max_send_message_length = int(grpc_max_send_message_length)
 
-        if not host_port:
-            # extract host and port from token
-            server_url, grpc_broadcast_address = get_addresses_from_jwt(token)
-            host_port = grpc_broadcast_address
+        # host_port = url.
+        # api_url = urlparse(settings.GOMTM_URL)
+        # if not host_port:
+        #     # extract host and port from token
+        #     server_url, grpc_broadcast_address = get_addresses_from_jwt(token)
+        #     host_port = grpc_broadcast_address
 
-        if not tenant_id:
+        if not tenant_id and token:
             tenant_id = get_tenant_id_from_jwt(token)
 
-        tls_config = self._load_tls_config(config_data["tls"], host_port)
+        # tls_config = self._load_tls_config(config_data["tls"], host_port)
 
         otel_exporter_oltp_endpoint = get_config_value(
             "otel_exporter_oltp_endpoint", "HATCHET_CLIENT_OTEL_EXPORTER_OTLP_ENDPOINT"
@@ -162,12 +167,19 @@ class ConfigLoader:
             "otel_exporter_oltp_protocol", "HATCHET_CLIENT_OTEL_EXPORTER_OTLP_PROTOCOL"
         )
 
+        tls_config = ClientTLSConfig(
+            tls_strategy="none",
+            cert_file="None",
+            key_file="None",
+            ca_file="None",
+            server_name="localhost",
+        )
         return ClientConfig(
             tenant_id=tenant_id,
             tls_config=tls_config,
             token=token,
-            host_port=host_port,
-            server_url=server_url,
+            # host_port=host_port,
+            server_url=settings.GOMTM_URL,
             namespace=namespace,
             listener_v2_timeout=listener_v2_timeout,
             logger=defaults.logInterceptor,
@@ -183,7 +195,8 @@ class ConfigLoader:
         tls_strategy = (
             tls_data["tlsStrategy"]
             if "tlsStrategy" in tls_data
-            else self._get_env_var("HATCHET_CLIENT_TLS_STRATEGY")
+            # else self._get_env_var("HATCHET_CLIENT_TLS_STRATEGY")
+            else "none"
         )
 
         if not tls_strategy:

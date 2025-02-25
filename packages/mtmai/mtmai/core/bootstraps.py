@@ -38,3 +38,5 @@ def bootstrap_core():
     if settings.SOCKS_PROXY:
         logger.info(f"SOCKS_PROXY: {settings.SOCKS_PROXY}")
         os.environ["SOCKS_PROXY"] = settings.SOCKS_PROXY
+
+    os.environ["DISPLAY"] = ":1"
