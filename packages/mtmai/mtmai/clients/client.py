@@ -4,12 +4,15 @@ from logging import Logger
 from typing import Callable
 
 import grpc
+import httpx
+from connecpy.context import ClientContext
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.connection import new_conn
 from mtmai.clients.events import EventClient, new_event
 from mtmai.clients.rest_client import AsyncRestApi, RestApi
 from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
 from mtmai.loader import ClientConfig, ConfigLoader
+from mtmai.mtmpb import ag_connecpy, events_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from mtmai.workflow_listener import PooledWorkflowRunListener
@@ -106,6 +109,29 @@ class Client:
         self.logInterceptor = config.logInterceptor
         self.debug = debug
 
+        self.default_client_timeout = 20
+        # MTM 客户端
+        # 参考: https://github.com/i2y/connecpy/blob/main/example/async_client.py
+
+        self.client_context = ClientContext(
+            headers={
+                "Authorization": f"Bearer {config.token}",
+                "X-Tid": config.tenant_id,
+            }
+        )
+        gomtm_api_path_prefix = "/mtmapi"
+        gomtm_api_url = config.server_url + gomtm_api_path_prefix
+        self.session = httpx.AsyncClient(
+            base_url=gomtm_api_url,
+            timeout=self.default_client_timeout,
+        )
+        self.ag = ag_connecpy.AsyncAgServiceClient(
+            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+        )
+        self.events = events_connecpy.AsyncEventsServiceClient(
+            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+        )
+
 
 def with_host_port(host: str, port: int):
     def with_host_port_impl(config: ClientConfig):
@@ -115,21 +141,10 @@ def with_host_port(host: str, port: int):
     return with_host_port_impl
 
 
-new_client = Client.from_environment
-new_client_raw = Client.from_config
-
-## 新功能 =====================================================================================================================================================
-
-
 def get_gomtm():
     backend_url = get_backend_url()
     if not backend_url:
         raise ValueError("backend_url is required")
-    # return ApiClient(
-    #     configuration=Configuration(
-    #         host=backend_url,
-    #     )
-    # )
     api_token = get_api_token_context()
     tenant_id = get_tenant_id()
     return AsyncRestApi(backend_url, api_token, tenant_id)
@@ -145,6 +160,3 @@ def get_gomtm_api_context() -> AsyncRestApi:
 
 def set_gomtm_api_context(gomtm_api: AsyncRestApi):
     gomtm_ctx.set(gomtm_api)
-
-
-# gomtm_api: AsyncRestApi = LazyProxy(get_gomtm_api_context, enable_cache=False)  # type: ignore

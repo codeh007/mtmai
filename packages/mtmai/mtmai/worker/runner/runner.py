@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, cast
 
 from loguru import logger
 from mtmai.clients.admin import new_admin
-from mtmai.clients.client import new_client_raw
+from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.loader import ClientConfig
@@ -59,7 +59,7 @@ class Runner:
     ):
         # We store the config so we can dynamically create clients for the dispatcher client.
         self.config = config
-        self.client = new_client_raw(config)
+        self.client = Client.from_config(config)
         self.name = self.client.config.namespace + name
         self.max_runs = max_runs
         self.tasks: dict[str, asyncio.Task[Any]] = {}  # Store run ids and futures
@@ -84,7 +84,7 @@ class Runner:
         self.client.workflow_listener = PooledWorkflowRunListener(self.config)
 
         self.worker_context = WorkerContext(
-            labels=labels, client=new_client_raw(config).dispatcher
+            labels=labels, client=Client.from_config(config).dispatcher
         )
 
         self.otel_tracer = create_tracer(config=config)

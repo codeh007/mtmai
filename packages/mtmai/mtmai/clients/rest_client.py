@@ -76,6 +76,7 @@ class AsyncRestApi:
         self._ag_state_api = None
         self._chat_api = None
         self._coms_api = None
+        self._mtmai_api = None
 
     @property
     def api_client(self):

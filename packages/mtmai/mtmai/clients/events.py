@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, TypedDict
 import grpc
 from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
-from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb.events_pb2 import (
@@ -18,7 +17,7 @@ from mtmai.mtmpb.events_pb2 import (
 )
 from mtmai.mtmpb.events_pb2_grpc import EventsServiceStub
 
-from ..mtm_client import MtmClient
+# from ..mtm_client import MtmClient
 
 mtmclient_path_prefix = "/mtmapi"
 
@@ -62,7 +61,8 @@ class EventClient:
             }
         )
         self.namespace = config.namespace
-        self.mtm_client = MtmClient(settings.GOMTM_URL)
+        # self.mtm_client = MtmClient(settings.GOMTM_URL)
+        self.client = client
 
     async def async_push(
         self, event_key, payload, options: Optional[PushEventOptions] = None
@@ -112,7 +112,7 @@ class EventClient:
 
         try:
             # return self.client.Push(request, metadata=get_metadata(self.token))
-            return await self.mtm_client.events.Push(
+            return await self.client.events.Push(
                 ctx=self.client_context,
                 request=request,
                 server_path_prefix=mtmclient_path_prefix,

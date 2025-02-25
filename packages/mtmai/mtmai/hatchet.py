@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing_extensions import deprecated
 
 from mtmai.clients.admin import AdminClient
-from mtmai.clients.client import Client, new_client, new_client_raw
+from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
@@ -207,11 +207,11 @@ class HatchetV1:
     def from_environment(
         cls, defaults: ClientConfig = ClientConfig(), **kwargs: Any
     ) -> "Hatchet":
-        return cls(client=new_client(defaults), **kwargs)
+        return cls(client=Client.from_environment(defaults), **kwargs)
 
     @classmethod
     def from_config(cls, config: ClientConfig, **kwargs: Any) -> "Hatchet":
-        return cls(client=new_client_raw(config), **kwargs)
+        return cls(client=Client.from_config(config), **kwargs)
 
     def __init__(
         self,
@@ -230,7 +230,7 @@ class HatchetV1:
         if client is not None:
             self._client = client
         else:
-            self._client = new_client(config, debug)
+            self._client = Client.from_config(config, debug)
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
 

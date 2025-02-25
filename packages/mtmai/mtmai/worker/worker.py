@@ -13,7 +13,7 @@ from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
 from loguru import logger
-from mtmai.clients.client import Client, new_client_raw
+from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
@@ -81,7 +81,7 @@ class Worker:
 
         self.loop: asyncio.AbstractEventLoop
 
-        self.client = new_client_raw(self.config, self.debug)
+        self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
 
         self._setup_signal_handlers()

@@ -72,8 +72,6 @@ from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from google.protobuf import any_pb2
 from mtmai import loader
-from mtmai.clients.rest.api.mtmai_api import MtmaiApi
-from mtmai.clients.rest.configuration import Configuration
 from mtmai.context.context import Context, set_api_token_context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
@@ -88,14 +86,11 @@ from ..agents.team_builder.swram_team_builder import SwramTeamBuilder
 from ..agents.team_builder.travel_builder import TravelTeamBuilder
 from ..agents.tenant_agent.tenant_agent import MsgResetTenant
 from ..clients.client import set_gomtm_api_context
-from ..clients.rest.api_client import ApiClient
 from ..clients.rest.models.ag_state_upsert import AgStateUpsert
 from ..clients.rest.models.agent_run_input import AgentRunInput
 from ..clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from ..clients.rest.models.mt_component import MtComponent
-from ..clients.rest_client import AsyncRestApi
 from ..mtlibs.id import generate_uuid
-from ..mtm_client import MtmClient
 
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")
@@ -156,12 +151,17 @@ class MtmWorkerRuntime(AgentRuntime):
             )
 
         self._payload_serialization_format = payload_serialization_format
-        self.api_client = ApiClient(
-            configuration=Configuration(
-                host=settings.GOMTM_URL,
-            )
-        )
-        self.mtm_client = MtmClient(settings.GOMTM_URL)
+        # self.api_client = ApiClient(
+        #     configuration=Configuration(
+        #         host=settings.GOMTM_URL,
+        #     )
+        # )
+        # self.mtm_client = MtmClient(settings.GOMTM_URL)
+        # self.client = Client.from_config(
+        #     config=ClientConfig(
+        #         server_url=settings.GOMTM_URL,
+        #     )
+        # )
         self._runtime = SingleThreadedAgentRuntime(
             tracer_provider=tracer_provider,
             # payload_serialization_format=self._payload_serialization_format,
@@ -774,10 +774,11 @@ class MtmWorkerRuntime(AgentRuntime):
         maxRetry = settings.WORKER_MAX_RETRY
         for i in range(maxRetry):
             try:
-                mtmaiapi = MtmaiApi(self.api_client)
-                workerConfig = await mtmaiapi.mtmai_worker_config()
+                # workerConfig = (
+                #     await self.client.rest.aio.mtmai_api.mtmai_worker_config()
+                # )
                 os.environ["HATCHET_CLIENT_TLS_STRATEGY"] = "none"
-                os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
+                # os.environ["HATCHET_CLIENT_TOKEN"] = workerConfig.token
                 os.environ["DISPLAY"] = ":1"
                 config_loader = loader.ConfigLoader(".")
 
@@ -800,16 +801,17 @@ class MtmWorkerRuntime(AgentRuntime):
                 )
                 token = clientConfig.token
                 set_api_token_context(token)
-                self.gomtmapi = AsyncRestApi(
-                    host=settings.GOMTM_URL,
-                    api_key=workerConfig.token,
-                    tenant_id=clientConfig.tenant_id,
-                )
+                # self.gomtmapi = AsyncRestApi(
+                #     host=settings.GOMTM_URL,
+                #     api_key=workerConfig.token,
+                #     tenant_id=clientConfig.tenant_id,
+                # )
 
                 self.wfapp = Hatchet.from_config(
                     clientConfig,
                     debug=True,
                 )
+                self.client = self.wfapp.client
 
                 self.worker = self.wfapp.worker(settings.WORKER_NAME)
                 await self.setup_hatchet_workflows()
@@ -1012,7 +1014,6 @@ class MtmWorkerRuntime(AgentRuntime):
         self.worker.register_workflow(FlowBrowser())
 
     async def list_team_component(self, tenant_id: str):
-        # return await self.gomtmapi.(tenant_id, component_id)
         return await self.tenant_reset_teams(tenant_id)
 
     async def tenant_reset_teams(self, tenant_id: str):

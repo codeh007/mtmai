@@ -4,7 +4,7 @@ from multiprocessing import Queue
 from typing import Callable, TypeVar
 
 from loguru import logger
-from mtmai.clients.client import Client, new_client_raw
+from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
@@ -39,7 +39,7 @@ class WorkerActionRunLoopManager:
     def __post_init__(self):
         # if self.debug:
         #     logger.setLevel(logging.DEBUG)
-        self.client = new_client_raw(self.config, self.debug)
+        self.client = Client.from_config(self.config, self.debug)
         self.start()
 
     def start(self, retry_count=1):
