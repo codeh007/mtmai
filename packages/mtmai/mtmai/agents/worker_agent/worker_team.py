@@ -35,14 +35,14 @@ from opentelemetry.trace import TracerProvider
 class WorkerTeam:
     def __init__(
         self,
-        # client: Client,
         hatctx: Context,
         runtime: AgentRuntime = None,
         tracer_provider: TracerProvider | None = None,
         # payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
+        self.hatctx = hatctx
         # self.client = client
-        self.rest = hatctx.aio
+        # self.rest = hatctx.aio
         # self._trace_helper = TraceHelper(
         #     tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         # )
@@ -184,7 +184,7 @@ class WorkerTeam:
     async def tenant_reset_teams(self, tenant_id: str):
         logger.info(f"TenantAgent 重置租户信息: {tenant_id}")
         results = []
-        teams_list = await self.rest.coms_api.coms_list(
+        teams_list = await self.hatctx.aio.rest_client.aio.coms_api.coms_list(
             tenant=tenant_id, label="default"
         )
         if teams_list.rows and len(teams_list.rows) > 0:
@@ -211,7 +211,7 @@ class WorkerTeam:
             logger.info(f"create team for tenant {tenant_id}")
             team_comp = await team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
-            new_team = await self.rest.coms_api.coms_upsert(
+            new_team = await self.hatctx.aio.rest_client.aio.coms_api.coms_upsert(
                 tenant=tenant_id,
                 com=generate_uuid(),
                 mt_component=MtComponent(
@@ -235,7 +235,7 @@ class WorkerTeam:
                 if hasattr(agent, "close"):
                     await agent.close()
         state = await team.save_state()
-        await self.rest.ag_state_api.ag_state_upsert(
+        await self.hatctx.aio.rest_client.aio.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
                 componentId=team_id,
@@ -245,7 +245,7 @@ class WorkerTeam:
         )
 
     async def handle_message_create(self, message: ChatMessageUpsert) -> None:
-        await self.rest.chat_api.chat_message_upsert(
+        await self.hatctx.aio.rest_client.aio.chat_api.chat_message_upsert(
             tenant=message.tenant_id,
             chat_message_upsert=message.model_dump(),
         )

@@ -327,17 +327,6 @@ class HatchetV1:
         )
 
 
-def concurrency(
-    name: str = "",
-    max_runs: int = 1,
-    limit_strategy: ConcurrencyLimitStrategy = ConcurrencyLimitStrategy.GROUP_ROUND_ROBIN,
-):
-    def inner(func: Callable[[Context], str]) -> ConcurrencyFunction:
-        return ConcurrencyFunction(func, name, max_runs, limit_strategy)
-
-    return inner
-
-
 def function(
     name: str = "",
     auto_register: bool = True,
@@ -421,6 +410,17 @@ def durable(
     return inner
 
 
+# def concurrency(
+#     name: str = "",
+#     max_runs: int = 1,
+#     limit_strategy: ConcurrencyLimitStrategy = ConcurrencyLimitStrategy.GROUP_ROUND_ROBIN,
+# ):
+#     def inner(func: Callable[[Context], str]) -> ConcurrencyFunction:
+#         return ConcurrencyFunction(func, name, max_runs, limit_strategy)
+
+#     return inner
+
+
 def concurrency(
     name: str = "concurrency",
     max_runs: int = 1,
@@ -435,7 +435,9 @@ def concurrency(
 class Hatchet(HatchetV1):
     # 多余的,  因为 直接使用 workflow 函数, 更加直接
     # dag = staticmethod(workflow)
-    concurrency = staticmethod(concurrency)
+
+    # 多余的,  因为 直接使用 concurrency 函数, 更加直接
+    # concurrency = staticmethod(concurrency)
 
     functions: List[HatchetCallable] = []
 

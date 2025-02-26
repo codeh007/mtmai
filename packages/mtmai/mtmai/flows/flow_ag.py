@@ -6,10 +6,15 @@ from mtmai.agents.worker_agent.worker_team import WorkerTeam
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
-from mtmai.hatchet import step
+from mtmai.hatchet import step, workflow
 from mtmpb import ag_connecpy
 
 
+@workflow(
+    name="ag",
+    on_events=["ag:run"],
+    input_validator=AgentRunInput,
+)
 class FlowAg:
     @step(timeout="60m")
     async def step_entry(self, hatctx: Context):
