@@ -3,7 +3,6 @@ import asyncio
 import typer
 
 import mtmai.core.bootstraps as bootstraps
-from mtmai.agents.worker_agent.worker_agent import WorkerAgent
 
 bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
@@ -18,7 +17,10 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    asyncio.run(WorkerAgent().run(task="Hello, world!"))
+    # asyncio.run(WorkerAgent().run(task="Hello, world!"))
+    from mtmai.flows.worker_app import run_worker
+
+    asyncio.run(run_worker())
 
 
 @app.command()

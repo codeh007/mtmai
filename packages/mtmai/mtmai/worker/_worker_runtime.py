@@ -5,30 +5,62 @@ import inspect
 import json
 import logging
 import signal
-import sys
 import uuid
 import warnings
 from asyncio import Future, Task
 from collections import defaultdict
-from typing import (Any, AsyncIterable, AsyncIterator, Awaitable, Callable,
-                    DefaultDict, Dict, List, Literal, Mapping, ParamSpec,
-                    Sequence, Set, Type, TypedDict, TypeVar, cast)
+from typing import (
+    Any,
+    AsyncIterable,
+    AsyncIterator,
+    Awaitable,
+    Callable,
+    DefaultDict,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    ParamSpec,
+    Sequence,
+    Set,
+    Type,
+    TypeVar,
+    cast,
+)
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import (HandoffMessage, MultiModalMessage,
-                                        StopMessage, TextMessage,
-                                        ToolCallExecutionEvent,
-                                        ToolCallRequestEvent)
-from autogen_core import (JSON_DATA_CONTENT_TYPE, PROTOBUF_DATA_CONTENT_TYPE,
-                          Agent, AgentId, AgentInstantiationContext,
-                          AgentMetadata, AgentRuntime, AgentType,
-                          CancellationToken, MessageContext,
-                          MessageHandlerContext, MessageSerializer,
-                          SingleThreadedAgentRuntime, Subscription, TopicId)
+from autogen_agentchat.messages import (
+    HandoffMessage,
+    MultiModalMessage,
+    StopMessage,
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+)
+from autogen_core import (
+    JSON_DATA_CONTENT_TYPE,
+    PROTOBUF_DATA_CONTENT_TYPE,
+    Agent,
+    AgentId,
+    AgentInstantiationContext,
+    AgentMetadata,
+    AgentRuntime,
+    AgentType,
+    CancellationToken,
+    MessageContext,
+    MessageHandlerContext,
+    MessageSerializer,
+    SingleThreadedAgentRuntime,
+    Subscription,
+    TopicId,
+)
 from autogen_core._runtime_impl_helpers import SubscriptionManager, get_impl
 from autogen_core._serialization import SerializationRegistry
-from autogen_core._telemetry import (MessageRuntimeTracingConfig, TraceHelper,
-                                     get_telemetry_grpc_metadata)
+from autogen_core._telemetry import (
+    MessageRuntimeTracingConfig,
+    TraceHelper,
+    get_telemetry_grpc_metadata,
+)
 from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._utils import subscription_to_proto
 from autogen_ext.runtimes.grpc.protos import agent_worker_pb2, cloudevent_pb2
@@ -36,28 +68,21 @@ from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from google.protobuf import any_pb2
 from loguru import logger
-from opentelemetry.trace import TracerProvider
-
-from mtmai import loader
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder.article_gen_teambuilder import \
-    ArticleGenTeamBuilder
-from mtmai.agents.team_builder.assisant_team_builder import \
-    AssistantTeamBuilder
+from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
+from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
 from mtmai.agents.team_builder.m1_web_builder import M1WebTeamBuilder
 from mtmai.agents.team_builder.swram_team_builder import SwramTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
-from mtmai.clients.client import set_gomtm_api_context
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.context.context import Context
 from mtmai.core.config import settings
-from mtmai.hatchet import Hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
+from opentelemetry.trace import TracerProvider
 
 # logger = logging.getLogger("autogen_core")
 # event_logger = logging.getLogger("autogen_core.events")
@@ -725,40 +750,40 @@ class MtmWorkerRuntime(AgentRuntime):
     ) -> None:
         self._serialization_registry.add_serializer(serializer)
 
-    async def _init_ingestor(self):
-        """食入外部消息,包括用户输入的消息"""
-        maxRetry = settings.WORKER_MAX_RETRY
-        for i in range(maxRetry):
-            try:
-                self.wfapp = Hatchet.from_config(
-                    loader.ConfigLoader().load_client_config(
-                        loader.ClientConfig(
-                            server_url=settings.GOMTM_URL,
-                            # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-                            # logger=logger,
-                        )
-                    ),
-                    debug=True,
-                )
-                await self.wfapp.boot()
+    # async def _init_ingestor(self):
+    #     """食入外部消息,包括用户输入的消息"""
+    #     maxRetry = settings.WORKER_MAX_RETRY
+    #     for i in range(maxRetry):
+    #         try:
+    #             self.wfapp = Hatchet.from_config(
+    #                 loader.ConfigLoader().load_client_config(
+    #                     loader.ClientConfig(
+    #                         server_url=settings.GOMTM_URL,
+    #                         # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+    #                         # logger=logger,
+    #                     )
+    #                 ),
+    #                 debug=True,
+    #             )
+    #             await self.wfapp.boot()
 
-                self.worker = self.wfapp.worker(settings.WORKER_NAME)
-                await self.setup_hatchet_workflows()
+    #             self.worker = self.wfapp.worker(settings.WORKER_NAME)
+    #             await self.setup_hatchet_workflows()
 
-                logger.info("connect gomtm server success")
-                break
+    #             logger.info("connect gomtm server success")
+    #             break
 
-            except Exception as e:
-                if i == maxRetry - 1:
-                    sys.exit(1)
-                logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
-                # raise e
-                await asyncio.sleep(settings.WORKER_INTERVAL)
-        # 非阻塞启动(注意: eventloop, 如果嵌套了,可能会莫名其妙的退出)
-        # self.worker.setup_loop(asyncio.new_event_loop())
-        # asyncio.create_task(self.worker.async_start())
-        # 阻塞启动
-        await self.worker.async_start()
+    #         except Exception as e:
+    #             if i == maxRetry - 1:
+    #                 sys.exit(1)
+    #             logger.info(f"failed to connect gomtm server, retry {i + 1},err:{e}")
+    #             # raise e
+    #             await asyncio.sleep(settings.WORKER_INTERVAL)
+    #     # 非阻塞启动(注意: eventloop, 如果嵌套了,可能会莫名其妙的退出)
+    #     # self.worker.setup_loop(asyncio.new_event_loop())
+    #     # asyncio.create_task(self.worker.async_start())
+    #     # 阻塞启动
+    #     await self.worker.async_start()
 
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
         tenant_id: str | None = message.tenant_id
@@ -857,91 +882,91 @@ class MtmWorkerRuntime(AgentRuntime):
             )
         return task_result
 
-    async def setup_hatchet_workflows(self):
-        wfapp = self.wfapp
-        worker_app = self
+    # async def setup_hatchet_workflows(self):
+    #     wfapp = self.wfapp
+    #     worker_app = self
 
-        class MyResultType(TypedDict):
-            my_func: str
+    #     class MyResultType(TypedDict):
+    #         my_func: str
 
-        @wfapp.function(
-            name="my_func2232",
-        )
-        def my_func(context: Context) -> MyResultType:
-            return MyResultType(my_func="testing123")
+    #     @wfapp.function(
+    #         name="my_func2232",
+    #     )
+    #     def my_func(context: Context) -> MyResultType:
+    #         return MyResultType(my_func="testing123")
 
-        @wfapp.workflow(
-            name="ag",
-            on_events=["ag:run"],
-            input_validator=AgentRunInput,
-        )
-        class FlowAg:
-            @self.wfapp.step(timeout="60m")
-            async def step_entry(self, hatctx: Context):
-                set_gomtm_api_context(hatctx.aio)
-                input = cast(AgentRunInput, hatctx.workflow_input())
-                if not input.run_id:
-                    input.run_id = hatctx.workflow_run_id()
-                if not input.step_run_id:
-                    input.step_run_id = hatctx.step_run_id
-                task_result = await worker_app.handle_message(input)
-                # Convert TaskResult to a JSON-serializable dict
-                return {
-                    # "messages": [
-                    #     msg.model_dump() if hasattr(msg, "model_dump") else msg
-                    #     for msg in task_result.messages
-                    # ],
-                    "ok": True,
-                }
+    #     @wfapp.workflow(
+    #         name="ag",
+    #         on_events=["ag:run"],
+    #         input_validator=AgentRunInput,
+    #     )
+    #     class FlowAg:
+    #         @self.wfapp.step(timeout="60m")
+    #         async def step_entry(self, hatctx: Context):
+    #             set_gomtm_api_context(hatctx.aio)
+    #             input = cast(AgentRunInput, hatctx.workflow_input())
+    #             if not input.run_id:
+    #                 input.run_id = hatctx.workflow_run_id()
+    #             if not input.step_run_id:
+    #                 input.step_run_id = hatctx.step_run_id
+    #             task_result = await worker_app.handle_message(input)
+    #             # Convert TaskResult to a JSON-serializable dict
+    #             return {
+    #                 # "messages": [
+    #                 #     msg.model_dump() if hasattr(msg, "model_dump") else msg
+    #                 #     for msg in task_result.messages
+    #                 # ],
+    #                 "ok": True,
+    #             }
 
-        self.worker.register_workflow(FlowAg())
+    #     self.worker.register_workflow(FlowAg())
 
-    async def setup_browser_workflows(self):
-        @self.wfapp.workflow(
-            on_events=["browser:run"],
-            # input_validator=CrewAIParams,
-        )
-        class FlowBrowser:
-            @self.wfapp.step(timeout="10m", retries=1)
-            async def run(self, hatctx: Context):
-                from mtmai.clients.rest.models import BrowserParams
+    # async def setup_browser_workflows(self):
+    #     @self.wfapp.workflow(
+    #         on_events=["browser:run"],
+    #         # input_validator=CrewAIParams,
+    #     )
+    #     class FlowBrowser:
+    #         @self.wfapp.step(timeout="10m", retries=1)
+    #         async def run(self, hatctx: Context):
+    #             from mtmai.clients.rest.models import BrowserParams
 
-                # from mtmai.agents.browser_agent import BrowserAgent
+    #             # from mtmai.agents.browser_agent import BrowserAgent
 
-                input = BrowserParams.model_validate(hatctx.workflow_input())
-                # init_mtmai_context(hatctx)
+    #             input = BrowserParams.model_validate(hatctx.workflow_input())
+    #             # init_mtmai_context(hatctx)
 
-                # ctx = get_mtmai_context()
-                # tenant_id = ctx.tenant_id
-                # llm_config = await wfapp.rest.aio.llm_api.llm_get(
-                #     tenant=tenant_id, slug="default"
-                # )
-                # llm = ChatOpenAI(
-                #     model=llm_config.model,
-                #     api_key=llm_config.api_key,
-                #     base_url=llm_config.base_url,
-                #     temperature=0,
-                #     max_tokens=40960,
-                #     verbose=True,
-                #     http_client=httpx.Client(transport=LoggingTransport()),
-                #     http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
-                # )
+    #             # ctx = get_mtmai_context()
+    #             # tenant_id = ctx.tenant_id
+    #             # llm_config = await wfapp.rest.aio.llm_api.llm_get(
+    #             #     tenant=tenant_id, slug="default"
+    #             # )
+    #             # llm = ChatOpenAI(
+    #             #     model=llm_config.model,
+    #             #     api_key=llm_config.api_key,
+    #             #     base_url=llm_config.base_url,
+    #             #     temperature=0,
+    #             #     max_tokens=40960,
+    #             #     verbose=True,
+    #             #     http_client=httpx.Client(transport=LoggingTransport()),
+    #             #     http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
+    #             # )
 
-                # 简单测试llm 是否配置正确
-                # aa=llm.invoke(["Hello, how are you?"])
-                # print(aa)
-                # agent = BrowserAgent(
-                #     generate_gif=False,
-                #     use_vision=False,
-                #     tool_call_in_content=False,
-                #     # task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and scroll down by one page - then scroll up by 100 pixels - then scroll down by 100 pixels - then scroll down by 10000 pixels.",
-                #     task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and to the string 'The vast majority of computer'",
-                #     llm=llm,
-                #     browser=Browser(config=BrowserConfig(headless=False)),
-                # )
-                # await agent.run()
+    #             # 简单测试llm 是否配置正确
+    #             # aa=llm.invoke(["Hello, how are you?"])
+    #             # print(aa)
+    #             # agent = BrowserAgent(
+    #             #     generate_gif=False,
+    #             #     use_vision=False,
+    #             #     tool_call_in_content=False,
+    #             #     # task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and scroll down by one page - then scroll up by 100 pixels - then scroll down by 100 pixels - then scroll down by 10000 pixels.",
+    #             #     task="Navigate to 'https://en.wikipedia.org/wiki/Internet' and to the string 'The vast majority of computer'",
+    #             #     llm=llm,
+    #             #     browser=Browser(config=BrowserConfig(headless=False)),
+    #             # )
+    #             # await agent.run()
 
-        self.worker.register_workflow(FlowBrowser())
+    #     self.worker.register_workflow(FlowBrowser())
 
     async def list_team_component(self, tenant_id: str):
         return await self.tenant_reset_teams(tenant_id)

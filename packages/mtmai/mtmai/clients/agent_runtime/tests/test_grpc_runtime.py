@@ -7,33 +7,12 @@ from dotenv import load_dotenv
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.tests.autogen_test_utils import NoopAgent
 
-# from mtmai.tests.autogen_test_utils.telemetry_test_utils import (
-#     MyTestExporter,
-#     get_test_tracer_provider,
-# )
-
-# test_exporter = MyTestExporter()
-
 envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
 load_dotenv(envFileAbsPath)
-
-# host = "localhost:7071"
-
-
-# @pytest.fixture
-# def tracer_provider() -> TracerProvider:
-#     test_exporter.clear()
-#     return get_test_tracer_provider(test_exporter)
-
-#####################################################################################
-## 参考官方 测试用例 test_worker_runtime.py
-##
-#####################################################################################
-
-gomtm_host_addr = "localhost:7071"
+gomtm_host_addr = "http://localhost:8383"
 
 
-@pytest.mark.grpc
+# @pytest.mark.grpc
 @pytest.mark.asyncio
 async def test_agent_types_must_be_unique_single_worker() -> None:
     worker = GrpcWorkerAgentRuntime(server_url=gomtm_host_addr)
