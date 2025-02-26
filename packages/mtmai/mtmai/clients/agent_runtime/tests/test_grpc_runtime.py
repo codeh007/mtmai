@@ -3,9 +3,9 @@ import os
 import pytest
 from autogen_core import AgentId, AgentInstantiationContext, AgentType
 from dotenv import load_dotenv
+from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.tests.autogen_test_utils import CascadingAgent, NoopAgent
 from mtmai.tests.autogen_test_utils.telemetry_test_utils import MyTestExporter
-from worker._worker_runtime import MtmWorkerRuntime
 
 test_exporter = MyTestExporter()
 
@@ -21,7 +21,7 @@ async def test_grpc_runtime():
 @pytest.mark.asyncio
 async def test_agent_type_register_factory() -> None:
     # runtime = SingleThreadedAgentRuntime()
-    runtime = MtmWorkerRuntime(tracer_provider=test_exporter)
+    runtime = GrpcWorkerAgentRuntime(tracer_provider=test_exporter)
 
     def agent_factory() -> NoopAgent:
         id = AgentInstantiationContext.current_agent_id()
