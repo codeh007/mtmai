@@ -6,14 +6,14 @@ from typing import TypedDict, cast
 
 from loguru import logger
 from mtmai import loader
+from mtmai.agents.worker_agent.worker_team import WorkerTeam
+from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.clients.client import set_gomtm_api_context
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.worker.worker import Worker
-
-from ..agents.worker_agent.worker_team import WorkerTeam
 
 mtmapp = None
 
@@ -79,14 +79,11 @@ async def setup_hatchet_workflows(wfapp: Hatchet, worker: Worker):
             if not input.step_run_id:
                 input.step_run_id = hatctx.step_run_id
 
-            worker_team = WorkerTeam()
+            # agent_rpc_client = AgentRpcClient(self.config.server_url)
+            runtime = GrpcWorkerAgentRuntime(agent_rpc_client=wfapp.client.ag)
+            worker_team = WorkerTeam(client=wfapp.client)
             task_result = await worker_team.handle_message(input)
-            # Convert TaskResult to a JSON-serializable dict
             return {
-                # "messages": [
-                #     msg.model_dump() if hasattr(msg, "model_dump") else msg
-                #     for msg in task_result.messages
-                # ],
                 "ok": True,
             }
 

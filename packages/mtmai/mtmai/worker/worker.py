@@ -12,7 +12,6 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
-from autogen_core import AgentRuntime
 from loguru import logger
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
@@ -24,9 +23,6 @@ from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
-
-from ..clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
-from ..mtmpb.agent_worker_connecpy import AgentRpcClient
 
 T = TypeVar("T")
 
@@ -330,9 +326,9 @@ class Worker:
             1
         )  # Exit immediately TODO - should we exit with 1 here, there may be other workers to cleanup
 
-    def get_ag_runtime(self) -> AgentRuntime:
-        agent_rpc_client = AgentRpcClient(self.config.server_url)
-        return GrpcWorkerAgentRuntime(agent_rpc_client=agent_rpc_client)
+    # def get_ag_runtime(self) -> AgentRuntime:
+    #     agent_rpc_client = AgentRpcClient(self.config.server_url)
+    #     return GrpcWorkerAgentRuntime(agent_rpc_client=agent_rpc_client)
 
 
 def register_on_worker(callable: HatchetCallable[T], worker: Worker) -> None:
