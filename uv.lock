@@ -3058,7 +3058,7 @@ wheels = [
 
 [[package]]
 name = "mtxai"
-version = "0.0.262"
+version = "0.0.263"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "aiohttp" },
