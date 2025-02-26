@@ -1,4 +1,3 @@
-import asyncio
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
@@ -191,142 +190,6 @@ class HatchetRest:
         self.rest = RestApi(_config.server_url, _config.token, _config.tenant_id)
 
 
-class HatchetV1:
-    _client: Client
-    cron: CronClient
-    scheduled: ScheduledClient
-
-    @classmethod
-    def from_environment(
-        cls, defaults: ClientConfig = ClientConfig(), **kwargs: Any
-    ) -> "Hatchet":
-        return cls(client=Client.from_environment(defaults), **kwargs)
-
-    @classmethod
-    def from_config(cls, config: ClientConfig, **kwargs: Any) -> "Hatchet":
-        return cls(client=Client.from_config(config), **kwargs)
-
-    def __init__(
-        self,
-        debug: bool = False,
-        client: Optional[Client] = None,
-        config: ClientConfig = ClientConfig(),
-    ):
-        """
-        Initialize a new Hatchet instance.
-
-        Args:
-            debug (bool, optional): Enable debug logging. Defaults to False.
-            client (Optional[Client], optional): A pre-configured Client instance. Defaults to None.
-            config (ClientConfig, optional): Configuration for creating a new Client. Defaults to ClientConfig().
-        """
-        if client is not None:
-            self._client = client
-        else:
-            self._client = Client.from_config(config, debug)
-        self.cron = CronClient(self._client)
-        self.scheduled = ScheduledClient(self._client)
-        self.debug = debug
-
-    @property
-    @deprecated(
-        "Direct access to client is deprecated and will be removed in a future version. Use specific client properties (Hatchet.admin, Hatchet.dispatcher, Hatchet.event, Hatchet.rest) instead. [0.32.0]",
-    )
-    def client(self) -> Client:
-        return self._client
-
-    @property
-    def admin(self) -> AdminClient:
-        return self._client.admin
-
-    @property
-    def dispatcher(self) -> DispatcherClient:
-        return self._client.dispatcher
-
-    @property
-    def event(self) -> EventClient:
-        return self._client.event
-
-    @property
-    def rest(self) -> RestApi:
-        return self._client.rest
-
-    @property
-    def mtm(self) -> AsyncMtmServiceClient:
-        return self._client.mtm
-
-    @property
-    def listener(self) -> RunEventListenerClient:
-        return self._client.listener
-
-    @property
-    def config(self) -> ClientConfig:
-        return self._client.config
-
-    @property
-    def tenant_id(self) -> str:
-        return self._client.config.tenant_id
-
-    # 多余的,  因为 直接使用 concurrency 函数, 更加直接
-    # concurrency = staticmethod(concurrency)
-
-    # 多余的,  因为 直接使用 workflow 函数, 更加直接
-    # workflow = staticmethod(workflow)
-
-    # 多余的,  因为 直接使用 step 函数, 更加直接
-    # step = staticmethod(step)
-
-    on_failure_step = staticmethod(on_failure_step)
-
-    async def boot(self):
-        if not self._client.config.token:
-            if (
-                not self._client.config.credentials.username
-                or not self._client.config.credentials.password
-            ):
-                logger.info("login required")
-                email = input("email:")
-                password = input("password:")
-                self.config.token = f"{email}:{password}"
-            resp = await self.mtm.Login(
-                ctx=ClientContext(),
-                request=_pb2.LoginReq(
-                    username=self.config.credentials.username,
-                    password=self.config.credentials.password,
-                ),
-            )
-            if resp.access_token:
-                self.config.token = resp.access_token
-                self.config.credentials.token = resp.access_token
-                await ConfigLoader.save_credentials(self.config.credentials)
-            else:
-                raise ValueError("credentials invalid")
-        self._client = Client.from_config(self.config, debug=self.debug)
-        self.config.tenant_id = await self.load_default_tenant()
-        self._client = Client.from_config(self.config, debug=self.debug)
-
-    async def load_default_tenant(self):
-        resp = await self._client.rest.aio.user_api.tenant_memberships_list()
-        return resp.rows[0].tenant.metadata.id
-
-    def worker(
-        self, name: str, max_runs: int | None = None, labels: dict[str, str | int] = {}
-    ) -> Worker:
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
-
-        return Worker(
-            name=name,
-            max_runs=max_runs,
-            labels=labels,
-            config=self._client.config,
-            debug=self._client.debug,
-            owned_loop=loop is None,
-        )
-
-
 def function(
     name: str = "",
     auto_register: bool = True,
@@ -402,23 +265,10 @@ def durable(
         )
 
         resp = f(func)
-
         resp.durable = True
-
         return resp
 
     return inner
-
-
-# def concurrency(
-#     name: str = "",
-#     max_runs: int = 1,
-#     limit_strategy: ConcurrencyLimitStrategy = ConcurrencyLimitStrategy.GROUP_ROUND_ROBIN,
-# ):
-#     def inner(func: Callable[[Context], str]) -> ConcurrencyFunction:
-#         return ConcurrencyFunction(func, name, max_runs, limit_strategy)
-
-#     return inner
 
 
 def concurrency(
@@ -432,14 +282,115 @@ def concurrency(
     return inner
 
 
-class Hatchet(HatchetV1):
-    # 多余的,  因为 直接使用 workflow 函数, 更加直接
-    # dag = staticmethod(workflow)
-
-    # 多余的,  因为 直接使用 concurrency 函数, 更加直接
-    # concurrency = staticmethod(concurrency)
-
+class Hatchet:
+    _client: Client
+    cron: CronClient
+    scheduled: ScheduledClient
     functions: List[HatchetCallable] = []
+
+    @classmethod
+    def from_environment(
+        cls, defaults: ClientConfig = ClientConfig(), **kwargs: Any
+    ) -> "Hatchet":
+        return cls(client=Client.from_environment(defaults), **kwargs)
+
+    @classmethod
+    def from_config(cls, config: ClientConfig, **kwargs: Any) -> "Hatchet":
+        return cls(client=Client.from_config(config), **kwargs)
+
+    def __init__(
+        self,
+        debug: bool = False,
+        client: Optional[Client] = None,
+        config: ClientConfig = ClientConfig(),
+    ):
+        """
+        Initialize a new Hatchet instance.
+
+        Args:
+            debug (bool, optional): Enable debug logging. Defaults to False.
+            client (Optional[Client], optional): A pre-configured Client instance. Defaults to None.
+            config (ClientConfig, optional): Configuration for creating a new Client. Defaults to ClientConfig().
+        """
+        if client is not None:
+            self._client = client
+        else:
+            self._client = Client.from_config(config, debug)
+        self.cron = CronClient(self._client)
+        self.scheduled = ScheduledClient(self._client)
+        self.debug = debug
+
+    @property
+    @deprecated(
+        "Direct access to client is deprecated and will be removed in a future version. Use specific client properties (Hatchet.admin, Hatchet.dispatcher, Hatchet.event, Hatchet.rest) instead. [0.32.0]",
+    )
+    def client(self) -> Client:
+        return self._client
+
+    @property
+    def admin(self) -> AdminClient:
+        return self._client.admin
+
+    @property
+    def dispatcher(self) -> DispatcherClient:
+        return self._client.dispatcher
+
+    @property
+    def event(self) -> EventClient:
+        return self._client.event
+
+    @property
+    def rest(self) -> RestApi:
+        return self._client.rest
+
+    @property
+    def mtm(self) -> AsyncMtmServiceClient:
+        return self._client.mtm
+
+    @property
+    def listener(self) -> RunEventListenerClient:
+        return self._client.listener
+
+    @property
+    def config(self) -> ClientConfig:
+        return self._client.config
+
+    @property
+    def tenant_id(self) -> str:
+        return self._client.config.tenant_id
+
+    # on_failure_step = staticmethod(on_failure_step)
+
+    async def boot(self):
+        if not self._client.config.token:
+            if (
+                not self._client.config.credentials.username
+                or not self._client.config.credentials.password
+            ):
+                logger.info("login required")
+                email = input("email:")
+                password = input("password:")
+                self.config.token = f"{email}:{password}"
+            resp = await self.mtm.Login(
+                ctx=ClientContext(),
+                request=_pb2.LoginReq(
+                    username=self.config.credentials.username,
+                    password=self.config.credentials.password,
+                ),
+            )
+            if resp.access_token:
+                self.config.token = resp.access_token
+                self.config.credentials.token = resp.access_token
+                await ConfigLoader.save_credentials(self.config.credentials)
+            else:
+                raise ValueError("credentials invalid")
+        self._client = Client.from_config(self.config, debug=self.debug)
+        self.config.tenant_id = await self.load_default_tenant()
+        self._client = Client.from_config(self.config, debug=self.debug)
+
+    async def load_default_tenant(self):
+        resp = await self._client.rest.aio.user_api.tenant_memberships_list()
+        return resp.rows[0].tenant.metadata.id
 
     def function(
         self,

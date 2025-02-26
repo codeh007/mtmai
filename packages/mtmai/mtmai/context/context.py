@@ -231,7 +231,11 @@ class Context(BaseContext):
             worker,
             namespace,
         )
-
+        self.ag = ag_client
+        self.admin = admin_client
+        self.event = event_client
+        self.rest = rest_client
+        self.dispatcher = dispatcher_client
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):
             try:

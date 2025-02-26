@@ -41,39 +41,6 @@ class WorkerTeam:
         # payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
         self.hatctx = hatctx
-        # self.client = client
-        # self.rest = hatctx.aio
-        # self._trace_helper = TraceHelper(
-        #     tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
-        # )
-        # self._per_type_subscribers: DefaultDict[tuple[str, str], Set[AgentId]] = (
-        #     defaultdict(set)
-        # )
-        # self._agent_factories: Dict[
-        #     str,
-        #     Callable[[], Agent | Awaitable[Agent]]
-        #     | Callable[[AgentRuntime, AgentId], Agent | Awaitable[Agent]],
-        # ] = {}
-        # self._instantiated_agents: Dict[AgentId, Agent] = {}
-        # self._known_namespaces: set[str] = set()
-        # self._read_task: None | Task[None] = None
-        # self._running = False
-        # self._pending_requests: Dict[str, Future[Any]] = {}
-        # self._pending_requests_lock = asyncio.Lock()
-        # self._next_request_id = 0
-        # self._background_tasks: Set[Task[Any]] = set()
-        # self._subscription_manager = SubscriptionManager()
-        # self._serialization_registry = SerializationRegistry()
-
-        # if payload_serialization_format not in {
-        #     JSON_DATA_CONTENT_TYPE,
-        #     PROTOBUF_DATA_CONTENT_TYPE,
-        # }:
-        #     raise ValueError(
-        #         f"Unsupported payload serialization format: {payload_serialization_format}"
-        #     )
-
-        # self._payload_serialization_format = payload_serialization_format
         self._runtime = runtime
         if not self._runtime:
             self._runtime = SingleThreadedAgentRuntime(
@@ -103,7 +70,7 @@ class WorkerTeam:
             logger.info(f"get team component: {tenant_teams}")
             message.team_id = tenant_teams[0].metadata.id
 
-        team_comp_data = await self.client.ag.GetComponent(
+        team_comp_data = await self.hatctx.ag.GetComponent(
             ctx=ClientContext(),
             request=ag_pb2.GetComponentReq(
                 tenant_id=message.tenant_id, component_id=message.team_id
@@ -190,7 +157,7 @@ class WorkerTeam:
         if teams_list.rows and len(teams_list.rows) > 0:
             logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
             results.append(teams_list.rows[0])
-        defaultModel = await self.rest.model_api.model_get(
+        defaultModel = await self.hatctx.aio.rest_client.aio.model_api.model_get(
             tenant=tenant_id, model="default"
         )
         model_dict = defaultModel.config.model_dump()
