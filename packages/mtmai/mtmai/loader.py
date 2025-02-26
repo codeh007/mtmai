@@ -85,13 +85,7 @@ class ClientConfig:
         if not self.server_url:
             self.server_url = settings.GOMTM_URL
 
-        self.credentials = CredentialsData(username="test123", password="test123")
-
-    # def load_credentials(self):
-    #     if Path(credentials_file).exists():
-    #         with open(credentials_file, "r") as f:
-    #             self.credentials = CredentialsData.model_validate_json(f.read())
-    #             self.config.token = self.credentials.token
+        self.credentials = CredentialsData(username="", password="")
 
 
 class ConfigLoader:
