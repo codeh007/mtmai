@@ -55,6 +55,7 @@ class ClientConfig:
         otel_service_name: str | None = None,
         otel_exporter_oltp_headers: dict[str, str] | None = None,
         otel_exporter_oltp_protocol: str | None = None,
+        credentials: CredentialsData = None,
     ):
         self.tenant_id = tenant_id
         self.tls_config = tls_config
@@ -69,7 +70,7 @@ class ClientConfig:
         self.otel_service_name = otel_service_name
         self.otel_exporter_oltp_headers = otel_exporter_oltp_headers
         self.otel_exporter_oltp_protocol = otel_exporter_oltp_protocol
-
+        self.credentials = credentials
         if not self.logInterceptor:
             self.logInterceptor = getLogger()
 
@@ -84,8 +85,6 @@ class ClientConfig:
         self.listener_v2_timeout = listener_v2_timeout
         if not self.server_url:
             self.server_url = settings.GOMTM_URL
-
-        self.credentials = CredentialsData(username="", password="")
 
 
 class ConfigLoader:
@@ -131,15 +130,6 @@ class ConfigLoader:
             "listener_v2_timeout", "HATCHET_CLIENT_LISTENER_V2_TIMEOUT"
         )
         listener_v2_timeout = int(listener_v2_timeout) if listener_v2_timeout else None
-
-        # if not token:
-        #     raise ValueError(
-        #         "Token must be set via HATCHET_CLIENT_TOKEN environment variable"
-        #     )
-
-        # host_port = get_config_value("hostPort", "HATCHET_CLIENT_HOST_PORT")
-        # server_url: str | None = None
-
         grpc_max_recv_message_length = get_config_value(
             "grpc_max_recv_message_length",
             "HATCHET_CLIENT_GRPC_MAX_RECV_MESSAGE_LENGTH",
@@ -148,20 +138,11 @@ class ConfigLoader:
             "grpc_max_send_message_length",
             "HATCHET_CLIENT_GRPC_MAX_SEND_MESSAGE_LENGTH",
         )
-
         if grpc_max_recv_message_length:
             grpc_max_recv_message_length = int(grpc_max_recv_message_length)
 
         if grpc_max_send_message_length:
             grpc_max_send_message_length = int(grpc_max_send_message_length)
-
-        # host_port = url.
-        # api_url = urlparse(settings.GOMTM_URL)
-        # if not host_port:
-        #     # extract host and port from token
-        #     server_url, grpc_broadcast_address = get_addresses_from_jwt(token)
-        #     host_port = grpc_broadcast_address
-
         if not tenant_id and token:
             tenant_id = get_tenant_id_from_jwt(token)
 
@@ -201,7 +182,7 @@ class ConfigLoader:
             ca_file="None",
             server_name="localhost",
         )
-        client_config = ClientConfig(
+        return ClientConfig(
             tenant_id=tenant_id,
             tls_config=tls_config,
             token=token,
@@ -216,9 +197,8 @@ class ConfigLoader:
             otel_service_name=otel_service_name,
             otel_exporter_oltp_headers=otel_exporter_oltp_headers,
             otel_exporter_oltp_protocol=otel_exporter_oltp_protocol,
+            credentials=self.load_credentials(),
         )
-        client_config.credentials = self.load_credentials()
-        return client_config
 
     def _load_tls_config(self, tls_data: Dict, host_port) -> ClientTLSConfig:
         tls_strategy = (

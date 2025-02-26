@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
 from connecpy.context import ClientContext
@@ -14,7 +13,7 @@ from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
-from mtmai.loader import ClientConfig, ConfigLoader
+from mtmai.loader import ClientConfig, ConfigLoader, CredentialsData
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from mtmai.mtmpb.mtm_connecpy import AsyncMtmServiceClient
@@ -32,8 +31,8 @@ from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
 
-config_dir = Path.home().joinpath(".mtm")
-credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
+# config_dir = Path.home().joinpath(".mtm")
+# credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
 
 
 def workflow(
@@ -151,43 +150,6 @@ def on_failure_step(
         return func
 
     return inner
-
-
-def concurrency(
-    name: str = "",
-    max_runs: int = 1,
-    limit_strategy: ConcurrencyLimitStrategy = ConcurrencyLimitStrategy.CANCEL_IN_PROGRESS,
-) -> Callable[..., Any]:
-    def inner(func: Callable[[Context], Any]) -> Callable[[Context], Any]:
-        setattr(
-            func,
-            "_concurrency_fn_name",
-            name.lower() or str(func.__name__).lower(),
-        )
-        setattr(func, "_concurrency_max_runs", max_runs)
-        setattr(func, "_concurrency_limit_strategy", limit_strategy)
-
-        return func
-
-    return inner
-
-
-class HatchetRest:
-    """
-    Main client for interacting with the Hatchet API.
-
-    This class provides access to various client interfaces and utility methods
-    for working with Hatchet via the REST API,
-
-    Attributes:
-        rest (RestApi): Interface for REST API operations.
-    """
-
-    rest: RestApi
-
-    def __init__(self, config: ClientConfig = ClientConfig()):
-        _config: ClientConfig = ConfigLoader(".").load_client_config(config)
-        self.rest = RestApi(_config.server_url, _config.token, _config.tenant_id)
 
 
 def function(
@@ -364,13 +326,17 @@ class Hatchet:
     async def boot(self):
         if not self._client.config.token:
             if (
-                not self._client.config.credentials.username
+                not self._client.config.credentials
+                or not self._client.config.credentials.username
                 or not self._client.config.credentials.password
             ):
                 logger.info("login required")
                 email = input("email:")
                 password = input("password:")
-                self.config.token = f"{email}:{password}"
+                # self.config.token = f"{email}:{password}"
+                self.config.credentials = CredentialsData(
+                    username=email, password=password
+                )
             resp = await self.mtm.Login(
                 ctx=ClientContext(),
                 request=_pb2.LoginReq(
@@ -378,12 +344,14 @@ class Hatchet:
                     password=self.config.credentials.password,
                 ),
             )
-            if resp.access_token:
-                self.config.token = resp.access_token
-                self.config.credentials.token = resp.access_token
-                await ConfigLoader.save_credentials(self.config.credentials)
-            else:
+            if not resp.access_token:
                 raise ValueError("credentials invalid")
+            self.config.token = resp.access_token
+            self.config.credentials.token = resp.access_token
+            # self.config.credentials.username = email
+            # self.config.credentials.password = password
+            await ConfigLoader.save_credentials(self.config.credentials)
+
         self._client = Client.from_config(self.config, debug=self.debug)
         self.config.tenant_id = await self.load_default_tenant()
         self._client = Client.from_config(self.config, debug=self.debug)

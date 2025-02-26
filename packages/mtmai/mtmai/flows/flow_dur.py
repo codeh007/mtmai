@@ -1,20 +1,20 @@
 from typing import Any, TypedDict, cast
 
 from mtmai.context.context import Context
-from mtmai.hatchet import durable, function
 from mtmai.mtlibs.callable import DurableContext
+from mtmai.worker_app import mtmapp
 
 
 class MyResultType(TypedDict):
     my_func: str
 
 
-@function()
+@mtmapp.function()
 def my_func(context: Context) -> MyResultType:
     return MyResultType(my_func="testing123")
 
 
-@durable()
+@mtmapp.durable()
 async def my_durable_func(context: DurableContext) -> dict[str, MyResultType | None]:
     result = cast(dict[str, Any], await context.run(my_func, {"test": "test"}).result())
 

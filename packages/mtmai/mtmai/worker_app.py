@@ -7,10 +7,18 @@ from loguru import logger
 
 from mtmai import loader
 from mtmai.core.config import settings
-from mtmai.flows.flow_ag import FlowAg
 from mtmai.hatchet import Hatchet
 
-mtmapp = None
+mtmapp = Hatchet.from_config(
+    loader.ConfigLoader().load_client_config(
+        loader.ClientConfig(
+            server_url=settings.GOMTM_URL,
+            # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+            # logger=logger,
+        )
+    ),
+    debug=True,
+)
 
 
 async def run_worker():
@@ -18,20 +26,11 @@ async def run_worker():
     maxRetry = settings.WORKER_MAX_RETRY
     for i in range(maxRetry):
         try:
-            mtmapp = Hatchet.from_config(
-                loader.ConfigLoader().load_client_config(
-                    loader.ClientConfig(
-                        server_url=settings.GOMTM_URL,
-                        # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-                        # logger=logger,
-                    )
-                ),
-                debug=True,
-            )
             await mtmapp.boot()
-
             worker = mtmapp.worker(settings.WORKER_NAME)
             # await setup_hatchet_workflows(mtmapp, worker)
+            from mtmai.flows.flow_ag import FlowAg
+
             worker.register_workflow(FlowAg())
             # worker.register_workflow(FlowBrowser())
 
