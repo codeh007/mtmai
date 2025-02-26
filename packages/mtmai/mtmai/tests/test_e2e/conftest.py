@@ -10,7 +10,7 @@ from mtmai.hatchet import Hatchet
 @pytest.fixture(scope="session")
 def mock_config():
     """模拟配置对象"""
-    a = loader.CredentialsData(username="test", password="test")
+    a = loader.CredentialsData(username="admin@example.com", password="Admin123!!")
     return a
 
 
@@ -18,18 +18,18 @@ def mock_config():
 async def mtmapp(mock_config):
     """Session-wide mtmapp fixture"""
 
-    with patch("mtmai.loader.ClientConfig.load_credentials") as mock_load:
+    with patch(
+        "mtmai.loader.ConfigLoader.load_credentials", autospec=True
+    ) as mock_load:
         mock_load.return_value = mock_config
-        app = Hatchet.from_config(
-            loader.ConfigLoader().load_client_config(
-                loader.ClientConfig(
-                    server_url=settings.GOMTM_URL,
-                )
-            ),
-            debug=True,
+        config_loader = loader.ConfigLoader()
+
+        loaded_config = config_loader.load_client_config(
+            loader.ClientConfig(server_url=settings.GOMTM_URL)
         )
+        assert loaded_config.credentials.username == "admin@example.com"
+        app = Hatchet.from_config(loaded_config, debug=True)
         await app.boot()
         print("app boot 完成")
         yield app
-        # Cleanup after all tests
         await app.shutdown()

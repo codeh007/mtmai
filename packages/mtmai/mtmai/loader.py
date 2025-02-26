@@ -39,8 +39,6 @@ credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
 class ClientConfig:
     logInterceptor: Logger
 
-    # credentials: CredentialsData
-
     def __init__(
         self,
         tenant_id: str = None,
@@ -89,23 +87,29 @@ class ClientConfig:
 
         self.credentials = CredentialsData(username="test123", password="test123")
 
-    def load_credentials(self):
-        if Path(credentials_file).exists():
-            with open(credentials_file, "r") as f:
-                self.credentials = CredentialsData.model_validate_json(f.read())
-                self.config.token = self.credentials.token
-
-    async def save_credentials(self):
-        Path(credentials_file).parent.mkdir(parents=True, exist_ok=True)
-        with open(credentials_file, "w") as f:
-            content = self.credentials.model_dump_json()
-            f.write(content)
-
+    # def load_credentials(self):
+    #     if Path(credentials_file).exists():
+    #         with open(credentials_file, "r") as f:
+    #             self.credentials = CredentialsData.model_validate_json(f.read())
+    #             self.config.token = self.credentials.token
 
 
 class ConfigLoader:
     def __init__(self, directory: str = "."):
         self.directory = directory
+
+    def load_credentials(self):
+        if Path(credentials_file).exists():
+            with open(credentials_file, "r") as f:
+                return CredentialsData.model_validate_json(f.read())
+        return None
+
+    @classmethod
+    async def save_credentials(cls, credentials: CredentialsData):
+        Path(credentials_file).parent.mkdir(parents=True, exist_ok=True)
+        with open(credentials_file, "w") as f:
+            content = credentials.model_dump_json()
+            f.write(content)
 
     def load_client_config(self, defaults: ClientConfig) -> ClientConfig:
         config_file_path = os.path.join(self.directory, "client.yaml")
@@ -219,7 +223,7 @@ class ConfigLoader:
             otel_exporter_oltp_headers=otel_exporter_oltp_headers,
             otel_exporter_oltp_protocol=otel_exporter_oltp_protocol,
         )
-        client_config.load_credentials()
+        client_config.credentials = self.load_credentials()
         return client_config
 
     def _load_tls_config(self, tls_data: Dict, host_port) -> ClientTLSConfig:

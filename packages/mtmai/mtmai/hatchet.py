@@ -276,31 +276,28 @@ class HatchetV1:
     on_failure_step = staticmethod(on_failure_step)
 
     async def boot(self):
-        if not self.config.token:
-            # try load local credentials
-            # if await os.path.existpath=s(credentials_file):
-            #     with open(credentials_file, "r") as f:
-            #         credentials = json.load(f)
-            #         self.config.token = credentials["token"]
-            if not self._client.config.token:
-                if (
-                    not self._client.config.credentials.username
-                    or not self._client.config.credentials.password
-                ):
-                    logger.info("login required")
-                    email = input("email:")
-                    password = input("password:")
-                    self.config.token = f"{email}:{password}"
-                resp = await self.mtm.Login(
-                    ctx=ClientContext(),
-                    request=_pb2.LoginReq(username=email, password=password),
-                )
-                if resp.access_token:
-                    self.config.token = resp.access_token
-                    self.config.credentials.token = resp.access_token
-                    await self.config.save_credentials(self.config.token)
-                else:
-                    raise Exception("login failed")
+        if not self._client.config.token:
+            if (
+                not self._client.config.credentials.username
+                or not self._client.config.credentials.password
+            ):
+                logger.info("login required")
+                email = input("email:")
+                password = input("password:")
+                self.config.token = f"{email}:{password}"
+            resp = await self.mtm.Login(
+                ctx=ClientContext(),
+                request=_pb2.LoginReq(
+                    username=self.config.credentials.username,
+                    password=self.config.credentials.password,
+                ),
+            )
+            if resp.access_token:
+                self.config.token = resp.access_token
+                self.config.credentials.token = resp.access_token
+                await ConfigLoader.save_credentials(self.config.credentials)
+            else:
+                raise ValueError("credentials invalid")
         self._client = Client.from_config(self.config, debug=self.debug)
         self.config.tenant_id = await self.load_default_tenant()
         self._client = Client.from_config(self.config, debug=self.debug)
