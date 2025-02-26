@@ -105,7 +105,7 @@ class QueueAsyncIterable(AsyncIterator[Any], AsyncIterable[Any]):
         return self
 
 
-class MtmWorkerRuntime(AgentRuntime):
+class WorkerTeam:
     # TODO: Needs to handle agent close() call
     def __init__(
         self,

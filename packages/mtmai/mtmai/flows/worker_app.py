@@ -13,6 +13,8 @@ from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.worker.worker import Worker
 
+from ..agents.worker_agent.worker_team import WorkerTeam
+
 mtmapp = None
 
 
@@ -53,9 +55,6 @@ async def run_worker():
 
 
 async def setup_hatchet_workflows(wfapp: Hatchet, worker: Worker):
-    # wfapp = self.wfapp
-    # worker_app = self
-
     class MyResultType(TypedDict):
         my_func: str
 
@@ -79,7 +78,9 @@ async def setup_hatchet_workflows(wfapp: Hatchet, worker: Worker):
                 input.run_id = hatctx.workflow_run_id()
             if not input.step_run_id:
                 input.step_run_id = hatctx.step_run_id
-            task_result = await wfapp.handle_message(input)
+
+            worker_team = WorkerTeam()
+            task_result = await worker_team.handle_message(input)
             # Convert TaskResult to a JSON-serializable dict
             return {
                 # "messages": [

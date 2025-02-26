@@ -20,7 +20,6 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     Subscription,
     TopicId,
-    message_handler,
 )
 from autogen_core.logging import LLMCallEvent
 from autogenstudio.datamodel import LLMCallEventMessage
@@ -162,7 +161,7 @@ class WorkerAgent(Team, ComponentBase[WorkerAgentConfig]):
         # await self._init_ingestor()
         # logger.info("worker agent 结束")
 
-    @message_handler
+    # @message_handler
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
         # Setup logger correctly
         logger = logging.getLogger(EVENT_LOGGER_NAME)
