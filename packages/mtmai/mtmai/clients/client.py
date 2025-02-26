@@ -3,19 +3,14 @@ from contextvars import ContextVar
 from logging import Logger
 from typing import Callable
 
-# import grpc
 import httpx
 from connecpy.context import ClientContext
-from mtmpb import mtm_connecpy
-
 from mtmai.clients.admin import AdminClient, new_admin
-# from mtmai.clients.connection import new_conn
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi, RestApi
-from mtmai.context.context import (get_api_token_context, get_backend_url,
-                                   get_tenant_id)
+from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
 from mtmai.loader import ClientConfig, ConfigLoader
-from mtmai.mtmpb import ag_connecpy, events_connecpy
+from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher
 from mtmai.workflow_listener import PooledWorkflowRunListener
@@ -71,7 +66,7 @@ class Client:
             config.server_url,
             timeout=20,
         )
-        event_client = EventClient( config,eventsService)
+        event_client = EventClient(config, eventsService)
         admin_client = new_admin(config)
         dispatcher_client = new_dispatcher(config)
         rest_client = RestApi(config.server_url, config.token, config.tenant_id)

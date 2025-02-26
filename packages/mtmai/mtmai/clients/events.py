@@ -6,14 +6,16 @@ from typing import Any, Dict, List, Optional, TypedDict
 import grpc
 from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
-from mtmpb import events_connecpy
-
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
-from mtmai.mtmpb.events_pb2 import (BulkPushEventRequest, Event,
-                                    PushEventRequest, PutLogRequest,
-                                    PutStreamEventRequest)
-from mtmai.mtmpb.events_pb2_grpc import EventsServiceStub
+from mtmai.mtmpb import events_connecpy
+from mtmai.mtmpb.events_pb2 import (
+    BulkPushEventRequest,
+    Event,
+    PushEventRequest,
+    PutLogRequest,
+    PutStreamEventRequest,
+)
 
 mtmclient_path_prefix = "/mtmapi"
 

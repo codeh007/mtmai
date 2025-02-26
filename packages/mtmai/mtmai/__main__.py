@@ -23,7 +23,7 @@ def run():
 
 @app.command()
 def host():
-    import grpc_host as grpc_host
+    import mtmai.grpc_host as grpc_host
 
     asyncio.run(grpc_host.run_ag_grpc_host())
 
