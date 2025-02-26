@@ -15,15 +15,12 @@ from mtmai.worker.worker import Worker
 
 
 @pytest.mark.asyncio
-async def test_example(mtmapp: Hatchet) -> None:
+async def test_example(mtmapp: Hatchet, worker: Worker) -> None:
     assert mtmapp is not None
-
-    worker = mtmapp.worker("testing_worker")
-
-    await setup_hatchet_workflows(mtmapp, worker)
+    await setup_example_workflows(mtmapp, worker)
 
 
-async def setup_hatchet_workflows(wfapp: Hatchet, worker: Worker):
+async def setup_example_workflows(wfapp: Hatchet, worker: Worker):
     class MyResultType(TypedDict):
         my_func: str
 

@@ -32,3 +32,10 @@ async def mtmapp(mock_config):
         print("app boot 完成")
         yield app
         # await app.shutdown()
+
+
+@pytest_asyncio.fixture(scope="session")
+async def worker(mtmapp: Hatchet):
+    worker = mtmapp.worker("testing_worker")
+    yield worker
+    await worker.close()

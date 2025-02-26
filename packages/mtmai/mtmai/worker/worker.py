@@ -285,10 +285,11 @@ class Worker:
         # self.action_queue.close()
         # self.event_queue.close()
 
-        if self.action_runner is not None:
+        if hasattr(self, "action_runner") and self.action_runner is not None:
             self.action_runner.cleanup()
 
-        await self.action_listener_health_check
+        if hasattr(self, "action_listener_health_check"):
+            await self.action_listener_health_check
 
     async def exit_gracefully(self) -> None:
         logger.info(f"gracefully stopping worker: {self.name}")
