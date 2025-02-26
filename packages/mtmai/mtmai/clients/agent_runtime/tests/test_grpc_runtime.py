@@ -5,12 +5,22 @@ from autogen_core import AgentId, AgentInstantiationContext, AgentType
 from dotenv import load_dotenv
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.tests.autogen_test_utils import CascadingAgent, NoopAgent
-from mtmai.tests.autogen_test_utils.telemetry_test_utils import MyTestExporter
+from mtmai.tests.autogen_test_utils.telemetry_test_utils import (
+    MyTestExporter,
+    get_test_tracer_provider,
+)
+from opentelemetry.sdk.trace import TracerProvider
 
 test_exporter = MyTestExporter()
 
 envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
 load_dotenv(envFileAbsPath)
+
+
+@pytest.fixture
+def tracer_provider() -> TracerProvider:
+    test_exporter.clear()
+    return get_test_tracer_provider(test_exporter)
 
 
 @pytest.mark.asyncio
