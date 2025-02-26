@@ -1,9 +1,7 @@
 import asyncio
-import json
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
-from aiofiles import os
 from connecpy.context import ClientContext
 from loguru import logger
 from pydantic import BaseModel
@@ -21,9 +19,12 @@ from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.models._types import DesiredWorkerLabel, RateLimit
 from mtmai.mtlibs.callable import ConcurrencyFunction, HatchetCallable
 from mtmai.mtmpb.mtm_connecpy import AsyncMtmServiceClient
-from mtmai.mtmpb.workflows_pb2 import (ConcurrencyLimitStrategy,
-                                       CreateStepRateLimit,
-                                       DesiredWorkerLabels, StickyStrategy)
+from mtmai.mtmpb.workflows_pb2 import (
+    ConcurrencyLimitStrategy,
+    CreateStepRateLimit,
+    DesiredWorkerLabels,
+    StickyStrategy,
+)
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
@@ -277,11 +278,11 @@ class HatchetV1:
     async def boot(self):
         if not self.config.token:
             # try load local credentials
-            if await os.path.exists(credentials_file):
-                with open(credentials_file, "r") as f:
-                    credentials = json.load(f)
-                    self.config.token = credentials["token"]
-            else:
+            # if await os.path.existpath=s(credentials_file):
+            #     with open(credentials_file, "r") as f:
+            #         credentials = json.load(f)
+            #         self.config.token = credentials["token"]
+            if not self._client.config.token:
                 logger.info("login required")
                 email = input("email:")
                 password = input("password:")
@@ -292,17 +293,13 @@ class HatchetV1:
                 )
                 if resp.access_token:
                     self.config.token = resp.access_token
-                    await self.save_credentials(self.config.token)
+                    self.config.credentials.token = resp.access_token
+                    await self.config.save_credentials(self.config.token)
                 else:
                     raise Exception("login failed")
         self._client = Client.from_config(self.config, debug=self.debug)
         self.config.tenant_id = await self.load_default_tenant()
         self._client = Client.from_config(self.config, debug=self.debug)
-
-    async def save_credentials(self, token: str):
-        Path(credentials_file).parent.mkdir(parents=True, exist_ok=True)
-        with open(credentials_file, "w") as f:
-            f.write(json.dumps({"token": token}))
 
     async def load_default_tenant(self):
         resp = await self._client.rest.aio.user_api.tenant_memberships_list()
