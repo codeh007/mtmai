@@ -22,11 +22,11 @@ from mtmai.agents.team_builder.m1_web_builder import M1WebTeamBuilder
 from mtmai.agents.team_builder.swram_team_builder import SwramTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
-from mtmai.clients.client import Client
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
+from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
 from opentelemetry.trace import TracerProvider
@@ -35,13 +35,14 @@ from opentelemetry.trace import TracerProvider
 class WorkerTeam:
     def __init__(
         self,
-        client: Client,
+        # client: Client,
+        hatctx: Context,
         runtime: AgentRuntime = None,
         tracer_provider: TracerProvider | None = None,
         # payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        self.client = client
-        self.rest = self.client.rest.aio
+        # self.client = client
+        self.rest = hatctx.aio
         # self._trace_helper = TraceHelper(
         #     tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         # )

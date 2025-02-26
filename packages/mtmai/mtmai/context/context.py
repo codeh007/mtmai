@@ -19,6 +19,7 @@ from mtmai.clients.rest_client import RestApi
 from mtmai.context.worker_context import WorkerContext
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.types import WorkflowValidator
+from mtmai.mtmpb import ag_connecpy
 from mtmai.mtmpb.dispatcher_pb2 import OverridesData
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
@@ -129,6 +130,7 @@ class ContextAioImpl(BaseContext):
         workflow_listener: PooledWorkflowRunListener,
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
+        ag_client: ag_connecpy.AsyncAgServiceClient,
         namespace: str = "",
     ):
         self.action = action
@@ -141,6 +143,7 @@ class ContextAioImpl(BaseContext):
         self.namespace = namespace
         self.spawn_index = -1
         self.worker = worker
+        self.ag = ag_client
 
     @tenacity_retry
     async def spawn_workflow(
@@ -210,6 +213,7 @@ class Context(BaseContext):
         workflow_listener: PooledWorkflowRunListener,
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
+        ag_client: ag_connecpy.AsyncAgServiceClient,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
     ):

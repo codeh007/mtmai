@@ -4,7 +4,6 @@ from typing import cast
 import pytest
 from mtmai.agents.worker_agent.worker_team import WorkerTeam
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
-from mtmai.clients.client import set_gomtm_api_context
 from mtmai.context.context import Context
 from mtmai.hatchet import Hatchet
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
@@ -54,7 +53,6 @@ async def setup_example_workflows(wfapp: Hatchet, worker: Worker):
     class FlowAg:
         @wfapp.step(timeout="60m")
         async def step_entry(self, hatctx: Context):
-            set_gomtm_api_context(hatctx.aio)
             input = cast(AgentRunInput, hatctx.workflow_input())
             if not input.run_id:
                 input.run_id = hatctx.workflow_run_id()

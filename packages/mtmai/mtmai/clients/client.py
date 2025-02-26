@@ -1,5 +1,4 @@
 import asyncio
-from contextvars import ContextVar
 from logging import Logger
 from typing import Callable
 
@@ -7,8 +6,7 @@ import httpx
 from connecpy.context import ClientContext
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
-from mtmai.clients.rest_client import AsyncRestApi, RestApi
-from mtmai.context.context import get_api_token_context, get_backend_url, get_tenant_id
+from mtmai.clients.rest_client import RestApi
 from mtmai.loader import ClientConfig, ConfigLoader
 from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
@@ -143,22 +141,22 @@ def with_host_port(host: str, port: int):
     return with_host_port_impl
 
 
-def get_gomtm():
-    backend_url = get_backend_url()
-    if not backend_url:
-        raise ValueError("backend_url is required")
-    api_token = get_api_token_context()
-    tenant_id = get_tenant_id()
-    return AsyncRestApi(backend_url, api_token, tenant_id)
+# def get_gomtm():
+#     backend_url = get_backend_url()
+#     if not backend_url:
+#         raise ValueError("backend_url is required")
+#     api_token = get_api_token_context()
+#     tenant_id = get_tenant_id()
+#     return AsyncRestApi(backend_url, api_token, tenant_id)
 
 
-gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_api_ctx", default=None)
+# gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_api_ctx", default=None)
 
 
-def get_gomtm_api_context() -> AsyncRestApi:
-    a = gomtm_ctx.get()
-    return a
+# def get_gomtm_api_context() -> AsyncRestApi:
+#     a = gomtm_ctx.get()
+#     return a
 
 
-def set_gomtm_api_context(gomtm_api: AsyncRestApi):
-    gomtm_ctx.set(gomtm_api)
+# def set_gomtm_api_context(gomtm_api: AsyncRestApi):
+#     gomtm_ctx.set(gomtm_api)

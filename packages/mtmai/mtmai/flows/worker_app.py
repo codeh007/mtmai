@@ -8,11 +8,10 @@ from loguru import logger
 from mtmai import loader
 from mtmai.agents.worker_agent.worker_team import WorkerTeam
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
-from mtmai.clients.client import set_gomtm_api_context
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
 from mtmai.core.config import settings
-from mtmai.hatchet import Hatchet
+from mtmai.hatchet import Hatchet, step, workflow
 from mtmai.worker.worker import Worker
 
 mtmapp = None
@@ -64,15 +63,14 @@ async def setup_hatchet_workflows(wfapp: Hatchet, worker: Worker):
     def my_func(context: Context) -> MyResultType:
         return MyResultType(my_func="testing123")
 
-    @wfapp.workflow(
+    @workflow(
         name="ag",
         on_events=["ag:run"],
         input_validator=AgentRunInput,
     )
     class FlowAg:
-        @wfapp.step(timeout="60m")
+        @step(timeout="60m")
         async def step_entry(self, hatctx: Context):
-            set_gomtm_api_context(hatctx.aio)
             input = cast(AgentRunInput, hatctx.workflow_input())
             if not input.run_id:
                 input.run_id = hatctx.workflow_run_id()

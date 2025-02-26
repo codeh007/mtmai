@@ -267,11 +267,14 @@ class HatchetV1:
     def tenant_id(self) -> str:
         return self._client.config.tenant_id
 
-    concurrency = staticmethod(concurrency)
+    # 多余的,  因为 直接使用 concurrency 函数, 更加直接
+    # concurrency = staticmethod(concurrency)
 
-    workflow = staticmethod(workflow)
+    # 多余的,  因为 直接使用 workflow 函数, 更加直接
+    # workflow = staticmethod(workflow)
 
-    step = staticmethod(step)
+    # 多余的,  因为 直接使用 step 函数, 更加直接
+    # step = staticmethod(step)
 
     on_failure_step = staticmethod(on_failure_step)
 
@@ -430,7 +433,8 @@ def concurrency(
 
 
 class Hatchet(HatchetV1):
-    dag = staticmethod(workflow)
+    # 多余的,  因为 直接使用 workflow 函数, 更加直接
+    # dag = staticmethod(workflow)
     concurrency = staticmethod(concurrency)
 
     functions: List[HatchetCallable] = []
