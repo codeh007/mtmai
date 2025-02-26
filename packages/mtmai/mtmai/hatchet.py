@@ -283,10 +283,14 @@ class HatchetV1:
             #         credentials = json.load(f)
             #         self.config.token = credentials["token"]
             if not self._client.config.token:
-                logger.info("login required")
-                email = input("email:")
-                password = input("password:")
-                self.config.token = f"{email}:{password}"
+                if (
+                    not self._client.config.credentials.username
+                    or not self._client.config.credentials.password
+                ):
+                    logger.info("login required")
+                    email = input("email:")
+                    password = input("password:")
+                    self.config.token = f"{email}:{password}"
                 resp = await self.mtm.Login(
                     ctx=ClientContext(),
                     request=_pb2.LoginReq(username=email, password=password),

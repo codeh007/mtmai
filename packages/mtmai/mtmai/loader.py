@@ -39,7 +39,7 @@ credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
 class ClientConfig:
     logInterceptor: Logger
 
-    credentials: CredentialsData
+    # credentials: CredentialsData
 
     def __init__(
         self,
@@ -87,6 +87,8 @@ class ClientConfig:
         if not self.server_url:
             self.server_url = settings.GOMTM_URL
 
+        self.credentials = CredentialsData(username="test123", password="test123")
+
     def load_credentials(self):
         if Path(credentials_file).exists():
             with open(credentials_file, "r") as f:
@@ -98,6 +100,7 @@ class ClientConfig:
         with open(credentials_file, "w") as f:
             content = self.credentials.model_dump_json()
             f.write(content)
+
 
 
 class ConfigLoader:

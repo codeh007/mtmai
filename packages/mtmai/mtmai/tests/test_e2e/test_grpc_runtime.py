@@ -1,11 +1,12 @@
-import os
+# import os
 
 import pytest
-from dotenv import load_dotenv
 
-envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
-load_dotenv(envFileAbsPath)
-gomtm_host_addr = "http://localhost:8383"
+# from dotenv import load_dotenv
+
+# envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
+# load_dotenv(envFileAbsPath)
+# gomtm_host_addr = "http://localhost:8383"
 
 
 @pytest.mark.asyncio
