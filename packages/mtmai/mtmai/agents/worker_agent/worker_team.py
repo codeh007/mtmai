@@ -161,7 +161,7 @@ class WorkerTeam:
                                 stepRunId=message.step_run_id,
                             ),
                         )
-                        await self.wfapp.event.stream(
+                        await self.client.event.stream(
                             "hello1await22222222", step_run_id=message.step_run_id
                         )
                     else:
