@@ -10,8 +10,7 @@ from mtmai.hatchet import Hatchet
 @pytest.fixture(scope="session")
 def mock_config():
     """模拟配置对象"""
-    a = loader.CredentialsData(username="admin@example.com", password="Admin123!!")
-    return a
+    return loader.CredentialsData(username="admin@example.com", password="Admin123!!")
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -32,4 +31,4 @@ async def mtmapp(mock_config):
         await app.boot()
         print("app boot 完成")
         yield app
-        await app.shutdown()
+        # await app.shutdown()
