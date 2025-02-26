@@ -67,6 +67,8 @@ from google.protobuf import any_pb2
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
+from ...mtmpb.agent_worker_connecpy import AgentRpcClient
+
 try:
     import grpc.aio
 except ImportError as e:
@@ -212,27 +214,14 @@ class HostConnection:
 
 
 class GrpcWorkerAgentRuntime(AgentRuntime):
-    """An agent runtime for running remote or cross-language agents.
-
-    Agent messaging uses protobufs from `agent_worker.proto`_ and ``CloudEvent`` from `cloudevent.proto`_.
-
-    Cross-language agents will additionally require all agents use shared protobuf schemas for any message types that are sent between agents.
-
-    .. _agent_worker.proto: https://github.com/microsoft/autogen/blob/main/protos/agent_worker.proto
-
-    .. _cloudevent.proto: https://github.com/microsoft/autogen/blob/main/protos/cloudevent.proto
-
-    """
-
-    # TODO: Needs to handle agent close() call
     def __init__(
         self,
-        host_address: str,
+        agent_rpc_client: AgentRpcClient,
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        self._host_address = host_address
+        self._agent_rpc_client = agent_rpc_client
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
