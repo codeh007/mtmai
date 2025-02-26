@@ -38,4 +38,6 @@ async def mtmapp(mock_config):
 async def worker(mtmapp: Hatchet):
     worker = mtmapp.worker("testing_worker")
     yield worker
+    await worker.async_start()
+
     await worker.close()

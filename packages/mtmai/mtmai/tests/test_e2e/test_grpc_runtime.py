@@ -1,17 +1,18 @@
-# import os
-
-from typing import TypedDict
+from typing import TypedDict, cast
 
 import pytest
+from mtmai.agents.worker_agent.worker_team import WorkerTeam
+from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
+from mtmai.clients.client import set_gomtm_api_context
 from mtmai.context.context import Context
 from mtmai.hatchet import Hatchet
+from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.worker.worker import Worker
 
 # from dotenv import load_dotenv
 
 # envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
 # load_dotenv(envFileAbsPath)
-# gomtm_host_addr = "http://localhost:8383"
 
 
 @pytest.mark.asyncio
@@ -30,28 +31,28 @@ async def setup_example_workflows(wfapp: Hatchet, worker: Worker):
     def my_func(context: Context) -> MyResultType:
         return MyResultType(my_func="testing123")
 
-    # @wfapp.workflow(
-    #     name="ag",
-    #     on_events=["ag:run"],
-    #     input_validator=AgentRunInput,
-    # )
-    # class FlowAg:
-    #     @wfapp.step(timeout="60m")
-    #     async def step_entry(self, hatctx: Context):
-    #         set_gomtm_api_context(hatctx.aio)
-    #         input = cast(AgentRunInput, hatctx.workflow_input())
-    #         if not input.run_id:
-    #             input.run_id = hatctx.workflow_run_id()
-    #         if not input.step_run_id:
-    #             input.step_run_id = hatctx.step_run_id
+    @wfapp.workflow(
+        name="ag",
+        on_events=["ag:run"],
+        # input_validator=AgentRunInput,
+    )
+    class FlowAg:
+        @wfapp.step(timeout="60m")
+        async def step_entry(self, hatctx: Context):
+            set_gomtm_api_context(hatctx.aio)
+            input = cast(AgentRunInput, hatctx.workflow_input())
+            if not input.run_id:
+                input.run_id = hatctx.workflow_run_id()
+            if not input.step_run_id:
+                input.step_run_id = hatctx.step_run_id
 
-    #         # agent_rpc_client = AgentRpcClient(self.config.server_url)
-    #         runtime = GrpcWorkerAgentRuntime(agent_rpc_client=wfapp.client.ag)
-    #         worker_team = WorkerTeam(client=wfapp.client)
-    #         task_result = await worker_team.handle_message(input)
-    #         return {
-    #             "ok": True,
-    #         }
+            # agent_rpc_client = AgentRpcClient(self.config.server_url)
+            runtime = GrpcWorkerAgentRuntime(agent_rpc_client=wfapp.client.ag)
+            worker_team = WorkerTeam(client=wfapp.client)
+            task_result = await worker_team.handle_message(input)
+            return {
+                "ok": True,
+            }
 
     # worker.register_workflow(FlowAg())
     # print(f"Mtmapp instance: {mtmapp}")
