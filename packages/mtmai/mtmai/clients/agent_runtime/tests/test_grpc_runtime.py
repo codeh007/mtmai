@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.tests.autogen_test_utils import NoopAgent
 
+from ....hatchet import Hatchet
+
 envFileAbsPath = os.path.abspath("../gomtm/env/mtmai.env")
 load_dotenv(envFileAbsPath)
 gomtm_host_addr = "http://localhost:8383"
@@ -15,32 +17,52 @@ gomtm_host_addr = "http://localhost:8383"
 # @pytest.mark.grpc
 @pytest.mark.asyncio
 async def test_agent_types_must_be_unique_single_worker() -> None:
-    worker = GrpcWorkerAgentRuntime(server_url=gomtm_host_addr)
-    await worker.start()
+    # from mtmai.agents.worker_agent.rpc_team import RpcDemoTeam
+    from mtmai import loader
+    from mtmai.core import settings
+    from mtmai.flows.worker_app import run_worker
 
-    await worker.register_factory(
+    mtmapp = Hatchet.from_config(
+        loader.ConfigLoader().load_client_config(
+            loader.ClientConfig(
+                server_url=settings.GOMTM_URL,
+                # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+                # logger=logger,
+            )
+        ),
+        debug=True,
+    )
+    await mtmapp.boot()
+
+    worker = mtmapp.worker(settings.WORKER_NAME)
+    await setup_hatchet_workflows(mtmapp, worker)
+    await run_worker()
+    runtime = GrpcWorkerAgentRuntime(server_url=gomtm_host_addr)
+    await runtime.start()
+
+    await runtime.register_factory(
         type=AgentType("name1"),
         agent_factory=lambda: NoopAgent(),
         expected_class=NoopAgent,
     )
 
     with pytest.raises(ValueError):
-        await worker.register_factory(
+        await runtime.register_factory(
             type=AgentType("name1"),
             agent_factory=lambda: NoopAgent(),
             expected_class=NoopAgent,
         )
 
-    await worker.register_factory(
+    await runtime.register_factory(
         type=AgentType("name4"),
         agent_factory=lambda: NoopAgent(),
         expected_class=NoopAgent,
     )
-    await worker.register_factory(
+    await runtime.register_factory(
         type=AgentType("name5"), agent_factory=lambda: NoopAgent()
     )
 
-    await worker.stop()
+    await runtime.stop()
     # await host.stop()
 
 
