@@ -12,12 +12,14 @@ from typing import Any, Callable, Dict, cast
 
 from loguru import logger
 from mtmai.clients.admin import new_admin
+from mtmai.clients.ag import AgClient
 from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
+from mtmai.mtlibs.callable import DurableContext
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
@@ -38,8 +40,6 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
-
-from ...mtlibs.callable import DurableContext
 
 
 class WorkerStatus(Enum):
@@ -92,17 +92,14 @@ class Runner:
         )
 
         self.otel_tracer = create_tracer(config=config)
-
-        # self.session = httpx.AsyncClient(
-        #     base_url=self.config.server_url,
-        #     timeout=settings.DEFAULT_CLIENT_TIMEOUT,
-        # )
         self.ag = ag_connecpy.AsyncAgServiceClient(
             self.config.server_url,
             # session=self.session,
             timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
         self.agent_runtime = MtmAgentRuntime(agent_rpc_client=self.ag)
+        # self.aio = AsyncRestApi(self.config)
+        self.ag_client2 = AgClient(self.config, self.ag)
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -315,11 +312,12 @@ class Runner:
             admin_client=self.admin_client,
             event_client=self.client.event,
             rest_client=self.client.rest,
+            ag_client=self.ag,
+            ag_client2=self.ag_client2,
             workflow_listener=self.client.workflow_listener,
             workflow_run_event_listener=self.workflow_run_event_listener,
             worker=self.worker_context,
             namespace=self.client.config.namespace,
-            ag_client=self.ag,
             validator_registry=self.validator_registry,
             agent_runtime=self.agent_runtime,
         )

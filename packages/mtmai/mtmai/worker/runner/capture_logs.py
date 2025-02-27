@@ -32,6 +32,8 @@ class InjectingFilter(logging.Filter):
         # 由于传输日志是本身触发 httpx 请求,这里防止死循环 (可能还需要修正)
         if record.name == "httpx" and record.module == "_client":
             return False
+        # if "/PutLog " in record.message:
+        #     return False
         return True
 
 

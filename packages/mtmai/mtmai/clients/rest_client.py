@@ -18,32 +18,36 @@ from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.models import TriggerWorkflowRunRequest
 from mtmai.clients.rest.models.event_list import EventList
-from mtmai.clients.rest.models.event_order_by_direction import \
-    EventOrderByDirection
+from mtmai.clients.rest.models.event_order_by_direction import EventOrderByDirection
 from mtmai.clients.rest.models.event_order_by_field import EventOrderByField
 from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
-from mtmai.clients.rest.models.log_line_order_by_direction import \
-    LogLineOrderByDirection
-from mtmai.clients.rest.models.log_line_order_by_field import \
-    LogLineOrderByField
+from mtmai.clients.rest.models.log_line_order_by_direction import (
+    LogLineOrderByDirection,
+)
+from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
 from mtmai.clients.rest.models.replay_event_request import ReplayEventRequest
-from mtmai.clients.rest.models.replay_workflow_runs_request import \
-    ReplayWorkflowRunsRequest
-from mtmai.clients.rest.models.replay_workflow_runs_response import \
-    ReplayWorkflowRunsResponse
+from mtmai.clients.rest.models.replay_workflow_runs_request import (
+    ReplayWorkflowRunsRequest,
+)
+from mtmai.clients.rest.models.replay_workflow_runs_response import (
+    ReplayWorkflowRunsResponse,
+)
 from mtmai.clients.rest.models.workflow import Workflow
 from mtmai.clients.rest.models.workflow_kind import WorkflowKind
 from mtmai.clients.rest.models.workflow_list import WorkflowList
 from mtmai.clients.rest.models.workflow_run import WorkflowRun
 from mtmai.clients.rest.models.workflow_run_list import WorkflowRunList
-from mtmai.clients.rest.models.workflow_run_order_by_direction import \
-    WorkflowRunOrderByDirection
-from mtmai.clients.rest.models.workflow_run_order_by_field import \
-    WorkflowRunOrderByField
+from mtmai.clients.rest.models.workflow_run_order_by_direction import (
+    WorkflowRunOrderByDirection,
+)
+from mtmai.clients.rest.models.workflow_run_order_by_field import (
+    WorkflowRunOrderByField,
+)
 from mtmai.clients.rest.models.workflow_run_status import WorkflowRunStatus
-from mtmai.clients.rest.models.workflow_runs_cancel_request import \
-    WorkflowRunsCancelRequest
+from mtmai.clients.rest.models.workflow_runs_cancel_request import (
+    WorkflowRunsCancelRequest,
+)
 from mtmai.clients.rest.models.workflow_version import WorkflowVersion
 
 from .rest.api.coms_api import ComsApi
@@ -57,7 +61,6 @@ class AsyncRestApi:
         self.config = Configuration(
             host=host,
             access_token=api_key,
-
         )
 
         self._api_client = None
