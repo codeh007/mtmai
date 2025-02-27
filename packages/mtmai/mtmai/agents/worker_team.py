@@ -15,6 +15,8 @@ from autogen_core import CancellationToken, SingleThreadedAgentRuntime
 from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from loguru import logger
+from opentelemetry.trace import TracerProvider
+
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
@@ -22,7 +24,6 @@ from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
-from opentelemetry.trace import TracerProvider
 
 
 class WorkerTeam:
@@ -41,7 +42,7 @@ class WorkerTeam:
 
         self.cancellation_token = CancellationToken()
 
-    async def handle_message(self, message: AgentRunInput) -> TaskResult:
+    async def run(self, message: AgentRunInput) -> TaskResult:
         tenant_id: str | None = message.tenant_id
         run_id = message.run_id
         user_input = message.content
@@ -125,7 +126,7 @@ class WorkerTeam:
                             ),
                         )
                         await self.hatctx.event.stream(
-                            "hello1await22222222", step_run_id=message.step_run_id
+                            event, step_run_id=message.step_run_id
                         )
                     else:
                         logger.warn(f"worker Agent 消息没有content: {event}")

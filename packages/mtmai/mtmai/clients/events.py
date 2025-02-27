@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 import grpc
 from connecpy.context import ClientContext
+from core.loader import ClientConfig
 from google.protobuf import timestamp_pb2
 from mtmai.core.config import settings
-from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb import events_connecpy
 from mtmai.mtmpb.events_pb2 import (
@@ -16,6 +16,7 @@ from mtmai.mtmpb.events_pb2 import (
     PutLogRequest,
     PutStreamEventRequest,
 )
+from pydantic import BaseModel
 
 
 def proto_timestamp_now():
@@ -171,6 +172,8 @@ class EventClient:
                 data_bytes = data.encode("utf-8")
             elif isinstance(data, bytes):
                 data_bytes = data
+            elif isinstance(data, BaseModel):
+                data_bytes = data.model_dump_json().encode("utf-8")
             else:
                 raise ValueError("Invalid data type. Expected str, bytes, or file.")
 

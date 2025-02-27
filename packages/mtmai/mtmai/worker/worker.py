@@ -12,10 +12,10 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
+from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
-from mtmai.loader import ClientConfig
 from mtmai.mtlibs.callable import HatchetCallable
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtlibs.typing import is_basemodel_subclass

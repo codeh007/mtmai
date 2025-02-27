@@ -161,15 +161,3 @@ def setup_openai_base_logging():
     )
     file_handler.setFormatter(formatter)
     openai_base_client_logger.addHandler(file_handler)
-
-
-# # Create a named logger
-# logger = logging.getLogger("mtmai")
-# logger.setLevel(logging.INFO)
-
-# handler = logging.StreamHandler(sys.stdout)
-# formatter = logging.Formatter("[%(levelname)s]\t🪓 -- %(asctime)s - %(message)s")
-# handler.setFormatter(formatter)
-# logger.addHandler(handler)
-
-# logger.propagate = False

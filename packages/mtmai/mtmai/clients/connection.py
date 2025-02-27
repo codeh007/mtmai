@@ -2,7 +2,7 @@ import os
 from typing import Any
 
 import grpc
-from mtmai.loader import ClientConfig
+from core.loader import ClientConfig
 
 
 def new_conn(config: "ClientConfig", aio=False):

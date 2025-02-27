@@ -1,6 +1,6 @@
 from typing import List
 
-from autogen_agentchat.agents import UserProxyAgent
+from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.agents._user_proxy_agent import UserProxyAgentConfig
 from autogen_agentchat.base import ChatAgent, TerminationCondition
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -44,3 +44,7 @@ class MtRoundRobinGroupChat(
         max_turns: int | None = None,
     ):
         super().__init__(participants, termination_condition, max_turns)
+
+
+class MtAssisantAgent(AssistantAgent):
+    pass

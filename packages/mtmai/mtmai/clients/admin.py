@@ -3,9 +3,9 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, TypedDict, TypeVar, Union
 
 import grpc
+from core.loader import ClientConfig
 from google.protobuf import timestamp_pb2
 from mtmai.clients.connection import new_conn
-from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
 from mtmai.mtmpb.workflows_pb2 import (
     BulkTriggerWorkflowRequest,

@@ -14,7 +14,7 @@ from mtmai.mtmpb.dispatcher_pb2 import (
 )
 from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 
-from .loader import ClientConfig
+from .core.loader import ClientConfig
 from .mtlibs.hatchet_utils import get_metadata
 
 DEFAULT_ACTION_LISTENER_RETRY_INTERVAL = 5  # seconds

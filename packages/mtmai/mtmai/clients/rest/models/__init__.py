@@ -37,7 +37,6 @@ from mtmai.clients.rest.models.agent_node_create_request import AgentNodeCreateR
 from mtmai.clients.rest.models.agent_node_update_request import AgentNodeUpdateRequest
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_step import AgentStep
-from mtmai.clients.rest.models.agent_stream200_response import AgentStream200Response
 from mtmai.clients.rest.models.agent_task_step import AgentTaskStep
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.artifact import Artifact
@@ -308,6 +307,7 @@ from mtmai.clients.rest.models.workflow_run_triggered_by import WorkflowRunTrigg
 from mtmai.clients.rest.models.workflow_runs_cancel_request import WorkflowRunsCancelRequest
 from mtmai.clients.rest.models.workflow_runs_metrics import WorkflowRunsMetrics
 from mtmai.clients.rest.models.workflow_runs_metrics_counts import WorkflowRunsMetricsCounts
+from mtmai.clients.rest.models.workflow_stream200_response import WorkflowStream200Response
 from mtmai.clients.rest.models.workflow_tag import WorkflowTag
 from mtmai.clients.rest.models.workflow_trigger_cron_ref import WorkflowTriggerCronRef
 from mtmai.clients.rest.models.workflow_trigger_event_ref import WorkflowTriggerEventRef

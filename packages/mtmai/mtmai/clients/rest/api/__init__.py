@@ -19,7 +19,6 @@ from mtmai.clients.rest.api.admin_api import AdminApi
 from mtmai.clients.rest.api.ag_events_api import AgEventsApi
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.ag_states_api import AgStatesApi
-from mtmai.clients.rest.api.agent_api import AgentApi
 from mtmai.clients.rest.api.artifact_api import ArtifactApi
 from mtmai.clients.rest.api.blog_api import BlogApi
 from mtmai.clients.rest.api.browser_api import BrowserApi
