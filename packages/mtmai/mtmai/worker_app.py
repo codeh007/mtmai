@@ -27,6 +27,9 @@ async def run_worker():
     for i in range(maxRetry):
         try:
             await mtmapp.boot()
+            # 确保 durable 函数注册发送在 mtmapp.worker()函数之前.
+            from mtmai.flows.flow_dur import my_durable_func  # noqa
+
             worker = mtmapp.worker(settings.WORKER_NAME)
             # await setup_hatchet_workflows(mtmapp, worker)
             from mtmai.flows.flow_ag import FlowAg

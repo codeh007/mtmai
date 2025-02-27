@@ -294,28 +294,30 @@ class Runner:
     ) -> Context | DurableContext:
         if hasattr(action_func, "durable") and getattr(action_func, "durable"):
             return DurableContext(
-                action,
-                self.dispatcher_client,
-                self.admin_client,
-                self.client.event,
-                self.client.rest,
-                self.client.workflow_listener,
-                self.workflow_run_event_listener,
-                self.worker_context,
-                self.client.config.namespace,
+                action=action,
+                dispatcher_client=self.dispatcher_client,
+                admin_client=self.admin_client,
+                event_client=self.client.event,
+                rest_client=self.client.rest,
+                workflow_listener=self.client.workflow_listener,
+                workflow_run_event_listener=self.workflow_run_event_listener,
+                worker=self.worker_context,
+                namespace=self.client.config.namespace,
+                ag_client=self.ag,
                 validator_registry=self.validator_registry,
             )
 
         return Context(
-            action,
-            self.dispatcher_client,
-            self.admin_client,
-            self.client.event,
-            self.client.rest,
-            self.client.workflow_listener,
-            self.workflow_run_event_listener,
-            self.worker_context,
-            self.client.config.namespace,
+            action=action,
+            dispatcher_client=self.dispatcher_client,
+            admin_client=self.admin_client,
+            event_client=self.client.event,
+            rest_client=self.client.rest,
+            workflow_listener=self.client.workflow_listener,
+            workflow_run_event_listener=self.workflow_run_event_listener,
+            worker=self.worker_context,
+            namespace=self.client.config.namespace,
+            ag_client=self.ag,
             validator_registry=self.validator_registry,
         )
 
@@ -370,16 +372,16 @@ class Runner:
             span.add_event("Starting group key run")
             action_name = action.action_id
             context = Context(
-                action,
-                self.dispatcher_client,
-                self.admin_client,
-                self.client.event,
-                self.client.rest,
-                self.client.workflow_listener,
-                self.workflow_run_event_listener,
-                self.worker_context,
-                self.ag,
-                self.client.config.namespace,
+                action=action,
+                dispatcher_client=self.dispatcher_client,
+                admin_client=self.admin_client,
+                event_client=self.client.event,
+                rest_client=self.client.rest,
+                workflow_listener=self.client.workflow_listener,
+                workflow_run_event_listener=self.workflow_run_event_listener,
+                worker=self.worker_context,
+                ag_client=self.ag,
+                namespace=self.client.config.namespace,
             )
 
             self.contexts[action.get_group_key_run_id] = context
