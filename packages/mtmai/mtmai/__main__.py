@@ -25,9 +25,25 @@ def run():
 
 @app.command()
 def host():
-    import mtmai.grpc_host as grpc_host
+    asyncio.run(_run_ag_grpc_host())
 
-    asyncio.run(grpc_host.run_ag_grpc_host())
+
+async def _run_ag_grpc_host():
+    import asyncio
+    import platform
+
+    from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
+
+    host = GrpcWorkerAgentRuntimeHost(address="localhost:7071")
+    host.start()  # Start a host service in the background.
+    if platform.system() == "Windows":
+        try:
+            while True:
+                await asyncio.sleep(1)
+        except KeyboardInterrupt:
+            await host.stop()
+    else:
+        await host.stop_when_signal()
 
 
 if __name__ == "__main__":

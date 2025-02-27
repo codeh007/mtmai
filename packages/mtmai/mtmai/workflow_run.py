@@ -5,6 +5,8 @@ from mtmai.mtlibs.aio_utils import EventLoopThread, get_active_event_loop
 from mtmai.run_event_listener import RunEventListener, RunEventListenerClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 
+T = TypeVar("T")
+
 
 class WorkflowRunRef:
     workflow_run_id: str
@@ -39,9 +41,6 @@ class WorkflowRunRef:
             coro = self.workflow_listener.result(self.workflow_run_id)
             future = asyncio.run_coroutine_threadsafe(coro, loop)
             return future.result()
-
-
-T = TypeVar("T")
 
 
 class RunRef(WorkflowRunRef, Generic[T]):
