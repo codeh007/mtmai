@@ -38,7 +38,7 @@ class Dispatcher(Protocol):
 class DispatcherServer(ConnecpyServer):
     def __init__(self, *, service: Dispatcher, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/.Dispatcher"
+        self._prefix = f"{server_path_prefix}/mtmai.mtmpb.Dispatcher"
         self._endpoints = {
             "Register": Endpoint[_pb2.WorkerRegisterRequest, _pb2.WorkerRegisterResponse](
                 service_name="Dispatcher",
@@ -147,7 +147,7 @@ class DispatcherServer(ConnecpyServer):
         }
 
     def serviceName(self):
-        return ".Dispatcher"
+        return "mtmai.mtmpb.Dispatcher"
 
 
 class DispatcherSync(Protocol):
@@ -169,7 +169,7 @@ class DispatcherSync(Protocol):
 class DispatcherServerSync(ConnecpyServer):
     def __init__(self, *, service: DispatcherSync, server_path_prefix=""):
         super().__init__()
-        self._prefix = f"{server_path_prefix}/.Dispatcher"
+        self._prefix = f"{server_path_prefix}/mtmai.mtmpb.Dispatcher"
         self._endpoints = {
             "Register": Endpoint[_pb2.WorkerRegisterRequest, _pb2.WorkerRegisterResponse](
                 service_name="Dispatcher",
@@ -278,7 +278,7 @@ class DispatcherServerSync(ConnecpyServer):
         }
 
     def serviceName(self):
-        return ".Dispatcher"
+        return "mtmai.mtmpb.Dispatcher"
 
 
 class DispatcherClient(ConnecpyClient):
@@ -292,7 +292,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.WorkerRegisterResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Register",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Register",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkerRegisterResponse,
@@ -310,7 +310,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.AssignedAction:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Listen",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Listen",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AssignedAction,
@@ -328,7 +328,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.AssignedAction:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/ListenV2",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/ListenV2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AssignedAction,
@@ -346,7 +346,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.HeartbeatResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Heartbeat",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Heartbeat",
             ctx=ctx,
             request=request,
             response_obj=_pb2.HeartbeatResponse,
@@ -364,7 +364,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.WorkflowEvent:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SubscribeToWorkflowEvents",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SubscribeToWorkflowEvents",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowEvent,
@@ -382,7 +382,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.WorkflowRunEvent:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SubscribeToWorkflowRuns",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SubscribeToWorkflowRuns",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowRunEvent,
@@ -400,7 +400,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.ActionEventResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SendStepActionEvent",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SendStepActionEvent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ActionEventResponse,
@@ -418,7 +418,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.ActionEventResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SendGroupKeyActionEvent",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SendGroupKeyActionEvent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ActionEventResponse,
@@ -436,7 +436,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.OverridesDataResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/PutOverridesData",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/PutOverridesData",
             ctx=ctx,
             request=request,
             response_obj=_pb2.OverridesDataResponse,
@@ -454,7 +454,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.WorkerUnsubscribeResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Unsubscribe",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Unsubscribe",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkerUnsubscribeResponse,
@@ -472,7 +472,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.RefreshTimeoutResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/RefreshTimeout",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/RefreshTimeout",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RefreshTimeoutResponse,
@@ -490,7 +490,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.ReleaseSlotResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/ReleaseSlot",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/ReleaseSlot",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ReleaseSlotResponse,
@@ -508,7 +508,7 @@ class DispatcherClient(ConnecpyClient):
     ) -> _pb2.UpsertWorkerLabelsResponse:
         method = "POST"
         return self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/UpsertWorkerLabels",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/UpsertWorkerLabels",
             ctx=ctx,
             request=request,
             response_obj=_pb2.UpsertWorkerLabelsResponse,
@@ -529,7 +529,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.WorkerRegisterResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Register",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Register",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkerRegisterResponse,
@@ -549,7 +549,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.AssignedAction:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Listen",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Listen",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AssignedAction,
@@ -569,7 +569,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.AssignedAction:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/ListenV2",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/ListenV2",
             ctx=ctx,
             request=request,
             response_obj=_pb2.AssignedAction,
@@ -589,7 +589,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.HeartbeatResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Heartbeat",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Heartbeat",
             ctx=ctx,
             request=request,
             response_obj=_pb2.HeartbeatResponse,
@@ -609,7 +609,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.WorkflowEvent:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SubscribeToWorkflowEvents",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SubscribeToWorkflowEvents",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowEvent,
@@ -629,7 +629,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.WorkflowRunEvent:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SubscribeToWorkflowRuns",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SubscribeToWorkflowRuns",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkflowRunEvent,
@@ -649,7 +649,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.ActionEventResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SendStepActionEvent",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SendStepActionEvent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ActionEventResponse,
@@ -669,7 +669,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.ActionEventResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/SendGroupKeyActionEvent",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/SendGroupKeyActionEvent",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ActionEventResponse,
@@ -689,7 +689,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.OverridesDataResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/PutOverridesData",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/PutOverridesData",
             ctx=ctx,
             request=request,
             response_obj=_pb2.OverridesDataResponse,
@@ -709,7 +709,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.WorkerUnsubscribeResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/Unsubscribe",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/Unsubscribe",
             ctx=ctx,
             request=request,
             response_obj=_pb2.WorkerUnsubscribeResponse,
@@ -729,7 +729,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.RefreshTimeoutResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/RefreshTimeout",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/RefreshTimeout",
             ctx=ctx,
             request=request,
             response_obj=_pb2.RefreshTimeoutResponse,
@@ -749,7 +749,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.ReleaseSlotResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/ReleaseSlot",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/ReleaseSlot",
             ctx=ctx,
             request=request,
             response_obj=_pb2.ReleaseSlotResponse,
@@ -769,7 +769,7 @@ class AsyncDispatcherClient(AsyncConnecpyClient):
     ) -> _pb2.UpsertWorkerLabelsResponse:
         method = "POST"
         return await self._make_request(
-            url=f"{server_path_prefix}/.Dispatcher/UpsertWorkerLabels",
+            url=f"{server_path_prefix}/mtmai.mtmpb.Dispatcher/UpsertWorkerLabels",
             ctx=ctx,
             request=request,
             response_obj=_pb2.UpsertWorkerLabelsResponse,
