@@ -2,6 +2,7 @@ import os
 from logging import Logger, getLogger
 from pathlib import Path
 from typing import Dict, Optional
+from urllib.parse import urlparse
 
 import yaml
 from pydantic import BaseModel
@@ -85,6 +86,9 @@ class ClientConfig:
         self.listener_v2_timeout = listener_v2_timeout
         if not self.server_url:
             self.server_url = settings.GOMTM_URL
+
+        uri = urlparse(self.server_url)
+        self.host_port = f"{uri.hostname}:{uri.port}"
 
 
 class ConfigLoader:
