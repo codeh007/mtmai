@@ -321,7 +321,11 @@ class Hatchet:
     def tenant_id(self) -> str:
         return self._client.config.tenant_id
 
-    # on_failure_step = staticmethod(on_failure_step)
+    workflow = staticmethod(workflow)
+
+    step = staticmethod(step)
+
+    on_failure_step = staticmethod(on_failure_step)
 
     async def boot(self):
         if not self._client.config.token:

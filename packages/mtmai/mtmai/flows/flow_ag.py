@@ -7,17 +7,17 @@ from mtmai.clients.agent_runtime.mtm_runtime import GrpcWorkerAgentRuntime
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
 from mtmai.flows.flow_dur import my_durable_func
-from mtmai.hatchet import step, workflow
 from mtmai.mtmpb import ag_connecpy
+from mtmai.worker_app import mtmapp
 
 
-@workflow(
+@mtmapp.workflow(
     name="ag",
     on_events=["ag:run"],
     input_validator=AgentRunInput,
 )
 class FlowAg:
-    @step(timeout="60m")
+    @mtmapp.step(timeout="60m")
     async def step_entry(self, hatctx: Context):
         input = cast(AgentRunInput, hatctx.workflow_input())
         if not input.run_id:
