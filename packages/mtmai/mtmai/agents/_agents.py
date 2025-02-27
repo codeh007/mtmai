@@ -7,9 +7,7 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
-from autogen_core import Component, RoutedAgent
-
-from mtmai.hatchet import Hatchet
+from autogen_core import Component
 
 
 class MtWebUserProxyAgent(UserProxyAgent):
@@ -46,14 +44,3 @@ class MtRoundRobinGroupChat(
         max_turns: int | None = None,
     ):
         super().__init__(participants, termination_condition, max_turns)
-
-
-class MtBaseAgent(RoutedAgent):
-    """扩展 BaseAgent"""
-
-    def __init__(self, description: str, wfapp: Hatchet = None):
-        # super().__init__("UI Agent")
-        if wfapp is not None:
-            self.wfapp = wfapp
-            self.gomtmapi = self.wfapp.rest.aio
-        super().__init__(description)

@@ -14,6 +14,8 @@ from mtmai.clients.admin import (
     TriggerWorkflowOptions,
     WorkflowRunDict,
 )
+from mtmai.clients.ag import AgClient
+from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
 from mtmai.context.worker_context import WorkerContext
@@ -26,8 +28,6 @@ from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
-
-from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
@@ -132,6 +132,7 @@ class ContextAioImpl(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
+        ag_client2: AgClient,
         agent_runtime: MtmAgentRuntime,
         namespace: str = "",
     ):
@@ -147,6 +148,7 @@ class ContextAioImpl(BaseContext):
         self.worker = worker
         self.ag = ag_client
         self.agent_runtime = agent_runtime
+        self.ag_client2 = ag_client2
 
     @tenacity_retry
     async def spawn_workflow(
@@ -217,6 +219,7 @@ class Context(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
+        ag_client2: AgClient,
         agent_runtime: MtmAgentRuntime,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
@@ -236,12 +239,14 @@ class Context(BaseContext):
             namespace=namespace,
             ag_client=ag_client,
             agent_runtime=agent_runtime,
+            ag_client2=ag_client2,
         )
         self.ag = ag_client
         self.admin = admin_client
         self.event = event_client
         self.rest = rest_client
         self.dispatcher = dispatcher_client
+        self.ag_client2 = ag_client2
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):
             try:
@@ -267,6 +272,7 @@ class Context(BaseContext):
         self.admin_client = admin_client
         self.event_client = event_client
         self.rest_client = rest_client
+        self.ag_client2 = ag_client2
         self.agent_runtime = agent_runtime
         self.workflow_listener = workflow_listener
         self.workflow_run_event_listener = workflow_run_event_listener

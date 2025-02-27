@@ -4,8 +4,6 @@ from autogen_core.models import ChatCompletionClient
 
 from mtmai.agents._agents import MtRoundRobinGroupChat
 
-from .__init__ import current_team_version
-
 
 class TravelTeamBuilder:
     """Manages team operations including loading configs and running teams"""
@@ -60,7 +58,7 @@ class TravelTeamBuilder:
             ],
             termination_condition=combined_termination,
         )
-        team.component_version = current_team_version
+        # team.component_version = settings.CURRENT_TEAM_VERSION
         team.component_label = self.name
         team.component_description = self.description
 

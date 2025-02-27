@@ -22,7 +22,6 @@ from mtmai.agents.team_builder.m1_web_builder import M1WebTeamBuilder
 from mtmai.agents.team_builder.swram_team_builder import SwramTeamBuilder
 from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
-from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
@@ -137,7 +136,7 @@ class WorkerTeam:
                 else:
                     logger.info(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
-            await self.save_team_state(
+            await self.hatctx.ag_client2.save_team_state(
                 team=team,
                 team_id=team_id,
                 tenant_id=tenant_id,
@@ -191,25 +190,25 @@ class WorkerTeam:
             results.append(new_team)
         return results
 
-    async def save_team_state(
-        self, team: Team, team_id: str, tenant_id: str, run_id: str
-    ) -> None:
-        """保存团队状态"""
-        logger.info("保存团队状态")
-        # 确保停止团队的内部 agents
-        if team and hasattr(team, "_participants"):
-            for agent in team._participants:
-                if hasattr(agent, "close"):
-                    await agent.close()
-        state = await team.save_state()
-        await self.hatctx.aio.rest_client.aio.ag_state_api.ag_state_upsert(
-            tenant=tenant_id,
-            ag_state_upsert=AgStateUpsert(
-                componentId=team_id,
-                runId=run_id,
-                state=state,
-            ).model_dump(),
-        )
+    # async def save_team_state(
+    #     self, team: Team, team_id: str, tenant_id: str, run_id: str
+    # ) -> None:
+    #     """保存团队状态"""
+    #     logger.info("保存团队状态")
+    #     # 确保停止团队的内部 agents
+    #     if team and hasattr(team, "_participants"):
+    #         for agent in team._participants:
+    #             if hasattr(agent, "close"):
+    #                 await agent.close()
+    #     state = await team.save_state()
+    #     await self.hatctx.aio.rest_client.aio.ag_state_api.ag_state_upsert(
+    #         tenant=tenant_id,
+    #         ag_state_upsert=AgStateUpsert(
+    #             componentId=team_id,
+    #             runId=run_id,
+    #             state=state,
+    #         ).model_dump(),
+    #     )
 
     async def handle_message_create(self, message: ChatMessageUpsert) -> None:
         await self.hatctx.aio.rest_client.aio.chat_api.chat_message_upsert(

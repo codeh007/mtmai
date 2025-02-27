@@ -1,13 +1,12 @@
 import asyncio
 from logging import Logger
-from typing import Callable
 
 import httpx
 from connecpy.context import ClientContext
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
-from mtmai.loader import ClientConfig, ConfigLoader
+from mtmai.loader import ClientConfig
 from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher
@@ -23,24 +22,24 @@ class Client:
     logInterceptor: Logger
     debug: bool = False
 
-    @classmethod
-    def from_environment(
-        cls,
-        defaults: ClientConfig = ClientConfig(),
-        debug: bool = False,
-        *opts_functions: Callable[[ClientConfig], None],
-    ):
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+    # @classmethod
+    # def from_environment(
+    #     cls,
+    #     defaults: ClientConfig = ClientConfig(),
+    #     debug: bool = False,
+    #     *opts_functions: Callable[[ClientConfig], None],
+    # ):
+    #     try:
+    #         loop = asyncio.get_running_loop()
+    #     except RuntimeError:
+    #         loop = asyncio.new_event_loop()
+    #         asyncio.set_event_loop(loop)
 
-        config: ClientConfig = ConfigLoader(".").load_client_config(defaults)
-        for opt_function in opts_functions:
-            opt_function(config)
+    #     config: ClientConfig = ConfigLoader(".").load_client_config(defaults)
+    #     for opt_function in opts_functions:
+    #         opt_function(config)
 
-        return cls.from_config(config, debug)
+    #     return cls.from_config(config, debug)
 
     @classmethod
     def from_config(
