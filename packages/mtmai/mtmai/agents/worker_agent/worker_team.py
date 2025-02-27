@@ -11,7 +11,7 @@ from autogen_agentchat.messages import (
     ToolCallExecutionEvent,
     ToolCallRequestEvent,
 )
-from autogen_core import AgentRuntime, SingleThreadedAgentRuntime
+from autogen_core import CancellationToken, SingleThreadedAgentRuntime
 from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from loguru import logger
@@ -36,17 +36,17 @@ class WorkerTeam:
     def __init__(
         self,
         hatctx: Context,
-        runtime: AgentRuntime = None,
         tracer_provider: TracerProvider | None = None,
-        # payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
         self.hatctx = hatctx
-        self._runtime = runtime
+        self._runtime = hatctx.agent_runtime
         if not self._runtime:
             self._runtime = SingleThreadedAgentRuntime(
                 tracer_provider=tracer_provider,
                 # payload_serialization_format=self._payload_serialization_format,
             )
+
+        self.cancellation_token = CancellationToken()
 
     async def handle_message(self, message: AgentRunInput) -> TaskResult:
         tenant_id: str | None = message.tenant_id
@@ -97,10 +97,10 @@ class WorkerTeam:
         try:
             async for event in team.run_stream(
                 task=message.content,
-                # cancellation_token=ctx.cancellation_token,
+                cancellation_token=self.cancellation_token,
             ):
-                # if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
-                #     break
+                if self.cancellation_token and self.cancellation_token.is_cancelled():
+                    break
 
                 if isinstance(event, TaskResult):
                     logger.info(f"Worker Agent 收到任务结果: {event}")

@@ -3,7 +3,6 @@ from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 from connecpy.context import ClientContext
 from loguru import logger
 from pydantic import BaseModel
-from typing_extensions import deprecated
 
 import mtmai.mtmpb.mtm_pb2 as _pb2
 from mtmai.clients.admin import AdminClient
@@ -282,12 +281,12 @@ class Hatchet:
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
 
-    @property
-    @deprecated(
-        "Direct access to client is deprecated and will be removed in a future version. Use specific client properties (Hatchet.admin, Hatchet.dispatcher, Hatchet.event, Hatchet.rest) instead. [0.32.0]",
-    )
-    def client(self) -> Client:
-        return self._client
+    # @property
+    # @deprecated(
+    #     "Direct access to client is deprecated and will be removed in a future version. Use specific client properties (Hatchet.admin, Hatchet.dispatcher, Hatchet.event, Hatchet.rest) instead. [0.32.0]",
+    # )
+    # def client(self) -> Client:
+    #     return self._client
 
     @property
     def admin(self) -> AdminClient:

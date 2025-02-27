@@ -213,7 +213,7 @@ class HostConnection:
         return await self._recv_queue.get()
 
 
-class GrpcWorkerAgentRuntime(AgentRuntime):
+class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
         agent_rpc_client: AgentRpcClient,

@@ -12,12 +12,12 @@ from typing import Any, Callable, Dict, cast
 
 from loguru import logger
 from mtmai.clients.admin import new_admin
+from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
-from mtmai.mtlibs.callable import DurableContext
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
@@ -38,6 +38,8 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+
+from ...mtlibs.callable import DurableContext
 
 
 class WorkerStatus(Enum):
@@ -100,6 +102,7 @@ class Runner:
             # session=self.session,
             timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
+        self.agent_runtime = MtmAgentRuntime(agent_rpc_client=self.ag)
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -302,6 +305,7 @@ class Runner:
                 worker=self.worker_context,
                 namespace=self.client.config.namespace,
                 ag_client=self.ag,
+                agent_runtime=self.agent_runtime,
                 validator_registry=self.validator_registry,
             )
 
@@ -317,6 +321,7 @@ class Runner:
             namespace=self.client.config.namespace,
             ag_client=self.ag,
             validator_registry=self.validator_registry,
+            agent_runtime=self.agent_runtime,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:
@@ -380,6 +385,7 @@ class Runner:
                 worker=self.worker_context,
                 ag_client=self.ag,
                 namespace=self.client.config.namespace,
+                agent_runtime=self.agent_runtime,
             )
 
             self.contexts[action.get_group_key_run_id] = context

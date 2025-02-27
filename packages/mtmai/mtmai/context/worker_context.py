@@ -23,6 +23,3 @@ class WorkerContext:
 
     def id(self):
         return self._worker_id
-
-    # def has_workflow(self, workflow_name: str):
-    #     return workflow_name in self._registered_workflow_names

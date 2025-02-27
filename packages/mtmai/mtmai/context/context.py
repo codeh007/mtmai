@@ -27,10 +27,11 @@ from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
+from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
+
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
-
 user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
 
 
@@ -131,6 +132,7 @@ class ContextAioImpl(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
+        agent_runtime: MtmAgentRuntime,
         namespace: str = "",
     ):
         self.action = action
@@ -144,6 +146,7 @@ class ContextAioImpl(BaseContext):
         self.spawn_index = -1
         self.worker = worker
         self.ag = ag_client
+        self.agent_runtime = agent_runtime
 
     @tenacity_retry
     async def spawn_workflow(
@@ -214,6 +217,7 @@ class Context(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
+        agent_runtime: MtmAgentRuntime,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
     ):
@@ -221,15 +225,17 @@ class Context(BaseContext):
         self.validator_registry = validator_registry
 
         self.aio = ContextAioImpl(
-            action,
-            dispatcher_client,
-            admin_client,
-            event_client,
-            rest_client,
-            workflow_listener,
-            workflow_run_event_listener,
-            worker,
-            namespace,
+            action=action,
+            dispatcher_client=dispatcher_client,
+            admin_client=admin_client,
+            event_client=event_client,
+            rest_client=rest_client,
+            workflow_listener=workflow_listener,
+            workflow_run_event_listener=workflow_run_event_listener,
+            worker=worker,
+            namespace=namespace,
+            ag_client=ag_client,
+            agent_runtime=agent_runtime,
         )
         self.ag = ag_client
         self.admin = admin_client
@@ -261,6 +267,7 @@ class Context(BaseContext):
         self.admin_client = admin_client
         self.event_client = event_client
         self.rest_client = rest_client
+        self.agent_runtime = agent_runtime
         self.workflow_listener = workflow_listener
         self.workflow_run_event_listener = workflow_run_event_listener
         self.namespace = namespace
