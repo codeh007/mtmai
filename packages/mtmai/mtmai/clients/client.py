@@ -5,7 +5,7 @@ import httpx
 from connecpy.context import ClientContext
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
-from mtmai.clients.rest_client import RestApi
+from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
@@ -18,7 +18,7 @@ class Client:
     admin: AdminClient
     dispatcher: DispatcherClient
     event: EventClient
-    rest: RestApi
+    rest: AsyncRestApi
     workflow_listener: PooledWorkflowRunListener
     logInterceptor: Logger
     debug: bool = False
@@ -48,7 +48,7 @@ class Client:
         event_client = EventClient(config, eventsService)
         admin_client = new_admin(config)
         dispatcher_client = new_dispatcher(config)
-        rest_client = RestApi(config.server_url, config.token, config.tenant_id)
+        rest_client = AsyncRestApi(config.server_url, config.token, config.tenant_id)
         workflow_listener = None  # Initialize this if needed
 
         return cls(
@@ -67,7 +67,7 @@ class Client:
         admin_client: AdminClient,
         dispatcher_client: DispatcherClient,
         workflow_listener: PooledWorkflowRunListener,
-        rest_client: RestApi,
+        rest_client: AsyncRestApi,
         config: ClientConfig,
         debug: bool = False,
     ):

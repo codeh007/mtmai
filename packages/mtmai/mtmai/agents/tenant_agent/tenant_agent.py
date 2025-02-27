@@ -36,7 +36,7 @@ class TenantAgent(RoutedAgent):
     def __init__(self, description: str, wfapp: Hatchet = None) -> None:
         if wfapp is not None:
             self.wfapp = wfapp
-            self.gomtmapi = self.wfapp.rest.aio
+            self.gomtmapi = self.wfapp.rest
         else:
             raise ValueError("ui_agent is required")
         self.team_builders = [

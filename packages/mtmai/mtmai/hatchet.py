@@ -9,8 +9,6 @@ from mtmai import loader
 from mtmai.clients.admin import AdminClient
 from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
-
-# from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.features.cron import CronClient
@@ -29,6 +27,8 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
+
+from .clients.rest_client import AsyncRestApi
 
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
@@ -340,7 +340,7 @@ class Hatchet:
         self._client = Client.from_config(self.config, debug=self.debug)
 
     async def load_default_tenant(self):
-        resp = await self._client.rest.aio.user_api.tenant_memberships_list()
+        resp = await self._client.rest.user_api.tenant_memberships_list()
         return resp.rows[0].tenant.metadata.id
 
     def function(

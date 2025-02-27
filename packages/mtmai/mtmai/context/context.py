@@ -17,7 +17,7 @@ from mtmai.clients.admin import (
 from mtmai.clients.ag import AgClient
 from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.events import EventClient
-from mtmai.clients.rest_client import RestApi
+from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.context.worker_context import WorkerContext
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.types import WorkflowValidator
@@ -127,7 +127,7 @@ class ContextAioImpl(BaseContext):
         dispatcher_client: DispatcherClient,
         admin_client: AdminClient,
         event_client: EventClient,
-        rest_client: RestApi,
+        rest_client: AsyncRestApi,
         workflow_listener: PooledWorkflowRunListener,
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
@@ -214,7 +214,7 @@ class Context(BaseContext):
         dispatcher_client: DispatcherClient,
         admin_client: AdminClient,
         event_client: EventClient,
-        rest_client: RestApi,
+        rest_client: AsyncRestApi,
         workflow_listener: PooledWorkflowRunListener,
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
