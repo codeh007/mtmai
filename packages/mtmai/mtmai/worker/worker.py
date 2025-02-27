@@ -327,10 +327,6 @@ class Worker:
             1
         )  # Exit immediately TODO - should we exit with 1 here, there may be other workers to cleanup
 
-    # def get_ag_runtime(self) -> AgentRuntime:
-    #     agent_rpc_client = AgentRpcClient(self.config.server_url)
-    #     return GrpcWorkerAgentRuntime(agent_rpc_client=agent_rpc_client)
-
 
 def register_on_worker(callable: HatchetCallable[T], worker: Worker) -> None:
     worker.register_function(callable.get_action_name(), callable)

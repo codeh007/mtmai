@@ -12,7 +12,7 @@ mtmapp = Hatchet.from_config(
             # logger=logger,
         )
     ),
-    debug=True,
+    # debug=True,
 )
 
 

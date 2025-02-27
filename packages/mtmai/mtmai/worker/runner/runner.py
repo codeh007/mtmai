@@ -10,12 +10,12 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
-import httpx
 from loguru import logger
 from mtmai.clients.admin import new_admin
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
+from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.callable import DurableContext
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
@@ -38,8 +38,6 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
-
-default_client_timeout = 20
 
 
 class WorkerStatus(Enum):
@@ -93,14 +91,14 @@ class Runner:
 
         self.otel_tracer = create_tracer(config=config)
 
-        self.session = httpx.AsyncClient(
-            base_url=self.config.server_url,
-            timeout=default_client_timeout,
-        )
+        # self.session = httpx.AsyncClient(
+        #     base_url=self.config.server_url,
+        #     timeout=settings.DEFAULT_CLIENT_TIMEOUT,
+        # )
         self.ag = ag_connecpy.AsyncAgServiceClient(
             self.config.server_url,
-            session=self.session,
-            timeout=default_client_timeout,
+            # session=self.session,
+            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
 
     def create_workflow_run_url(self, action: Action) -> str:

@@ -222,6 +222,7 @@ class Settings(BaseSettings):
     GOMTM_URL: str = "http://127.0.0.1:8383"
     # HATCHET_CLIENT_TOKEN: str | None = None
     AG_HOST_ADDRESS: str = "0.0.0.0:7777"
+    DEFAULT_CLIENT_TIMEOUT: int = 20
 
 
 settings = Settings()  # type: ignore
