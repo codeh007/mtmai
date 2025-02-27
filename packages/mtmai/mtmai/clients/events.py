@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import json
 from typing import Any, Dict, List, Optional, TypedDict
@@ -6,6 +5,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 import grpc
 from connecpy.context import ClientContext
 from google.protobuf import timestamp_pb2
+from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb import events_connecpy
@@ -17,7 +17,6 @@ from mtmai.mtmpb.events_pb2 import (
     PutStreamEventRequest,
 )
 
-mtmclient_path_prefix = "/mtmapi"
 
 def proto_timestamp_now():
     t = datetime.datetime.now().timestamp()
@@ -43,9 +42,11 @@ class BulkPushEventWithMetadata(TypedDict):
 
 
 class EventClient:
-    def __init__(self,
-                 config: ClientConfig,
-                 eventService: events_connecpy.AsyncEventsServiceClient):
+    def __init__(
+        self,
+        config: ClientConfig,
+        eventService: events_connecpy.AsyncEventsServiceClient,
+    ):
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {config.token}",
@@ -54,20 +55,6 @@ class EventClient:
         )
         self.namespace = config.namespace
         self.eventService = eventService
-
-    async def async_push(
-        self, event_key, payload, options: Optional[PushEventOptions] = None
-    ) -> Event:
-        return await asyncio.to_thread(
-            self.push, event_key=event_key, payload=payload, options=options
-        )
-
-    async def async_bulk_push(
-        self,
-        events: List[BulkPushEventWithMetadata],
-        options: Optional[BulkPushEventOptions] = None,
-    ) -> List[Event]:
-        return await asyncio.to_thread(self.bulk_push, events=events, options=options)
 
     @tenacity_retry
     async def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
@@ -102,11 +89,10 @@ class EventClient:
         )
 
         try:
-            # return self.client.Push(request, metadata=get_metadata(self.token))
             return await self.eventService.Push(
                 ctx=self.client_context,
                 request=request,
-                server_path_prefix=mtmclient_path_prefix,
+                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
             )
         except grpc.RpcError as e:
             raise ValueError(f"gRPC error: {e}")
@@ -157,7 +143,7 @@ class EventClient:
             response = await self.eventService.BulkPush(
                 ctx=self.client_context,
                 request=bulk_request,
-                server_path_prefix=mtmclient_path_prefix,
+                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
             )
             return response.events
         except grpc.RpcError as e:
@@ -173,7 +159,7 @@ class EventClient:
             await self.eventService.PutLog(
                 ctx=self.client_context,
                 request=request,
-                server_path_prefix=mtmclient_path_prefix,
+                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
             )
 
         except Exception as e:
@@ -195,7 +181,7 @@ class EventClient:
             )
             await self.eventService.PutStreamEvent(
                 ctx=self.client_context,
-                server_path_prefix=mtmclient_path_prefix,
+                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
                 request=request,
             )
         except Exception as e:

@@ -9,7 +9,8 @@ from mtmai import loader
 from mtmai.clients.admin import AdminClient
 from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
-from mtmai.clients.rest_client import RestApi
+
+# from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.features.cron import CronClient
@@ -280,7 +281,7 @@ class Hatchet:
         return self._client.event
 
     @property
-    def rest(self) -> RestApi:
+    def rest(self) -> AsyncRestApi:
         return self._client.rest
 
     @property

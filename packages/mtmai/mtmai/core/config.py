@@ -223,6 +223,7 @@ class Settings(BaseSettings):
     # HATCHET_CLIENT_TOKEN: str | None = None
     AG_HOST_ADDRESS: str = "0.0.0.0:7777"
     DEFAULT_CLIENT_TIMEOUT: int = 20
+    GOMTM_API_PATH_PREFIX: str = "/mtmapi"
 
 
 settings = Settings()  # type: ignore

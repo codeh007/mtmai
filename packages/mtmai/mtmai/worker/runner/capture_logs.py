@@ -41,7 +41,6 @@ class CustomLogHandler(logging.StreamHandler):
     def __init__(self, event_client: EventClient, stream=None):
         super().__init__(stream)
         self.event_client = event_client
-        # 移除 ThreadPoolExecutor，因为我们将使用异步方式
 
     async def _log(self, line: str, step_run_id: str | None):
         try:

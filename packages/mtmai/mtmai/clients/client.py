@@ -6,6 +6,7 @@ from connecpy.context import ClientContext
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
+from mtmai.core.config import settings
 from mtmai.loader import ClientConfig
 from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
@@ -21,25 +22,6 @@ class Client:
     workflow_listener: PooledWorkflowRunListener
     logInterceptor: Logger
     debug: bool = False
-
-    # @classmethod
-    # def from_environment(
-    #     cls,
-    #     defaults: ClientConfig = ClientConfig(),
-    #     debug: bool = False,
-    #     *opts_functions: Callable[[ClientConfig], None],
-    # ):
-    #     try:
-    #         loop = asyncio.get_running_loop()
-    #     except RuntimeError:
-    #         loop = asyncio.new_event_loop()
-    #         asyncio.set_event_loop(loop)
-
-    #     config: ClientConfig = ConfigLoader(".").load_client_config(defaults)
-    #     for opt_function in opts_functions:
-    #         opt_function(config)
-
-    #     return cls.from_config(config, debug)
 
     @classmethod
     def from_config(
@@ -105,7 +87,6 @@ class Client:
         self.logInterceptor = config.logInterceptor
         self.debug = debug
 
-        self.default_client_timeout = 20
         # MTM 客户端
         # 参考: https://github.com/i2y/connecpy/blob/main/example/async_client.py
 
@@ -115,26 +96,17 @@ class Client:
                 "X-Tid": config.tenant_id,
             }
         )
-        gomtm_api_path_prefix = "/mtmapi"
-        gomtm_api_url = config.server_url + gomtm_api_path_prefix
+        gomtm_api_url = config.server_url + settings.GOMTM_API_PATH_PREFIX
         self.session = httpx.AsyncClient(
             base_url=gomtm_api_url,
-            timeout=self.default_client_timeout,
+            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
         self.ag = ag_connecpy.AsyncAgServiceClient(
-            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+            gomtm_api_url, session=self.session, timeout=settings.DEFAULT_CLIENT_TIMEOUT
         )
         self.events = events_connecpy.AsyncEventsServiceClient(
-            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+            gomtm_api_url, session=self.session, timeout=settings.DEFAULT_CLIENT_TIMEOUT
         )
         self.mtm = mtm_connecpy.AsyncMtmServiceClient(
-            gomtm_api_url, session=self.session, timeout=self.default_client_timeout
+            gomtm_api_url, session=self.session, timeout=settings.DEFAULT_CLIENT_TIMEOUT
         )
-
-
-def with_host_port(host: str, port: int):
-    def with_host_port_impl(config: ClientConfig):
-        config.host = host
-        config.port = port
-
-    return with_host_port_impl
