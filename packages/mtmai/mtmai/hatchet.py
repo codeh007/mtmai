@@ -5,11 +5,13 @@ from loguru import logger
 from pydantic import BaseModel
 
 import mtmai.mtmpb.mtm_pb2 as _pb2
+from mtmai import loader
 from mtmai.clients.admin import AdminClient
 from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import RestApi
 from mtmai.context.context import Context
+from mtmai.core.config import settings
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.loader import ClientConfig, ConfigLoader, CredentialsData
@@ -29,9 +31,6 @@ from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 
 T = TypeVar("T", bound=BaseModel)
 TWorkflow = TypeVar("TWorkflow", bound=object)
-
-# config_dir = Path.home().joinpath(".mtm")
-# credentials_file = Path(config_dir).joinpath("mtm_credentials.json")
 
 
 def workflow(
@@ -249,44 +248,24 @@ class Hatchet:
     scheduled: ScheduledClient
     functions: List[HatchetCallable] = []
 
-    @classmethod
-    def from_environment(
-        cls, defaults: ClientConfig = ClientConfig(), **kwargs: Any
-    ) -> "Hatchet":
-        return cls(client=Client.from_environment(defaults), **kwargs)
-
-    @classmethod
-    def from_config(cls, config: ClientConfig, **kwargs: Any) -> "Hatchet":
-        return cls(client=Client.from_config(config), **kwargs)
-
     def __init__(
         self,
         debug: bool = False,
         client: Optional[Client] = None,
-        config: ClientConfig = ClientConfig(),
     ):
-        """
-        Initialize a new Hatchet instance.
-
-        Args:
-            debug (bool, optional): Enable debug logging. Defaults to False.
-            client (Optional[Client], optional): A pre-configured Client instance. Defaults to None.
-            config (ClientConfig, optional): Configuration for creating a new Client. Defaults to ClientConfig().
-        """
         if client is not None:
             self._client = client
         else:
-            self._client = Client.from_config(config, debug)
+            config = ClientConfig(
+                server_url=settings.GOMTM_URL,
+                # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
+                # logger=logger,
+            )
+            client_config = loader.ConfigLoader().load_client_config(config)
+            self._client = Client.from_config(client_config, debug=debug)
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
-
-    # @property
-    # @deprecated(
-    #     "Direct access to client is deprecated and will be removed in a future version. Use specific client properties (Hatchet.admin, Hatchet.dispatcher, Hatchet.event, Hatchet.rest) instead. [0.32.0]",
-    # )
-    # def client(self) -> Client:
-    #     return self._client
 
     @property
     def admin(self) -> AdminClient:

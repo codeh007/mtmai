@@ -1,19 +1,9 @@
 from __future__ import annotations
 
-from mtmai import loader
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 
-mtmapp = Hatchet.from_config(
-    loader.ConfigLoader().load_client_config(
-        loader.ClientConfig(
-            server_url=settings.GOMTM_URL,
-            # 绑定 python 默认logger,这样,就可以不用依赖 hatchet 内置的ctx.log()
-            # logger=logger,
-        )
-    ),
-    # debug=True,
-)
+mtmapp = Hatchet()
 
 
 async def run_worker():

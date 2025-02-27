@@ -139,24 +139,3 @@ def with_host_port(host: str, port: int):
         config.port = port
 
     return with_host_port_impl
-
-
-# def get_gomtm():
-#     backend_url = get_backend_url()
-#     if not backend_url:
-#         raise ValueError("backend_url is required")
-#     api_token = get_api_token_context()
-#     tenant_id = get_tenant_id()
-#     return AsyncRestApi(backend_url, api_token, tenant_id)
-
-
-# gomtm_ctx: ContextVar["AsyncRestApi"] = ContextVar("gomtm_api_ctx", default=None)
-
-
-# def get_gomtm_api_context() -> AsyncRestApi:
-#     a = gomtm_ctx.get()
-#     return a
-
-
-# def set_gomtm_api_context(gomtm_api: AsyncRestApi):
-#     gomtm_ctx.set(gomtm_api)
