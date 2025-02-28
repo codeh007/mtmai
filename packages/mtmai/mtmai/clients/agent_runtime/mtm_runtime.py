@@ -10,7 +10,6 @@ import warnings
 from asyncio import Future, Task
 from collections import defaultdict
 from typing import (
-    TYPE_CHECKING,
     Any,
     AsyncIterable,
     AsyncIterator,
@@ -57,28 +56,19 @@ from autogen_core._telemetry import (
 from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._constants import GRPC_IMPORT_ERROR_STR
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
-from autogen_ext.runtimes.grpc._utils import subscription_to_proto
-from autogen_ext.runtimes.grpc.protos import (
-    agent_worker_pb2,
-    agent_worker_pb2_grpc,
-    cloudevent_pb2,
-)
 from google.protobuf import any_pb2
+from mtmai.clients.agent_runtime._utils import subscription_to_proto
+from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
+from mtmai.mtmpb.agent_worker_pb2_grpc import AgentRpcStub
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
 from ...core.loader import ClientConfig
-from ...mtmpb.workflows_pb2_grpc import WorkflowServiceStub
-from ..connection import new_conn
 
 try:
     import grpc.aio
 except ImportError as e:
     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
-
-if TYPE_CHECKING:
-    from autogen_ext.runtimes.grpc.protos.agent_worker_pb2_grpc import AgentRpcAsyncStub
-
 logger = logging.getLogger("autogen_core")
 event_logger = logging.getLogger("autogen_core.events")
 
@@ -128,7 +118,7 @@ class HostConnection:
         self._send_queue = asyncio.Queue[agent_worker_pb2.Message]()
         self._recv_queue = asyncio.Queue[agent_worker_pb2.Message]()
         self._connection_task: Task[None] | None = None
-        self._stub: AgentRpcAsyncStub = stub
+        self._stub = stub
         self._client_id = str(uuid.uuid4())
 
     @property
@@ -140,35 +130,6 @@ class HostConnection:
         return [("client-id", self._client_id)]
 
     @classmethod
-    async def from_host_address(
-        cls,
-        host_address: str,
-        extra_grpc_config: ChannelArgumentType = DEFAULT_GRPC_CONFIG,
-    ) -> Self:
-        logger.info("Connecting to %s", host_address)
-        #  Always use DEFAULT_GRPC_CONFIG and override it with provided grpc_config
-        merged_options = [
-            (k, v)
-            for k, v in {
-                **dict(HostConnection.DEFAULT_GRPC_CONFIG),
-                **dict(extra_grpc_config),
-            }.items()
-        ]
-
-        channel = grpc.aio.insecure_channel(
-            host_address,
-            options=merged_options,
-        )
-        stub: AgentRpcAsyncStub = agent_worker_pb2_grpc.AgentRpcStub(channel)  # type: ignore
-        instance = cls(channel, stub)
-
-        instance._connection_task = await instance._connect(
-            stub, instance._send_queue, instance._recv_queue, instance._client_id
-        )
-
-        return instance
-
-    @classmethod
     async def from_client_config(
         cls,
         config: ClientConfig,
@@ -176,6 +137,7 @@ class HostConnection:
     ) -> Self:
         # logger.info("Connecting to %s", host_address)
         #  Always use DEFAULT_GRPC_CONFIG and override it with provided grpc_config
+
         merged_options = [
             (k, v)
             for k, v in {
@@ -188,7 +150,7 @@ class HostConnection:
             config.host_port,
             options=merged_options,
         )
-        stub: AgentRpcAsyncStub = agent_worker_pb2_grpc.AgentRpcStub(channel)  # type: ignore
+        stub = AgentRpcStub(channel)  # type: ignore
         instance = cls(channel, stub)
 
         instance._connection_task = await instance._connect(
@@ -249,15 +211,11 @@ class HostConnection:
 class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
-        # agent_rpc_client: AgentRpcClient,
-        # host_address: str,
         config: ClientConfig = ClientConfig(),
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        # self._agent_rpc_client = agent_rpc_client
-        # self._host_address = host_address
         self.config = config
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
@@ -297,11 +255,8 @@ class MtmAgentRuntime(AgentRuntime):
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        aio_conn = new_conn(self.config, True)
-        self.client = WorkflowServiceStub(aio_conn)
-        # self._host_connection = await HostConnection.from_host_address(
-        #     self._host_address, extra_grpc_config=self._extra_grpc_config
-        # )
+        # aio_conn = new_conn(self.config, True)
+        # self.client = WorkflowServiceStub(aio_conn)
         self._host_connection = await HostConnection.from_client_config(
             self.config, extra_grpc_config=self._extra_grpc_config
         )

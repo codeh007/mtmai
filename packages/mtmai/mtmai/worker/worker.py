@@ -200,7 +200,7 @@ class Worker:
         self.action_listener_process = self._start_listener()
 
         self.action_runner = self._run_action_runner()
-        await self.agent_runtime.start()
+        # await self.agent_runtime.start()
         # self.
 
         self.action_listener_health_check = self.loop.create_task(
