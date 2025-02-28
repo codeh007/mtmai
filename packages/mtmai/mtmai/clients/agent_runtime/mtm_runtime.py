@@ -64,10 +64,14 @@ from autogen_ext.runtimes.grpc.protos import (
     cloudevent_pb2,
 )
 from google.protobuf import any_pb2
+from mtmai.core.config import settings
+from mtmai.mtmpb import ag_connecpy
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
-from ...mtmpb.agent_worker_connecpy import AgentRpcClient
+from ...core.loader import ClientConfig
+from ...mtmpb.workflows_pb2_grpc import WorkflowServiceStub
+from ..connection import new_conn
 
 try:
     import grpc.aio
@@ -216,12 +220,15 @@ class HostConnection:
 class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
-        agent_rpc_client: AgentRpcClient,
+        # agent_rpc_client: AgentRpcClient,
+        host_address: str,
+        config: ClientConfig = ClientConfig(),
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
-        self._agent_rpc_client = agent_rpc_client
+        # self._agent_rpc_client = agent_rpc_client
+        self._host_address = host_address
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
@@ -261,8 +268,17 @@ class MtmAgentRuntime(AgentRuntime):
         if self._running:
             raise ValueError("Runtime is already running.")
         logger.info(f"Connecting to host: {self._host_address}")
+
+        if not self.client:
+            aio_conn = new_conn(self.config, True)
+            self.client = WorkflowServiceStub(aio_conn)
         self._host_connection = await HostConnection.from_host_address(
             self._host_address, extra_grpc_config=self._extra_grpc_config
+        )
+        self.ag = ag_connecpy.AsyncAgServiceClient(
+            "http://localhost:8383",
+            session=self.session,
+            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
         logger.info("Connection established")
         if self._read_task is None:

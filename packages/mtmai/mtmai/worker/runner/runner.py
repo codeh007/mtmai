@@ -14,7 +14,6 @@ from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
-from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
@@ -97,9 +96,11 @@ class Runner:
             # session=self.session,
             timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
-        self.agent_runtime = MtmAgentRuntime(agent_rpc_client=self.ag)
+        # self.agent_runtime = MtmAgentRuntime(config=self.config)
         # self.aio = AsyncRestApi(self.config)
-        self.ag_client2 = AgClient(self.config, self.ag)
+        self.ag_client2 = AgClient(
+            self.config,
+        )
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -319,7 +320,7 @@ class Runner:
             worker=self.worker_context,
             namespace=self.client.config.namespace,
             validator_registry=self.validator_registry,
-            agent_runtime=self.agent_runtime,
+            # agent_runtime=self.agent_runtime,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:

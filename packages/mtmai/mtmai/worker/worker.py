@@ -24,6 +24,8 @@ from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
 
+from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
+
 T = TypeVar("T")
 
 
@@ -82,6 +84,7 @@ class Worker:
 
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
+        self.agent_runtime = MtmAgentRuntime(config=self.config)
 
         self._setup_signal_handlers()
 
@@ -196,6 +199,7 @@ class Worker:
         self.action_listener_process = self._start_listener()
 
         self.action_runner = self._run_action_runner()
+        await self.agent_runtime.start()
 
         self.action_listener_health_check = self.loop.create_task(
             self._check_listener_health()
