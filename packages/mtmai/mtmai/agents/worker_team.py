@@ -11,14 +11,13 @@ from autogen_agentchat.messages import (
     ToolCallExecutionEvent,
     ToolCallRequestEvent,
 )
-from autogen_core import CancellationToken
+from autogen_core import CancellationToken, SingleThreadedAgentRuntime
 from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from loguru import logger
 from opentelemetry.trace import TracerProvider
 
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
-from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
@@ -26,8 +25,6 @@ from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
-
-from .rpc_demo_team import RpcDemoTeam
 
 
 class WorkerTeam:
@@ -39,12 +36,12 @@ class WorkerTeam:
         self.hatctx = hatctx
         # self._runtime = hatctx.agent_runtime
         # if not self._runtime:
-        #     self._runtime = SingleThreadedAgentRuntime(
-        #         tracer_provider=tracer_provider,
-        #         # payload_serialization_format=self._payload_serialization_format,
-        #     )
+        self._runtime = SingleThreadedAgentRuntime(
+            tracer_provider=tracer_provider,
+            # payload_serialization_format=self._payload_serialization_format,
+        )
 
-        self._runtime = MtmAgentRuntime(agent_rpc_client=hatctx.aio.ag)
+        # self._runtime = MtmAgentRuntime(agent_rpc_client=hatctx.aio.ag)
 
         self.cancellation_token = CancellationToken()
 
@@ -60,10 +57,10 @@ class WorkerTeam:
             )
             return
 
-        self._runtime = MtmAgentRuntime(agent_rpc_client=self.hatctx.aio.ag)
+        # self._runtime = MtmAgentRuntime(agent_rpc_client=self.hatctx.aio.ag)
 
-        rpc_demo_team = RpcDemoTeam(self._runtime)
-        await rpc_demo_team.run()
+        # rpc_demo_team = RpcDemoTeam(self._runtime)
+        # await rpc_demo_team.run()
 
         team_comp_data: MtComponent = None
         if not message.team_id:
