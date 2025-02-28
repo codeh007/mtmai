@@ -1,4 +1,3 @@
-from autogen_core import AgentRuntime
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 
 
@@ -11,11 +10,11 @@ class WorkerContext:
         self,
         labels: dict[str, str | int],
         client: DispatcherClient,
-        agent_runtime: AgentRuntime,
+        # agent_runtime: AgentRuntime,
     ):
         self._labels = labels
         self.client = client
-        self.agent_runtime = agent_runtime
+        # self.agent_runtime = agent_runtime
 
     def labels(self):
         return self._labels

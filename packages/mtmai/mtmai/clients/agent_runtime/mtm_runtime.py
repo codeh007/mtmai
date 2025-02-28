@@ -85,11 +85,13 @@ class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
         config: ClientConfig = ClientConfig(),
+        # client: AgentRuntimeClient,
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
         self.config = config
+        # self.client = client
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
@@ -128,11 +130,10 @@ class MtmAgentRuntime(AgentRuntime):
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        # aio_conn = new_conn(self.config, True)
-        # self.client = WorkflowServiceStub(aio_conn)
         self._host_connection = await AgentRuntimeClient.from_client_config(
             self.config, extra_grpc_config=self._extra_grpc_config
         )
+        # self._host_connection = self.client
         logger.info("(MTM Grpc Runtime)Connection established")
         if self._read_task is None:
             self._read_task = asyncio.create_task(self._run_read_loop())

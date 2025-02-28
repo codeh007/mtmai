@@ -5,15 +5,12 @@ from typing import Callable, TypeVar
 
 from core.loader import ClientConfig
 from loguru import logger
-from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
-
-from ...clients.agent_runtime_client import AgentRuntimeClient
 
 STOP_LOOP = "STOP_LOOP"
 
@@ -43,15 +40,12 @@ class WorkerActionRunLoopManager:
         # if self.debug:
         #     logger.setLevel(logging.DEBUG)
         self.client = Client.from_config(self.config, self.debug)
-        self.agent_runtime = MtmAgentRuntime(config=self.config)
-        self.agent_runtime_client = AgentRuntimeClient.from_client_config(self.config)
         self.start()
 
     def start(self, retry_count=1):
         k = self.loop.create_task(self.async_start(retry_count))
 
     async def async_start(self, retry_count=1):
-        await self.agent_runtime.start()
         await capture_logs(
             self.client.logInterceptor,
             self.client.event,
@@ -84,7 +78,7 @@ class WorkerActionRunLoopManager:
             validator_registry=self.validator_registry,
             config=self.config,
             labels=self.labels,
-            agent_runtime=self.agent_runtime,
+            # agent_runtime=self.agent_runtime,
         )
 
         logger.debug(f"'{self.name}' waiting for {list(self.action_registry.keys())}")

@@ -28,7 +28,7 @@ from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
-from ..clients.agent_runtime_client import AgentRuntimeClient
+from ..core.loader import ClientConfig
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
@@ -55,8 +55,8 @@ def get_api_token_context() -> str | None:
     return api_token_context.get()
 
 
-def get_gomtm():
-    pass
+# def get_gomtm():
+#     pass
 
 
 tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
@@ -134,7 +134,8 @@ class ContextAioImpl(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        agent_runtime_client: AgentRuntimeClient,
+        # agent_runtime_client: AgentRuntimeClient,
+        config: ClientConfig,
         namespace: str = "",
     ):
         self.action = action
@@ -149,7 +150,8 @@ class ContextAioImpl(BaseContext):
         self.worker = worker
         self.ag = ag_client
         self.ag_client2 = ag_client2
-        self.agent_runtime_client = agent_runtime_client
+        # self.agent_runtime_client = agent_runtime_client
+        self.config = config
 
     @tenacity_retry
     async def spawn_workflow(
@@ -221,7 +223,8 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        agent_runtime_client: AgentRuntimeClient,
+        # agent_runtime_client: AgentRuntimeClient,
+        config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
     ):
@@ -240,7 +243,8 @@ class Context(BaseContext):
             namespace=namespace,
             ag_client=ag_client,
             ag_client2=ag_client2,
-            agent_runtime_client=agent_runtime_client,
+            # agent_runtime_client=agent_runtime_client,
+            config=config,
         )
         self.ag = ag_client
         self.admin = admin_client
@@ -248,7 +252,8 @@ class Context(BaseContext):
         self.rest = rest_client
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
-        self.agent_runtime_client = agent_runtime_client
+        # self.agent_runtime_client = agent_runtime_client
+        self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):
             try:

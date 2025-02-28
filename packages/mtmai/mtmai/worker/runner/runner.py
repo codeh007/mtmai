@@ -10,7 +10,6 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
-from autogen_core import AgentRuntime
 from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.admin import new_admin
@@ -41,7 +40,6 @@ from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
 
 from ...clients.ag import AgClient
-from ...clients.agent_runtime_client import AgentRuntimeClient
 
 
 class WorkerStatus(Enum):
@@ -62,7 +60,7 @@ class Runner:
         validator_registry: dict[str, WorkflowValidator] = {},
         config: ClientConfig = ClientConfig(),
         labels: dict[str, str | int] = {},
-        agent_runtime: AgentRuntime | None = None,
+        # agent_runtime: AgentRuntime | None = None,
     ):
         # We store the config so we can dynamically create clients for the dispatcher client.
         self.config = config
@@ -93,7 +91,7 @@ class Runner:
         self.worker_context = WorkerContext(
             labels=labels,
             client=Client.from_config(config).dispatcher,
-            agent_runtime=agent_runtime,
+            # agent_runtime=agent_runtime,
         )
 
         self.otel_tracer = create_tracer(config=config)
@@ -107,7 +105,9 @@ class Runner:
             self.config,
             self.ag,
         )
-        self.agent_runtime_client = AgentRuntimeClient.from_client_config(self.config)
+        # self.agent_runtime_client = asyncio.run(
+        #     AgentRuntimeClient.from_client_config(self.config)
+        # )
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -327,6 +327,8 @@ class Runner:
             worker=self.worker_context,
             namespace=self.client.config.namespace,
             validator_registry=self.validator_registry,
+            config=self.config,
+            # agent_runtime_client=self.agent_runtime_client,
             # agent_runtime=self.agent_runtime,
         )
 
@@ -391,8 +393,7 @@ class Runner:
                 worker=self.worker_context,
                 ag_client=self.ag,
                 namespace=self.client.config.namespace,
-                agent_runtime_client=self.agent_runtime_client,
-                # agent_runtime=self.agent_runtime,
+                # agent_runtime_client=self.agent_runtime_client,
             )
 
             self.contexts[action.get_group_key_run_id] = context

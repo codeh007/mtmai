@@ -71,13 +71,12 @@ class GreeterAgent(RoutedAgent):
 class FlowAg:
     @mtmapp.step()
     async def step_entry(self, hatctx: Context):
-        # runtime = MtmAgentRuntime(host_address="localhost:8383")
-        # await runtime.start()
-        # runtime = mtmapp.agent_runtime
+        # conn = hatctx.agent_runtime_client
+        runtime = MtmAgentRuntime(config=hatctx.config)
+        await runtime.start()
         # 提示: hatctx.worker.agent_runtime 是全局的.
-        runtime = hatctx.worker.agent_runtime
+        # runtime = hatctx.worker.agent_runtime
 
-        # runtime = MtmAgentRuntime(config=hatctx.)
         await ReceiveAgent.register(
             runtime,
             "receiver",
