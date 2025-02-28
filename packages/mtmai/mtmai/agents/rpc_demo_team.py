@@ -57,10 +57,10 @@ class GreeterAgent(RoutedAgent):
 class RpcDemoTeam:
     def __init__(self, runtime: AgentRuntime) -> None:
         self.runtime = runtime
-        self.greeter_agent = GreeterAgent("ReceiveAgent")
-        self.receive_agent = ReceiveAgent()
 
     async def run(self):
+        self.greeter_agent = GreeterAgent("ReceiveAgent")
+        self.receive_agent = ReceiveAgent()
         # runtime = GrpcWorkerAgentRuntime(host_address="localhost:50051")
         await self.runtime.start()
 

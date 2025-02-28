@@ -60,6 +60,8 @@ class WorkerTeam:
             )
             return
 
+        self._runtime = MtmAgentRuntime(agent_rpc_client=self.hatctx.aio.ag)
+
         rpc_demo_team = RpcDemoTeam(self._runtime)
         await rpc_demo_team.run()
 
