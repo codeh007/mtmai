@@ -64,8 +64,6 @@ from autogen_ext.runtimes.grpc.protos import (
     cloudevent_pb2,
 )
 from google.protobuf import any_pb2
-from mtmai.core.config import settings
-from mtmai.mtmpb import ag_connecpy
 from opentelemetry.trace import TracerProvider
 from typing_extensions import Self
 
@@ -170,6 +168,35 @@ class HostConnection:
 
         return instance
 
+    @classmethod
+    async def from_client_config(
+        cls,
+        config: ClientConfig,
+        extra_grpc_config: ChannelArgumentType = DEFAULT_GRPC_CONFIG,
+    ) -> Self:
+        # logger.info("Connecting to %s", host_address)
+        #  Always use DEFAULT_GRPC_CONFIG and override it with provided grpc_config
+        merged_options = [
+            (k, v)
+            for k, v in {
+                **dict(HostConnection.DEFAULT_GRPC_CONFIG),
+                **dict(extra_grpc_config),
+            }.items()
+        ]
+
+        channel = grpc.aio.insecure_channel(
+            config.host_port,
+            options=merged_options,
+        )
+        stub: AgentRpcAsyncStub = agent_worker_pb2_grpc.AgentRpcStub(channel)  # type: ignore
+        instance = cls(channel, stub)
+
+        instance._connection_task = await instance._connect(
+            stub, instance._send_queue, instance._recv_queue, instance._client_id
+        )
+
+        return instance
+
     async def close(self) -> None:
         if self._connection_task is None:
             raise RuntimeError("Connection is not open.")
@@ -221,14 +248,15 @@ class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
         # agent_rpc_client: AgentRpcClient,
-        host_address: str,
+        # host_address: str,
         config: ClientConfig = ClientConfig(),
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
     ) -> None:
         # self._agent_rpc_client = agent_rpc_client
-        self._host_address = host_address
+        # self._host_address = host_address
+        self.config = config
         self._trace_helper = TraceHelper(
             tracer_provider, MessageRuntimeTracingConfig("Worker Runtime")
         )
@@ -267,19 +295,18 @@ class MtmAgentRuntime(AgentRuntime):
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        logger.info(f"Connecting to host: {self._host_address}")
+        # logger.info(f"Connecting to host: {self._host_address}")
 
-        if not self.client:
-            aio_conn = new_conn(self.config, True)
-            self.client = WorkflowServiceStub(aio_conn)
-        self._host_connection = await HostConnection.from_host_address(
-            self._host_address, extra_grpc_config=self._extra_grpc_config
-        )
-        self.ag = ag_connecpy.AsyncAgServiceClient(
-            "http://localhost:8383",
-            session=self.session,
-            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
-        )
+        aio_conn = new_conn(self.config, True)
+        self.client = WorkflowServiceStub(aio_conn)
+        # self._host_connection = await HostConnection.from_host_address(
+        #     self._host_address, extra_grpc_config=self._extra_grpc_config
+        # )
+        # self.ag = ag_connecpy.AsyncAgServiceClient(
+        #     "http://localhost:8383",
+        #     session=self.session,
+        #     timeout=settings.DEFAULT_CLIENT_TIMEOUT,
+        # )
         logger.info("Connection established")
         if self._read_task is None:
             self._read_task = asyncio.create_task(self._run_read_loop())
