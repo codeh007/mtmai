@@ -132,7 +132,7 @@ Only select one agent.
             return None
 
         team = SelectorGroupChat(
-            [planning_agent, web_search_agent, data_analyst_agent],
+            participants=[planning_agent, web_search_agent, data_analyst_agent],
             model_client=model_client,
             termination_condition=termination,
             selector_prompt=selector_prompt,
