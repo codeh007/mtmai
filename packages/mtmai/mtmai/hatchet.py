@@ -1,5 +1,6 @@
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
+from autogen_core import AgentRuntime
 from connecpy.context import ClientContext
 from core import loader
 from core.loader import ClientConfig, ConfigLoader, CredentialsData
@@ -28,6 +29,7 @@ from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 
+from .clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from .clients.rest_client import AsyncRestApi
 
 T = TypeVar("T", bound=BaseModel)
@@ -267,6 +269,7 @@ class Hatchet:
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
+        self.agent_runtime: AgentRuntime | None = None
 
     @property
     def admin(self) -> AdminClient:
@@ -299,6 +302,14 @@ class Hatchet:
     @property
     def tenant_id(self) -> str:
         return self._client.config.tenant_id
+
+    @property
+    def agent_runtime(self) -> AgentRuntime:
+        if not self.agent_runtime:
+            self.agent_runtime = MtmAgentRuntime(
+                config=self._client.config,
+            )
+        return self.agent_runtime
 
     workflow = staticmethod(workflow)
 

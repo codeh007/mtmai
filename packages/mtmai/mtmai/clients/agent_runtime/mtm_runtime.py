@@ -295,19 +295,15 @@ class MtmAgentRuntime(AgentRuntime):
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
-        # logger.info(f"Connecting to host: {self._host_address}")
-
         aio_conn = new_conn(self.config, True)
         self.client = WorkflowServiceStub(aio_conn)
         # self._host_connection = await HostConnection.from_host_address(
         #     self._host_address, extra_grpc_config=self._extra_grpc_config
         # )
-        # self.ag = ag_connecpy.AsyncAgServiceClient(
-        #     "http://localhost:8383",
-        #     session=self.session,
-        #     timeout=settings.DEFAULT_CLIENT_TIMEOUT,
-        # )
-        logger.info("Connection established")
+        self._host_connection = await HostConnection.from_client_config(
+            self.config, extra_grpc_config=self._extra_grpc_config
+        )
+        logger.info("(MTM Grpc Runtime)Connection established")
         if self._read_task is None:
             self._read_task = asyncio.create_task(self._run_read_loop())
         self._running = True
@@ -323,6 +319,7 @@ class MtmAgentRuntime(AgentRuntime):
         # TODO: catch exceptions and reconnect
         while self._running:
             try:
+                # self.client.
                 message = await self._host_connection.recv()
                 oneofcase = agent_worker_pb2.Message.WhichOneof(message, "message")
                 match oneofcase:

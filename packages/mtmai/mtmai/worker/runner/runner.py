@@ -13,7 +13,6 @@ from typing import Any, Callable, Dict, cast
 from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.admin import new_admin
-from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
@@ -39,6 +38,8 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+
+from ...clients.ag import AgClient
 
 
 class WorkerStatus(Enum):
@@ -93,13 +94,13 @@ class Runner:
         self.otel_tracer = create_tracer(config=config)
         self.ag = ag_connecpy.AsyncAgServiceClient(
             self.config.server_url,
-            # session=self.session,
             timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
         # self.agent_runtime = MtmAgentRuntime(config=self.config)
         # self.aio = AsyncRestApi(self.config)
         self.ag_client2 = AgClient(
             self.config,
+            self.ag,
         )
 
     def create_workflow_run_url(self, action: Action) -> str:
@@ -384,7 +385,7 @@ class Runner:
                 worker=self.worker_context,
                 ag_client=self.ag,
                 namespace=self.client.config.namespace,
-                agent_runtime=self.agent_runtime,
+                # agent_runtime=self.agent_runtime,
             )
 
             self.contexts[action.get_group_key_run_id] = context

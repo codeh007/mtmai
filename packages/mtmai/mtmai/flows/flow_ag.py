@@ -71,9 +71,10 @@ class GreeterAgent(RoutedAgent):
 class FlowAg:
     @mtmapp.step()
     async def step_entry(self, hatctx: Context):
-        runtime = MtmAgentRuntime(host_address="localhost:8383")
-        await runtime.start()
-
+        # runtime = MtmAgentRuntime(host_address="localhost:8383")
+        # await runtime.start()
+        runtime = mtmapp.agent_runtime
+        runtime.start()
         await ReceiveAgent.register(
             runtime,
             "receiver",

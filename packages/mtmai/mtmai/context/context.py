@@ -15,7 +15,6 @@ from mtmai.clients.admin import (
     WorkflowRunDict,
 )
 from mtmai.clients.ag import AgClient
-from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.context.worker_context import WorkerContext
@@ -133,7 +132,6 @@ class ContextAioImpl(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        agent_runtime: MtmAgentRuntime,
         namespace: str = "",
     ):
         self.action = action
@@ -147,7 +145,7 @@ class ContextAioImpl(BaseContext):
         self.spawn_index = -1
         self.worker = worker
         self.ag = ag_client
-        self.agent_runtime = agent_runtime
+        # self.agent_runtime = agent_runtime
         self.ag_client2 = ag_client2
 
     @tenacity_retry
@@ -220,7 +218,7 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        agent_runtime: MtmAgentRuntime,
+        # agent_runtime: MtmAgentRuntime,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
     ):
@@ -238,7 +236,7 @@ class Context(BaseContext):
             worker=worker,
             namespace=namespace,
             ag_client=ag_client,
-            agent_runtime=agent_runtime,
+            # agent_runtime=agent_runtime,
             ag_client2=ag_client2,
         )
         self.ag = ag_client
@@ -273,7 +271,6 @@ class Context(BaseContext):
         self.event_client = event_client
         self.rest_client = rest_client
         self.ag_client2 = ag_client2
-        self.agent_runtime = agent_runtime
         self.workflow_listener = workflow_listener
         self.workflow_run_event_listener = workflow_run_event_listener
         self.namespace = namespace
