@@ -267,7 +267,6 @@ class Hatchet:
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
-        # self._agent_runtime = MtmAgentRuntime(config=self._client.config)
 
     @property
     def admin(self) -> AdminClient:
@@ -300,10 +299,6 @@ class Hatchet:
     @property
     def tenant_id(self) -> str:
         return self._client.config.tenant_id
-
-    # @property
-    # def agent_runtime(self) -> AgentRuntime:
-    #     return self._agent_runtime
 
     workflow = staticmethod(workflow)
 
@@ -445,7 +440,6 @@ class Hatchet:
             labels=labels,
             config=self._client.config,
             debug=self._client.debug,
-            # agent_runtime=self.agent_runtime,
         )
 
         for func in self.functions:

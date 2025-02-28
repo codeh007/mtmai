@@ -83,9 +83,6 @@ class Worker:
 
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
-        # self.agent_runtime = MtmAgentRuntime(config=self.config)
-        # self.agent_runtime = agent_runtime
-
         self._setup_signal_handlers()
 
     def register_function(self, action: str, func: Callable[[Context], Any]) -> None:
@@ -197,11 +194,7 @@ class Worker:
             self.setup_loop(options.loop)
 
         self.action_listener_process = self._start_listener()
-
         self.action_runner = self._run_action_runner()
-        # await self.agent_runtime.start()
-        # self.
-
         self.action_listener_health_check = self.loop.create_task(
             self._check_listener_health()
         )

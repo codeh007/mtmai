@@ -5,6 +5,7 @@ from typing import Callable, TypeVar
 
 from core.loader import ClientConfig
 from loguru import logger
+from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.mtlibs.types import WorkflowValidator
@@ -12,7 +13,7 @@ from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
 
-from ...clients.agent_runtime.mtm_runtime import MtmAgentRuntime
+from ...clients.agent_runtime_client import AgentRuntimeClient
 
 STOP_LOOP = "STOP_LOOP"
 
@@ -43,6 +44,7 @@ class WorkerActionRunLoopManager:
         #     logger.setLevel(logging.DEBUG)
         self.client = Client.from_config(self.config, self.debug)
         self.agent_runtime = MtmAgentRuntime(config=self.config)
+        self.agent_runtime_client = AgentRuntimeClient.from_client_config(self.config)
         self.start()
 
     def start(self, retry_count=1):

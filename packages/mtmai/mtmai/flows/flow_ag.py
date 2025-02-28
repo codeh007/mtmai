@@ -74,8 +74,10 @@ class FlowAg:
         # runtime = MtmAgentRuntime(host_address="localhost:8383")
         # await runtime.start()
         # runtime = mtmapp.agent_runtime
+        # 提示: hatctx.worker.agent_runtime 是全局的.
         runtime = hatctx.worker.agent_runtime
-        # runtime.start()
+
+        # runtime = MtmAgentRuntime(config=hatctx.)
         await ReceiveAgent.register(
             runtime,
             "receiver",

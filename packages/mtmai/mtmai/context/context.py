@@ -28,6 +28,8 @@ from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
+from ..clients.agent_runtime_client import AgentRuntimeClient
+
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
@@ -132,6 +134,7 @@ class ContextAioImpl(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
+        agent_runtime_client: AgentRuntimeClient,
         namespace: str = "",
     ):
         self.action = action
@@ -145,8 +148,8 @@ class ContextAioImpl(BaseContext):
         self.spawn_index = -1
         self.worker = worker
         self.ag = ag_client
-        # self.agent_runtime = agent_runtime
         self.ag_client2 = ag_client2
+        self.agent_runtime_client = agent_runtime_client
 
     @tenacity_retry
     async def spawn_workflow(
@@ -218,7 +221,7 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        # agent_runtime: MtmAgentRuntime,
+        agent_runtime_client: AgentRuntimeClient,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
     ):
@@ -236,8 +239,8 @@ class Context(BaseContext):
             worker=worker,
             namespace=namespace,
             ag_client=ag_client,
-            # agent_runtime=agent_runtime,
             ag_client2=ag_client2,
+            agent_runtime_client=agent_runtime_client,
         )
         self.ag = ag_client
         self.admin = admin_client
@@ -245,6 +248,7 @@ class Context(BaseContext):
         self.rest = rest_client
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
+        self.agent_runtime_client = agent_runtime_client
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):
             try:

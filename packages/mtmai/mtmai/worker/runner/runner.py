@@ -41,6 +41,7 @@ from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
 
 from ...clients.ag import AgClient
+from ...clients.agent_runtime_client import AgentRuntimeClient
 
 
 class WorkerStatus(Enum):
@@ -106,6 +107,7 @@ class Runner:
             self.config,
             self.ag,
         )
+        self.agent_runtime_client = AgentRuntimeClient.from_client_config(self.config)
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -389,6 +391,7 @@ class Runner:
                 worker=self.worker_context,
                 ag_client=self.ag,
                 namespace=self.client.config.namespace,
+                agent_runtime_client=self.agent_runtime_client,
                 # agent_runtime=self.agent_runtime,
             )
 
