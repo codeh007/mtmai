@@ -17,7 +17,6 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    # asyncio.run(WorkerAgent().run(task="Hello, world!"))
     from worker_app import run_worker
 
     asyncio.run(run_worker())
