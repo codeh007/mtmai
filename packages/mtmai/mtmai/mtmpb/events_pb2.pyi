@@ -85,3 +85,11 @@ class ReplayEventRequest(_message.Message):
     EVENTID_FIELD_NUMBER: _ClassVar[int]
     eventId: str
     def __init__(self, eventId: _Optional[str] = ...) -> None: ...
+
+class ChatSessionStartEvent(_message.Message):
+    __slots__ = ("type", "threadId")
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    THREADID_FIELD_NUMBER: _ClassVar[int]
+    type: str
+    threadId: str
+    def __init__(self, type: _Optional[str] = ..., threadId: _Optional[str] = ...) -> None: ...

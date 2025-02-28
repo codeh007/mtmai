@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 import grpc
 from connecpy.context import ClientContext
 from core.loader import ClientConfig
+from google.protobuf import message as pb_message
 from google.protobuf import timestamp_pb2
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
@@ -174,6 +175,9 @@ class EventClient:
                 data_bytes = data
             elif isinstance(data, BaseModel):
                 data_bytes = data.model_dump_json().encode("utf-8")
+            elif isinstance(data, pb_message.Message):
+                # data_bytes = data.model_dump_json().encode("utf-8")
+                data_bytes = data.SerializeToString()
             else:
                 raise ValueError("Invalid data type. Expected str, bytes, or file.")
 

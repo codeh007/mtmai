@@ -11,19 +11,23 @@ from autogen_agentchat.messages import (
     ToolCallExecutionEvent,
     ToolCallRequestEvent,
 )
-from autogen_core import CancellationToken, SingleThreadedAgentRuntime
+from autogen_core import CancellationToken
 from autogenstudio.datamodel import LLMCallEventMessage
 from connecpy.context import ClientContext
 from loguru import logger
 from opentelemetry.trace import TracerProvider
 
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
+from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
+from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
+
+from .rpc_demo_team import RpcDemoTeam
 
 
 class WorkerTeam:
@@ -33,12 +37,14 @@ class WorkerTeam:
         tracer_provider: TracerProvider | None = None,
     ) -> None:
         self.hatctx = hatctx
-        self._runtime = hatctx.agent_runtime
-        if not self._runtime:
-            self._runtime = SingleThreadedAgentRuntime(
-                tracer_provider=tracer_provider,
-                # payload_serialization_format=self._payload_serialization_format,
-            )
+        # self._runtime = hatctx.agent_runtime
+        # if not self._runtime:
+        #     self._runtime = SingleThreadedAgentRuntime(
+        #         tracer_provider=tracer_provider,
+        #         # payload_serialization_format=self._payload_serialization_format,
+        #     )
+
+        self._runtime = MtmAgentRuntime(agent_rpc_client=hatctx.aio.ag)
 
         self.cancellation_token = CancellationToken()
 
@@ -53,6 +59,10 @@ class WorkerTeam:
                 self.tenant_agent_id,
             )
             return
+
+        rpc_demo_team = RpcDemoTeam(self._runtime)
+        await rpc_demo_team.run()
+
         team_comp_data: MtComponent = None
         if not message.team_id:
             # team_id = "fake_team_id"
@@ -81,13 +91,23 @@ class WorkerTeam:
             team_id = generate_uuid()
 
         thread_id = message.session_id
+        # TODO: 获取 session state, 如果获取失败,触发 ChatSessionStartEvent 事件.
         if not thread_id:
             thread_id = generate_uuid()
+
         else:
             logger.info(f"现有session: {thread_id}")
             # 加载团队状态
             # await self.load_state(thread_id)
             ...
+
+        step_run_id = self.hatctx.step_run_id
+        await self.hatctx.event.stream(
+            step_run_id=step_run_id,
+            data=ChatSessionStartEvent(
+                threadId=thread_id,
+            ),
+        )
 
         task_result: TaskResult | None = None
         try:
