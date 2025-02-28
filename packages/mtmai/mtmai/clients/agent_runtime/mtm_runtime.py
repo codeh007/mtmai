@@ -3,7 +3,8 @@ from __future__ import annotations
 import asyncio
 import inspect
 import json
-import logging
+
+# import logging
 import signal
 import uuid
 import warnings
@@ -57,6 +58,7 @@ from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._constants import GRPC_IMPORT_ERROR_STR
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
 from google.protobuf import any_pb2
+from loguru import logger
 from mtmai.clients.agent_runtime._utils import subscription_to_proto
 from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
 from mtmai.mtmpb.agent_worker_pb2_grpc import AgentRpcStub
@@ -69,8 +71,8 @@ try:
     import grpc.aio
 except ImportError as e:
     raise ImportError(GRPC_IMPORT_ERROR_STR) from e
-logger = logging.getLogger("autogen_core")
-event_logger = logging.getLogger("autogen_core.events")
+# logger = logging.getLogger("autogen_core")
+# event_logger = logging.getLogger("autogen_core.events")
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=Agent)
@@ -544,9 +546,9 @@ class MtmAgentRuntime(AgentRuntime):
         sender: AgentId | None = None
         if request.HasField("source"):
             sender = AgentId(request.source.type, request.source.key)
-            logging.info(f"Processing request from {sender} to {recipient}")
+            logger.info(f"Processing request from {sender} to {recipient}")
         else:
-            logging.info(f"Processing request from unknown source to {recipient}")
+            logger.info(f"Processing request from unknown source to {recipient}")
 
         # Deserialize the message.
         message = self._serialization_registry.deserialize(

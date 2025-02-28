@@ -1,6 +1,5 @@
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
-from autogen_core import AgentRuntime
 from connecpy.context import ClientContext
 from core import loader
 from core.loader import ClientConfig, ConfigLoader, CredentialsData
@@ -29,7 +28,6 @@ from mtmai.worker.dispatcher.dispatcher import DispatcherClient
 from mtmai.worker.worker import Worker, register_on_worker
 from mtmai.workflow import ConcurrencyExpression, WorkflowMeta
 
-from .clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from .clients.rest_client import AsyncRestApi
 
 T = TypeVar("T", bound=BaseModel)
@@ -269,7 +267,7 @@ class Hatchet:
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
-        self._agent_runtime = MtmAgentRuntime(config=self._client.config)
+        # self._agent_runtime = MtmAgentRuntime(config=self._client.config)
 
     @property
     def admin(self) -> AdminClient:
@@ -303,9 +301,9 @@ class Hatchet:
     def tenant_id(self) -> str:
         return self._client.config.tenant_id
 
-    @property
-    def agent_runtime(self) -> AgentRuntime:
-        return self._agent_runtime
+    # @property
+    # def agent_runtime(self) -> AgentRuntime:
+    #     return self._agent_runtime
 
     workflow = staticmethod(workflow)
 
@@ -338,8 +336,6 @@ class Hatchet:
                 raise ValueError("credentials invalid")
             self.config.token = resp.access_token
             self.config.credentials.token = resp.access_token
-            # self.config.credentials.username = email
-            # self.config.credentials.password = password
             await ConfigLoader.save_credentials(self.config.credentials)
 
         self._client = Client.from_config(self.config, debug=self.debug)
@@ -449,7 +445,7 @@ class Hatchet:
             labels=labels,
             config=self._client.config,
             debug=self._client.debug,
-            agent_runtime=self.agent_runtime,
+            # agent_runtime=self.agent_runtime,
         )
 
         for func in self.functions:

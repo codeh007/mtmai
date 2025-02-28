@@ -12,7 +12,6 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
-from autogen_core import AgentRuntime
 from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.client import Client
@@ -53,7 +52,7 @@ class Worker:
         debug: bool = False,
         owned_loop: bool = True,
         handle_kill: bool = True,
-        agent_runtime: AgentRuntime | None = None,
+        # agent_runtime: AgentRuntime | None = None,
     ) -> None:
         self.name = name
         self.config = config
@@ -85,7 +84,7 @@ class Worker:
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
         # self.agent_runtime = MtmAgentRuntime(config=self.config)
-        self.agent_runtime = agent_runtime
+        # self.agent_runtime = agent_runtime
 
         self._setup_signal_handlers()
 
