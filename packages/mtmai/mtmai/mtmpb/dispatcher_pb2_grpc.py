@@ -97,9 +97,7 @@ class DispatcherServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ListenV2(self, request, context):
-        """ListenV2 is like listen, but implementation does not include heartbeats.
-        This should only used by SDKs against engine version v0.18.1+
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
