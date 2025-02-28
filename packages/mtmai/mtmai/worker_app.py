@@ -1,5 +1,3 @@
-# from __future__ import annotations
-
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 
