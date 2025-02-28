@@ -10,6 +10,7 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
+from autogen_core import AgentRuntime
 from core.loader import ClientConfig
 from loguru import logger
 from mtmai.clients.admin import new_admin
@@ -60,6 +61,7 @@ class Runner:
         validator_registry: dict[str, WorkflowValidator] = {},
         config: ClientConfig = ClientConfig(),
         labels: dict[str, str | int] = {},
+        agent_runtime: AgentRuntime | None = None,
     ):
         # We store the config so we can dynamically create clients for the dispatcher client.
         self.config = config
@@ -88,7 +90,9 @@ class Runner:
         self.client.workflow_listener = PooledWorkflowRunListener(self.config)
 
         self.worker_context = WorkerContext(
-            labels=labels, client=Client.from_config(config).dispatcher
+            labels=labels,
+            client=Client.from_config(config).dispatcher,
+            agent_runtime=agent_runtime,
         )
 
         self.otel_tracer = create_tracer(config=config)

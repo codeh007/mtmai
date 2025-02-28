@@ -241,7 +241,9 @@ class HostConnection:
 
     async def recv(self) -> agent_worker_pb2.Message:
         logger.info("Getting message from queue")
-        return await self._recv_queue.get()
+        data = await self._recv_queue.get()
+        logger.info(f"(MTM Runtime) Received message from host: {data}")
+        return data
 
 
 class MtmAgentRuntime(AgentRuntime):
