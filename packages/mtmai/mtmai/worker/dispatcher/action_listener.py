@@ -8,6 +8,7 @@ import grpc
 from grpc._cython import cygrpc
 from loguru import logger
 from mtmai.clients.connection import new_conn
+from mtmai.clients.events import proto_timestamp_now
 from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
@@ -15,6 +16,7 @@ from mtmai.mtlibs.serialization import flatten
 from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
     AssignedAction,
+    HeartbeatRequest,
     WorkerLabels,
     WorkerListenRequest,
     WorkerUnsubscribeRequest,
@@ -112,6 +114,7 @@ START_GET_GROUP_KEY = 2
 class ActionListener:
     config: ClientConfig
     worker_id: str
+
     aio_client: DispatcherStub = field(init=False)
     token: str = field(init=False)
     retries: int = field(default=0, init=False)
@@ -132,77 +135,79 @@ class ActionListener:
     def is_healthy(self):
         return self.last_heartbeat_succeeded
 
-    # async def heartbeat(self):
-    #     heartbeat_delay = 4
-    #     while True:
-    #         if not self.run_heartbeat:
-    #             break
+    async def heartbeat(self):
+        # 解释: hearbeat 是必须的,因为需要告诉服务器当前是否活跃, 这样服务器才会将任务发送过来.
+        #      因为,相同的 job 可能会被分配到不同的 worker, 如果一个 worker 挂了, 那么这个 job 就会分配到其他 worker.
+        heartbeat_delay = 4
+        while True:
+            if not self.run_heartbeat:
+                break
 
-    #         try:
-    #             # logger.info("sending heartbeat")
-    #             await self.aio_client.Heartbeat(
-    #                 HeartbeatRequest(
-    #                     workerId=self.worker_id,
-    #                     heartbeatAt=proto_timestamp_now(),
-    #                 ),
-    #                 timeout=5,
-    #                 metadata=get_metadata(self.token),
-    #             )
+            try:
+                # logger.info("sending heartbeat")
+                await self.aio_client.Heartbeat(
+                    HeartbeatRequest(
+                        workerId=self.worker_id,
+                        heartbeatAt=proto_timestamp_now(),
+                    ),
+                    timeout=5,
+                    metadata=get_metadata(self.token),
+                )
 
-    #             if self.last_heartbeat_succeeded is False:
-    #                 logger.info("listener established")
+                if self.last_heartbeat_succeeded is False:
+                    logger.info("listener established")
 
-    #             now = time.time()
-    #             diff = now - self.time_last_hb_succeeded
-    #             if diff > heartbeat_delay + 1:
-    #                 logger.warn(
-    #                     f"time since last successful heartbeat: {diff:.2f}s, expects {heartbeat_delay}s"
-    #                 )
+                now = time.time()
+                diff = now - self.time_last_hb_succeeded
+                if diff > heartbeat_delay + 1:
+                    logger.warn(
+                        f"time since last successful heartbeat: {diff:.2f}s, expects {heartbeat_delay}s"
+                    )
 
-    #             self.last_heartbeat_succeeded = True
-    #             self.time_last_hb_succeeded = now
-    #             self.missed_heartbeats = 0
-    #         except grpc.RpcError as e:
-    #             self.missed_heartbeats = self.missed_heartbeats + 1
-    #             self.last_heartbeat_succeeded = False
+                self.last_heartbeat_succeeded = True
+                self.time_last_hb_succeeded = now
+                self.missed_heartbeats = 0
+            except grpc.RpcError as e:
+                self.missed_heartbeats = self.missed_heartbeats + 1
+                self.last_heartbeat_succeeded = False
 
-    #             if (
-    #                 e.code() == grpc.StatusCode.UNAVAILABLE
-    #                 or e.code() == grpc.StatusCode.FAILED_PRECONDITION
-    #             ):
-    #                 # todo case on "recvmsg:Connection reset by peer" for updates?
-    #                 if self.missed_heartbeats >= 3:
-    #                     # we don't reraise the error here, as we don't want to stop the heartbeat thread
-    #                     logger.error(
-    #                         f"⛔️ failed heartbeat ({self.missed_heartbeats}): {e.details()}"
-    #                     )
-    #                 elif self.missed_heartbeats > 1:
-    #                     logger.warning(
-    #                         f"failed to send heartbeat ({self.missed_heartbeats}): {e.details()}"
-    #                     )
-    #             else:
-    #                 logger.error(f"failed to send heartbeat: {e}")
+                if (
+                    e.code() == grpc.StatusCode.UNAVAILABLE
+                    or e.code() == grpc.StatusCode.FAILED_PRECONDITION
+                ):
+                    # todo case on "recvmsg:Connection reset by peer" for updates?
+                    if self.missed_heartbeats >= 3:
+                        # we don't reraise the error here, as we don't want to stop the heartbeat thread
+                        logger.error(
+                            f"⛔️ failed heartbeat ({self.missed_heartbeats}): {e.details()}"
+                        )
+                    elif self.missed_heartbeats > 1:
+                        logger.warning(
+                            f"failed to send heartbeat ({self.missed_heartbeats}): {e.details()}"
+                        )
+                else:
+                    logger.error(f"failed to send heartbeat: {e}")
 
-    #             if self.interrupt is not None:
-    #                 self.interrupt.set()
+                if self.interrupt is not None:
+                    self.interrupt.set()
 
-    #             if e.code() == grpc.StatusCode.UNIMPLEMENTED:
-    #                 break
-    #         await asyncio.sleep(heartbeat_delay)
+                if e.code() == grpc.StatusCode.UNIMPLEMENTED:
+                    break
+            await asyncio.sleep(heartbeat_delay)
 
-    # async def start_heartbeater(self):
-    #     if self.heartbeat_task is not None:
-    #         return
+    async def start_heartbeater(self):
+        if self.heartbeat_task is not None:
+            return
 
-    #     try:
-    #         loop = asyncio.get_event_loop()
-    #     except RuntimeError as e:
-    #         if str(e).startswith("There is no current event loop in thread"):
-    #             loop = asyncio.new_event_loop()
-    #             asyncio.set_event_loop(loop)
-    #         else:
-    #             raise e
-    #     self.heartbeat_task = loop.create_task(self.heartbeat())
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError as e:
+            if str(e).startswith("There is no current event loop in thread"):
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            else:
+                raise e
+        self.heartbeat_task = loop.create_task(self.heartbeat())
 
     def __aiter__(self):
         return self._generator()
@@ -378,7 +383,7 @@ class ActionListener:
             timeout=self.config.listener_v2_timeout,
             metadata=get_metadata(self.token),
         )
-        # await self.start_heartbeater()
+        await self.start_heartbeater()
         # else:
         #     raise Exception("v1 listener not implemented")
 
@@ -387,8 +392,8 @@ class ActionListener:
         return listener
 
     def cleanup(self):
-        # self.run_heartbeat = False
-        # self.heartbeat_task.cancel()
+        self.run_heartbeat = False
+        self.heartbeat_task.cancel()
 
         try:
             self.unregister()
@@ -400,7 +405,7 @@ class ActionListener:
 
     def unregister(self):
         self.run_heartbeat = False
-        # self.heartbeat_task.cancel()
+        self.heartbeat_task.cancel()
 
         try:
             req = self.aio_client.Unsubscribe(
