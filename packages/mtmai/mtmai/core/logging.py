@@ -75,7 +75,7 @@ def setup_logging():
     setup_root_logger()
     # setup_sqlalchemy_logging()
     # setup_httpx_logging()
-    setup_openai_base_logging()
+    # setup_openai_base_logging()
 
 
 def setup_root_logger():
