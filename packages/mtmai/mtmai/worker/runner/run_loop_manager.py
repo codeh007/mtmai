@@ -82,7 +82,6 @@ class WorkerActionRunLoopManager:
             validator_registry=self.validator_registry,
             config=self.config,
             labels=self.labels,
-            # agent_runtime=self.agent_runtime,
             ag_runtime=self.ag_runtime,
         )
 

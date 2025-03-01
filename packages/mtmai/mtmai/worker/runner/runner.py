@@ -63,7 +63,6 @@ class Runner:
         validator_registry: dict[str, WorkflowValidator] = {},
         config: ClientConfig = ClientConfig(),
         labels: dict[str, str | int] = {},
-        # agent_runtime: AgentRuntime | None = None,
     ):
         # We store the config so we can dynamically create clients for the dispatcher client.
         self.config = config
