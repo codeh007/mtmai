@@ -4,7 +4,6 @@ import multiprocessing.context
 import os
 import signal
 import sys
-from concurrent.futures import Future
 from dataclasses import dataclass, field
 from enum import Enum
 from multiprocessing import Queue
@@ -24,6 +23,8 @@ from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
+
+from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 
 T = TypeVar("T")
 
@@ -53,7 +54,6 @@ class Worker:
         debug: bool = False,
         owned_loop: bool = True,
         handle_kill: bool = True,
-        # agent_runtime: AgentRuntime | None = None,
     ) -> None:
         self.name = name
         self.config = config
@@ -153,25 +153,6 @@ class Worker:
             created_loop = True
             return created_loop
 
-    def start(
-        self, options: WorkerStartOptions = WorkerStartOptions()
-    ) -> Future[asyncio.Task[Any] | None]:
-        self.owned_loop = self.setup_loop(options.loop)
-
-        f = asyncio.run_coroutine_threadsafe(
-            self.async_start(options, _from_start=True), self.loop
-        )
-
-        # start the loop and wait until its closed
-        if self.owned_loop:
-            self.loop.run_forever()
-
-            if self.handle_kill:
-                sys.exit(0)
-
-        return f
-
-    ## Start methods
     async def async_start(
         self,
         options: WorkerStartOptions = WorkerStartOptions(),
@@ -193,7 +174,8 @@ class Worker:
         # non blocking setup
         if not _from_start:
             self.setup_loop(options.loop)
-
+        self.agent_runtime = MtmAgentRuntime(config=self.config)
+        await self.agent_runtime.start()
         self.action_listener_process = self._start_listener()
         self.action_runner = self._run_action_runner()
         self.action_listener_health_check = self.loop.create_task(
@@ -205,17 +187,18 @@ class Worker:
     def _run_action_runner(self) -> WorkerActionRunLoopManager:
         # Retrieve the shared queue
         return WorkerActionRunLoopManager(
-            self.name,
-            self.action_registry,
-            self.validator_registry,
-            self.max_runs,
-            self.config,
-            self.action_queue,
-            self.event_queue,
-            self.loop,
-            self.handle_kill,
-            self.client.debug,
-            self.labels,
+            name=self.name,
+            action_registry=self.action_registry,
+            validator_registry=self.validator_registry,
+            max_runs=self.max_runs,
+            config=self.config,
+            action_queue=self.action_queue,
+            event_queue=self.event_queue,
+            loop=self.loop,
+            handle_kill=self.handle_kill,
+            debug=self.client.debug,
+            labels=self.labels,
+            ag_runtime=self.agent_runtime,
         )
 
     def _start_listener(self) -> multiprocessing.context.SpawnProcess:

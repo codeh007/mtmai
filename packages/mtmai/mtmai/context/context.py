@@ -6,7 +6,10 @@ from contextvars import ContextVar
 from typing import Any, TypeVar, cast
 from warnings import warn
 
+from autogen_core import AgentRuntime
 from loguru import logger
+from pydantic import BaseModel, StrictStr
+
 from mtmai.clients.admin import (
     AdminClient,
     ChildTriggerWorkflowOptions,
@@ -26,7 +29,6 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
-from pydantic import BaseModel, StrictStr
 
 from ..core.loader import ClientConfig
 
@@ -53,10 +55,6 @@ def set_api_token_context(api_token: str):
 
 def get_api_token_context() -> str | None:
     return api_token_context.get()
-
-
-# def get_gomtm():
-#     pass
 
 
 tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
@@ -134,8 +132,8 @@ class ContextAioImpl(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        # agent_runtime_client: AgentRuntimeClient,
         config: ClientConfig,
+        ag_runtime: AgentRuntime,
         namespace: str = "",
     ):
         self.action = action
@@ -152,6 +150,7 @@ class ContextAioImpl(BaseContext):
         self.ag_client2 = ag_client2
         # self.agent_runtime_client = agent_runtime_client
         self.config = config
+        self.ag_runtime = ag_runtime
 
     @tenacity_retry
     async def spawn_workflow(
@@ -223,6 +222,7 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
+        ag_runtime: AgentRuntime,
         # agent_runtime_client: AgentRuntimeClient,
         config: ClientConfig,
         namespace: str = "",
@@ -243,6 +243,7 @@ class Context(BaseContext):
             namespace=namespace,
             ag_client=ag_client,
             ag_client2=ag_client2,
+            ag_runtime=ag_runtime,
             # agent_runtime_client=agent_runtime_client,
             config=config,
         )
@@ -252,6 +253,7 @@ class Context(BaseContext):
         self.rest = rest_client
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
+        self.ag_runtime = ag_runtime
         # self.agent_runtime_client = agent_runtime_client
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON

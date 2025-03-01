@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
 
+from autogen_core import AgentRuntime
 from loguru import logger
 
 from mtmai.clients.client import Client
@@ -28,6 +29,8 @@ class WorkerActionRunLoopManager:
     action_queue: Queue
     event_queue: Queue
     loop: asyncio.AbstractEventLoop
+    ag_runtime: AgentRuntime
+
     handle_kill: bool = True
     debug: bool = False
     labels: dict[str, str | int] = field(default_factory=dict)
@@ -80,6 +83,7 @@ class WorkerActionRunLoopManager:
             config=self.config,
             labels=self.labels,
             # agent_runtime=self.agent_runtime,
+            ag_runtime=self.ag_runtime,
         )
 
         logger.debug(f"'{self.name}' waiting for {list(self.action_registry.keys())}")

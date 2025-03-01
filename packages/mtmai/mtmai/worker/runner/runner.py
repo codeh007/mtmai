@@ -10,6 +10,7 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
+from autogen_core import AgentRuntime
 from loguru import logger
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
@@ -54,6 +55,7 @@ class Runner:
     def __init__(
         self,
         name: str,
+        ag_runtime: AgentRuntime,
         event_queue: "Queue[Any]",
         max_runs: int | None = None,
         handle_kill: bool = True,
@@ -89,10 +91,12 @@ class Runner:
         self.workflow_run_event_listener = new_listener(self.config)
         self.client.workflow_listener = PooledWorkflowRunListener(self.config)
 
+        # self.agent_runtime_client =  AgentRuntimeClient.from_client_config(self.config)
+
         self.worker_context = WorkerContext(
             labels=labels,
             client=Client.from_config(config).dispatcher,
-            # agent_runtime=agent_runtime,
+            # agent_runtime=self.agent_runtime_client,
         )
 
         self.otel_tracer = create_tracer(config=config)
@@ -106,9 +110,7 @@ class Runner:
             self.config,
             self.ag,
         )
-        # self.agent_runtime_client = asyncio.run(
-        #     AgentRuntimeClient.from_client_config(self.config)
-        # )
+        self.ag_runtime = ag_runtime
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -329,6 +331,7 @@ class Runner:
             namespace=self.client.config.namespace,
             validator_registry=self.validator_registry,
             config=self.config,
+            ag_runtime=self.ag_runtime,
             # agent_runtime_client=self.agent_runtime_client,
             # agent_runtime=self.agent_runtime,
         )
