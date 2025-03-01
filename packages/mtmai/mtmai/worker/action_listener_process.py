@@ -6,8 +6,9 @@ from multiprocessing import Queue
 from typing import Any, List, Mapping, Optional
 
 import grpc
-from core.loader import ClientConfig
 from loguru import logger
+
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.mtmpb.dispatcher_pb2 import (
     GROUP_KEY_EVENT_TYPE_STARTED,

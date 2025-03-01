@@ -1,8 +1,9 @@
 from typing import Any, cast
 
-from core.loader import ClientConfig
 from google.protobuf.timestamp_pb2 import Timestamp
+
 from mtmai.clients.connection import new_conn
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import get_metadata, tenacity_retry
 from mtmai.mtmpb.dispatcher_pb2 import (
     STEP_EVENT_TYPE_COMPLETED,

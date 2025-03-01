@@ -1,7 +1,6 @@
 from functools import cache
 from typing import Any
 
-from core.loader import ClientConfig
 from opentelemetry import trace
 from opentelemetry.context import Context
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -10,6 +9,8 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import NoOpTracerProvider, Tracer
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+
+from mtmai.core.loader import ClientConfig
 
 OTEL_CARRIER_KEY = "__otel_carrier"
 

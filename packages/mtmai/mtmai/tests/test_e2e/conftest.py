@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
-from core import loader
+
+from mtmai.core import loader
 from mtmai.hatchet import Hatchet
 
 
@@ -17,7 +18,7 @@ async def mtmapp(mock_config):
     """Session-wide mtmapp fixture"""
 
     with patch(
-        "mtmai.loader.ConfigLoader.load_credentials", autospec=True
+        "mtmai.core.loader.ConfigLoader.load_credentials", autospec=True
     ) as mock_load:
         mock_load.return_value = mock_config
         # config_loader = loader.ConfigLoader()

@@ -5,15 +5,19 @@ from typing import cast
 
 from autogen_core import (
     AgentId,
+    DefaultSubscription,
     DefaultTopicId,
     MessageContext,
     RoutedAgent,
     message_handler,
 )
+
 from mtmai.agents.worker_team import WorkerTeam
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
 from mtmai.worker_app import mtmapp
+
+from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 
 
 @dataclass
@@ -68,26 +72,26 @@ class FlowAg:
     @mtmapp.step()
     async def step_entry(self, hatctx: Context):
         # conn = hatctx.agent_runtime_client
-        # runtime = MtmAgentRuntime(config=hatctx.config)
-        # await runtime.start()
+        runtime = MtmAgentRuntime(config=hatctx.config)
+        await runtime.start()
         # 提示: hatctx.worker.agent_runtime 是全局的.
         # runtime = hatctx.worker.agent_runtime
 
-        # await ReceiveAgent.register(
-        #     runtime,
-        #     "receiver",
-        #     lambda: ReceiveAgent(),
-        # )
-        # await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
-        # await GreeterAgent.register(
-        #     runtime,
-        #     "greeter",
-        #     lambda: GreeterAgent("receiver"),
-        # )
-        # await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
-        # await runtime.publish_message(
-        #     AskToGreet("Hello World!"), topic_id=DefaultTopicId()
-        # )
+        await ReceiveAgent.register(
+            runtime,
+            "receiver",
+            lambda: ReceiveAgent(),
+        )
+        await runtime.add_subscription(DefaultSubscription(agent_type="receiver"))
+        await GreeterAgent.register(
+            runtime,
+            "greeter",
+            lambda: GreeterAgent("receiver"),
+        )
+        await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
+        await runtime.publish_message(
+            AskToGreet("Hello World!"), topic_id=DefaultTopicId()
+        )
 
         input = cast(AgentRunInput, hatctx.workflow_input())
         if not input.run_id:

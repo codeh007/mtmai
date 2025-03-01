@@ -3,11 +3,12 @@ from logging import Logger
 
 import httpx
 from connecpy.context import ClientContext
-from core.loader import ClientConfig
+
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.core.config import settings
+from mtmai.core.loader import ClientConfig
 from mtmai.mtmpb import ag_connecpy, events_connecpy, mtm_connecpy
 from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import DispatcherClient, new_dispatcher

@@ -10,13 +10,16 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
-from core.loader import ClientConfig
 from loguru import logger
+from opentelemetry.trace import StatusCode
+from pydantic import BaseModel
+
 from mtmai.clients.admin import new_admin
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.callable import DurableContext
 from mtmai.mtlibs.tracing import create_tracer, parse_carrier_from_metadata
 from mtmai.mtlibs.types import WorkflowValidator
@@ -36,8 +39,6 @@ from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
 from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
-from opentelemetry.trace import StatusCode
-from pydantic import BaseModel
 
 from ...clients.ag import AgClient
 

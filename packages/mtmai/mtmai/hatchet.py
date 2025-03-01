@@ -1,8 +1,6 @@
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
 from connecpy.context import ClientContext
-from core import loader
-from core.loader import ClientConfig, ConfigLoader, CredentialsData
 from loguru import logger
 from pydantic import BaseModel
 
@@ -11,7 +9,9 @@ from mtmai.clients.admin import AdminClient
 from mtmai.clients.client import Client
 from mtmai.clients.events import EventClient
 from mtmai.context.context import Context
+from mtmai.core import loader
 from mtmai.core.config import settings
+from mtmai.core.loader import ClientConfig, ConfigLoader, CredentialsData
 from mtmai.features.cron import CronClient
 from mtmai.features.scheduled import ScheduledClient
 from mtmai.models._types import DesiredWorkerLabel, RateLimit

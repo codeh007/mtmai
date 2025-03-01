@@ -5,11 +5,12 @@ from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator, List, Optional
 
 import grpc
-from core.loader import ClientConfig
 from grpc._cython import cygrpc
 from loguru import logger
+
 from mtmai.clients.connection import new_conn
 from mtmai.clients.events import proto_timestamp_now
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
 from mtmai.mtlibs.serialization import flatten

@@ -3,10 +3,11 @@ from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
 
-from core.loader import ClientConfig
 from loguru import logger
+
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs

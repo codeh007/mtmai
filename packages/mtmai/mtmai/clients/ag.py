@@ -1,6 +1,6 @@
 from autogen_agentchat.base import Team
-from core.loader import ClientConfig
 from loguru import logger
+
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
 from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
@@ -16,6 +16,7 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest_client import AsyncRestApi
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_connecpy
 

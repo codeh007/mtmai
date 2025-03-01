@@ -6,12 +6,15 @@ import grpc
 from autogen_core import PROTOBUF_DATA_CONTENT_TYPE, try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
 from connecpy.context import ClientContext
-from core.loader import ClientConfig
-from google.protobuf import any_pb2, timestamp_pb2
+from google.protobuf import any_pb2
 from google.protobuf import message as pb_message
+from google.protobuf import timestamp_pb2
+from pydantic import BaseModel
+
 from mtmai.core.config import settings
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
-from mtmai.mtmpb import events_connecpy
+from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2, events_connecpy
 from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
     ChatSessionStartEvent,
@@ -20,8 +23,6 @@ from mtmai.mtmpb.events_pb2 import (
     PutLogRequest,
     PutStreamEventRequest,
 )
-from mtmpb import agent_worker_pb2, cloudevent_pb2
-from pydantic import BaseModel
 
 
 def proto_timestamp_now():

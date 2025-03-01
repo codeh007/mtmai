@@ -51,12 +51,13 @@ from autogen_core._telemetry import (
 )
 from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
-from clients.agent_runtime_client import AgentRuntimeClient
 from google.protobuf import any_pb2
 from loguru import logger
-from mtmai.clients.agent_runtime._utils import subscription_to_proto
-from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
 from opentelemetry.trace import TracerProvider
+
+from mtmai.clients.agent_runtime._utils import subscription_to_proto
+from mtmai.clients.agent_runtime_client import AgentRuntimeClient
+from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
 
 from ...core.loader import ClientConfig
 
@@ -85,7 +86,6 @@ class MtmAgentRuntime(AgentRuntime):
     def __init__(
         self,
         config: ClientConfig = ClientConfig(),
-        # client: AgentRuntimeClient,
         tracer_provider: TracerProvider | None = None,
         extra_grpc_config: ChannelArgumentType | None = None,
         payload_serialization_format: str = JSON_DATA_CONTENT_TYPE,
