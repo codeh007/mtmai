@@ -57,13 +57,16 @@ class GreeterAgent(RoutedAgent):
         logger.info(
             f"(GreeterAgent) topicid:{ctx.topic_id}, content: {message.content}"
         )
+        await self.publish_message(Feedback("Feedback1"), topic_id=DefaultTopicId())
+        await self.publish_message(Feedback("Feedback2"), topic_id=DefaultTopicId())
+
+        # 等待 ReceiveAgent 回应
         response = await self.send_message(
             Greeting(f"Hello, {message.content}!"), recipient=self._receive_agent_id
         )
+        # 调试: 这里一直没进入
         logger.info(f"(GreeterAgent) response: {response}")
-        await self.publish_message(
-            Feedback(f"Feedback: {response.content}"), topic_id=DefaultTopicId()
-        )
+
         logger.info("(GreeterAgent) 完成")
 
 
