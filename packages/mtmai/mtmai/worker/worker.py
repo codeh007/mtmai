@@ -11,7 +11,7 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
-from autogen_core import AgentRuntime, try_get_known_serializers_for_type
+from autogen_core import AgentRuntime
 from loguru import logger
 
 from mtmai.clients.client import Client
@@ -25,9 +25,7 @@ from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
 
-from ..agents.greeter_team import AskToGreet
 from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
-from ..mtmpb.events_pb2 import ChatSessionStartEvent
 
 T = TypeVar("T")
 
@@ -85,6 +83,9 @@ class Worker:
 
         self.loop: asyncio.AbstractEventLoop
 
+        #
+        self.agent_runtime = MtmAgentRuntime(config=self.config)
+        # self.agent_runtime = SingleThreadedAgentRuntime()
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
         self._setup_signal_handlers()
@@ -177,13 +178,12 @@ class Worker:
         # non blocking setup
         if not _from_start:
             self.setup_loop(options.loop)
-        self.agent_runtime = await self._start_ag_runtime()
+        # self.agent_runtime = await self._start_ag_runtime()
         self.action_listener_process = self._start_listener()
         self.action_runner = self._run_action_runner()
         self.action_listener_health_check = self.loop.create_task(
             self._check_listener_health()
         )
-
         return await self.action_listener_health_check
 
     def _run_action_runner(self) -> WorkerActionRunLoopManager:
@@ -232,12 +232,12 @@ class Worker:
     async def _start_ag_runtime(self) -> AgentRuntime:
         self.agent_runtime = MtmAgentRuntime(config=self.config)
 
-        self.agent_runtime.add_message_serializer(
-            try_get_known_serializers_for_type(ChatSessionStartEvent)
-        )
-        self.agent_runtime.add_message_serializer(
-            try_get_known_serializers_for_type(AskToGreet)
-        )
+        # self.agent_runtime.add_message_serializer(
+        #     try_get_known_serializers_for_type(ChatSessionStartEvent)
+        # )
+        # self.agent_runtime.add_message_serializer(
+        #     try_get_known_serializers_for_type(AskToGreet)
+        # )
         await self.agent_runtime.start()
         return self.agent_runtime
 

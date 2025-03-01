@@ -57,12 +57,8 @@ from opentelemetry.trace import TracerProvider
 
 from mtmai.clients.agent_runtime._utils import subscription_to_proto
 from mtmai.clients.agent_runtime_client import AgentRuntimeClient
+from mtmai.core.loader import ClientConfig
 from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
-
-from ...core.loader import ClientConfig
-
-# from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
-
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=Agent)

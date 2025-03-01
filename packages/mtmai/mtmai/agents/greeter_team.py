@@ -36,11 +36,15 @@ class ReceiveAgent(RoutedAgent):
 
     @message_handler
     async def on_greet(self, message: Greeting, ctx: MessageContext) -> Greeting:
-        return Greeting(content=f"Received: {message.content}")
+        logger.info(f"(ReceiveAgent)topicid:{ctx.topic_id}, content: {message.content}")
+
+        return Greeting(content=f"ReceiveAgent回应: {message.content}")
 
     @message_handler
     async def on_feedback(self, message: Feedback, ctx: MessageContext) -> None:
-        print(f"Feedback received: {message.content}")
+        logger.info(
+            f"(ReceiveAgent)[Feedback] topicid:{ctx.topic_id}, content: {message.content}"
+        )
 
 
 class GreeterAgent(RoutedAgent):
@@ -50,12 +54,17 @@ class GreeterAgent(RoutedAgent):
 
     @message_handler
     async def on_ask(self, message: AskToGreet, ctx: MessageContext) -> None:
+        logger.info(
+            f"(GreeterAgent) topicid:{ctx.topic_id}, content: {message.content}"
+        )
         response = await self.send_message(
             Greeting(f"Hello, {message.content}!"), recipient=self._receive_agent_id
         )
+        logger.info(f"(GreeterAgent) response: {response}")
         await self.publish_message(
             Feedback(f"Feedback: {response.content}"), topic_id=DefaultTopicId()
         )
+        logger.info("(GreeterAgent) 完成")
 
 
 class GreeterTeam:
@@ -64,6 +73,7 @@ class GreeterTeam:
     ) -> None: ...
 
     async def setup(self, runtime: AgentRuntime) -> TaskResult:
+        logger.info("GreeterTeam 初始化")
         await ReceiveAgent.register(
             runtime,
             "receiver",
@@ -76,7 +86,4 @@ class GreeterTeam:
             lambda: GreeterAgent("receiver"),
         )
         await runtime.add_subscription(DefaultSubscription(agent_type="greeter"))
-        # await runtime.publish_message(
-        #     AskToGreet("Hello World!"), topic_id=DefaultTopicId()
-        # )
         logger.info("GreeterTeam 初始化完成")

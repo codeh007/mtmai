@@ -18,10 +18,11 @@ from autogen_core import Agent
 from autogen_ext.runtimes.grpc._constants import GRPC_IMPORT_ERROR_STR
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
 from loguru import logger
+from typing_extensions import Self
+
 from mtmai.core.loader import ClientConfig
 from mtmai.mtmpb import agent_worker_pb2
 from mtmai.mtmpb.agent_worker_pb2_grpc import AgentRpcStub
-from typing_extensions import Self
 
 try:
     import grpc.aio
@@ -141,24 +142,23 @@ class AgentRuntimeClient:
 
         async def read_loop() -> None:
             while True:
-                logger.info("Waiting for message from host")
+                # logger.info("Waiting for message from host")
                 message = cast(agent_worker_pb2.Message, await stream.read())  # type: ignore
                 if message == grpc.aio.EOF:  # type: ignore
                     logger.info("EOF")
                     break
                 logger.info(f"Received a message from host: {message}")
                 await receive_queue.put(message)
-                logger.info("Put message in receive queue")
+                # logger.info("Put message in receive queue")
 
         return asyncio.create_task(read_loop())
 
     async def send(self, message: agent_worker_pb2.Message) -> None:
-        logger.info(f"Send message to host: {message}")
+        logger.info(f"(MTM Runtime) send:: {message}")
         await self._send_queue.put(message)
-        logger.info("Put message in send queue")
+        # logger.info("Put message in send queue")
 
     async def recv(self) -> agent_worker_pb2.Message:
-        logger.info("Getting message from queue")
         data = await self._recv_queue.get()
-        logger.info(f"(MTM Runtime) Received message from host: {data}")
+        logger.info(f"(MTM Runtime) Received: {data}")
         return data
