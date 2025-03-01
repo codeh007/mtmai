@@ -53,12 +53,14 @@ from autogen_ext.runtimes.grpc import _constants
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
 from google.protobuf import any_pb2
 from loguru import logger
-from opentelemetry.trace import TracerProvider
-
 from mtmai.clients.agent_runtime._utils import subscription_to_proto
-from mtmai.clients.agent_runtime_client import AgentRuntimeClient
+
+# from mtmai.clients.agent_runtime_client import AgentRuntimeClient
 from mtmai.core.loader import ClientConfig
 from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2
+from opentelemetry.trace import TracerProvider
+
+from .agent_runtime_client import AgentRuntimeClient
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=Agent)
@@ -122,13 +124,17 @@ class MtmAgentRuntime(AgentRuntime):
 
         self._payload_serialization_format = payload_serialization_format
 
+        # self._client =
+
     async def start(self) -> None:
         """Start the runtime in a background task."""
         if self._running:
             raise ValueError("Runtime is already running.")
+
         self._host_connection = await AgentRuntimeClient.from_client_config(
             self.config, extra_grpc_config=self._extra_grpc_config
         )
+        await self._host_connection.start()
         # self._host_connection = self.client
         logger.info("(MTM Grpc Runtime)Connection established")
         if self._read_task is None:

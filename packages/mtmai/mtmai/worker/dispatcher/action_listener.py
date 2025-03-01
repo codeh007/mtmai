@@ -7,7 +7,6 @@ from typing import Any, AsyncGenerator, List, Optional
 import grpc
 from grpc._cython import cygrpc
 from loguru import logger
-
 from mtmai.clients.connection import new_conn
 from mtmai.clients.events import proto_timestamp_now
 from mtmai.core.loader import ClientConfig
@@ -116,7 +115,7 @@ class ActionListener:
     config: ClientConfig
     worker_id: str
 
-    client: DispatcherStub = field(init=False)
+    # client: DispatcherStub = field(init=False)
     aio_client: DispatcherStub = field(init=False)
     token: str = field(init=False)
     retries: int = field(default=0, init=False)
@@ -131,7 +130,6 @@ class ActionListener:
     missed_heartbeats: int = field(default=0, init=False)
 
     def __post_init__(self):
-        self.client = DispatcherStub(new_conn(self.config))
         self.aio_client = DispatcherStub(new_conn(self.config, True))
         self.token = self.config.token
 
@@ -139,15 +137,13 @@ class ActionListener:
         return self.last_heartbeat_succeeded
 
     async def heartbeat(self):
-        # send a heartbeat every 4 seconds
         heartbeat_delay = 4
-
         while True:
             if not self.run_heartbeat:
                 break
 
             try:
-                # logger.debug("sending heartbeat")
+                # logger.info("sending heartbeat")
                 await self.aio_client.Heartbeat(
                     HeartbeatRequest(
                         workerId=self.worker_id,
@@ -221,75 +217,67 @@ class ActionListener:
         while not self.stop_signal:
             if listener is not None:
                 listener.cancel()
-
+            listener = await self.get_listen_client()
             try:
-                listener = await self.get_listen_client()
-            except Exception:
-                logger.info("closing action listener loop")
-                yield None
+                logger.info("Waiting for action...")
+                self.interrupt = Event_ts()
+                t = asyncio.create_task(read_with_interrupt(listener, self.interrupt))
+                await self.interrupt.wait()
 
-            try:
-                while not self.stop_signal:
-                    self.interrupt = Event_ts()
-                    t = asyncio.create_task(
-                        read_with_interrupt(listener, self.interrupt)
-                    )
-                    await self.interrupt.wait()
-
-                    if not t.done():
-                        # print a warning
-                        logger.warning(
-                            "Interrupted read_with_interrupt task of action listener"
-                        )
-
-                        t.cancel()
-                        listener.cancel()
-                        break
-
-                    assigned_action = t.result()
-
-                    logger.info(f"🟢 Received action: \n{assigned_action}\n")
-                    if assigned_action is cygrpc.EOF:
-                        self.retries = self.retries + 1
-                        break
-
-                    self.retries = 0
-                    assigned_action: AssignedAction
-
-                    # Process the received action
-                    action_type = self.map_action_type(assigned_action.actionType)
-
-                    if (
-                        assigned_action.actionPayload is None
-                        or assigned_action.actionPayload == ""
-                    ):
-                        action_payload = None
-                    else:
-                        action_payload = self.parse_action_payload(
-                            assigned_action.actionPayload
-                        )
-
-                    action = Action(
-                        tenant_id=assigned_action.tenantId,
-                        worker_id=self.worker_id,
-                        workflow_run_id=assigned_action.workflowRunId,
-                        get_group_key_run_id=assigned_action.getGroupKeyRunId,
-                        job_id=assigned_action.jobId,
-                        job_name=assigned_action.jobName,
-                        job_run_id=assigned_action.jobRunId,
-                        step_id=assigned_action.stepId,
-                        step_run_id=assigned_action.stepRunId,
-                        action_id=assigned_action.actionId,
-                        action_payload=action_payload,
-                        action_type=action_type,
-                        retry_count=assigned_action.retryCount,
-                        additional_metadata=assigned_action.additional_metadata,
-                        child_workflow_index=assigned_action.child_workflow_index,
-                        child_workflow_key=assigned_action.child_workflow_key,
-                        parent_workflow_run_id=assigned_action.parent_workflow_run_id,
+                if not t.done():
+                    # print a warning
+                    logger.warning(
+                        "Interrupted read_with_interrupt task of action listener"
                     )
 
-                    yield action
+                    t.cancel()
+                    listener.cancel()
+                    break
+
+                assigned_action = t.result()
+
+                logger.info(f"🟢 Received action: \n{assigned_action}\n")
+                if assigned_action is cygrpc.EOF:
+                    logger.info("Connection EOF, will retry...")
+                    self.retries = self.retries + 1
+                    break
+
+                self.retries = 0
+                assigned_action: AssignedAction
+
+                # Process the received action
+                action_type = self.map_action_type(assigned_action.actionType)
+
+                if (
+                    assigned_action.actionPayload is None
+                    or assigned_action.actionPayload == ""
+                ):
+                    action_payload = None
+                else:
+                    action_payload = self.parse_action_payload(
+                        assigned_action.actionPayload
+                    )
+
+                action = Action(
+                    tenant_id=assigned_action.tenantId,
+                    worker_id=self.worker_id,
+                    workflow_run_id=assigned_action.workflowRunId,
+                    get_group_key_run_id=assigned_action.getGroupKeyRunId,
+                    job_id=assigned_action.jobId,
+                    job_name=assigned_action.jobName,
+                    job_run_id=assigned_action.jobRunId,
+                    step_id=assigned_action.stepId,
+                    step_run_id=assigned_action.stepRunId,
+                    action_id=assigned_action.actionId,
+                    action_payload=action_payload,
+                    action_type=action_type,
+                    retry_count=assigned_action.retryCount,
+                    additional_metadata=assigned_action.additional_metadata,
+                    child_workflow_index=assigned_action.child_workflow_index,
+                    child_workflow_key=assigned_action.child_workflow_key,
+                    parent_workflow_run_id=assigned_action.parent_workflow_run_id,
+                )
+                yield action
             except grpc.RpcError as e:
                 self.last_heartbeat_succeeded = False
 
@@ -311,11 +299,32 @@ class ActionListener:
                     # TODO retry
                     if e.code() == grpc.StatusCode.UNAVAILABLE:
                         logger.error(f"action listener error: {e.details()}")
+                    elif e.code() == grpc.StatusCode.INTERNAL:
+                        logger.error(f"action listener error(内部出错): {e.details()}")
                     else:
                         # Unknown error, report and break
                         logger.error(f"action listener error: {e}")
 
                     self.retries = self.retries + 1
+
+                    # Add retry delay with exponential backoff
+                    # await exp_backoff_sleep(
+                    #     self.retries, DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
+                    # )
+
+                    # Clean up listener if exists
+                    # if listener is not None:
+                    #     listener.cancel()
+
+                    # Continue to retry if under max retries
+                    if self.retries <= DEFAULT_ACTION_LISTENER_RETRY_COUNT:
+                        logger.info(
+                            f"Retrying action listener... ({self.retries}/{DEFAULT_ACTION_LISTENER_RETRY_COUNT})"
+                        )
+                        continue
+                    else:
+                        logger.error("Max retries exceeded, stopping listener")
+                        break
 
     def parse_action_payload(self, payload: str):
         try:
@@ -365,17 +374,17 @@ class ActionListener:
 
         self.aio_client = DispatcherStub(new_conn(self.config, True))
 
-        if self.listen_strategy == "v2":
-            # we should await for the listener to be established before
-            # starting the heartbeater
-            listener = self.aio_client.ListenV2(
-                WorkerListenRequest(workerId=self.worker_id),
-                timeout=self.config.listener_v2_timeout,
-                metadata=get_metadata(self.token),
-            )
-            await self.start_heartbeater()
-        else:
-            raise Exception("v1 listener not implemented")
+        # if self.listen_strategy == "v2":
+        # we should await for the listener to be established before
+        # starting the heartbeater
+        listener = self.aio_client.ListenV2(
+            WorkerListenRequest(workerId=self.worker_id),
+            timeout=self.config.listener_v2_timeout,
+            metadata=get_metadata(self.token),
+        )
+        await self.start_heartbeater()
+        # else:
+        #     raise Exception("v1 listener not implemented")
 
         self.last_connection_attempt = current_time
 

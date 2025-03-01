@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from typing import cast
 
-from autogen_core import DefaultTopicId
-
-from mtmai.agents.greeter_team import AskToGreet
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
 from mtmai.worker_app import mtmapp
+
+from ..agents.worker_team import WorkerTeam
 
 
 @mtmapp.workflow(
@@ -16,7 +15,7 @@ from mtmai.worker_app import mtmapp
     input_validator=AgentRunInput,
 )
 class FlowAg:
-    @mtmapp.step()
+    @mtmapp.step(timeout="60m")
     async def step_entry(self, hatctx: Context):
         # conn = hatctx.agent_runtime_client
         # runtime = MtmAgentRuntime(config=hatctx.config)
@@ -30,12 +29,14 @@ class FlowAg:
         if not input.step_run_id:
             input.step_run_id = hatctx.step_run_id
 
-        # worker_team = WorkerTeam(hatctx=hatctx)
-        # task_result = await worker_team.run(input)
-        ag_runtime = hatctx.ag_runtime
-        await ag_runtime.publish_message(
-            AskToGreet("Hello World!"), topic_id=DefaultTopicId()
-        )
+        # ag_runtime = hatctx.ag_runtime
+        # await ag_runtime.publish_message(
+        #     AskToGreet("Hello World!"), topic_id=DefaultTopicId()
+        # )
+
+        worker_team = WorkerTeam(hatctx=hatctx)
+        task_result = await worker_team.run(input)
+
         return {
             "ok": True,
         }

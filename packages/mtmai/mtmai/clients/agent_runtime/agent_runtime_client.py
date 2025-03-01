@@ -18,11 +18,10 @@ from autogen_core import Agent
 from autogen_ext.runtimes.grpc._constants import GRPC_IMPORT_ERROR_STR
 from autogen_ext.runtimes.grpc._type_helpers import ChannelArgumentType
 from loguru import logger
-from typing_extensions import Self
-
 from mtmai.core.loader import ClientConfig
 from mtmai.mtmpb import agent_worker_pb2
 from mtmai.mtmpb.agent_worker_pb2_grpc import AgentRpcStub
+from typing_extensions import Self
 
 try:
     import grpc.aio
@@ -110,9 +109,10 @@ class AgentRuntimeClient:
         stub = AgentRpcStub(channel)  # type: ignore
         instance = cls(channel, stub)
 
-        instance._connection_task = await instance._connect(
-            stub, instance._send_queue, instance._recv_queue, instance._client_id
-        )
+        # # channel.
+        # instance._connection_task = await instance._connect(
+        #     stub, instance._send_queue, instance._recv_queue, instance._client_id
+        # )
 
         return instance
 
@@ -142,20 +142,28 @@ class AgentRuntimeClient:
 
         async def read_loop() -> None:
             while True:
-                # logger.info("Waiting for message from host")
                 message = cast(agent_worker_pb2.Message, await stream.read())  # type: ignore
                 if message == grpc.aio.EOF:  # type: ignore
                     logger.info("EOF")
                     break
-                logger.info(f"Received a message from host: {message}")
+                logger.info(f"(loop)Received: {message}")
                 await receive_queue.put(message)
                 # logger.info("Put message in receive queue")
 
         return asyncio.create_task(read_loop())
 
+    async def start(self) -> None:
+        self._connection_task = await self._connect(
+            self._stub,
+            self._send_queue,
+            self._recv_queue,
+            self._client_id,
+        )
+
     async def send(self, message: agent_worker_pb2.Message) -> None:
-        logger.info(f"(MTM Runtime) send:: {message}")
         await self._send_queue.put(message)
+        logger.info(f"(MTM Runtime) send: {message}")
+
         # logger.info("Put message in send queue")
 
     async def recv(self) -> agent_worker_pb2.Message:

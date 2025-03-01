@@ -73,8 +73,8 @@ def setup_logging():
     #         root_logger.addHandler(handler)
 
     setup_root_logger()
-    setup_sqlalchemy_logging()
-    setup_httpx_logging()
+    # setup_sqlalchemy_logging()
+    # setup_httpx_logging()
     setup_openai_base_logging()
 
 
@@ -121,11 +121,11 @@ def setup_sqlalchemy_logging():
 
 def setup_httpx_logging():
     httpx_logger = logging.getLogger("httpx")
-    httpx_logger.setLevel(logging.DEBUG)
-    print(f"httpx logger level set to: {httpx_logger.level}")
+    # httpx_logger.setLevel(logging.DEBUG)
 
     # if is_in_dev():
     target_file = pathlib.Path(logs_dir) / "httpx.log"
+    print(f"httpx logger level set to: {httpx_logger.level}, logfile: {target_file}")
 
     if not target_file.parent.exists():
         target_file.parent.mkdir(parents=True, exist_ok=True)
