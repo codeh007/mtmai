@@ -80,37 +80,37 @@ class EventClient:
         )
         return self._event_service
 
-    @tenacity_retry
-    async def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
-        namespace = self.namespace
+    # @tenacity_retry
+    # async def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
+    #     namespace = self.namespace
 
-        if (
-            options is not None
-            and "namespace" in options
-            and options["namespace"] is not None
-        ):
-            namespace = options["namespace"]
-            del options["namespace"]
+    #     if (
+    #         options is not None
+    #         and "namespace" in options
+    #         and options["namespace"] is not None
+    #     ):
+    #         namespace = options["namespace"]
+    #         del options["namespace"]
 
-        namespaced_event_key = namespace + event_key
+    #     namespaced_event_key = namespace + event_key
 
-        meta = None if options is None else options["additional_metadata"]
-        meta_bytes = None if meta is None else json.dumps(meta).encode("utf-8")
+    #     meta = None if options is None else options["additional_metadata"]
+    #     meta_bytes = None if meta is None else json.dumps(meta).encode("utf-8")
 
-        payload_bytes = json.dumps(payload)
+    #     payload_bytes = json.dumps(payload)
 
-        request = PushEventRequest(
-            key=namespaced_event_key,
-            payload=payload_bytes,
-            eventTimestamp=proto_timestamp_now(),
-            additionalMetadata=meta_bytes,
-        )
+    #     request = PushEventRequest(
+    #         key=namespaced_event_key,
+    #         payload=payload_bytes,
+    #         eventTimestamp=proto_timestamp_now(),
+    #         additionalMetadata=meta_bytes,
+    #     )
 
-        return await self.event_service.Push(
-            ctx=self.client_context,
-            request=request,
-            server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
-        )
+    #     return await self.event_service.Push(
+    #         ctx=self.client_context,
+    #         request=request,
+    #         server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
+    #     )
 
     @tenacity_retry
     async def bulk_push(

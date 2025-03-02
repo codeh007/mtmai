@@ -15,6 +15,21 @@ from mtmai.worker_app import mtmapp
 from opentelemetry.trace import TracerProvider
 
 
+class MtCancelToken(CancellationToken):
+    def __init__(self, hatctx: Context):
+        # self.is_cancelled = False
+        self.cancellation_token: Context | None = hatctx
+        super().__init__()
+
+    def cancel(self):
+        if self.cancellation_token:
+            return self.cancellation_token.cancel()
+
+    def is_cancelled(self):
+        if self.cancellation_token:
+            return self.cancellation_token.done()
+
+
 @mtmapp.workflow(
     name="ag",
     on_events=["ag:run"],
@@ -25,16 +40,13 @@ class FlowAg:
             tracer_provider=tracer_provider,
             # payload_serialization_format=self._payload_serialization_format,
         )
-        self.cancellation_token = CancellationToken()
         logger.info("FlowAg 初始化")
 
     @mtmapp.step(timeout="60m")
     async def step_entry(self, hatctx: Context):
         input = AgentRunInput.model_validate(hatctx.input)
-        input = cast(AgentRunInput, input)
-        return await self.run(input)
-
-    async def run(self, message: AgentRunInput) -> TaskResult:
+        message = cast(AgentRunInput, input)
+        cancellation_token = MtCancelToken(hatctx)
         tenant_client = TenantClient()
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
@@ -77,9 +89,9 @@ class FlowAg:
         try:
             async for event in team.run_stream(
                 task=message.content,
-                cancellation_token=self.cancellation_token,
+                cancellation_token=cancellation_token,
             ):
-                if self.cancellation_token and self.cancellation_token.is_cancelled():
+                if cancellation_token and cancellation_token.is_cancelled():
                     break
                 await tenant_client.event.emit(event)
 
