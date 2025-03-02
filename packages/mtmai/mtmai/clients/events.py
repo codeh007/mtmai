@@ -181,9 +181,34 @@ class EventClient:
         step_run_id = get_step_run_id()
         if isinstance(event, str) or isinstance(event, bytes):
             await self.stream(event, step_run_id)
+        elif isinstance(event, BaseModel):
+            json_bytes = event.model_dump_json()
+            await self.stream(json_bytes, step_run_id=step_run_id)
+        elif isinstance(event, ChatSessionStartEvent):
+            result_type = self._serialization_registry.type_name(event)
+            serialized_result = self._serialization_registry.serialize(
+                event,
+                type_name=result_type,
+                data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
+            )
+
+            # serialized_message = self._serialization_registry.serialize(data)
+            any_proto = any_pb2.Any()
+            any_proto.ParseFromString(serialized_result)
+            ce_message = cloudevent_pb2.CloudEvent(
+                # id=message_id,
+                spec_version="1.0",
+                # type=topic_id.type,
+                source="event_source",
+                # attributes=attributes,
+                proto_data=any_proto,
+            )
+
+            data_bytes = ce_message.SerializeToString()
+            await self.stream(data_bytes, step_run_id=step_run_id)
         else:
-            bytes = json.dumps(event)
-            await self.stream(bytes, step_run_id)
+            json_bytes = json.dumps(event)
+            await self.stream(json_bytes, step_run_id=step_run_id)
 
     async def stream(self, data: str | bytes, step_run_id: str):
         if isinstance(data, str):

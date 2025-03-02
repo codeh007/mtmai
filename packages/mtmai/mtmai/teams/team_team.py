@@ -13,14 +13,14 @@ from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
 
-class SysTeamConfig(BaseModel):
+class TeamTeamConfig(BaseModel):
     participants: List[ComponentModel]
     termination_condition: ComponentModel | None = None
     max_turns: int | None = None
 
 
-class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
-    component_type = "mtmai.teams.sys_team.SysTeam"
+class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
+    component_type = "mtmai.teams.team_team.TeamTeam"
 
     def __init__(self):
         super().__init__()
@@ -77,6 +77,40 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                     break
                 await tenant_client.event.emit(event)
 
+                # if isinstance(event, TaskResult):
+                #     logger.info(f"Worker Agent 收到任务结果: {event}")
+                #     task_result = event
+                # elif isinstance(
+                #     event,
+                #     (
+                #         TextMessage,
+                #         MultiModalMessage,
+                #         StopMessage,
+                #         HandoffMessage,
+                #         ToolCallRequestEvent,
+                #         ToolCallExecutionEvent,
+                #         LLMCallEventMessage,
+                #     ),
+                # ):
+                #     # if event.content:
+                #     await tenant_client.ag.handle_message_create(
+                #         ChatMessageUpsert(
+                #             content=event.content,
+                #             tenant_id=tenant_client.tenant_id,
+                #             component_id=message.team_id,
+                #             threadId=thread_id,
+                #             role=event.source,
+                #             runId=tenant_client.run_id,
+                #             stepRunId=message.step_run_id,
+                #         ),
+                #     )
+                #     await tenant_client.event.stream(
+                #         event, step_run_id=message.step_run_id
+                #     )
+                #     # else:
+                #     #     logger.warn(f"worker Agent 消息没有content: {event}")
+                # else:
+                #     logger.warn(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
             await tenant_client.ag.save_team_state(
                 team=team,

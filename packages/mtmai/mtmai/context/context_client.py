@@ -1,3 +1,4 @@
+from typing import Any
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.context.ctx import (
@@ -59,3 +60,6 @@ class TenantClient:
             return self._event
         self._event = EventClient(get_server_url(), get_access_token())
         return self._event
+
+    async def emit(self, event: Any):
+        await self.event.emit(event)

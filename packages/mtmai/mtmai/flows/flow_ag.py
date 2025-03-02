@@ -28,4 +28,4 @@ class FlowAg:
         message = cast(AgentRunInput, input)
         task = message.content
         assisant_team = SysTeam()
-        return assisant_team.run(task=task, cancellation_token=MtCancelToken())
+        return await assisant_team.run(task=task, cancellation_token=MtCancelToken())
