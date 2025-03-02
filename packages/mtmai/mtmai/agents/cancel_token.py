@@ -1,20 +1,11 @@
-from typing import Callable
-
 from autogen_core import CancellationToken
+
+from mtmai.context.ctx import get_step_canceled_ctx, set_step_canceled_ctx
 
 
 class MtCancelToken(CancellationToken):
-    def __init__(
-        self, lambda_cancel: Callable[[], None], is_cancelled: Callable[[], bool]
-    ):
-        self.lambda_cancel: Callable[[], None] = lambda_cancel
-        self.is_cancelled: Callable[[], bool] = is_cancelled
-        super().__init__()
-
     def cancel(self):
-        if self.lambda_cancel:
-            return self.lambda_cancel()
+        set_step_canceled_ctx(True)
 
     def is_cancelled(self):
-        if self.is_cancelled:
-            return self.is_cancelled()
+        return get_step_canceled_ctx()

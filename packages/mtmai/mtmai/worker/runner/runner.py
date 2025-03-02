@@ -16,7 +16,11 @@ from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
-from mtmai.context.ctx import set_access_token_ctx, set_server_url_ctx
+from mtmai.context.ctx import (
+    set_access_token_ctx,
+    set_server_url_ctx,
+    set_step_canceled_ctx,
+)
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
 from mtmai.core.loader import ClientConfig
@@ -122,6 +126,7 @@ class Runner:
 
             set_server_url_ctx(self.config.server_url)
             set_access_token_ctx(self.config.credentials.token)
+            set_step_canceled_ctx(False)
 
             parse_ctx_from_action(action)
             match action.action_type:

@@ -92,8 +92,7 @@ def set_run_by_user_id_ctx(run_by_user_id: str):
     run_by_user_id_ctx.set(run_by_user_id)
 
 
-def team_id_ctx() -> str:
-    return team_id_ctx.get()
+team_id_ctx: ContextVar[str] = ContextVar("team_id", default=None)
 
 
 def get_team_id_ctx() -> str:
@@ -102,3 +101,14 @@ def get_team_id_ctx() -> str:
 
 def set_team_id_ctx(team_id: str):
     team_id_ctx.set(team_id)
+
+
+step_canceled_ctx: ContextVar[bool] = ContextVar("step_canceled_ctx", default=False)
+
+
+def get_step_canceled_ctx() -> str:
+    return step_canceled_ctx.get()
+
+
+def set_step_canceled_ctx(step_canceled: str):
+    step_canceled_ctx.set(step_canceled)
