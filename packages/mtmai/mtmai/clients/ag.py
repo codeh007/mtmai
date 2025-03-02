@@ -1,4 +1,5 @@
 from autogen_agentchat.base import Team
+from connecpy.context import ClientContext
 from loguru import logger
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
@@ -26,32 +27,36 @@ class AgClient:
     ):
         self.server_url = server_url
         self.access_token = access_token
-        self._ag_state_api = None
-        self._api_client = None
-        self._chat_api = None
-        self._rest = None
-        self._coms_api = None
+        self.client_context = ClientContext(
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                # "X-Tid": tenant_id,
+            }
+        )
+        self.client_config = Configuration(
+            host=self.server_url,
+            access_token=self.access_token,
+        )
 
     @property
     def api_client(self):
-        if self._api_client is None:
-            client_config = Configuration(
-                host=self.server_url,
-                access_token=self.access_token,
-            )
-            self._api_client = ApiClient(configuration=client_config)
+        if hasattr(self, "_api_client"):
+            return self._api_client
+        self._api_client = ApiClient(configuration=self.client_config)
         return self._api_client
 
     @property
     def ag_state_api(self):
-        if self._ag_state_api is None:
-            self._ag_state_api = AgStateApi(self.api_client)
+        if hasattr(self, "_ag_state_api"):
+            return self._ag_state_api
+        self._ag_state_api = AgStateApi(self.api_client)
         return self._ag_state_api
 
     @property
     def chat_api(self):
-        if self._chat_api is None:
-            self._chat_api = ChatApi(self.api_client)
+        if hasattr(self, "_chat_api"):
+            return self._chat_api
+        self._chat_api = ChatApi(self.api_client)
         return self._chat_api
 
     @property
@@ -63,8 +68,9 @@ class AgClient:
 
     @property
     def coms_api(self):
-        if self._coms_api is None:
-            self._coms_api = ComsApi(self.api_client)
+        if hasattr(self, "_coms_api"):
+            return self._coms_api
+        self._coms_api = ComsApi(self.api_client)
         return self._coms_api
 
     async def save_team_state(
@@ -134,3 +140,17 @@ class AgClient:
             tenant=message.tenant_id,
             chat_message_upsert=message.model_dump(),
         )
+
+    async def get_component(self, tenant_id: str, component_id: str):
+        return await self.coms_api.coms_get(
+            tenant=tenant_id,
+            com=component_id,
+        )
+
+    async def get_team(self, tenant_id: str, team_id: str):
+        team_comp_data = await self.coms_api.coms_get(
+            tenant=tenant_id,
+            com=team_id,
+        )
+        team = Team.load_component(team_comp_data.component)
+        return team

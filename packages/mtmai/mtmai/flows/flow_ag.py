@@ -2,18 +2,42 @@ from __future__ import annotations
 
 from typing import cast
 
-from mtmai.agents.worker_team import WorkerTeam
+from autogen_agentchat.base import TaskResult
+from autogen_agentchat.messages import (
+    HandoffMessage,
+    MultiModalMessage,
+    StopMessage,
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+)
+from autogen_core import CancellationToken, SingleThreadedAgentRuntime
+from autogenstudio.datamodel import LLMCallEventMessage
+from loguru import logger
+from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.context.context import Context
+from mtmai.context.context_client import TenantClient
+from mtmai.mtlibs.id import generate_uuid
+from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
 from mtmai.worker_app import mtmapp
+from opentelemetry.trace import TracerProvider
 
 
 @mtmapp.workflow(
     name="ag",
     on_events=["ag:run"],
-    input_validator=AgentRunInput,
 )
 class FlowAg:
+    def __init__(self, tracer_provider: TracerProvider | None = None) -> None:
+        self._runtime = SingleThreadedAgentRuntime(
+            tracer_provider=tracer_provider,
+            # payload_serialization_format=self._payload_serialization_format,
+        )
+        self.cancellation_token = CancellationToken()
+        logger.info("FlowAg 初始化")
+
     @mtmapp.step(timeout="60m")
     async def step_entry(self, hatctx: Context):
         # conn = hatctx.agent_runtime_client
@@ -24,5 +48,98 @@ class FlowAg:
 
         # set_step_run_id(hatctx.step_run_id)
 
-        input = cast(AgentRunInput, hatctx.workflow_input())
-        return await WorkerTeam().run(input)
+        input2 = hatctx.input
+        input = AgentRunInput.model_validate(input2)
+        input = cast(AgentRunInput, input)
+        return await self.run(input)
+
+    async def run(self, message: AgentRunInput) -> TaskResult:
+        tenant_client = TenantClient()
+        user_input = message.content
+        if user_input.startswith("/tenant/seed"):
+            logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
+            result = await self._runtime.send_message(
+                MsgResetTenant(tenant_id=tenant_client.tenant_id),
+                self.tenant_agent_id,
+            )
+            return
+
+        if not message.team_id:
+            tenant_teams = await tenant_client.ag.list_team_component(message.tenant_id)
+            logger.info(f"get team component: {tenant_teams}")
+            message.team_id = tenant_teams[0].metadata.id
+
+        team = await tenant_client.ag.get_team(tenant_client.tenant_id, message.team_id)
+        team_id = message.team_id
+        if not team_id:
+            team_id = generate_uuid()
+
+        thread_id = message.session_id
+        # TODO: 获取 session state, 如果获取失败,触发 ChatSessionStartEvent 事件.
+        if not thread_id:
+            thread_id = generate_uuid()
+
+        else:
+            logger.info(f"现有session: {thread_id}")
+            # 加载团队状态
+            # await self.load_state(thread_id)
+            ...
+
+        await tenant_client.event.stream(
+            step_run_id=tenant_client.step_run_id,
+            data=ChatSessionStartEvent(
+                threadId=thread_id,
+            ),
+        )
+
+        task_result: TaskResult | None = None
+        try:
+            async for event in team.run_stream(
+                task=message.content,
+                cancellation_token=self.cancellation_token,
+            ):
+                if self.cancellation_token and self.cancellation_token.is_cancelled():
+                    break
+
+                if isinstance(event, TaskResult):
+                    logger.info(f"Worker Agent 收到任务结果: {event}")
+                    task_result = event
+                elif isinstance(
+                    event,
+                    (
+                        TextMessage,
+                        MultiModalMessage,
+                        StopMessage,
+                        HandoffMessage,
+                        ToolCallRequestEvent,
+                        ToolCallExecutionEvent,
+                        LLMCallEventMessage,
+                    ),
+                ):
+                    if event.content:
+                        await tenant_client.ag.handle_message_create(
+                            ChatMessageUpsert(
+                                content=event.content,
+                                tenant_id=tenant_client.tenant_id,
+                                component_id=message.team_id,
+                                threadId=thread_id,
+                                role=event.source,
+                                runId=tenant_client.run_id,
+                                stepRunId=message.step_run_id,
+                            ),
+                        )
+                        await tenant_client.event.stream(
+                            event, step_run_id=message.step_run_id
+                        )
+                    else:
+                        logger.warn(f"worker Agent 消息没有content: {event}")
+                else:
+                    logger.info(f"worker Agent 收到(未知类型)消息: {event}")
+        finally:
+            await tenant_client.ag.save_team_state(
+                team=team,
+                team_id=team_id,
+                tenant_id=tenant_client.tenant_id,
+                run_id=tenant_client.run_id,
+            )
+        return task_result

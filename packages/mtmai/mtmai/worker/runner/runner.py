@@ -17,10 +17,9 @@ from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.context.context_client import (
+    parse_ctx_from_action,
     set_access_token_ctx,
-    set_run_id,
     set_server_url_ctx,
-    set_step_run_id,
 )
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
@@ -125,9 +124,8 @@ class Runner:
 
             set_server_url_ctx(self.config.server_url)
             set_access_token_ctx(self.config.credentials.token)
-            set_run_id(action.workflow_run_id)
-            set_step_run_id(action.step_run_id)
 
+            parse_ctx_from_action(action)
             match action.action_type:
                 case ActionType.START_STEP_RUN:
                     log = f"run: start step: {action.action_id}/{action.step_run_id}"

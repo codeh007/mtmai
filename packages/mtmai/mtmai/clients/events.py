@@ -9,7 +9,6 @@ from connecpy.context import ClientContext
 from google.protobuf import any_pb2, timestamp_pb2
 from google.protobuf import message as pb_message
 from mtmai.core.config import settings
-from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2, events_connecpy
 from mtmai.mtmpb.events_pb2 import (
@@ -49,21 +48,37 @@ class BulkPushEventWithMetadata(TypedDict):
 class EventClient:
     def __init__(
         self,
-        config: ClientConfig,
-        eventService: events_connecpy.AsyncEventsServiceClient,
+        server_url: str,
+        token: str,
+        tenant_id: str | None = None,
+        namespace: str | None = "",
     ):
         self.client_context = ClientContext(
             headers={
-                "Authorization": f"Bearer {config.token}",
-                "X-Tid": config.tenant_id,
+                "Authorization": f"Bearer {token}",
+                "X-Tid": tenant_id,
             }
         )
-        self.namespace = config.namespace
-        self.eventService = eventService
+        self.namespace = namespace
+        self.server_url = server_url
+        self.eventsService = events_connecpy.AsyncEventsServiceClient(
+            server_url,
+            timeout=20,
+        )
         self._serialization_registry = SerializationRegistry()
         self._serialization_registry.add_serializer(
             try_get_known_serializers_for_type(ChatSessionStartEvent)
         )
+
+    @property
+    def event_service(self):
+        if hasattr(self, "_event_service"):
+            return self._event_service
+        self._event_service = events_connecpy.AsyncEventsServiceClient(
+            self.server_url,
+            timeout=20,
+        )
+        return self._event_service
 
     @tenacity_retry
     async def push(self, event_key, payload, options: PushEventOptions = None) -> Event:
@@ -148,79 +163,69 @@ class EventClient:
 
         bulk_request = BulkPushEventRequest(events=bulk_events)
 
-        try:
-            response = await self.eventService.BulkPush(
-                ctx=self.client_context,
-                request=bulk_request,
-                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
-            )
-            return response.events
-        except grpc.RpcError as e:
-            raise ValueError(f"gRPC error: {e}")
+        response = await self.eventService.BulkPush(
+            ctx=self.client_context,
+            request=bulk_request,
+            server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
+        )
+        return response.events
 
     async def log(self, message: str, step_run_id: str):
-        try:
-            request = PutLogRequest(
-                stepRunId=step_run_id,
-                createdAt=proto_timestamp_now(),
-                message=message,
-            )
-            await self.eventService.PutLog(
-                ctx=self.client_context,
-                request=request,
-                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
-            )
-
-        except Exception as e:
-            raise ValueError(f"Error logging: {str(e)}")
+        request = PutLogRequest(
+            stepRunId=step_run_id,
+            createdAt=proto_timestamp_now(),
+            message=message,
+        )
+        await self.eventService.PutLog(
+            ctx=self.client_context,
+            request=request,
+            server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
+        )
 
     async def stream(self, data: str | bytes, step_run_id: str):
-        try:
-            if isinstance(data, str):
-                data_bytes = data.encode("utf-8")
-            elif isinstance(data, bytes):
-                data_bytes = data
-            elif isinstance(data, BaseModel):
-                data_bytes = data.model_dump_json().encode("utf-8")
-            elif isinstance(data, ChatSessionStartEvent):
-                result_type = self._serialization_registry.type_name(data)
-                serialized_result = self._serialization_registry.serialize(
-                    data,
-                    type_name=result_type,
-                    data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
-                )
-
-                # serialized_message = self._serialization_registry.serialize(data)
-                any_proto = any_pb2.Any()
-                any_proto.ParseFromString(serialized_result)
-                ce_message = cloudevent_pb2.CloudEvent(
-                    # id=message_id,
-                    spec_version="1.0",
-                    # type=topic_id.type,
-                    source="event_source",
-                    # attributes=attributes,
-                    proto_data=any_proto,
-                )
-
-                data_bytes = ce_message.SerializeToString()
-            elif isinstance(data, agent_worker_pb2.Message):
-                data_bytes = data.SerializeToString()
-            elif isinstance(data, pb_message.Message):
-                # data_bytes = data.model_dump_json().encode("utf-8")
-                data_bytes = data.SerializeToString()
-
-            else:
-                raise ValueError("Invalid data type. Expected str, bytes, or file.")
-
-            request = PutStreamEventRequest(
-                stepRunId=step_run_id,
-                createdAt=proto_timestamp_now(),
-                message=data_bytes,
+        if isinstance(data, str):
+            data_bytes = data.encode("utf-8")
+        elif isinstance(data, bytes):
+            data_bytes = data
+        elif isinstance(data, BaseModel):
+            data_bytes = data.model_dump_json().encode("utf-8")
+        elif isinstance(data, ChatSessionStartEvent):
+            result_type = self._serialization_registry.type_name(data)
+            serialized_result = self._serialization_registry.serialize(
+                data,
+                type_name=result_type,
+                data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
             )
-            await self.eventService.PutStreamEvent(
-                ctx=self.client_context,
-                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
-                request=request,
+
+            # serialized_message = self._serialization_registry.serialize(data)
+            any_proto = any_pb2.Any()
+            any_proto.ParseFromString(serialized_result)
+            ce_message = cloudevent_pb2.CloudEvent(
+                # id=message_id,
+                spec_version="1.0",
+                # type=topic_id.type,
+                source="event_source",
+                # attributes=attributes,
+                proto_data=any_proto,
             )
-        except Exception as e:
-            raise ValueError(f"Error putting stream event: {str(e)}")
+
+            data_bytes = ce_message.SerializeToString()
+        elif isinstance(data, agent_worker_pb2.Message):
+            data_bytes = data.SerializeToString()
+        elif isinstance(data, pb_message.Message):
+            # data_bytes = data.model_dump_json().encode("utf-8")
+            data_bytes = data.SerializeToString()
+
+        else:
+            raise ValueError("Invalid data type. Expected str, bytes, or file.")
+
+        request = PutStreamEventRequest(
+            stepRunId=step_run_id,
+            createdAt=proto_timestamp_now(),
+            message=data_bytes,
+        )
+        await self.event_service.PutStreamEvent(
+            ctx=self.client_context,
+            server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
+            request=request,
+        )

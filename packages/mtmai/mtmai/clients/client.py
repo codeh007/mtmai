@@ -3,7 +3,6 @@ from logging import Logger
 
 import httpx
 from connecpy.context import ClientContext
-
 from mtmai.clients.admin import AdminClient, new_admin
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi
@@ -42,11 +41,16 @@ class Client:
         if config.host_port is None:
             raise ValueError("Host and port are required")
 
-        eventsService = events_connecpy.AsyncEventsServiceClient(
-            config.server_url,
-            timeout=20,
+        # eventsService = events_connecpy.AsyncEventsServiceClient(
+        #     config.server_url,
+        #     timeout=20,
+        # )
+        event_client = EventClient(
+            server_url=config.server_url,
+            token=config.token,
+            tenant_id=config.tenant_id,
+            namespace=config.namespace,
         )
-        event_client = EventClient(config, eventsService)
         admin_client = new_admin(config)
         dispatcher_client = new_dispatcher(config)
         rest_client = AsyncRestApi(config.server_url, config.token, config.tenant_id)
