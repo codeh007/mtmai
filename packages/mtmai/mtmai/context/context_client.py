@@ -1,6 +1,6 @@
 from contextvars import ContextVar
 
-from ..clients.ag import AgClient
+from mtmai.clients.ag import AgClient
 
 tenant_id_context: ContextVar[str] = ContextVar("user_tenant_id", default=None)
 
@@ -63,16 +63,21 @@ class TenantClient:
         self.run_id = get_run_id()
         self.step_run_id = get_step_run_id()
 
-        server_url = get_server_url()
-        if server_url is None:
+        self.server_url = get_server_url()
+        if self.server_url is None:
             raise ValueError("server_url context is not set")
-        access_token = get_access_token()
-        if access_token is None:
+        self.access_token = get_access_token()
+        if self.access_token is None:
             raise ValueError("access_token context is not set")
-
-        self.ag: AgClient = AgClient(server_url, access_token)
 
     def show_info(self):
         print(
             f"(TenantClient) tenant_id: {self.tenant_id}, run_id: {self.run_id}, step_run_id: {self.step_run_id}"
         )
+
+    @property
+    def ag(self) -> AgClient:
+        if hasattr(self, "_ag"):
+            return self._ag
+        self._ag = AgClient(get_server_url(), get_access_token())
+        return self._ag

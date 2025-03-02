@@ -9,12 +9,12 @@ from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
+from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.mtlibs.id import generate_uuid
 
 
@@ -23,11 +23,9 @@ class AgClient:
         self,
         server_url: str,
         access_token: str,
-        # agService: ag_connecpy.AsyncAgServiceClient,
     ):
         self.server_url = server_url
         self.access_token = access_token
-        # self.agService = agService
         self._ag_state_api = None
         self._api_client = None
         self._chat_api = None
@@ -38,8 +36,8 @@ class AgClient:
     def api_client(self):
         if self._api_client is None:
             client_config = Configuration(
-                host=self.config.server_url,
-                access_token=self.config.token,
+                host=self.server_url,
+                access_token=self.access_token,
             )
             self._api_client = ApiClient(configuration=client_config)
         return self._api_client
@@ -57,13 +55,11 @@ class AgClient:
         return self._chat_api
 
     @property
-    def rest(self):
-        if self._rest is None:
-            self._rest = AsyncRestApi(
-                self.config.server_url, self.config.token, self.config.tenant_id
-            )
-
-        return self._rest
+    def model_api(self):
+        if hasattr(self, "_model_api"):
+            return self._model_api
+        self._model_api = ModelApi(self.api_client)
+        return self._model_api
 
     @property
     def coms_api(self):
@@ -101,9 +97,7 @@ class AgClient:
         if teams_list.rows and len(teams_list.rows) > 0:
             logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
             results.append(teams_list.rows[0])
-        defaultModel = await self.rest.model_api.model_get(
-            tenant=tenant_id, model="default"
-        )
+        defaultModel = await self.model_api.model_get(tenant=tenant_id, model="default")
         model_dict = defaultModel.config.model_dump()
         model_dict.pop("n", None)
         model_client = MtmOpenAIChatCompletionClient(
@@ -122,7 +116,7 @@ class AgClient:
             logger.info(f"create team for tenant {tenant_id}")
             team_comp = await team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
-            new_team = await self.rest.coms_api.coms_upsert(
+            new_team = await self.coms_api.coms_upsert(
                 tenant=tenant_id,
                 com=generate_uuid(),
                 mt_component=MtComponent(

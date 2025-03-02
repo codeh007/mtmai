@@ -124,7 +124,7 @@ class Runner:
             span.set_attribute("workflow_run_url", self.create_workflow_run_url(action))
 
             set_server_url_ctx(self.config.server_url)
-            set_access_token_ctx(action.access_token)
+            set_access_token_ctx(self.config.credentials.token)
             set_run_id(action.workflow_run_id)
             set_step_run_id(action.step_run_id)
 
