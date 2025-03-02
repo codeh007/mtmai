@@ -2,12 +2,12 @@ import datetime
 import json
 from typing import Any, Dict, List, Optional, TypedDict
 
-import grpc
 from autogen_core import PROTOBUF_DATA_CONTENT_TYPE, try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
 from connecpy.context import ClientContext
 from google.protobuf import any_pb2, timestamp_pb2
 from google.protobuf import message as pb_message
+from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2, events_connecpy
@@ -56,7 +56,7 @@ class EventClient:
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {token}",
-                "X-Tid": tenant_id,
+                # "X-Tid": tenant_id,
             }
         )
         self.namespace = namespace
@@ -94,16 +94,10 @@ class EventClient:
 
         namespaced_event_key = namespace + event_key
 
-        try:
-            meta = None if options is None else options["additional_metadata"]
-            meta_bytes = None if meta is None else json.dumps(meta).encode("utf-8")
-        except Exception as e:
-            raise ValueError(f"Error encoding meta: {e}")
+        meta = None if options is None else options["additional_metadata"]
+        meta_bytes = None if meta is None else json.dumps(meta).encode("utf-8")
 
-        try:
-            payload_bytes = json.dumps(payload).encode("utf-8")
-        except json.UnicodeEncodeError as e:
-            raise ValueError(f"Error encoding payload: {e}")
+        payload_bytes = json.dumps(payload)
 
         request = PushEventRequest(
             key=namespaced_event_key,
@@ -112,14 +106,11 @@ class EventClient:
             additionalMetadata=meta_bytes,
         )
 
-        try:
-            return await self.eventService.Push(
-                ctx=self.client_context,
-                request=request,
-                server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
-            )
-        except grpc.RpcError as e:
-            raise ValueError(f"gRPC error: {e}")
+        return await self.event_service.Push(
+            ctx=self.client_context,
+            request=request,
+            server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
+        )
 
     @tenacity_retry
     async def bulk_push(
@@ -163,7 +154,7 @@ class EventClient:
 
         bulk_request = BulkPushEventRequest(events=bulk_events)
 
-        response = await self.eventService.BulkPush(
+        response = await self.event_service.BulkPush(
             ctx=self.client_context,
             request=bulk_request,
             server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
@@ -176,11 +167,23 @@ class EventClient:
             createdAt=proto_timestamp_now(),
             message=message,
         )
-        await self.eventService.PutLog(
+        await self.event_service.PutLog(
             ctx=self.client_context,
             request=request,
             server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
         )
+
+    # async def emit(self, events: List[Event]):
+    #     for event in events:
+    #         await self.emit(event)
+
+    async def emit(self, event: Any):
+        step_run_id = get_step_run_id()
+        if isinstance(event, str) or isinstance(event, bytes):
+            await self.stream(event, step_run_id)
+        else:
+            bytes = json.dumps(event)
+            await self.stream(bytes, step_run_id)
 
     async def stream(self, data: str | bytes, step_run_id: str):
         if isinstance(data, str):
@@ -188,7 +191,7 @@ class EventClient:
         elif isinstance(data, bytes):
             data_bytes = data
         elif isinstance(data, BaseModel):
-            data_bytes = data.model_dump_json().encode("utf-8")
+            data_bytes = data.model_dump_json()
         elif isinstance(data, ChatSessionStartEvent):
             result_type = self._serialization_registry.type_name(data)
             serialized_result = self._serialization_registry.serialize(
@@ -213,11 +216,10 @@ class EventClient:
         elif isinstance(data, agent_worker_pb2.Message):
             data_bytes = data.SerializeToString()
         elif isinstance(data, pb_message.Message):
-            # data_bytes = data.model_dump_json().encode("utf-8")
             data_bytes = data.SerializeToString()
 
         else:
-            raise ValueError("Invalid data type. Expected str, bytes, or file.")
+            raise ValueError("(stream)未知数据类型")
 
         request = PutStreamEventRequest(
             stepRunId=step_run_id,

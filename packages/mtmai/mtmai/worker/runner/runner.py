@@ -16,11 +16,7 @@ from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
-from mtmai.context.context_client import (
-    parse_ctx_from_action,
-    set_access_token_ctx,
-    set_server_url_ctx,
-)
+from mtmai.context.ctx import set_access_token_ctx, set_server_url_ctx
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
 from mtmai.core.loader import ClientConfig
@@ -45,6 +41,8 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+
+from ...context.context_client import parse_ctx_from_action
 
 
 class WorkerStatus(Enum):

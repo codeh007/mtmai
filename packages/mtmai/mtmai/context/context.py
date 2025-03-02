@@ -44,26 +44,26 @@ def set_current_user_id(user_id: str):
     user_id_context.set(user_id)
 
 
-api_token_context: ContextVar[str] = ContextVar("api_token", default=None)
+# api_token_context: ContextVar[str] = ContextVar("api_token", default=None)
 
 
-def set_api_token_context(api_token: str):
-    api_token_context.set(api_token)
+# def set_api_token_context(api_token: str):
+#     api_token_context.set(api_token)
 
 
-def get_api_token_context() -> str | None:
-    return api_token_context.get()
+# def get_api_token_context() -> str | None:
+#     return api_token_context.get()
 
 
-tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
+# tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
 
 
-def set_tenant_id(tenant_id: str):
-    tenant_id_context.set(tenant_id)
+# def set_tenant_id(tenant_id: str):
+#     tenant_id_context.set(tenant_id)
 
 
-def get_tenant_id() -> str | None:
-    return tenant_id_context.get()
+# def get_tenant_id() -> str | None:
+#     return tenant_id_context.get()
 
 
 backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
