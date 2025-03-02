@@ -36,7 +36,7 @@ class ReceiveAgent(RoutedAgent):
 
     @message_handler
     async def on_greet(self, message: Greeting, ctx: MessageContext) -> Greeting:
-        logger.info(f"(ReceiveAgent)topicid:{ctx.topic_id}, content: {message.content}")
+        # logger.info(f"(ReceiveAgent)topicid:{ctx.topic_id}, content: {message.content}")
 
         return Greeting(content=f"ReceiveAgent回应: {message.content}")
 
@@ -55,19 +55,15 @@ class GreeterAgent(RoutedAgent):
     @message_handler
     async def on_ask(self, message: AskToGreet, ctx: MessageContext) -> None:
         logger.info(
-            f"(GreeterAgent) topicid:{ctx.topic_id}, content: {message.content}"
+            f"(GreeterAgent) on_ask, topicid:{ctx.topic_id}, content: {message.content}"
         )
-        await self.publish_message(Feedback("Feedback1"), topic_id=DefaultTopicId())
-        await self.publish_message(Feedback("Feedback2"), topic_id=DefaultTopicId())
 
-        # 等待 ReceiveAgent 回应
         response = await self.send_message(
             Greeting(f"Hello, {message.content}!"), recipient=self._receive_agent_id
         )
-        # 调试: 这里一直没进入
-        logger.info(f"(GreeterAgent) response: {response}")
+        await self.publish_message(Feedback("Feedback1"), topic_id=DefaultTopicId())
 
-        logger.info("(GreeterAgent) 完成")
+        logger.info(f"(GreeterAgent) response: {response}")
 
 
 class GreeterTeam:

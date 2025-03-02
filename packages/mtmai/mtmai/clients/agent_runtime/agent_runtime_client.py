@@ -146,7 +146,7 @@ class AgentRuntimeClient:
                 if message == grpc.aio.EOF:  # type: ignore
                     logger.info("EOF")
                     break
-                logger.info(f"(loop)Received: {message}")
+                # logger.info(f"(loop)Received: {message}")
                 await receive_queue.put(message)
                 # logger.info("Put message in receive queue")
 
@@ -162,11 +162,11 @@ class AgentRuntimeClient:
 
     async def send(self, message: agent_worker_pb2.Message) -> None:
         await self._send_queue.put(message)
-        logger.info(f"(MTM Runtime) send: {message}")
+        # logger.info(f"(MTM Runtime) send: {message}")
 
         # logger.info("Put message in send queue")
 
     async def recv(self) -> agent_worker_pb2.Message:
         data = await self._recv_queue.get()
-        logger.info(f"(MTM Runtime) Received: {data}")
+        # logger.info(f"(MTM Runtime) Received: {data}")
         return data
