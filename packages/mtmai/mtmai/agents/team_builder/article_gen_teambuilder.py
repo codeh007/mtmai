@@ -8,8 +8,6 @@ from autogen_core.models import ChatCompletionClient
 
 from ..tools.web_search import search_web_tool
 
-# from .__init__ import current_team_version
-
 
 def percentage_change_tool(start: float, end: float) -> float:
     return ((end - start) / start) * 100

@@ -6,9 +6,10 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from .._agents import MtAssisantAgent
-from ..tools.web_search import search_web_tool
-from .__init__ import current_team_version
+from mtmai.agents._agents import MtAssisantAgent
+from mtmai.agents.tools.web_search import search_web_tool
+
+# from mtmai.workflow_listener import current_team_version
 
 
 def percentage_change_tool(start: float, end: float) -> float:
@@ -140,7 +141,7 @@ Only select one agent.
             # selector_func=selector_func,  # 可选,(自定义选择器)
             selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
         )
-        team.component_version = current_team_version
+        # team.component_version = current_team_version
         team.component_label = self.name
         team.component_description = self.description
         return team

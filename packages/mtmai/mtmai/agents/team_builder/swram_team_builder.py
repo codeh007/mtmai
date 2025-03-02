@@ -3,8 +3,6 @@ from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from .__init__ import current_team_version
-
 
 class SwramTeamBuilder:
     @property
@@ -31,8 +29,7 @@ class SwramTeamBuilder:
 
         # Run the conversation and stream to the console.
         # stream = team.run_stream(task="Write a 4-line poem about the ocean.")
-        team.component_version = current_team_version
+        # team.component_version = current_team_version
         team.component_label = self.name
         team.component_description = self.description
-        return team
         return team
