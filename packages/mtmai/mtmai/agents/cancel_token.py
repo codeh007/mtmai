@@ -7,7 +7,6 @@ class MtCancelToken(CancellationToken):
     def __init__(
         self, lambda_cancel: Callable[[], None], is_cancelled: Callable[[], bool]
     ):
-        # self.is_cancelled = False
         self.lambda_cancel: Callable[[], None] = lambda_cancel
         self.is_cancelled: Callable[[], bool] = is_cancelled
         super().__init__()

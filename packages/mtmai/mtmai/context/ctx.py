@@ -15,6 +15,17 @@ def set_tenant_id(tenant_id: str):
     tenant_id_context.set(tenant_id)
 
 
+user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
+
+
+def get_current_user_id() -> str:
+    return user_id_context.get()
+
+
+def set_current_user_id(user_id: str):
+    user_id_context.set(user_id)
+
+
 step_run_id_context: ContextVar[str] = ContextVar("step_run_id", default=None)
 
 

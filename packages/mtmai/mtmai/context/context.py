@@ -33,15 +33,6 @@ from pydantic import BaseModel, StrictStr
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
-user_id_context: ContextVar[str] = ContextVar("user_id", default=None)
-
-
-def get_current_user_id() -> str:
-    return user_id_context.get()
-
-
-def set_current_user_id(user_id: str):
-    user_id_context.set(user_id)
 
 
 # api_token_context: ContextVar[str] = ContextVar("api_token", default=None)
@@ -69,12 +60,12 @@ def set_current_user_id(user_id: str):
 backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
 
 
-def set_backend_url(backend_url: str):
-    backend_url_context.set(backend_url)
+# def set_backend_url(backend_url: str):
+#     backend_url_context.set(backend_url)
 
 
-def get_backend_url() -> str | None:
-    return backend_url_context.get()
+# def get_backend_url() -> str | None:
+#     return backend_url_context.get()
 
 
 def get_caller_file_path() -> str:
