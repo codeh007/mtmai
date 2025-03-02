@@ -21,19 +21,22 @@ from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.context.context import Context
+
+# from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb import ag_pb2
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
+
+from ..context.context_client import TenantClient
 
 
 class WorkerTeam:
     def __init__(
         self,
-        hatctx: Context,
+        # hatctx: Context,
         tracer_provider: TracerProvider | None = None,
     ) -> None:
-        self.hatctx = hatctx
+        # self.hatctx = hatctx
         # self._runtime = hatctx.agent_runtime
         # if not self._runtime:
         self._runtime = SingleThreadedAgentRuntime(
@@ -46,13 +49,13 @@ class WorkerTeam:
         self.cancellation_token = CancellationToken()
 
     async def run(self, message: AgentRunInput) -> TaskResult:
-        tenant_id: str | None = message.tenant_id
-        run_id = message.run_id
+        tenant_client = TenantClient()
+        tenant_client.show_info()
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
             logger.info(f"通知 TanantAgent 初始化(或重置)租户信息: {message}")
             result = await self._runtime.send_message(
-                MsgResetTenant(tenant_id=tenant_id),
+                MsgResetTenant(tenant_id=tenant_client.tenant_id),
                 self.tenant_agent_id,
             )
             return
@@ -69,13 +72,11 @@ class WorkerTeam:
             #     MsgGetTeamComponent(tenant_id=message.tenant_id, component_id=team_id),
             #     self.tenant_agent_id,
             # )
-            tenant_teams = await self.hatctx.ag_client2.list_team_component(
-                message.tenant_id
-            )
+            tenant_teams = await tenant_client.ag.list_team_component(message.tenant_id)
             logger.info(f"get team component: {tenant_teams}")
             message.team_id = tenant_teams[0].metadata.id
 
-        team_comp_data = await self.hatctx.ag.GetComponent(
+        team_comp_data = await tenant_client.ag.GetComponent(
             ctx=ClientContext(),
             request=ag_pb2.GetComponentReq(
                 tenant_id=message.tenant_id, component_id=message.team_id
@@ -133,18 +134,18 @@ class WorkerTeam:
                     ),
                 ):
                     if event.content:
-                        await self.hatctx.ag_client2.handle_message_create(
+                        await tenant_client.ag.handle_message_create(
                             ChatMessageUpsert(
                                 content=event.content,
-                                tenant_id=message.tenant_id,
+                                tenant_id=tenant_client.tenant_id,
                                 component_id=message.team_id,
                                 threadId=thread_id,
                                 role=event.source,
-                                runId=run_id,
+                                runId=tenant_client.run_id,
                                 stepRunId=message.step_run_id,
                             ),
                         )
-                        await self.hatctx.event.stream(
+                        await tenant_client.event.stream(
                             event, step_run_id=message.step_run_id
                         )
                     else:
@@ -152,10 +153,10 @@ class WorkerTeam:
                 else:
                     logger.info(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
-            await self.hatctx.ag_client2.save_team_state(
+            await tenant_client.ag.save_team_state(
                 team=team,
                 team_id=team_id,
-                tenant_id=tenant_id,
-                run_id=run_id,
+                tenant_id=tenant_client.tenant_id,
+                run_id=tenant_client.run_id,
             )
         return task_result

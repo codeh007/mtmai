@@ -12,12 +12,16 @@ from typing import Any, Callable, Dict, cast
 
 from autogen_core import AgentRuntime
 from loguru import logger
-from opentelemetry.trace import StatusCode
-from pydantic import BaseModel
-
 from mtmai.clients.admin import new_admin
+from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
+from mtmai.context.context_client import (
+    set_access_token_ctx,
+    set_run_id,
+    set_server_url_ctx,
+    set_step_run_id,
+)
 from mtmai.context.worker_context import WorkerContext
 from mtmai.core.config import settings
 from mtmai.core.loader import ClientConfig
@@ -40,8 +44,8 @@ from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
 from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
-
-from ...clients.ag import AgClient
+from opentelemetry.trace import StatusCode
+from pydantic import BaseModel
 
 
 class WorkerStatus(Enum):
@@ -89,13 +93,9 @@ class Runner:
         self.admin_client = new_admin(self.config)
         self.workflow_run_event_listener = new_listener(self.config)
         self.client.workflow_listener = PooledWorkflowRunListener(self.config)
-
-        # self.agent_runtime_client =  AgentRuntimeClient.from_client_config(self.config)
-
         self.worker_context = WorkerContext(
             labels=labels,
             client=Client.from_config(config).dispatcher,
-            # agent_runtime=self.agent_runtime_client,
         )
 
         self.otel_tracer = create_tracer(config=config)
@@ -103,8 +103,6 @@ class Runner:
             self.config.server_url,
             timeout=settings.DEFAULT_CLIENT_TIMEOUT,
         )
-        # self.agent_runtime = MtmAgentRuntime(config=self.config)
-        # self.aio = AsyncRestApi(self.config)
         self.ag_client2 = AgClient(
             self.config,
             self.ag,
@@ -116,7 +114,6 @@ class Runner:
 
     def run(self, action: Action) -> None:
         ctx = parse_carrier_from_metadata(action.additional_metadata)
-
         with self.otel_tracer.start_as_current_span(
             f"hatchet.worker.run.{action.step_id}", context=ctx
         ) as span:
@@ -125,6 +122,11 @@ class Runner:
 
             span.set_attributes(action.otel_attributes)
             span.set_attribute("workflow_run_url", self.create_workflow_run_url(action))
+
+            set_server_url_ctx(self.config.server_url)
+            set_access_token_ctx(action.access_token)
+            set_run_id(action.workflow_run_id)
+            set_step_run_id(action.step_run_id)
 
             match action.action_type:
                 case ActionType.START_STEP_RUN:
@@ -331,8 +333,6 @@ class Runner:
             validator_registry=self.validator_registry,
             config=self.config,
             ag_runtime=self.ag_runtime,
-            # agent_runtime_client=self.agent_runtime_client,
-            # agent_runtime=self.agent_runtime,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:
@@ -396,7 +396,6 @@ class Runner:
                 worker=self.worker_context,
                 ag_client=self.ag,
                 namespace=self.client.config.namespace,
-                # agent_runtime_client=self.agent_runtime_client,
             )
 
             self.contexts[action.get_group_key_run_id] = context

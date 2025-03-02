@@ -1,6 +1,5 @@
 from autogen_agentchat.base import Team
 from loguru import logger
-
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
 from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
@@ -16,23 +15,19 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest_client import AsyncRestApi
-from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.id import generate_uuid
-from mtmai.mtmpb import ag_connecpy
 
 
 class AgClient:
     def __init__(
-        self, config: ClientConfig, agService: ag_connecpy.AsyncAgServiceClient
+        self,
+        server_url: str,
+        access_token: str,
+        # agService: ag_connecpy.AsyncAgServiceClient,
     ):
-        self.config = config
-        # self.client_context = ClientContext(
-        #     headers={
-        #         "Authorization": f"Bearer {config.token}",
-        #         "X-Tid": config.tenant_id,
-        #     }
-        # )
-        self.agService = agService
+        self.server_url = server_url
+        self.access_token = access_token
+        # self.agService = agService
         self._ag_state_api = None
         self._api_client = None
         self._chat_api = None

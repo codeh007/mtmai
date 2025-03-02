@@ -8,8 +8,6 @@ from warnings import warn
 
 from autogen_core import AgentRuntime
 from loguru import logger
-from pydantic import BaseModel, StrictStr
-
 from mtmai.clients.admin import (
     AdminClient,
     ChildTriggerWorkflowOptions,
@@ -21,6 +19,7 @@ from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.context.worker_context import WorkerContext
+from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
@@ -29,8 +28,7 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
-
-from ..core.loader import ClientConfig
+from pydantic import BaseModel, StrictStr
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
@@ -148,7 +146,6 @@ class ContextAioImpl(BaseContext):
         self.worker = worker
         self.ag = ag_client
         self.ag_client2 = ag_client2
-        # self.agent_runtime_client = agent_runtime_client
         self.config = config
         self.ag_runtime = ag_runtime
 
@@ -223,7 +220,6 @@ class Context(BaseContext):
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
         ag_runtime: AgentRuntime,
-        # agent_runtime_client: AgentRuntimeClient,
         config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
@@ -244,7 +240,6 @@ class Context(BaseContext):
             ag_client=ag_client,
             ag_client2=ag_client2,
             ag_runtime=ag_runtime,
-            # agent_runtime_client=agent_runtime_client,
             config=config,
         )
         self.ag = ag_client
@@ -254,7 +249,6 @@ class Context(BaseContext):
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
         self.ag_runtime = ag_runtime
-        # self.agent_runtime_client = agent_runtime_client
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):

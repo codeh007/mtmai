@@ -13,7 +13,6 @@ from typing import Any, Callable, TypeVar, get_type_hints
 
 from autogen_core import AgentRuntime
 from loguru import logger
-
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
@@ -28,6 +27,7 @@ from mtmai.workflow import WorkflowInterface
 from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 
 T = TypeVar("T")
+TWorkflow = TypeVar("TWorkflow", bound=object)
 
 
 class WorkerStatus(Enum):
@@ -40,9 +40,6 @@ class WorkerStatus(Enum):
 @dataclass
 class WorkerStartOptions:
     loop: asyncio.AbstractEventLoop | None = field(default=None)
-
-
-TWorkflow = TypeVar("TWorkflow", bound=object)
 
 
 class Worker:
@@ -63,29 +60,19 @@ class Worker:
         self.labels = labels
         self.handle_kill = handle_kill
         self.owned_loop = owned_loop
-
         self.client: Client
-
         self.action_registry: dict[str, Callable[[Context], Any]] = {}
         self.validator_registry: dict[str, WorkflowValidator] = {}
-
         self.killing: bool = False
         self._status: WorkerStatus
-
         self.action_listener_process: BaseProcess
         self.action_listener_health_check: asyncio.Task[Any]
         self.action_runner: WorkerActionRunLoopManager
-
         self.ctx = multiprocessing.get_context("spawn")
-
         self.action_queue: "Queue[Any]" = self.ctx.Queue()
         self.event_queue: "Queue[Any]" = self.ctx.Queue()
-
         self.loop: asyncio.AbstractEventLoop
-
-        #
         self.agent_runtime = MtmAgentRuntime(config=self.config)
-        # self.agent_runtime = SingleThreadedAgentRuntime()
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
         self._setup_signal_handlers()
@@ -178,7 +165,6 @@ class Worker:
         # non blocking setup
         if not _from_start:
             self.setup_loop(options.loop)
-        # self.agent_runtime = await self._start_ag_runtime()
         self.action_listener_process = self._start_listener()
         self.action_runner = self._run_action_runner()
         self.action_listener_health_check = self.loop.create_task(
