@@ -11,7 +11,7 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
-from autogen_core import AgentRuntime
+from autogen_core import AgentRuntime, SingleThreadedAgentRuntime
 from loguru import logger
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
@@ -72,10 +72,17 @@ class Worker:
         self.action_queue: "Queue[Any]" = self.ctx.Queue()
         self.event_queue: "Queue[Any]" = self.ctx.Queue()
         self.loop: asyncio.AbstractEventLoop
-        self.agent_runtime = MtmAgentRuntime(config=self.config)
         self.client = Client.from_config(self.config, self.debug)
         self.name = self.client.config.namespace + self.name
         self._setup_signal_handlers()
+
+    @property
+    def agent_runtime(self) -> AgentRuntime:
+        if not hasattr(self, "_agent_runtime"):
+            # self._agent_runtime = MtmAgentRuntime(config=self.config)
+            # self._agent_runtime = MtmAgentRuntime(config=self.config)
+            self._agent_runtime = SingleThreadedAgentRuntime()
+        return self._agent_runtime
 
     def register_function(self, action: str, func: Callable[[Context], Any]) -> None:
         self.action_registry[action] = func
