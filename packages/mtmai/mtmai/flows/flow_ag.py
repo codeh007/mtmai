@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import cast
 
 from autogen_agentchat.base import TaskResult
-from autogen_core import CancellationToken, SingleThreadedAgentRuntime
+from autogen_core import SingleThreadedAgentRuntime
 from loguru import logger
+from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
@@ -13,21 +14,6 @@ from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
 from mtmai.worker_app import mtmapp
 from opentelemetry.trace import TracerProvider
-
-
-class MtCancelToken(CancellationToken):
-    def __init__(self, hatctx: Context):
-        # self.is_cancelled = False
-        self.cancellation_token: Context | None = hatctx
-        super().__init__()
-
-    def cancel(self):
-        if self.cancellation_token:
-            return self.cancellation_token.cancel()
-
-    def is_cancelled(self):
-        if self.cancellation_token:
-            return self.cancellation_token.done()
 
 
 @mtmapp.workflow(
@@ -46,7 +32,9 @@ class FlowAg:
     async def step_entry(self, hatctx: Context):
         input = AgentRunInput.model_validate(hatctx.input)
         message = cast(AgentRunInput, input)
-        cancellation_token = MtCancelToken(hatctx)
+        cancellation_token = MtCancelToken(
+            lambda_cancel=hatctx.cancel, is_cancelled=hatctx.done
+        )
         tenant_client = TenantClient()
         user_input = message.content
         if user_input.startswith("/tenant/seed"):
