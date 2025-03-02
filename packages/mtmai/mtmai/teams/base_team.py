@@ -26,12 +26,8 @@ class MtBaseTeam(Team, ABC, Component[BaseTeamConfig]):
         task: str | ChatMessage | Sequence[ChatMessage] | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> TaskResult:
-        # async for event in await self.run_stream(
-        #     task=task,
-        #     cancellation_token=cancellation_token,
-        # ):
         result: TaskResult | None = None
-        async for message in await self.run_stream(
+        async for message in self.run_stream(
             task=task,
             cancellation_token=cancellation_token,
         ):

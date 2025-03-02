@@ -1,15 +1,12 @@
 from typing import Sequence
 
-from autogen_agentchat.agents import UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from mtmai.agents._agents import MtAssisantAgent
+from mtmai.agents._agents import MtAssisantAgent, MtUserProxyAgent
 from mtmai.agents.tools.web_search import search_web_tool
-
-# from mtmai.workflow_listener import current_team_version
 
 
 def percentage_change_tool(start: float, end: float) -> float:
@@ -103,7 +100,7 @@ Only select one agent.
                 return planning_agent.name
             return None
 
-        user_proxy_agent = UserProxyAgent(
+        user_proxy_agent = MtUserProxyAgent(
             "UserProxyAgent",
             description="A proxy for the user to approve or disapprove tasks.",
         )

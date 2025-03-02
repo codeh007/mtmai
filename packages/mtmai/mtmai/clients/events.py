@@ -2,9 +2,11 @@ import datetime
 import json
 from typing import Any, Dict, List, Optional, TypedDict
 
+from autogen_agentchat.base import TaskResult
 from autogen_core import PROTOBUF_DATA_CONTENT_TYPE, try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
 from connecpy.context import ClientContext
+from fastapi.encoders import jsonable_encoder
 from google.protobuf import any_pb2, timestamp_pb2
 from google.protobuf import message as pb_message
 from mtmai.context.ctx import get_step_run_id
@@ -179,12 +181,12 @@ class EventClient:
 
     async def emit(self, event: Any):
         step_run_id = get_step_run_id()
+        json_bytes = None
         if isinstance(event, str) or isinstance(event, bytes):
             await self.stream(event, step_run_id)
         elif isinstance(event, BaseModel):
             json_bytes = event.model_dump_json()
-            await self.stream(json_bytes, step_run_id=step_run_id)
-        elif isinstance(event, ChatSessionStartEvent):
+        elif isinstance(event, pb_message.Message):
             result_type = self._serialization_registry.type_name(event)
             serialized_result = self._serialization_registry.serialize(
                 event,
@@ -204,11 +206,13 @@ class EventClient:
                 proto_data=any_proto,
             )
 
-            data_bytes = ce_message.SerializeToString()
-            await self.stream(data_bytes, step_run_id=step_run_id)
+            json_bytes = ce_message.SerializeToString()
+        elif isinstance(event, TaskResult):
+            json_bytes = json.dumps(jsonable_encoder(event))
         else:
             json_bytes = json.dumps(event)
-            await self.stream(json_bytes, step_run_id=step_run_id)
+
+        await self.stream(json_bytes, step_run_id=step_run_id)
 
     async def stream(self, data: str | bytes, step_run_id: str):
         if isinstance(data, str):

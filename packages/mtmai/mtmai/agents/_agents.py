@@ -48,3 +48,7 @@ class MtRoundRobinGroupChat(
 
 class MtAssisantAgent(AssistantAgent):
     pass
+
+
+class MtUserProxyAgent(UserProxyAgent):
+    pass

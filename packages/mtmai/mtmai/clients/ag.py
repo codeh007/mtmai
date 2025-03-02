@@ -96,20 +96,15 @@ class AgClient:
     async def list_team_component(self, tenant_id: str):
         return await self.tenant_reset_teams(tenant_id)
 
-    async def tenant_reset_teams(self, tenant_id: str):
-        logger.info(f"TenantAgent 重置租户信息: {tenant_id}")
+    async def tenant_reset_teams(self, tid: str):
+        logger.info(f"TenantAgent 重置租户信息: {tid}")
         results = []
-        teams_list = await self.coms_api.coms_list(tenant=tenant_id, label="default")
+        teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
         if teams_list.rows and len(teams_list.rows) > 0:
             logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
             results.append(teams_list.rows[0])
-        defaultModel = await self.model_api.model_get(tenant=tenant_id, model="default")
-        model_dict = defaultModel.config.model_dump()
-        model_dict.pop("n", None)
-        model_client = MtmOpenAIChatCompletionClient(
-            **model_dict,
-        )
 
+        model_client = await self.get_default_model_client(tid)
         self.team_builders = [
             AssistantTeamBuilder(),
             SwramTeamBuilder(),
@@ -119,11 +114,12 @@ class AgClient:
         ]
         for team_builder in self.team_builders:
             label = team_builder.name
-            logger.info(f"create team for tenant {tenant_id}")
+            logger.info(f"create team for tenant {tid}")
+
             team_comp = await team_builder.create_team(model_client)
             component_model = team_comp.dump_component()
             new_team = await self.coms_api.coms_upsert(
-                tenant=tenant_id,
+                tenant=tid,
                 com=generate_uuid(),
                 mt_component=MtComponent(
                     label=label,
@@ -154,3 +150,11 @@ class AgClient:
         )
         team = Team.load_component(team_comp_data.component)
         return team
+
+    async def get_default_model_client(self, tid: str):
+        defaultModel = await self.model_api.model_get(tenant=tid, model="default")
+        model_dict = defaultModel.config.model_dump()
+        model_dict.pop("n", None)
+        return MtmOpenAIChatCompletionClient(
+            **model_dict,
+        )

@@ -27,5 +27,5 @@ class FlowAg:
         input = AgentRunInput.model_validate(hatctx.input)
         message = cast(AgentRunInput, input)
         task = message.content
-        assisant_team = SysTeam()
-        return await assisant_team.run(task=task, cancellation_token=MtCancelToken())
+        sys_team = SysTeam()
+        return await sys_team.run(task=task, cancellation_token=MtCancelToken())
