@@ -90,3 +90,15 @@ def get_run_by_user_id_ctx() -> str:
 
 def set_run_by_user_id_ctx(run_by_user_id: str):
     run_by_user_id_ctx.set(run_by_user_id)
+
+
+def team_id_ctx() -> str:
+    return team_id_ctx.get()
+
+
+def get_team_id_ctx() -> str:
+    return team_id_ctx.get()
+
+
+def set_team_id_ctx(team_id: str):
+    team_id_ctx.set(team_id)
