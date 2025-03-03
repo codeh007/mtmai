@@ -19,20 +19,16 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgState(BaseModel):
+class APIMetaPosthog(BaseModel):
     """
-    AgState
+    APIMetaPosthog
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    version: Optional[StrictStr] = '1.0.0'
-    type: Optional[StrictStr] = 'TeamState'
-    component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
-    state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "state"]
+    api_key: Optional[StrictStr] = Field(default=None, description="the PostHog API key", alias="apiKey")
+    api_host: Optional[StrictStr] = Field(default=None, description="the PostHog API host", alias="apiHost")
+    __properties: ClassVar[List[str]] = ["apiKey", "apiHost"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +48,7 @@ class AgState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgState from a JSON string"""
+        """Create an instance of APIMetaPosthog from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +69,11 @@ class AgState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgState from a dict"""
+        """Create an instance of APIMetaPosthog from a dict"""
         if obj is None:
             return None
 
@@ -88,11 +81,8 @@ class AgState(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "componentId": obj.get("componentId"),
-            "state": obj.get("state")
+            "apiKey": obj.get("apiKey"),
+            "apiHost": obj.get("apiHost")
         })
         return _obj
 

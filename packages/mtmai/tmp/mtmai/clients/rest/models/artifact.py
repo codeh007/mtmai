@@ -23,16 +23,16 @@ from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgState(BaseModel):
+class Artifact(BaseModel):
     """
-    AgState
+    Artifact
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    version: Optional[StrictStr] = '1.0.0'
-    type: Optional[StrictStr] = 'TeamState'
-    component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
-    state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "state"]
+    metadata: APIResourceMeta
+    title: StrictStr
+    state: Dict[str, Any] = Field(description="The tenant associated with this tenant blog.")
+    next_id: Optional[StrictStr] = Field(default=None, alias="nextId")
+    prev_id: Optional[StrictStr] = Field(default=None, alias="prevId")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "state", "nextId", "prevId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +52,7 @@ class AgState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgState from a JSON string"""
+        """Create an instance of Artifact from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,7 +80,7 @@ class AgState(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgState from a dict"""
+        """Create an instance of Artifact from a dict"""
         if obj is None:
             return None
 
@@ -89,10 +89,10 @@ class AgState(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "componentId": obj.get("componentId"),
-            "state": obj.get("state")
+            "title": obj.get("title"),
+            "state": obj.get("state"),
+            "nextId": obj.get("nextId"),
+            "prevId": obj.get("prevId")
         })
         return _obj
 

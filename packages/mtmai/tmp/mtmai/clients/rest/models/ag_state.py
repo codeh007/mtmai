@@ -31,8 +31,9 @@ class AgState(BaseModel):
     version: Optional[StrictStr] = '1.0.0'
     type: Optional[StrictStr] = 'TeamState'
     component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
+    chat_id: Optional[StrictStr] = Field(default=None, description="聊天id", alias="chatId")
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "state"]
+    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "chatId", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -92,6 +93,7 @@ class AgState(BaseModel):
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
             "componentId": obj.get("componentId"),
+            "chatId": obj.get("chatId"),
             "state": obj.get("state")
         })
         return _obj

@@ -17,22 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.blog_config import BlogConfig
+from mtmai.clients.rest.models.tenant import Tenant
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgState(BaseModel):
+class Blog(BaseModel):
     """
-    AgState
+    Blog
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    version: Optional[StrictStr] = '1.0.0'
-    type: Optional[StrictStr] = 'TeamState'
-    component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
-    state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "state"]
+    metadata: APIResourceMeta
+    title: StrictStr
+    description: Optional[StrictStr] = None
+    tenant: Optional[Tenant] = Field(default=None, description="The tenant associated with this tenant blog.")
+    config: Optional[BlogConfig] = None
+    status: Optional[StrictStr] = Field(default=None, description="The status of the blog.")
+    enabled: Optional[StrictBool] = Field(default=None, description="Whether the blog is enabled.")
+    slug: Optional[StrictStr] = Field(default=None, description="The slug of the blog.")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "tenant", "config", "status", "enabled", "slug"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +57,7 @@ class AgState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgState from a JSON string"""
+        """Create an instance of Blog from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,11 +81,17 @@ class AgState(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of tenant
+        if self.tenant:
+            _dict['tenant'] = self.tenant.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgState from a dict"""
+        """Create an instance of Blog from a dict"""
         if obj is None:
             return None
 
@@ -89,10 +100,13 @@ class AgState(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "componentId": obj.get("componentId"),
-            "state": obj.get("state")
+            "title": obj.get("title"),
+            "description": obj.get("description"),
+            "tenant": Tenant.from_dict(obj["tenant"]) if obj.get("tenant") is not None else None,
+            "config": BlogConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "status": obj.get("status"),
+            "enabled": obj.get("enabled"),
+            "slug": obj.get("slug")
         })
         return _obj
 
