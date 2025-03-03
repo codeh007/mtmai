@@ -200,9 +200,11 @@ class EventClient:
                 source="event_source",
                 # attributes=attributes,
                 proto_data=any_proto,
+                # proto_data=event,
             )
 
-            json_bytes = ce_message.SerializeToString()
+            data2 = event.SerializeToString()
+            json_bytes = data2
         elif isinstance(event, TaskResult):
             json_bytes = json.dumps(jsonable_encoder(event))
         else:

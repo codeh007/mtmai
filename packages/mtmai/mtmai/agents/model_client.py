@@ -19,6 +19,8 @@ from json_repair import repair_json
 from loguru import logger
 from openai import OpenAI
 
+from mtmai.core.config import settings
+
 # 常见错误代码:
 # 402: Payment Required
 
@@ -43,7 +45,7 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         if not kwargs.get("temperature"):
             kwargs["temperature"] = 0.6
 
-        kwargs["max_tokens"] = 4096
+        # kwargs["max_tokens"] = 4096
         super().__init__(**kwargs)
         self.config = kwargs
 
@@ -60,18 +62,21 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         cancellation_token: Optional[CancellationToken] = None,
     ) -> CreateResult:
         custom_model_client = OpenAIChatCompletionClient(
-            model="deepseek-ai/deepseek-r1",
-            base_url="https://integrate.api.nvidia.com/v1",
-            api_key=self.config.get("api_key"),
-            max_tokens=64 * 1024,
-            temperature=0.6,
-            top_p=0.7,
-            model_info={
-                "vision": False,
-                "function_calling": False,
-                "json_output": False,
-                "family": ModelFamily.R1,
-            },
+            model=self.config.get("model", "deepseek-ai/deepseek-r1"),
+            base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
+            api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
+            max_tokens=self.config.get("max_tokens", 64 * 1024),
+            temperature=self.config.get("temperature", 0.6),
+            top_p=self.config.get("top_p", 0.7),
+            model_info=self.config.get(
+                "model_info",
+                {
+                    "vision": False,
+                    "function_calling": False,
+                    "json_output": False,
+                    "family": ModelFamily.R1,
+                },
+            ),
         )
 
         response: CreateResult = None
@@ -102,12 +107,12 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             logger.exception(
                 "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
             )
-            logger.info(
-                "model_client_error",
-                messages=messages,
-                tools=tools,
-                # content=response.,
-            )
+            # logger.info(
+            #     "model_client_error",
+            #     messages=messages,
+            #     tools=tools,
+            #     # content=response.,
+            # )
             raise e
 
 
