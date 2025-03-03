@@ -25,6 +25,10 @@ class AgService(Protocol):
     async def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
     async def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
     async def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
+    async def UpsertChat(self, req: _pb2.UpsertChatReq, ctx: ServiceContext) -> _pb2.Chat: ...
+    async def UpsertChatMessage(self, req: _pb2.ChatMessageCreateReq, ctx: ServiceContext) -> _pb2.ChatMessage: ...
+    async def GetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
+    async def SetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
 
 
 class AgServiceServer(ConnecpyServer):
@@ -72,6 +76,38 @@ class AgServiceServer(ConnecpyServer):
                 output=_pb2.ChatMessageList,
                 allowed_methods=("POST",),
             ),
+            "UpsertChat": Endpoint[_pb2.UpsertChatReq, _pb2.Chat](
+                service_name="AgService",
+                name="UpsertChat",
+                function=getattr(service, "UpsertChat"),
+                input=_pb2.UpsertChatReq,
+                output=_pb2.Chat,
+                allowed_methods=("POST",),
+            ),
+            "UpsertChatMessage": Endpoint[_pb2.ChatMessageCreateReq, _pb2.ChatMessage](
+                service_name="AgService",
+                name="UpsertChatMessage",
+                function=getattr(service, "UpsertChatMessage"),
+                input=_pb2.ChatMessageCreateReq,
+                output=_pb2.ChatMessage,
+                allowed_methods=("POST",),
+            ),
+            "GetState": Endpoint[_pb2.AgState, _pb2.AgState](
+                service_name="AgService",
+                name="GetState",
+                function=getattr(service, "GetState"),
+                input=_pb2.AgState,
+                output=_pb2.AgState,
+                allowed_methods=("POST",),
+            ),
+            "SetState": Endpoint[_pb2.AgState, _pb2.AgState](
+                service_name="AgService",
+                name="SetState",
+                function=getattr(service, "SetState"),
+                input=_pb2.AgState,
+                output=_pb2.AgState,
+                allowed_methods=("POST",),
+            ),
         }
 
     def serviceName(self):
@@ -84,6 +120,10 @@ class AgServiceSync(Protocol):
     def ComponentList(self, req: _pb2.ComponentListReq, ctx: ServiceContext) -> _pb2.ComponentListRes: ...
     def GetComponent(self, req: _pb2.GetComponentReq, ctx: ServiceContext) -> _pb2.Component: ...
     def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
+    def UpsertChat(self, req: _pb2.UpsertChatReq, ctx: ServiceContext) -> _pb2.Chat: ...
+    def UpsertChatMessage(self, req: _pb2.ChatMessageCreateReq, ctx: ServiceContext) -> _pb2.ChatMessage: ...
+    def GetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
+    def SetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
 
 
 class AgServiceServerSync(ConnecpyServer):
@@ -129,6 +169,38 @@ class AgServiceServerSync(ConnecpyServer):
                 function=getattr(service, "ListChatMessage"),
                 input=_pb2.ChatMessageListReq,
                 output=_pb2.ChatMessageList,
+                allowed_methods=("POST",),
+            ),
+            "UpsertChat": Endpoint[_pb2.UpsertChatReq, _pb2.Chat](
+                service_name="AgService",
+                name="UpsertChat",
+                function=getattr(service, "UpsertChat"),
+                input=_pb2.UpsertChatReq,
+                output=_pb2.Chat,
+                allowed_methods=("POST",),
+            ),
+            "UpsertChatMessage": Endpoint[_pb2.ChatMessageCreateReq, _pb2.ChatMessage](
+                service_name="AgService",
+                name="UpsertChatMessage",
+                function=getattr(service, "UpsertChatMessage"),
+                input=_pb2.ChatMessageCreateReq,
+                output=_pb2.ChatMessage,
+                allowed_methods=("POST",),
+            ),
+            "GetState": Endpoint[_pb2.AgState, _pb2.AgState](
+                service_name="AgService",
+                name="GetState",
+                function=getattr(service, "GetState"),
+                input=_pb2.AgState,
+                output=_pb2.AgState,
+                allowed_methods=("POST",),
+            ),
+            "SetState": Endpoint[_pb2.AgState, _pb2.AgState](
+                service_name="AgService",
+                name="SetState",
+                function=getattr(service, "SetState"),
+                input=_pb2.AgState,
+                output=_pb2.AgState,
                 allowed_methods=("POST",),
             ),
         }
@@ -224,6 +296,78 @@ class AgServiceClient(ConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.ChatMessageList,
+            method=method,
+            **kwargs,
+        )
+
+    def UpsertChat(
+        self,
+        *,
+        request: _pb2.UpsertChatReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.Chat:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/UpsertChat",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.Chat,
+            method=method,
+            **kwargs,
+        )
+
+    def UpsertChatMessage(
+        self,
+        *,
+        request: _pb2.ChatMessageCreateReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.ChatMessage:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/UpsertChatMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ChatMessage,
+            method=method,
+            **kwargs,
+        )
+
+    def GetState(
+        self,
+        *,
+        request: _pb2.AgState,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.AgState:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/GetState",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.AgState,
+            method=method,
+            **kwargs,
+        )
+
+    def SetState(
+        self,
+        *,
+        request: _pb2.AgState,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        **kwargs,
+    ) -> _pb2.AgState:
+        method = "POST"
+        return self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/SetState",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.AgState,
             method=method,
             **kwargs,
         )
@@ -325,6 +469,86 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
             ctx=ctx,
             request=request,
             response_obj=_pb2.ChatMessageList,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def UpsertChat(
+        self,
+        *,
+        request: _pb2.UpsertChatReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.Chat:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/UpsertChat",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.Chat,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def UpsertChatMessage(
+        self,
+        *,
+        request: _pb2.ChatMessageCreateReq,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.ChatMessage:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/UpsertChatMessage",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.ChatMessage,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def GetState(
+        self,
+        *,
+        request: _pb2.AgState,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.AgState:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/GetState",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.AgState,
+            method=method,
+            session=session,
+            **kwargs,
+        )
+
+    async def SetState(
+        self,
+        *,
+        request: _pb2.AgState,
+        ctx: ClientContext,
+        server_path_prefix: str = "",
+        session: Union[httpx.AsyncClient, None] = None,
+        **kwargs,
+    ) -> _pb2.AgState:
+        method = "POST"
+        return await self._make_request(
+            url=f"{server_path_prefix}/mtmai.mtmpb.AgService/SetState",
+            ctx=ctx,
+            request=request,
+            response_obj=_pb2.AgState,
             method=method,
             session=session,
             **kwargs,

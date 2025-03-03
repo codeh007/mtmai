@@ -60,6 +60,12 @@ class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
             logger.info(f"现有session: {chat_session_id}")
             # 加载团队状态
             # await self.load_state(thread_id)
+            team_state = await tenant_client.ag.load_team_state(
+                team_id=team_id,
+                tenant_id=tenant_id,
+                run_id=tenant_client.run_id,
+            )
+            logger.info(f"load team state: {team_state}")
             ...
 
         await tenant_client.emit(

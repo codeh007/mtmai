@@ -119,3 +119,67 @@ class ChatMessageList(_message.Message):
     items: _containers.RepeatedCompositeFieldContainer[ChatMessage]
     Total: int
     def __init__(self, Pagination: _Optional[_Union[_mtm_pb2.Paging, _Mapping]] = ..., items: _Optional[_Iterable[_Union[ChatMessage, _Mapping]]] = ..., Total: _Optional[int] = ...) -> None: ...
+
+class ChatMessageCreateReq(_message.Message):
+    __slots__ = ("tenant_id", "chat_id", "content", "source", "component_id", "version", "message_type")
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHAT_ID_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    tenant_id: str
+    chat_id: str
+    content: str
+    source: str
+    component_id: str
+    version: str
+    message_type: str
+    def __init__(self, tenant_id: _Optional[str] = ..., chat_id: _Optional[str] = ..., content: _Optional[str] = ..., source: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ..., message_type: _Optional[str] = ...) -> None: ...
+
+class UpsertChatReq(_message.Message):
+    __slots__ = ("tenant_id", "chat_id", "component_id", "version")
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHAT_ID_FIELD_NUMBER: _ClassVar[int]
+    COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    tenant_id: str
+    chat_id: str
+    component_id: str
+    version: str
+    def __init__(self, tenant_id: _Optional[str] = ..., chat_id: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...
+
+class Chat(_message.Message):
+    __slots__ = ("id", "title", "component_id", "version")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    title: str
+    component_id: str
+    version: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...
+
+class GetStateReq(_message.Message):
+    __slots__ = ("id", "run_id")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    run_id: str
+    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ...) -> None: ...
+
+class AgState(_message.Message):
+    __slots__ = ("id", "run_id", "type", "component_id", "version")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    run_id: str
+    type: str
+    component_id: str
+    version: str
+    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ..., type: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...

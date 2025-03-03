@@ -13,10 +13,12 @@ from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
-from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.mtlibs.id import generate_uuid
+from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
+
+from .rest.models.ag_state import AgState
 
 
 class AgClient:
@@ -52,6 +54,15 @@ class AgClient:
         self._ag_state_api = AgStateApi(self.api_client)
         return self._ag_state_api
 
+    def ag_state_connect(self):
+        if hasattr(self, "_ag_state_connect"):
+            return self._ag_state_connect
+        self._ag_state_connect = AsyncAgServiceClient(
+            address=self.server_url,
+            # session=self.api_client.session,
+        )
+        return self._ag_state_connect
+
     @property
     def chat_api(self):
         if hasattr(self, "_chat_api"):
@@ -73,6 +84,17 @@ class AgClient:
         self._coms_api = ComsApi(self.api_client)
         return self._coms_api
 
+    async def load_team_state(
+        self,
+        session_id: str,
+        tenant_id: str,
+    ) -> Team:
+        team_state = await self.ag_state_api.ag_state_get(
+            tenant=tenant_id,
+            componentId=session_id,
+        )
+        return Team.load_state(team_state.state)
+
     async def save_team_state(
         self, team: Team, team_id: str, tenant_id: str, run_id: str
     ) -> None:
@@ -84,13 +106,22 @@ class AgClient:
                 if hasattr(agent, "close"):
                     await agent.close()
         state = await team.save_state()
-        await self.ag_state_api.ag_state_upsert(
-            tenant=tenant_id,
-            ag_state_upsert=AgStateUpsert(
-                componentId=team_id,
-                runId=run_id,
+        # await self.ag_state_api.ag_state_upsert(
+        #     tenant=tenant_id,
+        #     ag_state_upsert=AgStateUpsert(
+        #         componentId=team_id,
+        #         runId=run_id,
+        #         state=state,
+        #     ).model_dump(),
+        # )
+        await self.ag_state_connect().SetState(
+            ctx=self.client_context,
+            request=AgState(
+                tenant=tenant_id,
+                component_id=team_id,
+                run_id=run_id,
                 state=state,
-            ).model_dump(),
+            ),
         )
 
     async def list_team_component(self, tenant_id: str):
