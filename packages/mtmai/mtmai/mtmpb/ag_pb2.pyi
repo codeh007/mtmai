@@ -163,25 +163,25 @@ class Chat(_message.Message):
     def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...
 
 class GetStateReq(_message.Message):
-    __slots__ = ("id", "run_id")
+    __slots__ = ("id", "session_id")
     ID_FIELD_NUMBER: _ClassVar[int]
-    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
-    run_id: str
-    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ...) -> None: ...
+    session_id: str
+    def __init__(self, id: _Optional[str] = ..., session_id: _Optional[str] = ...) -> None: ...
 
 class AgState(_message.Message):
-    __slots__ = ("id", "run_id", "type", "component_id", "version", "state")
+    __slots__ = ("id", "session_id", "type", "component_id", "version", "state")
     ID_FIELD_NUMBER: _ClassVar[int]
-    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
     COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
     id: str
-    run_id: str
+    session_id: str
     type: str
     component_id: str
     version: str
     state: str
-    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ..., type: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ..., state: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., session_id: _Optional[str] = ..., type: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ..., state: _Optional[str] = ...) -> None: ...

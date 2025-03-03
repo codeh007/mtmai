@@ -100,10 +100,10 @@ class AgClient:
         return Team.load_state(team_state.state)
 
     async def save_team_state(
-        self, team: Team, team_id: str, tenant_id: str, run_id: str
+        self, team: Team, team_id: str, tenant_id: str, session_id: str
     ) -> None:
         """保存团队状态"""
-        logger.info("保存团队状态")
+        logger.info("保存团队状态", component_id=team_id)
         # 确保停止团队的内部 agents
         if team and hasattr(team, "_participants"):
             for agent in team._participants:
@@ -121,9 +121,8 @@ class AgClient:
         await self.ag_state_connect().SetState(
             ctx=self.client_context,
             request=AgState(
-                # tenant=tenant_id,
                 component_id=team_id,
-                run_id=run_id,
+                session_id=session_id,
                 state=json.dumps(state),
             ),
         )

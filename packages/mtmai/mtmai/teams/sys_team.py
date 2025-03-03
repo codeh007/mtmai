@@ -86,5 +86,5 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                 team=team,
                 team_id=team_id,
                 tenant_id=tenant_client.tenant_id,
-                run_id=tenant_client.run_id,
+                session_id=chat_session_id,
             )
