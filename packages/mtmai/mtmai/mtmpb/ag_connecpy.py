@@ -27,7 +27,7 @@ class AgService(Protocol):
     async def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
     async def UpsertChat(self, req: _pb2.UpsertChatReq, ctx: ServiceContext) -> _pb2.Chat: ...
     async def UpsertChatMessage(self, req: _pb2.ChatMessageCreateReq, ctx: ServiceContext) -> _pb2.ChatMessage: ...
-    async def GetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
+    async def GetState(self, req: _pb2.GetStateReq, ctx: ServiceContext) -> _pb2.AgState: ...
     async def SetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
 
 
@@ -92,11 +92,11 @@ class AgServiceServer(ConnecpyServer):
                 output=_pb2.ChatMessage,
                 allowed_methods=("POST",),
             ),
-            "GetState": Endpoint[_pb2.AgState, _pb2.AgState](
+            "GetState": Endpoint[_pb2.GetStateReq, _pb2.AgState](
                 service_name="AgService",
                 name="GetState",
                 function=getattr(service, "GetState"),
-                input=_pb2.AgState,
+                input=_pb2.GetStateReq,
                 output=_pb2.AgState,
                 allowed_methods=("POST",),
             ),
@@ -122,7 +122,7 @@ class AgServiceSync(Protocol):
     def ListChatMessage(self, req: _pb2.ChatMessageListReq, ctx: ServiceContext) -> _pb2.ChatMessageList: ...
     def UpsertChat(self, req: _pb2.UpsertChatReq, ctx: ServiceContext) -> _pb2.Chat: ...
     def UpsertChatMessage(self, req: _pb2.ChatMessageCreateReq, ctx: ServiceContext) -> _pb2.ChatMessage: ...
-    def GetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
+    def GetState(self, req: _pb2.GetStateReq, ctx: ServiceContext) -> _pb2.AgState: ...
     def SetState(self, req: _pb2.AgState, ctx: ServiceContext) -> _pb2.AgState: ...
 
 
@@ -187,11 +187,11 @@ class AgServiceServerSync(ConnecpyServer):
                 output=_pb2.ChatMessage,
                 allowed_methods=("POST",),
             ),
-            "GetState": Endpoint[_pb2.AgState, _pb2.AgState](
+            "GetState": Endpoint[_pb2.GetStateReq, _pb2.AgState](
                 service_name="AgService",
                 name="GetState",
                 function=getattr(service, "GetState"),
-                input=_pb2.AgState,
+                input=_pb2.GetStateReq,
                 output=_pb2.AgState,
                 allowed_methods=("POST",),
             ),
@@ -339,7 +339,7 @@ class AgServiceClient(ConnecpyClient):
     def GetState(
         self,
         *,
-        request: _pb2.AgState,
+        request: _pb2.GetStateReq,
         ctx: ClientContext,
         server_path_prefix: str = "",
         **kwargs,
@@ -517,7 +517,7 @@ class AsyncAgServiceClient(AsyncConnecpyClient):
     async def GetState(
         self,
         *,
-        request: _pb2.AgState,
+        request: _pb2.GetStateReq,
         ctx: ClientContext,
         server_path_prefix: str = "",
         session: Union[httpx.AsyncClient, None] = None,

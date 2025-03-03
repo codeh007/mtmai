@@ -51,7 +51,7 @@ class AgServiceStub(object):
                 _registered_method=True)
         self.GetState = channel.unary_unary(
                 '/mtmai.mtmpb.AgService/GetState',
-                request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.AgState.SerializeToString,
+                request_serializer=mtmai_dot_mtmpb_dot_ag__pb2.GetStateReq.SerializeToString,
                 response_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.AgState.FromString,
                 _registered_method=True)
         self.SetState = channel.unary_unary(
@@ -162,7 +162,7 @@ def add_AgServiceServicer_to_server(servicer, server):
             ),
             'GetState': grpc.unary_unary_rpc_method_handler(
                     servicer.GetState,
-                    request_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.AgState.FromString,
+                    request_deserializer=mtmai_dot_mtmpb_dot_ag__pb2.GetStateReq.FromString,
                     response_serializer=mtmai_dot_mtmpb_dot_ag__pb2.AgState.SerializeToString,
             ),
             'SetState': grpc.unary_unary_rpc_method_handler(
@@ -385,7 +385,7 @@ class AgService(object):
             request,
             target,
             '/mtmai.mtmpb.AgService/GetState',
-            mtmai_dot_mtmpb_dot_ag__pb2.AgState.SerializeToString,
+            mtmai_dot_mtmpb_dot_ag__pb2.GetStateReq.SerializeToString,
             mtmai_dot_mtmpb_dot_ag__pb2.AgState.FromString,
             options,
             channel_credentials,

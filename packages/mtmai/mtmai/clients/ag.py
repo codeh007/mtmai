@@ -1,5 +1,3 @@
-import json
-
 from autogen_agentchat.base import Team
 from connecpy.context import ClientContext
 from loguru import logger
@@ -15,14 +13,12 @@ from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
+from mtmai.clients.rest.exceptions import NotFoundException
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
-
-from ..mtmpb.ag_pb2 import AgState
-
-# from .rest.models.ag_state import AgState
 
 
 class AgClient:
@@ -58,7 +54,7 @@ class AgClient:
         self._ag_state_api = AgStateApi(self.api_client)
         return self._ag_state_api
 
-    def ag_state_connect(self):
+    def ag_state_connect(self) -> AsyncAgServiceClient:
         if hasattr(self, "_ag_state_connect"):
             return self._ag_state_connect
         self._ag_state_connect = AsyncAgServiceClient(
@@ -90,17 +86,29 @@ class AgClient:
 
     async def load_team_state(
         self,
-        session_id: str,
+        chat_id: str,
         tenant_id: str,
     ) -> Team:
-        team_state = await self.ag_state_api.ag_state_get(
-            tenant=tenant_id,
-            componentId=session_id,
-        )
-        return Team.load_state(team_state.state)
+        try:
+            ag_state = await self.ag_state_api.ag_state_get(
+                tenant=tenant_id,
+                chat=chat_id,
+            )
+
+            # ag_state = await self.ag_state_connect().GetState(
+            #     ctx=self.client_context,
+            #     request=AgState(
+            #         chat_id=chat_id,
+            #     ),
+            # )
+            logger.info(f"成功加载团队状态: {ag_state}")
+            return ag_state
+
+        except NotFoundException:
+            return None
 
     async def save_team_state(
-        self, team: Team, team_id: str, tenant_id: str, session_id: str
+        self, team: Team, team_id: str, tenant_id: str, chat_id: str
     ) -> None:
         """保存团队状态"""
         logger.info("保存团队状态", component_id=team_id)
@@ -110,22 +118,22 @@ class AgClient:
                 if hasattr(agent, "close"):
                     await agent.close()
         state = await team.save_state()
-        # await self.ag_state_api.ag_state_upsert(
-        #     tenant=tenant_id,
-        #     ag_state_upsert=AgStateUpsert(
-        #         componentId=team_id,
-        #         runId=run_id,
-        #         state=state,
-        #     ).model_dump(),
-        # )
-        await self.ag_state_connect().SetState(
-            ctx=self.client_context,
-            request=AgState(
-                component_id=team_id,
-                session_id=session_id,
-                state=json.dumps(state),
-            ),
+        await self.ag_state_api.ag_state_upsert(
+            tenant=tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                componentId=team_id,
+                chatId=chat_id,
+                state=state,
+            ).model_dump(),
         )
+        # await self.ag_state_connect().SetState(
+        #     ctx=self.client_context,
+        #     request=AgState(
+        #         component_id=team_id,
+        #         session_id=ch,
+        #         state=json.dumps(state),
+        #     ),
+        # )
 
     async def list_team_component(self, tenant_id: str):
         return await self.tenant_reset_teams(tenant_id)

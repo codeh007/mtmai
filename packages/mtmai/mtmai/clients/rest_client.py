@@ -67,7 +67,6 @@ class AsyncRestApi:
         self._event_api = None
         self._log_api = None
         self._default_api = None
-        self._ag_events_api = None
         self._teams_api = None
         self._team_api = None
         self._model_api = None
@@ -129,7 +128,7 @@ class AsyncRestApi:
 
     @property
     def ag_events_api(self):
-        if self._ag_events_api is None:
+        if hasattr(self, "_ag_events_api"):
             self._ag_events_api = AgEventsApi(self.api_client)
         return self._ag_events_api
 

@@ -55,19 +55,26 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         if not team_id:
             team_id = generate_uuid()
 
-        chat_session_id = get_chat_session_id_ctx()
-        # TODO: 获取 session state, 如果获取失败,触发 ChatSessionStartEvent 事件.
-        if not chat_session_id:
-            chat_session_id = generate_uuid()
+        chat_id = get_chat_session_id_ctx()
+        if not chat_id:
+            chat_id = generate_uuid()
 
         else:
             # 加载团队状态
             # await self.load_state(thread_id)
             ...
-        logger.info(f"chat session: {chat_session_id}")
+        logger.info(f"chat session: {chat_id}")
+        ag_state = await tenant_client.ag.load_team_state(
+            tenant_id=tenant_client.tenant_id,
+            chat_id=chat_id,
+        )
+        if ag_state:
+            team.load_state(ag_state)
+            logger.info("成功加载团队状态", component_type=team.component_type)
+
         await tenant_client.emit(
             ChatSessionStartEvent(
-                threadId=chat_session_id,
+                threadId=chat_id,
             )
         )
 
@@ -86,5 +93,5 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                 team=team,
                 team_id=team_id,
                 tenant_id=tenant_client.tenant_id,
-                session_id=chat_session_id,
+                chat_id=chat_id,
             )
