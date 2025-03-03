@@ -3,16 +3,17 @@ import json
 from typing import Any, Dict, List, Optional, TypedDict
 
 from autogen_agentchat.base import TaskResult
-from autogen_core import PROTOBUF_DATA_CONTENT_TYPE, try_get_known_serializers_for_type
+from autogen_core import try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
 from connecpy.context import ClientContext
 from fastapi.encoders import jsonable_encoder
-from google.protobuf import any_pb2, timestamp_pb2
 from google.protobuf import message as pb_message
+from google.protobuf import timestamp_pb2
+from google.protobuf.json_format import MessageToDict
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
-from mtmai.mtmpb import agent_worker_pb2, cloudevent_pb2, events_connecpy
+from mtmai.mtmpb import agent_worker_pb2, events_connecpy
 from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
     ChatSessionStartEvent,
@@ -184,27 +185,35 @@ class EventClient:
             json_bytes = event.model_dump_json()
         elif isinstance(event, pb_message.Message):
             result_type = self._serialization_registry.type_name(event)
-            serialized_result = self._serialization_registry.serialize(
-                event,
-                type_name=result_type,
-                data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
-            )
+            # serialized_result = self._serialization_registry.serialize(
+            #     event,
+            #     type_name=result_type,
+            #     data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
+            # )
 
             # serialized_message = self._serialization_registry.serialize(data)
-            any_proto = any_pb2.Any()
-            any_proto.ParseFromString(serialized_result)
-            ce_message = cloudevent_pb2.CloudEvent(
-                # id=message_id,
-                spec_version="1.0",
-                # type=topic_id.type,
-                source="event_source",
-                # attributes=attributes,
-                proto_data=any_proto,
-                # proto_data=event,
-            )
+            # any_proto = any_pb2.Any()
+            # any_proto.type_url = result_type
+            # any_proto.value = serialized_result
 
-            data2 = event.SerializeToString()
-            json_bytes = data2
+            # pb_message.Message.
+            # any_proto.ParseFromString(serialized_result)
+            # any_proto.ParseFromString(serialized_result)
+            # ce_message = cloudevent_pb2.CloudEvent(
+            #     # id=message_id,
+            #     spec_version="1.0",
+            #     # type=topic_id.type,
+            #     source="event_source",
+            #     # attributes=attributes,
+            #     proto_data=any_proto,
+            #     # proto_data=event,
+            # )
+            # json2 = MessageToDict(any_proto)
+            json2 = MessageToDict(event)
+            json2["@type"] = (
+                result_type  # json2["@type"].removeprefix("type.googleapis.com/")
+            )
+            json_bytes = json.dumps(json2)
         elif isinstance(event, TaskResult):
             json_bytes = json.dumps(jsonable_encoder(event))
         else:
@@ -219,27 +228,27 @@ class EventClient:
             data_bytes = data
         elif isinstance(data, BaseModel):
             data_bytes = data.model_dump_json()
-        elif isinstance(data, ChatSessionStartEvent):
-            result_type = self._serialization_registry.type_name(data)
-            serialized_result = self._serialization_registry.serialize(
-                data,
-                type_name=result_type,
-                data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
-            )
+        # elif isinstance(data, ChatSessionStartEvent):
+        #     result_type = self._serialization_registry.type_name(data)
+        #     serialized_result = self._serialization_registry.serialize(
+        #         data,
+        #         type_name=result_type,
+        #         data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
+        #     )
 
-            # serialized_message = self._serialization_registry.serialize(data)
-            any_proto = any_pb2.Any()
-            any_proto.ParseFromString(serialized_result)
-            ce_message = cloudevent_pb2.CloudEvent(
-                # id=message_id,
-                spec_version="1.0",
-                # type=topic_id.type,
-                source="event_source",
-                # attributes=attributes,
-                proto_data=any_proto,
-            )
+        #     # serialized_message = self._serialization_registry.serialize(data)
+        #     any_proto = any_pb2.Any()
+        #     any_proto.ParseFromString(serialized_result)
+        #     ce_message = cloudevent_pb2.CloudEvent(
+        #         # id=message_id,
+        #         spec_version="1.0",
+        #         # type=topic_id.type,
+        #         source="event_source",
+        #         # attributes=attributes,
+        #         proto_data=any_proto,
+        #     )
 
-            data_bytes = ce_message.SerializeToString()
+        #     data_bytes = ce_message.SerializeToString()
         elif isinstance(data, agent_worker_pb2.Message):
             data_bytes = data.SerializeToString()
         elif isinstance(data, pb_message.Message):
