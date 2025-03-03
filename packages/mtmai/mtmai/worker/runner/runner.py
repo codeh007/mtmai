@@ -11,6 +11,7 @@ from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
 from autogen_core import AgentRuntime
+from fastapi.encoders import jsonable_encoder
 from loguru import logger
 from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
@@ -502,7 +503,7 @@ class Runner:
 
         if output is not None:
             try:
-                return json.dumps(output)
+                return json.dumps(jsonable_encoder(output))
             except Exception as e:
                 logger.error(f"Could not serialize output: {e}")
                 return str(output)

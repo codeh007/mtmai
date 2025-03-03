@@ -64,9 +64,9 @@ class Settings(BaseSettings):
     # db
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
     API_V1_STR: str = "/api/v1"
-    OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
+    # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
 
-    vercel_token: str | None = None
+    # vercel_token: str | None = None
 
     PROJECT_NAME: str = "mtmai"
     SMTP_TLS: bool = True
@@ -224,6 +224,12 @@ class Settings(BaseSettings):
     AG_HOST_ADDRESS: str = "0.0.0.0:7777"
     DEFAULT_CLIENT_TIMEOUT: int = 20
     GOMTM_API_PATH_PREFIX: str = "/mtmapi"
+
+    # OPENAI
+    OPENAI_API_KEY: str | None = os.environ.get("OPENAI_API_KEY", "openai_key_not_set")
+    OPENAI_BASE_URL: str | None = os.environ.get(
+        "OPENAI_BASE_URL", "openai_base_url_not_set"
+    )
 
 
 settings = Settings()  # type: ignore

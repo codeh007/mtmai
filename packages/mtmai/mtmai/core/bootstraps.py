@@ -8,7 +8,12 @@ from dotenv import load_dotenv
 
 from mtmai._version import version
 
-default_env_files = [".env", ".env.local", "../gomtm/env/dev.env"]
+default_env_files = [
+    ".env",
+    ".env.local",
+    "../gomtm/env/dev.env",
+    "../../../gomtm/env/dev.env",
+]
 
 
 def bootstrap_core():

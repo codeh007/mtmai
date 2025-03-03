@@ -34,8 +34,6 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
-        # tenant_id = tenant_client.tenant_id
-
         if task.startswith("/tenant/seed"):
             logger.info("通知 TanantAgent 初始化(或重置)租户信息")
             result = await self._runtime.send_message(
@@ -63,11 +61,10 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             chat_session_id = generate_uuid()
 
         else:
-            logger.info(f"现有session: {chat_session_id}")
             # 加载团队状态
             # await self.load_state(thread_id)
             ...
-
+        logger.info(f"chat session: {chat_session_id}")
         await tenant_client.emit(
             ChatSessionStartEvent(
                 threadId=chat_session_id,

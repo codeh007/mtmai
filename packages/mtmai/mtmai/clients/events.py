@@ -175,10 +175,6 @@ class EventClient:
             server_path_prefix=settings.GOMTM_API_PATH_PREFIX,
         )
 
-    # async def emit(self, events: List[Event]):
-    #     for event in events:
-    #         await self.emit(event)
-
     async def emit(self, event: Any):
         step_run_id = get_step_run_id()
         json_bytes = None

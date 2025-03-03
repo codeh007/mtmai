@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import typer
 
@@ -43,6 +44,13 @@ async def _run_ag_grpc_host():
             await host.stop()
     else:
         await host.stop_when_signal()
+
+
+@app.command()
+def test_model_client():
+    from mtmai.agents.model_client import test_model_client2
+
+    asyncio.run(test_model_client2(os.environ.get("OPENAI_API_KEY")))
 
 
 if __name__ == "__main__":

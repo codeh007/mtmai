@@ -1,13 +1,26 @@
-from typing import Any, Unpack
+from typing import Any, Mapping, Optional, Sequence, Unpack
 
 import openai
-from autogen_core.models import CreateResult, ModelFamily, ModelInfo
+from autogen_core import CancellationToken
+from autogen_core.models import (
+    CreateResult,
+    LLMMessage,
+    ModelFamily,
+    ModelInfo,
+    UserMessage,
+)
+from autogen_core.tools import Tool, ToolSchema
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.models.openai.config import (
     OpenAIClientConfiguration,
     OpenAIClientConfigurationConfigModel,
 )
 from json_repair import repair_json
+from loguru import logger
+from openai import OpenAI
+
+# 常见错误代码:
+# 402: Payment Required
 
 
 class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
@@ -25,15 +38,53 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
                 function_calling=True,
                 json_output=True,
             )
+        if not kwargs.get("top_p"):
+            kwargs["top_p"] = 0.7
+        if not kwargs.get("temperature"):
+            kwargs["temperature"] = 0.6
+
+        kwargs["max_tokens"] = 4096
         super().__init__(**kwargs)
+        self.config = kwargs
 
-    def _to_config(self) -> OpenAIClientConfigurationConfigModel:
-        return super()._to_config()
+    # def _to_config(self) -> OpenAIClientConfigurationConfigModel:
+    #     return super()._to_config()
 
-    async def create(self, *args: Any, **kwargs: Any) -> CreateResult:
+    async def create(
+        self,
+        messages: Sequence[LLMMessage],
+        *,
+        tools: Sequence[Tool | ToolSchema] = [],
+        json_output: Optional[bool] = None,
+        extra_create_args: Mapping[str, Any] = {},
+        cancellation_token: Optional[CancellationToken] = None,
+    ) -> CreateResult:
+        custom_model_client = OpenAIChatCompletionClient(
+            model="deepseek-ai/deepseek-r1",
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=self.config.get("api_key"),
+            max_tokens=64 * 1024,
+            temperature=0.6,
+            top_p=0.7,
+            model_info={
+                "vision": False,
+                "function_calling": False,
+                "json_output": False,
+                "family": ModelFamily.R1,
+            },
+        )
+
+        response: CreateResult = None
         try:
-            response = await super().create(*args, **kwargs)
-            if kwargs.get("json_output", False):
+            response = await custom_model_client.create(
+                # response = await super().create(
+                messages=messages,
+                tools=tools,
+                json_output=json_output,
+                extra_create_args=extra_create_args,
+                cancellation_token=cancellation_token,
+            )
+            if json_output:
                 # 修正json格式
                 if isinstance(response.content, str):
                     response.content = repair_json(response.content)
@@ -48,7 +99,56 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         except openai.RateLimitError as e:
             raise e
         except Exception as e:
-            # logger.exception(
-            #     "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
-            # )
+            logger.exception(
+                "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
+            )
+            logger.info(
+                "model_client_error",
+                messages=messages,
+                tools=tools,
+                # content=response.,
+            )
             raise e
+
+
+async def test_model_client(apikey: str):
+    client = OpenAI(
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=apikey,
+    )
+
+    logger.info("test_model_client start")
+    completion = client.chat.completions.create(
+        model="deepseek-ai/deepseek-r1",
+        messages=[{"role": "user", "content": "hello"}],
+        temperature=0.6,
+        top_p=0.7,
+        max_tokens=4096,
+        stream=True,
+    )
+
+    logger.info("test_model_client response:\n")
+    for chunk in completion:
+        if chunk.choices[0].delta.content is not None:
+            print(chunk.choices[0].delta.content, end="")
+
+
+async def test_model_client2(apikey: str):
+    custom_model_client = OpenAIChatCompletionClient(
+        model="deepseek-ai/deepseek-r1",
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=apikey,
+        max_tokens=4096,
+        temperature=0.6,
+        top_p=0.7,
+        model_info={
+            "vision": False,
+            "function_calling": False,
+            "json_output": False,
+            "family": ModelFamily.R1,
+        },
+    )
+    result = await custom_model_client.create(
+        [UserMessage(content="hello", source="user")]
+    )  # type: ignore
+    logger.info(result)

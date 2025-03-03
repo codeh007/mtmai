@@ -6,9 +6,9 @@ from autogen_core import SingleThreadedAgentRuntime
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
+from mtmai.teams.sys_team import SysTeam
 from mtmai.worker_app import mtmapp
 from opentelemetry.trace import TracerProvider
-from teams.sys_team import SysTeam
 
 
 @mtmapp.workflow(
