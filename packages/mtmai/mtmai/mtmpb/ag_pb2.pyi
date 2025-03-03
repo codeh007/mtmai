@@ -171,15 +171,17 @@ class GetStateReq(_message.Message):
     def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ...) -> None: ...
 
 class AgState(_message.Message):
-    __slots__ = ("id", "run_id", "type", "component_id", "version")
+    __slots__ = ("id", "run_id", "type", "component_id", "version", "state")
     ID_FIELD_NUMBER: _ClassVar[int]
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
     COMPONENT_ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
     id: str
     run_id: str
     type: str
     component_id: str
     version: str
-    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ..., type: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...
+    state: str
+    def __init__(self, id: _Optional[str] = ..., run_id: _Optional[str] = ..., type: _Optional[str] = ..., component_id: _Optional[str] = ..., version: _Optional[str] = ..., state: _Optional[str] = ...) -> None: ...

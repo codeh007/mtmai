@@ -1,3 +1,5 @@
+import json
+
 from autogen_agentchat.base import Team
 from connecpy.context import ClientContext
 from loguru import logger
@@ -18,7 +20,9 @@ from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
-from .rest.models.ag_state import AgState
+from ..mtmpb.ag_pb2 import AgState
+
+# from .rest.models.ag_state import AgState
 
 
 class AgClient:
@@ -117,10 +121,10 @@ class AgClient:
         await self.ag_state_connect().SetState(
             ctx=self.client_context,
             request=AgState(
-                tenant=tenant_id,
+                # tenant=tenant_id,
                 component_id=team_id,
                 run_id=run_id,
-                state=state,
+                state=json.dumps(state),
             ),
         )
 
