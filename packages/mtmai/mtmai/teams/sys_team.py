@@ -47,8 +47,6 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             tenant_teams = await tenant_client.ag.list_team_component(tid)
             logger.info(f"get team component: {tenant_teams}")
             team_id = tenant_teams[0].metadata.id
-
-        # team = await tenant_client.ag.get_team(tenant_client.tenant_id, team_id)
         model_client = await tenant_client.ag.get_default_model_client(tid)
         team = await AssistantTeamBuilder().create_team(model_client)
 
@@ -69,7 +67,7 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             chat_id=chat_id,
         )
         if ag_state:
-            team.load_state(ag_state)
+            await team.load_state(ag_state.state)
             logger.info("成功加载团队状态", component_type=team.component_type)
 
         await tenant_client.emit(
