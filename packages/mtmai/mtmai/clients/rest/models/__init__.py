@@ -65,7 +65,6 @@ from mtmai.clients.rest.models.browser_update import BrowserUpdate
 from mtmai.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmai.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
 from mtmai.clients.rest.models.cancel_event_request import CancelEventRequest
-from mtmai.clients.rest.models.canvas_graph_params import CanvasGraphParams
 from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
@@ -81,7 +80,6 @@ from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmai.clients.rest.models.create_api_token_response import CreateAPITokenResponse
-from mtmai.clients.rest.models.create_artifactt_request import CreateArtifacttRequest
 from mtmai.clients.rest.models.create_blog_post_request import CreateBlogPostRequest
 from mtmai.clients.rest.models.create_blog_request import CreateBlogRequest
 from mtmai.clients.rest.models.create_event_request import CreateEventRequest
@@ -231,6 +229,7 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
+from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant

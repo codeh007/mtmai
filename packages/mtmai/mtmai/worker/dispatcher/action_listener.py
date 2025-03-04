@@ -5,10 +5,12 @@ from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator, List, Optional
 
 import grpc
+from connecpy.context import ClientContext
 from grpc._cython import cygrpc
 from loguru import logger
 from mtmai.clients.connection import new_conn
 from mtmai.clients.events import proto_timestamp_now
+from mtmai.core.config import settings
 from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
@@ -23,6 +25,7 @@ from mtmai.mtmpb.dispatcher_pb2 import (
 )
 from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
+from mtmpb import ag_connecpy, dispatcher_connecpy
 
 DEFAULT_ACTION_TIMEOUT = 600  # seconds
 DEFAULT_ACTION_LISTENER_RETRY_COUNT = 1000
@@ -131,6 +134,20 @@ class ActionListener:
     def __post_init__(self):
         self.aio_client = DispatcherStub(new_conn(self.config, True))
         self.token = self.config.token
+        self.ag = ag_connecpy.AsyncAgServiceClient(
+            self.config.server_url,
+            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
+        )
+        self.dispatcher_connecpy = dispatcher_connecpy.AsyncDispatcherClient(
+            self.config.server_url,
+            timeout=settings.DEFAULT_CLIENT_TIMEOUT,
+        )
+        self.client_context = ClientContext(
+            headers={
+                "Authorization": f"Bearer {self.config.token}",
+                # "X-Tid": config.tenant_id,
+            }
+        )
 
     def is_healthy(self):
         return self.last_heartbeat_succeeded
@@ -145,13 +162,22 @@ class ActionListener:
 
             try:
                 # logger.info("sending heartbeat")
-                await self.aio_client.Heartbeat(
-                    HeartbeatRequest(
+                # await self.aio_client.Heartbeat(
+                #     HeartbeatRequest(
+                #         workerId=self.worker_id,
+                #         heartbeatAt=proto_timestamp_now(),
+                #     ),
+                #     timeout=5,
+                #     metadata=get_metadata(self.token),
+                # )
+                await self.dispatcher_connecpy.Heartbeat(
+                    ctx=self.client_context,
+                    request=HeartbeatRequest(
                         workerId=self.worker_id,
                         heartbeatAt=proto_timestamp_now(),
                     ),
-                    timeout=5,
-                    metadata=get_metadata(self.token),
+                    # timeout=5,
+                    # metadata=get_metadata(self.token),
                 )
 
                 if self.last_heartbeat_succeeded is False:
@@ -160,14 +186,15 @@ class ActionListener:
                 now = time.time()
                 diff = now - self.time_last_hb_succeeded
                 if diff > heartbeat_delay + 1:
-                    logger.warn(
+                    logger.info(
                         f"time since last successful heartbeat: {diff:.2f}s, expects {heartbeat_delay}s"
                     )
 
                 self.last_heartbeat_succeeded = True
                 self.time_last_hb_succeeded = now
                 self.missed_heartbeats = 0
-            except grpc.RpcError as e:
+            # except grpc.RpcError as e:
+            except Exception as e:
                 self.missed_heartbeats = self.missed_heartbeats + 1
                 self.last_heartbeat_succeeded = False
 
@@ -193,6 +220,8 @@ class ActionListener:
 
                 if e.code() == grpc.StatusCode.UNIMPLEMENTED:
                     break
+            # except Exception as e:
+            #     logger.error(f"failed to send heartbeat: {e}")
             await asyncio.sleep(heartbeat_delay)
 
     async def start_heartbeater(self):
