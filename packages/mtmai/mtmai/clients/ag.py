@@ -15,11 +15,11 @@ from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.ctx import get_tenant_id
-from mtmai.mtlibs.id import is_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
+
+default_team_name = "assistant_team"
 
 team_builders = [
     AssistantTeamBuilder(),
@@ -29,7 +29,6 @@ team_builders = [
     TravelTeamBuilder(),
 ]
 
-default_team_name = "assistant_team"
 
 team_builder_map = {team_builder.name: team_builder for team_builder in team_builders}
 
@@ -71,7 +70,6 @@ class AgClient:
             return self._ag_state_connect
         self._ag_state_connect = AsyncAgServiceClient(
             address=self.server_url,
-            # session=self.api_client.session,
         )
         return self._ag_state_connect
 
@@ -146,28 +144,26 @@ class AgClient:
             component_id_or_name = default_team_name
         model_client = await self.default_model_client(tid)
         component_data: MtComponent = None
-        if is_uuid(component_id_or_name):
-            try:
-                # TODO: 缓存优化
-                component_data = await self.coms_api.coms_get(
-                    tenant=tid, com=component_id_or_name
-                )
-                # components = await self.coms_api.coms_list(tenant=tid,label=n)
-                # component_data = components.rows[0]
-                return Team.load_component(component_data.component)
-            except NotFoundException:
-                new_team = await self.upsert_team(
-                    tid,
-                    team_builder_map.get(component_id_or_name).create_team(
-                        model_client
-                    ),
-                )
-                return Team.load_component(component_data.component)
-        else:
-            team_builder = team_builder_map.get(component_id_or_name)
-            if not team_builder:
-                raise ValueError(f"未找到团队构建器: {component_id_or_name}")
-            return await team_builder.create_team(model_client)
+        # if is_uuid(component_id_or_name):
+        try:
+            # TODO: 缓存优化
+            component_data = await self.coms_api.coms_get(
+                tenant=tid, com=component_id_or_name
+            )
+            # components = await self.coms_api.coms_list(tenant=tid,label=n)
+            # component_data = components.rows[0]
+            return Team.load_component(component_data.component)
+        except NotFoundException:
+            new_team = await self.upsert_team(
+                tid,
+                team_builder_map.get(component_id_or_name).create_team(model_client),
+            )
+            return Team.load_component(component_data.component)
+        # else:
+        # team_builder = team_builder_map.get(component_id_or_name)
+        # if not team_builder:
+        #     raise ValueError(f"未找到团队构建器: {component_id_or_name}")
+        # return await team_builder.create_team(model_client)
 
         # results = []
         # teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
@@ -194,16 +190,10 @@ class AgClient:
         #     results.append(new_team)
         # return results
 
-    async def handle_message_create(self, message: ChatMessageUpsert) -> None:
-        await self.chat_api.chat_message_upsert(
-            tenant=message.tenant_id,
-            chat_message_upsert=message.model_dump(),
-        )
-
-    # async def get_component(self, tenant_id: str, component_id: str):
-    #     return await self.coms_api.coms_get(
-    #         tenant=tenant_id,
-    #         com=component_id,
+    # async def handle_message_create(self, message: ChatMessageUpsert) -> None:
+    #     await self.chat_api.chat_message_upsert(
+    #         tenant=message.tenant_id,
+    #         chat_message_upsert=message.model_dump(),
     #     )
 
     async def default_model_client(self, tid: str):
