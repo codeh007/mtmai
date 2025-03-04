@@ -176,8 +176,6 @@ class ActionListener:
                         workerId=self.worker_id,
                         heartbeatAt=proto_timestamp_now(),
                     ),
-                    # timeout=5,
-                    # metadata=get_metadata(self.token),
                 )
 
                 if self.last_heartbeat_succeeded is False:
