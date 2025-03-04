@@ -45,7 +45,6 @@ class AgClient:
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {access_token}",
-                # "X-Tid": tenant_id,
             }
         )
         self.client_config = Configuration(
@@ -97,12 +96,6 @@ class AgClient:
         self._coms_api = ComsApi(self.api_client)
         return self._coms_api
 
-    # async def default_model_client(self):
-    #     if hasattr(self, "_default_model_client"):
-    #         return self._default_model_client
-    #     self._default_model_client = await self.get_default_model_client(self.tenant_id)
-    #     return self._default_model_client
-
     async def load_team_state(
         self,
         chat_id: str,
@@ -113,14 +106,7 @@ class AgClient:
                 tenant=tenant_id,
                 chat=chat_id,
             )
-
-            # ag_state = await self.ag_state_connect().GetState(
-            #     ctx=self.client_context,
-            #     request=AgState(
-            #         chat_id=chat_id,
-            #     ),
-            # )
-            logger.info(f"成功加载团队状态: {ag_state}")
+            # logger.info(f"成功加载团队状态: {ag_state}")
             return ag_state
 
         except NotFoundException:
@@ -145,30 +131,13 @@ class AgClient:
                 state=state,
             ).model_dump(),
         )
-        # await self.ag_state_connect().SetState(
-        #     ctx=self.client_context,
-        #     request=AgState(
-        #         component_id=team_id,
-        #         session_id=ch,
-        #         state=json.dumps(state),
-        #     ),
-        # )
 
-    # async def get_team(self, component_id_or_name: str | None = None, tid: str = None):
-    #     if not tid:
-    #         tid = get_tenant_id()
-    #     if not tid:
-    #         raise ValueError("tenant_id is required")
-    #     if not component_id_or_name:
-    #         component_id_or_name = default_team_name
-    #     curr_team = await self.get_team_component(tid, component_id_or_name)
-    #     # team2 = Team.load_component(curr_team.component)
-    #     # logger.info(f"get team component: {curr_team}")
-    #     # model_client = await self.default_model_client(tid)
-    #     # team = await AssistantTeamBuilder().create_team(model_client)
-    #     return curr_team
-
-    async def get_team(self, component_id_or_name: str | None = None, tid: str = None):
+    async def get_team(
+        self,
+        component_id_or_name: str | None = None,
+        tid: str = None,
+        debug: bool = False,
+    ):
         if not tid:
             tid = get_tenant_id()
         if not tid:
@@ -183,6 +152,8 @@ class AgClient:
                 component_data = await self.coms_api.coms_get(
                     tenant=tid, com=component_id_or_name
                 )
+                # components = await self.coms_api.coms_list(tenant=tid,label=n)
+                # component_data = components.rows[0]
                 return Team.load_component(component_data.component)
             except NotFoundException:
                 new_team = await self.upsert_team(
@@ -196,8 +167,7 @@ class AgClient:
             team_builder = team_builder_map.get(component_id_or_name)
             if not team_builder:
                 raise ValueError(f"未找到团队构建器: {component_id_or_name}")
-            component_data = await team_builder.create_team(model_client)
-            return component_data
+            return await team_builder.create_team(model_client)
 
         # results = []
         # teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
@@ -230,19 +200,11 @@ class AgClient:
             chat_message_upsert=message.model_dump(),
         )
 
-    async def get_component(self, tenant_id: str, component_id: str):
-        return await self.coms_api.coms_get(
-            tenant=tenant_id,
-            com=component_id,
-        )
-
-    # async def get_team(self, tenant_id: str, team_id: str):
-    #     team_comp_data = await self.coms_api.coms_get(
+    # async def get_component(self, tenant_id: str, component_id: str):
+    #     return await self.coms_api.coms_get(
     #         tenant=tenant_id,
-    #         com=team_id,
+    #         com=component_id,
     #     )
-    #     team = Team.load_component(team_comp_data.component)
-    #     return team
 
     async def default_model_client(self, tid: str):
         if hasattr(self, "_default_model_client"):

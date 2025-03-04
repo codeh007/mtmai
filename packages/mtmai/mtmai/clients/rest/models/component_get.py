@@ -27,7 +27,8 @@ class ComponentGet(BaseModel):
     ComponentGet
     """ # noqa: E501
     id: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["id"]
+    label: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["id", "label"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +81,8 @@ class ComponentGet(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id")
+            "id": obj.get("id"),
+            "label": obj.get("label")
         })
         return _obj
 
