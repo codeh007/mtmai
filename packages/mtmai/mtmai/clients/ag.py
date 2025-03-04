@@ -17,8 +17,21 @@ from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.mtlibs.id import generate_uuid
+from mtmai.context.ctx import get_tenant_id
+from mtmai.mtlibs.id import is_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
+
+team_builders = [
+    AssistantTeamBuilder(),
+    SwramTeamBuilder(),
+    ArticleGenTeamBuilder(),
+    M1WebTeamBuilder(),
+    TravelTeamBuilder(),
+]
+
+default_team_name = "assistant_team"
+
+team_builder_map = {team_builder.name: team_builder for team_builder in team_builders}
 
 
 class AgClient:
@@ -84,6 +97,12 @@ class AgClient:
         self._coms_api = ComsApi(self.api_client)
         return self._coms_api
 
+    # async def default_model_client(self):
+    #     if hasattr(self, "_default_model_client"):
+    #         return self._default_model_client
+    #     self._default_model_client = await self.get_default_model_client(self.tenant_id)
+    #     return self._default_model_client
+
     async def load_team_state(
         self,
         chat_id: str,
@@ -135,43 +154,75 @@ class AgClient:
         #     ),
         # )
 
-    async def list_team_component(self, tenant_id: str):
-        return await self.tenant_reset_teams(tenant_id)
+    # async def get_team(self, component_id_or_name: str | None = None, tid: str = None):
+    #     if not tid:
+    #         tid = get_tenant_id()
+    #     if not tid:
+    #         raise ValueError("tenant_id is required")
+    #     if not component_id_or_name:
+    #         component_id_or_name = default_team_name
+    #     curr_team = await self.get_team_component(tid, component_id_or_name)
+    #     # team2 = Team.load_component(curr_team.component)
+    #     # logger.info(f"get team component: {curr_team}")
+    #     # model_client = await self.default_model_client(tid)
+    #     # team = await AssistantTeamBuilder().create_team(model_client)
+    #     return curr_team
 
-    async def tenant_reset_teams(self, tid: str):
-        logger.info(f"TenantAgent 重置租户信息: {tid}")
-        results = []
-        teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
-        if teams_list.rows and len(teams_list.rows) > 0:
-            logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
-            results.append(teams_list.rows[0])
+    async def get_team(self, component_id_or_name: str | None = None, tid: str = None):
+        if not tid:
+            tid = get_tenant_id()
+        if not tid:
+            raise ValueError("tenant_id is required")
+        if not component_id_or_name:
+            component_id_or_name = default_team_name
+        model_client = await self.default_model_client(tid)
+        component_data: MtComponent = None
+        if is_uuid(component_id_or_name):
+            try:
+                # TODO: 缓存优化
+                component_data = await self.coms_api.coms_get(
+                    tenant=tid, com=component_id_or_name
+                )
+                return Team.load_component(component_data.component)
+            except NotFoundException:
+                new_team = await self.upsert_team(
+                    tid,
+                    team_builder_map.get(component_id_or_name).create_team(
+                        model_client
+                    ),
+                )
+                return Team.load_component(component_data.component)
+        else:
+            team_builder = team_builder_map.get(component_id_or_name)
+            if not team_builder:
+                raise ValueError(f"未找到团队构建器: {component_id_or_name}")
+            component_data = await team_builder.create_team(model_client)
+            return component_data
 
-        model_client = await self.get_default_model_client(tid)
-        self.team_builders = [
-            AssistantTeamBuilder(),
-            SwramTeamBuilder(),
-            ArticleGenTeamBuilder(),
-            M1WebTeamBuilder(),
-            TravelTeamBuilder(),
-        ]
-        for team_builder in self.team_builders:
-            label = team_builder.name
-            logger.info(f"create team for tenant {tid}")
+        # results = []
+        # teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
+        # if teams_list.rows and len(teams_list.rows) > 0:
+        #     logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
+        #     results.append(teams_list.rows[0])
 
-            team_comp = await team_builder.create_team(model_client)
-            component_model = team_comp.dump_component()
-            new_team = await self.coms_api.coms_upsert(
-                tenant=tid,
-                com=generate_uuid(),
-                mt_component=MtComponent(
-                    label=label,
-                    description=component_model.description or "",
-                    componentType="team",
-                    component=component_model.model_dump(),
-                ).model_dump(),
-            )
-            results.append(new_team)
-        return results
+        # for team_builder in team_builders:
+        #     label = team_builder.name
+        #     logger.info(f"create team for tenant {tid}")
+
+        #     team_comp = await team_builder.create_team(model_client)
+        #     component_model = team_comp.dump_component()
+        #     new_team = await self.coms_api.coms_upsert(
+        #         tenant=tid,
+        #         com=generate_uuid(),
+        #         mt_component=MtComponent(
+        #             label=label,
+        #             description=component_model.description or "",
+        #             componentType="team",
+        #             component=component_model.model_dump(),
+        #         ).model_dump(),
+        #     )
+        #     results.append(new_team)
+        # return results
 
     async def handle_message_create(self, message: ChatMessageUpsert) -> None:
         await self.chat_api.chat_message_upsert(
@@ -185,18 +236,28 @@ class AgClient:
             com=component_id,
         )
 
-    async def get_team(self, tenant_id: str, team_id: str):
-        team_comp_data = await self.coms_api.coms_get(
-            tenant=tenant_id,
-            com=team_id,
-        )
-        team = Team.load_component(team_comp_data.component)
-        return team
+    # async def get_team(self, tenant_id: str, team_id: str):
+    #     team_comp_data = await self.coms_api.coms_get(
+    #         tenant=tenant_id,
+    #         com=team_id,
+    #     )
+    #     team = Team.load_component(team_comp_data.component)
+    #     return team
 
-    async def get_default_model_client(self, tid: str):
+    async def default_model_client(self, tid: str):
+        if hasattr(self, "_default_model_client"):
+            return self._default_model_client
         defaultModel = await self.model_api.model_get(tenant=tid, model="default")
         model_dict = defaultModel.config.model_dump()
         model_dict.pop("n", None)
         return MtmOpenAIChatCompletionClient(
             **model_dict,
+        )
+
+    async def upsert_team(self, tenant_id: str, team: Team):
+        team_comp = team.dump_component()
+        await self.coms_api.coms_upsert(
+            tenant=tenant_id,
+            com=team_comp.id,
+            mt_component=team_comp.model_dump(),
         )

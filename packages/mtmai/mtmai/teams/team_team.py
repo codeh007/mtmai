@@ -43,7 +43,7 @@ class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
         team_id = get_team_id_ctx()
         tenant_id = tenant_client.tenant_id
         if not team_id:
-            tenant_teams = await tenant_client.ag.list_team_component(tenant_id)
+            tenant_teams = await tenant_client.ag.get_team_component(tenant_id)
             logger.info(f"get team component: {tenant_teams}")
             team_id = tenant_teams[0].metadata.id
 

@@ -1,10 +1,9 @@
-from typing import AsyncGenerator, List, Sequence
+from typing import AsyncGenerator, Sequence
 
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_core import CancellationToken, Component, ComponentModel
+from autogen_core import CancellationToken, Component
 from loguru import logger
-from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
 from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_team_id_ctx
@@ -15,16 +14,13 @@ from pydantic import BaseModel
 
 
 class SysTeamConfig(BaseModel):
-    participants: List[ComponentModel]
-    termination_condition: ComponentModel | None = None
-    max_turns: int | None = None
-
+    # participants: List[ComponentModel]
+    # termination_condition: ComponentModel | None = None
+    # max_turns: int | None = None
+    ...
 
 class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     component_type = "mtmai.teams.sys_team.SysTeam"
-
-    def __init__(self):
-        super().__init__()
 
     async def run_stream(
         self,
@@ -42,33 +38,17 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
             return
 
-        team_id = get_team_id_ctx()
-        if not team_id:
-            tenant_teams = await tenant_client.ag.list_team_component(tid)
-            logger.info(f"get team component: {tenant_teams}")
-            team_id = tenant_teams[0].metadata.id
-        model_client = await tenant_client.ag.get_default_model_client(tid)
-        team = await AssistantTeamBuilder().create_team(model_client)
-
-        if not team_id:
-            team_id = generate_uuid()
-
-        chat_id = get_chat_session_id_ctx()
-        if not chat_id:
-            chat_id = generate_uuid()
-
-        else:
-            # 加载团队状态
-            # await self.load_state(thread_id)
-            ...
-        logger.info(f"chat session: {chat_id}")
+        team_id = get_team_id_ctx() or generate_uuid()
+        chat_id = get_chat_session_id_ctx() or generate_uuid()
+        team = await tenant_client.ag.get_team()
         ag_state = await tenant_client.ag.load_team_state(
             tenant_id=tenant_client.tenant_id,
             chat_id=chat_id,
         )
         if ag_state:
             await team.load_state(ag_state.state)
-            logger.info("成功加载团队状态", component_type=team.component_type)
+
+        logger.info(f"运行: task: {task}, chat_id:{chat_id}")
 
         await tenant_client.emit(
             ChatSessionStartEvent(

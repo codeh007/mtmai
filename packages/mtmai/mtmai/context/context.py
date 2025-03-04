@@ -2,7 +2,6 @@ import inspect
 import json
 import traceback
 from concurrent.futures import Future, ThreadPoolExecutor
-from contextvars import ContextVar
 from typing import Any, TypeVar, cast
 from warnings import warn
 
@@ -34,38 +33,7 @@ DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
 
-
-# api_token_context: ContextVar[str] = ContextVar("api_token", default=None)
-
-
-# def set_api_token_context(api_token: str):
-#     api_token_context.set(api_token)
-
-
-# def get_api_token_context() -> str | None:
-#     return api_token_context.get()
-
-
-# tenant_id_context: ContextVar[str] = ContextVar("tenant_id", default=None)
-
-
-# def set_tenant_id(tenant_id: str):
-#     tenant_id_context.set(tenant_id)
-
-
-# def get_tenant_id() -> str | None:
-#     return tenant_id_context.get()
-
-
-backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
-
-
-# def set_backend_url(backend_url: str):
-#     backend_url_context.set(backend_url)
-
-
-# def get_backend_url() -> str | None:
-#     return backend_url_context.get()
+# backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
 
 
 def get_caller_file_path() -> str:
