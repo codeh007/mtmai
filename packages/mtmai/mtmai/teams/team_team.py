@@ -22,9 +22,6 @@ class TeamTeamConfig(BaseModel):
 class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
     component_type = "mtmai.teams.team_team.TeamTeam"
 
-    def __init__(self):
-        super().__init__()
-
     async def run_stream(
         self,
         *,
@@ -32,45 +29,30 @@ class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
         if task.startswith("/tenant/seed"):
             logger.info("通知 TanantAgent 初始化(或重置)租户信息")
             result = await self._runtime.send_message(
-                MsgResetTenant(tenant_id=tenant_client.tenant_id),
+                MsgResetTenant(tenant_id=tid),
                 self.tenant_agent_id,
             )
             return
 
-        team_id = get_team_id_ctx()
-        tenant_id = tenant_client.tenant_id
-        if not team_id:
-            tenant_teams = await tenant_client.ag.get_team_component(tenant_id)
-            logger.info(f"get team component: {tenant_teams}")
-            team_id = tenant_teams[0].metadata.id
+        team_id = get_team_id_ctx() or generate_uuid()
+        chat_id = get_chat_session_id_ctx() or generate_uuid()
+        team = await tenant_client.ag.get_team()
+        ag_state = await tenant_client.ag.load_team_state(
+            tenant_id=tenant_client.tenant_id,
+            chat_id=chat_id,
+        )
+        if ag_state:
+            await team.load_state(ag_state.state)
 
-        team = await tenant_client.ag.get_team(tenant_client.tenant_id, team_id)
-        if not team_id:
-            team_id = generate_uuid()
-
-        chat_session_id = get_chat_session_id_ctx()
-        # TODO: 获取 session state, 如果获取失败,触发 ChatSessionStartEvent 事件.
-        if not chat_session_id:
-            chat_session_id = generate_uuid()
-
-        else:
-            logger.info(f"现有session: {chat_session_id}")
-            # 加载团队状态
-            # await self.load_state(thread_id)
-            team_state = await tenant_client.ag.load_team_state(
-                team_id=team_id,
-                tenant_id=tenant_id,
-                run_id=tenant_client.run_id,
-            )
-            logger.info(f"load team state: {team_state}")
-            ...
+        logger.info(f"运行: task: {task}, chat_id:{chat_id}")
 
         await tenant_client.emit(
             ChatSessionStartEvent(
-                threadId=chat_session_id,
+                threadId=chat_id,
             )
         )
 
@@ -81,46 +63,13 @@ class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
             ):
                 if cancellation_token and cancellation_token.is_cancelled():
                     break
+                yield event
                 await tenant_client.event.emit(event)
 
-                # if isinstance(event, TaskResult):
-                #     logger.info(f"Worker Agent 收到任务结果: {event}")
-                #     task_result = event
-                # elif isinstance(
-                #     event,
-                #     (
-                #         TextMessage,
-                #         MultiModalMessage,
-                #         StopMessage,
-                #         HandoffMessage,
-                #         ToolCallRequestEvent,
-                #         ToolCallExecutionEvent,
-                #         LLMCallEventMessage,
-                #     ),
-                # ):
-                #     # if event.content:
-                #     await tenant_client.ag.handle_message_create(
-                #         ChatMessageUpsert(
-                #             content=event.content,
-                #             tenant_id=tenant_client.tenant_id,
-                #             component_id=message.team_id,
-                #             threadId=thread_id,
-                #             role=event.source,
-                #             runId=tenant_client.run_id,
-                #             stepRunId=message.step_run_id,
-                #         ),
-                #     )
-                #     await tenant_client.event.stream(
-                #         event, step_run_id=message.step_run_id
-                #     )
-                #     # else:
-                #     #     logger.warn(f"worker Agent 消息没有content: {event}")
-                # else:
-                #     logger.warn(f"worker Agent 收到(未知类型)消息: {event}")
         finally:
             await tenant_client.ag.save_team_state(
                 team=team,
                 team_id=team_id,
                 tenant_id=tenant_client.tenant_id,
-                run_id=tenant_client.run_id,
+                chat_id=chat_id,
             )
