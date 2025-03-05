@@ -117,7 +117,7 @@ class AgClient:
         self,
         component_id_or_name: str | None = None,
         tid: str = None,
-        debug: bool = False,
+        # debug: bool = False,
     ):
         if not tid:
             tid = get_tenant_id()
@@ -128,6 +128,7 @@ class AgClient:
         model_client = await self.default_model_client(tid)
         component_data: MtComponent = None
         # if is_uuid(component_id_or_name):
+        component_data: MtComponent = None
         try:
             # TODO: 缓存优化
             component_data = await self.coms_api.coms_get(
@@ -140,11 +141,13 @@ class AgClient:
             team = await team_builder_map.get(component_id_or_name).create_team(
                 model_client
             )
-            new_team = await self.upsert_team(
+            component_data = await self.upsert_team(
                 tid,
                 team,
             )
-            return team
+        if not component_data:
+            raise ValueError("component_data is None")
+        return Team.load_component(component_data.component)
         # else:
         # team_builder = team_builder_map.get(component_id_or_name)
         # if not team_builder:
@@ -196,7 +199,7 @@ class AgClient:
         self, tenant_id: str, team: Team, component_id: str | None = None
     ):
         team_comp = team.dump_component()
-        await self.coms_api.coms_upsert(
+        return await self.coms_api.coms_upsert(
             tenant=tenant_id,
             com=component_id or generate_uuid(),
             mt_component=MtComponent(
