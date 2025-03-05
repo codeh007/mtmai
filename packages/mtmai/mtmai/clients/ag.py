@@ -110,7 +110,7 @@ class AgClient:
                 componentId=team_id,
                 chatId=chat_id,
                 state=state,
-            ).model_dump(),
+            ),
         )
 
     async def get_team(

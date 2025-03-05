@@ -44,8 +44,3 @@ async def run_worker():
         worker.register_workflow(workflow_type())
 
     await worker.async_start()
-
-
-# async def start_ag_teams():
-#     logger.info("STARTING AG TEAMS.------------------------------------------")
-#     pass
