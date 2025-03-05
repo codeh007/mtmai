@@ -117,7 +117,6 @@ class AgClient:
         self,
         component_id_or_name: str | None = None,
         tid: str = None,
-        # debug: bool = False,
     ):
         if not tid:
             tid = get_tenant_id()
@@ -147,7 +146,8 @@ class AgClient:
             )
         if not component_data:
             raise ValueError("component_data is None")
-        return Team.load_component(component_data.component)
+        team = Team.load_component(component_data.component)
+        return team
         # else:
         # team_builder = team_builder_map.get(component_id_or_name)
         # if not team_builder:

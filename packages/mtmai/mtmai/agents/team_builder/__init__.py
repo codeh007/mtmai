@@ -1,5 +1,6 @@
 from .article_gen_teambuilder import ArticleGenTeamBuilder
 from .assisant_team_builder import AssistantTeamBuilder
+from .demo_human_in_loop import DemoHumanInLoopTeamBuilder
 from .m1_web_builder import M1WebTeamBuilder
 from .swram_team_builder import SwramTeamBuilder
 from .travel_builder import TravelTeamBuilder
@@ -7,7 +8,8 @@ from .travel_builder import TravelTeamBuilder
 current_team_version = 1
 
 
-default_team_name = "assistant_team"
+# default_team_name = "assistant_team"
+default_team_name = "demo_human_in_loop"
 
 team_builders = [
     AssistantTeamBuilder(),
@@ -15,6 +17,7 @@ team_builders = [
     ArticleGenTeamBuilder(),
     M1WebTeamBuilder(),
     TravelTeamBuilder(),
+    DemoHumanInLoopTeamBuilder(),
 ]
 
 

@@ -15,6 +15,7 @@ from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.backoff import exp_backoff_sleep
 from mtmai.mtlibs.hatchet_utils import Event_ts, get_metadata, read_with_interrupt
 from mtmai.mtlibs.serialization import flatten
+from mtmai.mtmpb import ag_connecpy, dispatcher_connecpy
 from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
     AssignedAction,
@@ -25,7 +26,6 @@ from mtmai.mtmpb.dispatcher_pb2 import (
 )
 from mtmai.mtmpb.dispatcher_pb2_grpc import DispatcherStub
 from mtmai.run_event_listener import DEFAULT_ACTION_LISTENER_RETRY_INTERVAL
-from mtmpb import ag_connecpy, dispatcher_connecpy
 
 DEFAULT_ACTION_TIMEOUT = 600  # seconds
 DEFAULT_ACTION_LISTENER_RETRY_COUNT = 1000

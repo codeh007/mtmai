@@ -1,13 +1,15 @@
 import json
 from typing import List, Tuple
 
-from autogen_agentchat.conditions import MaxMessageTermination
-from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core import (
+    CancellationToken,
+    Component,
     FunctionCall,
     MessageContext,
     RoutedAgent,
+    SingleThreadedAgentRuntime,
     TopicId,
+    TypeSubscription,
     message_handler,
 )
 from autogen_core.models import (
@@ -20,9 +22,9 @@ from autogen_core.models import (
     UserMessage,
 )
 from autogen_core.tools import FunctionTool, Tool
+from mtmai.context.context_client import TenantClient
+from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
-
-from mtmai.agents._agents import MtUserProxyAgent
 
 
 class UserLogin(BaseModel):
@@ -302,47 +304,30 @@ escalate_to_human_tool = FunctionTool(
 )
 
 
-class DemoHumanInLoopTeamBuilder:
+class DemoHandoffsTeamConfig(BaseModel):
+    # participants: List[ComponentModel]
+    # termination_condition: ComponentModel | None = None
+    # max_turns: int | None = None
+    ...
+
+
+class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
     @property
     def name(self):
-        return "demo_human_in_loop"
+        return "demo_handoffs_team"
 
     @property
     def description(self):
         return "人机交互团队"
 
-    async def create_team(self, model_client: ChatCompletionClient = None):
-        # termination = TextMentionTermination(text="TERMINATE")
-        # max_msg_termination = MaxMessageTermination(max_messages=6)
-        # text_mention_termination = TextMentionTermination("TERMINATE")
-        # 提示: 不要加:"TERMINATE" 这个条件,因为团队的相关agents自己会提及 "TERMINATE",
-        # 团队成员提及 "TERMINATE" 时, 会自动终止团队
-        max_messages_termination = MaxMessageTermination(max_messages=25)
-        termination = max_messages_termination
-        # combined_termination = max_messages_termination & termination
+    async def run_stream(
+        self, task=None, cancellation_token: CancellationToken | None = None
+    ):
+        tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
+        runtime = SingleThreadedAgentRuntime()
+        model_client = await tenant_client.ag.default_model_client(tid)
 
-        selector_prompt = """Select an agent to perform task.
-
-{roles}
-
-Current conversation context:
-{history}
-
-Read the above conversation, then select an agent from {participants} to perform the next task.
-Make sure the planner agent has assigned tasks before other agents start working.
-Only select one agent.
-"""
-
-        # 可选
-        # def selector_func(messages: Sequence[AgentEvent | ChatMessage]) -> str | None:
-        #     if messages[-1].source != planning_agent.name:
-        #         return planning_agent.name
-        #     return None
-
-        user_proxy_agent = MtUserProxyAgent(
-            "UserProxyAgent",
-            description="A proxy for the user to approve or disapprove tasks.",
-        )
         # Register the triage agent.
         triage_agent_type = await AIAgent.register(
             runtime,
@@ -366,16 +351,109 @@ Only select one agent.
                 user_topic_type=user_topic_type,
             ),
         )
-        team = SelectorGroupChat(
-            participants=[planning_agent, web_search_agent, data_analyst_agent],
-            model_client=model_client,
-            termination_condition=termination,
-            selector_prompt=selector_prompt,
-            allow_repeated_speaker=True,  # Allow an agent to speak multiple turns in a row.
-            # selector_func=selector_func,  # 可选,(自定义选择器)
-            selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
+        # Add subscriptions for the triage agent: it will receive messages published to its own topic only.
+        await runtime.add_subscription(
+            TypeSubscription(
+                topic_type=triage_agent_topic_type, agent_type=triage_agent_type.type
+            )
         )
-        # team.component_version = current_team_version
-        team.component_label = self.name
-        team.component_description = self.description
-        return team
+
+        # Register the sales agent.
+        sales_agent_type = await AIAgent.register(
+            runtime,
+            type=sales_agent_topic_type,  # Using the topic type as the agent type.
+            factory=lambda: AIAgent(
+                description="A sales agent.",
+                system_message=SystemMessage(
+                    content="You are a sales agent for ACME Inc."
+                    "Always answer in a sentence or less."
+                    "Follow the following routine with the user:"
+                    "1. Ask them about any problems in their life related to catching roadrunners.\n"
+                    "2. Casually mention one of ACME's crazy made-up products can help.\n"
+                    " - Don't mention price.\n"
+                    "3. Once the user is bought in, drop a ridiculous price.\n"
+                    "4. Only after everything, and if the user says yes, "
+                    "tell them a crazy caveat and execute their order.\n"
+                    ""
+                ),
+                model_client=model_client,
+                tools=[execute_order_tool],
+                delegate_tools=[transfer_back_to_triage_tool],
+                agent_topic_type=sales_agent_topic_type,
+                user_topic_type=user_topic_type,
+            ),
+        )
+        # Add subscriptions for the sales agent: it will receive messages published to its own topic only.
+        await runtime.add_subscription(
+            TypeSubscription(
+                topic_type=sales_agent_topic_type, agent_type=sales_agent_type.type
+            )
+        )
+
+        # Register the issues and repairs agent.
+        issues_and_repairs_agent_type = await AIAgent.register(
+            runtime,
+            type=issues_and_repairs_agent_topic_type,  # Using the topic type as the agent type.
+            factory=lambda: AIAgent(
+                description="An issues and repairs agent.",
+                system_message=SystemMessage(
+                    content="You are a customer support agent for ACME Inc."
+                    "Always answer in a sentence or less."
+                    "Follow the following routine with the user:"
+                    "1. First, ask probing questions and understand the user's problem deeper.\n"
+                    " - unless the user has already provided a reason.\n"
+                    "2. Propose a fix (make one up).\n"
+                    "3. ONLY if not satisfied, offer a refund.\n"
+                    "4. If accepted, search for the ID and then execute refund."
+                ),
+                model_client=model_client,
+                tools=[
+                    execute_refund_tool,
+                    look_up_item_tool,
+                ],
+                delegate_tools=[transfer_back_to_triage_tool],
+                agent_topic_type=issues_and_repairs_agent_topic_type,
+                user_topic_type=user_topic_type,
+            ),
+        )
+        # Add subscriptions for the issues and repairs agent: it will receive messages published to its own topic only.
+        await runtime.add_subscription(
+            TypeSubscription(
+                topic_type=issues_and_repairs_agent_topic_type,
+                agent_type=issues_and_repairs_agent_type.type,
+            )
+        )
+
+        # Register the human agent.
+        human_agent_type = await HumanAgent.register(
+            runtime,
+            type=human_agent_topic_type,  # Using the topic type as the agent type.
+            factory=lambda: HumanAgent(
+                description="A human agent.",
+                agent_topic_type=human_agent_topic_type,
+                user_topic_type=user_topic_type,
+            ),
+        )
+        # Add subscriptions for the human agent: it will receive messages published to its own topic only.
+        await runtime.add_subscription(
+            TypeSubscription(
+                topic_type=human_agent_topic_type, agent_type=human_agent_type.type
+            )
+        )
+
+        # Register the user agent.
+        user_agent_type = await UserAgent.register(
+            runtime,
+            type=user_topic_type,
+            factory=lambda: UserAgent(
+                description="A user agent.",
+                user_topic_type=user_topic_type,
+                agent_topic_type=triage_agent_topic_type,  # Start with the triage agent.
+            ),
+        )
+        # Add subscriptions for the user agent: it will receive messages published to its own topic only.
+        await runtime.add_subscription(
+            TypeSubscription(
+                topic_type=user_topic_type, agent_type=user_agent_type.type
+            )
+        )
