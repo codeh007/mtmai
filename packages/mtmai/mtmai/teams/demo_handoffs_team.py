@@ -1,7 +1,9 @@
 import json
+import uuid
 from typing import List, Tuple
 
 from autogen_core import (
+    AgentRuntime,
     CancellationToken,
     Component,
     FunctionCall,
@@ -320,9 +322,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
     def description(self):
         return "人机交互团队"
 
-    async def run_stream(
-        self, task=None, cancellation_token: CancellationToken | None = None
-    ):
+    async def _init(self, runtime: AgentRuntime = None) -> None:
+        self._runtime = runtime
+
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
         runtime = SingleThreadedAgentRuntime()
@@ -457,3 +459,22 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
                 topic_type=user_topic_type, agent_type=user_agent_type.type
             )
         )
+
+    async def run(self, task=None, cancellation_token: CancellationToken | None = None):
+        # Start the runtime.
+        self._runtime.start()
+
+        # Create a new session for the user.
+        session_id = str(uuid.uuid4())
+        await self._runtime.publish_message(
+            UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
+        )
+        # async for event in runtime.():
+        #     print(event)
+
+        # Run until completion.
+        await self._runtime.stop_when_idle()
+
+        # await runtime.
+        # for event in super().run_stream():
+        #     yield event
