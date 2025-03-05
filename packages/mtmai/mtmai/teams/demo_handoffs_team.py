@@ -1,11 +1,17 @@
+import asyncio
 import json
 import uuid
 from typing import List, Tuple
 
+from autogen_agentchat.base import TerminationCondition
+from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
-    AgentRuntime,
     CancellationToken,
+    ClosureAgent,
+    ClosureContext,
     Component,
+    DefaultSubscription,
+    DefaultTopicId,
     FunctionCall,
     MessageContext,
     RoutedAgent,
@@ -13,6 +19,7 @@ from autogen_core import (
     TopicId,
     TypeSubscription,
     message_handler,
+    try_get_known_serializers_for_type,
 )
 from autogen_core.models import (
     AssistantMessage,
@@ -24,9 +31,14 @@ from autogen_core.models import (
     UserMessage,
 )
 from autogen_core.tools import FunctionTool, Tool
+from loguru import logger
 from mtmai.context.context_client import TenantClient
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
+
+
+class MyMessage(BaseModel):
+    content: str
 
 
 class UserLogin(BaseModel):
@@ -314,25 +326,67 @@ class DemoHandoffsTeamConfig(BaseModel):
 
 
 class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
-    @property
-    def name(self):
-        return "demo_handoffs_team"
+    component_type = "team"
 
-    @property
-    def description(self):
-        return "人机交互团队"
+    # @property
+    # def name(self):
+    #     return "demo_handoffs_team"
 
-    async def _init(self, runtime: AgentRuntime = None) -> None:
-        self._runtime = runtime
+    # @property
+    # def description(self):
+    #     return "人机交互团队"
+
+    def __init__(
+        self,
+        # participants: List[ChatAgent],
+        # group_chat_manager_class: type[SequentialRoutedAgent],
+        termination_condition: TerminationCondition | None = None,
+        max_turns: int | None = None,
+    ) -> None:
+        self._termination_condition = termination_condition
+        self._max_turns = max_turns
+
+        # Constants for the group chat.
+        self._team_id = str(uuid.uuid4())
+        self._group_topic_type = "group_topic"
+        self._output_topic_type = "output_topic"
+        self._group_chat_manager_topic_type = "group_chat_manager"
+        # self._participant_topic_types: List[str] = [
+        #     participant.name for participant in participants
+        # ]
+        # self._participant_descriptions: List[str] = [
+        #     participant.description for participant in participants
+        # ]
+        self._collector_agent_type = "collect_output_messages"
+
+        # Constants for the closure agent to collect the output messages.
+        self._stop_reason: str | None = None
+        self._output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | None] = (
+            asyncio.Queue()
+        )
+
+        # Create a runtime for the team.
+        # TODO: The runtime should be created by a managed context.
+        # Background exceptions must not be ignored as it results in non-surfaced exceptions and early team termination.
+        self._runtime = SingleThreadedAgentRuntime(ignore_unhandled_exceptions=False)
+
+        # Flag to track if the group chat has been initialized.
+        self._initialized = False
+
+        # Flag to track if the group chat is running.
+        self._is_running = False
+
+    async def _init(self) -> None:
+        # self._runtime = self._runtime
+        # self._runtime = SingleThreadedAgentRuntime()
 
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
-        runtime = SingleThreadedAgentRuntime()
         model_client = await tenant_client.ag.default_model_client(tid)
 
         # Register the triage agent.
         triage_agent_type = await AIAgent.register(
-            runtime,
+            self._runtime,
             type=triage_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: AIAgent(
                 description="A triage agent.",
@@ -354,7 +408,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ),
         )
         # Add subscriptions for the triage agent: it will receive messages published to its own topic only.
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=triage_agent_topic_type, agent_type=triage_agent_type.type
             )
@@ -362,7 +416,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         # Register the sales agent.
         sales_agent_type = await AIAgent.register(
-            runtime,
+            self._runtime,
             type=sales_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: AIAgent(
                 description="A sales agent.",
@@ -386,7 +440,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ),
         )
         # Add subscriptions for the sales agent: it will receive messages published to its own topic only.
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=sales_agent_topic_type, agent_type=sales_agent_type.type
             )
@@ -394,7 +448,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         # Register the issues and repairs agent.
         issues_and_repairs_agent_type = await AIAgent.register(
-            runtime,
+            self._runtime,
             type=issues_and_repairs_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: AIAgent(
                 description="An issues and repairs agent.",
@@ -419,7 +473,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ),
         )
         # Add subscriptions for the issues and repairs agent: it will receive messages published to its own topic only.
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=issues_and_repairs_agent_topic_type,
                 agent_type=issues_and_repairs_agent_type.type,
@@ -428,7 +482,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         # Register the human agent.
         human_agent_type = await HumanAgent.register(
-            runtime,
+            self._runtime,
             type=human_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: HumanAgent(
                 description="A human agent.",
@@ -437,7 +491,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ),
         )
         # Add subscriptions for the human agent: it will receive messages published to its own topic only.
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=human_agent_topic_type, agent_type=human_agent_type.type
             )
@@ -445,7 +499,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         # Register the user agent.
         user_agent_type = await UserAgent.register(
-            runtime,
+            self._runtime,
             type=user_topic_type,
             factory=lambda: UserAgent(
                 description="A user agent.",
@@ -454,27 +508,86 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ),
         )
         # Add subscriptions for the user agent: it will receive messages published to its own topic only.
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=user_topic_type, agent_type=user_agent_type.type
             )
         )
 
+        # Closure
+        async def collect_output_messages(
+            _runtime: ClosureContext,
+            message: UserLogin,
+            ctx: MessageContext,
+        ) -> None:
+            """Collect output messages from the group chat."""
+            # if isinstance(message, GroupChatStart):
+            #     if message.messages is not None:
+            #         for msg in message.messages:
+            #             event_logger.info(msg)
+            #             await self._output_message_queue.put(msg)
+            # elif isinstance(message, GroupChatMessage):
+            #     event_logger.info(message.message)
+            #     await self._output_message_queue.put(message.message)
+            # elif isinstance(message, GroupChatTermination):
+            #     event_logger.info(message.message)
+            #     self._stop_reason = message.message.content
+            logger.info(f"收到消息: message: {message}")
+
+        await ClosureAgent.register_closure(
+            runtime=self._runtime,
+            type="collector",
+            closure=collect_output_messages,
+            # subscriptions=lambda: [
+            #     TypeSubscription(
+            #         topic_type=self._output_topic_type,
+            #         agent_type=self._collector_agent_type,
+            #     ),
+            # ],
+            subscriptions=lambda: [DefaultSubscription()],
+        )
+
+        await self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(MyMessage)
+        )
+
+        self._initialized = True
+
     async def run(self, task=None, cancellation_token: CancellationToken | None = None):
-        # Start the runtime.
+        # queue = asyncio.Queue[MyMessage]()
+        if not self._initialized:
+            await self._init(self._runtime)
+
+        async def output_result(
+            _ctx: ClosureContext,
+            # message: MyMessage,
+            message: BaseModel,
+            ctx: MessageContext,
+        ) -> None:
+            # await queue.put(message)
+            print(f"收到消息: message: {message}")
+
+        await ClosureAgent.register_closure(
+            runtime=self._runtime,
+            type="closure_agent123",
+            closure=output_result,
+            subscriptions=lambda: [DefaultSubscription()],
+        )
+
         self._runtime.start()
+        await self._runtime.publish_message(
+            MyMessage(content="Hello, world!"), DefaultTopicId()
+        )
+        await self._runtime.stop_when_idle()
+
+        # result = await queue.get()
+
+        # 阶段2
+        # self._runtime.start()
 
         # Create a new session for the user.
         session_id = str(uuid.uuid4())
         await self._runtime.publish_message(
             UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
         )
-        # async for event in runtime.():
-        #     print(event)
-
-        # Run until completion.
         await self._runtime.stop_when_idle()
-
-        # await runtime.
-        # for event in super().run_stream():
-        #     yield event
