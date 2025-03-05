@@ -7,9 +7,7 @@ from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
-APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
-
-# HEADER_SITE_HOST = "X-Site-Host"  # 通过http header 传递前端域名
+# APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
 
 
 def parse_cors(v: Any) -> list[str] | str:
@@ -39,7 +37,7 @@ class Settings(BaseSettings):
     items_per_user: int = 50
     SECRET_KEY: str = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
     COOKIE_ACCESS_TOKEN: str | None = "access_token"
-    MEMBER_USER_DEFAULT_PASSWORD: str | None = "8888888@#@#123123"
+    # MEMBER_USER_DEFAULT_PASSWORD: str | None = "8888888@#@#123123"
 
     # oauth
     algorithm: str = "HS256"
@@ -65,8 +63,6 @@ class Settings(BaseSettings):
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
     API_V1_STR: str = "/api/v1"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
-
-    # vercel_token: str | None = None
 
     PROJECT_NAME: str = "mtmai"
     SMTP_TLS: bool = True
@@ -174,7 +170,7 @@ class Settings(BaseSettings):
     GRAFANA_TOKEN: str | None = None
 
     # front
-    FRONT_PORT: int = 3800
+    # FRONT_PORT: int = 3800
 
     # POETRY_PYPI_TOKEN_PYPI: str | None = None
 
@@ -182,13 +178,8 @@ class Settings(BaseSettings):
     DOCKERHUB_PASSWORD: str | None = None
     DOCKERHUB_USER: str | None = None
 
-    # DOCKER_IMAGE_TAG: str | None = "docker.io/gitgit188/tmpboaiv3"
-
     # langgraph
-    langgraph_checkpointer: Literal["memory", "postgres"] = "postgres"
-
-    # GROQ_TOKEN: str | None = ""
-    # TOGETHER_TOKEN: str | None = ""
+    # langgraph_checkpointer: Literal["memory", "postgres"] = "postgres"
 
     # http
     HTTP_PROXY: str | None = None

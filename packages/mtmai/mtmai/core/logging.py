@@ -35,7 +35,6 @@ def setup_logging():
         or "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
     logging_level = settings.LOGGING_LEVEL.upper() or logging.INFO
-    # print("logging level", logging_level)
     logging.basicConfig(
         level=logging_level,
         format=log_format,
@@ -72,13 +71,6 @@ def setup_logging():
     #         )
     #         root_logger.addHandler(handler)
 
-    setup_root_logger()
-    # setup_sqlalchemy_logging()
-    # setup_httpx_logging()
-    # setup_openai_base_logging()
-
-
-def setup_root_logger():
     root_logger = get_logger()
     root_logger.setLevel(logging.INFO)
 
@@ -96,34 +88,60 @@ def setup_root_logger():
         )
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
+    setup_httpx_logging()
+    # setup_sqlalchemy_logging()
+    # setup_httpx_logging()
+    # setup_openai_base_logging()
 
 
-def setup_sqlalchemy_logging():
-    sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
-    sqlalchemy_logger.setLevel(logging.ERROR)
-    print(f"SQLAlchemy logger level set to: {sqlalchemy_logger.level}")
+# def setup_sqlalchemy_logging():
+#     sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
+#     sqlalchemy_logger.setLevel(logging.ERROR)
+#     print(f"SQLAlchemy logger level set to: {sqlalchemy_logger.level}")
 
-    if is_in_dev():
-        target_file = pathlib.Path(logs_dir) / "sqlalchemy.log"
-        if not target_file.parent.exists():
-            target_file.parent.mkdir(parents=True, exist_ok=True)
+#     if is_in_dev():
+#         target_file = pathlib.Path(logs_dir) / "sqlalchemy.log"
+#         if not target_file.parent.exists():
+#             target_file.parent.mkdir(parents=True, exist_ok=True)
 
-        file_handler = RotatingFileHandler(
-            target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-        )
-        file_handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        file_handler.setFormatter(formatter)
-        sqlalchemy_logger.addHandler(file_handler)
+#         file_handler = RotatingFileHandler(
+#             target_file, maxBytes=10 * 1024 * 1024, backupCount=5
+#         )
+#         file_handler.setLevel(logging.DEBUG)
+#         formatter = logging.Formatter(
+#             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+#         )
+#         file_handler.setFormatter(formatter)
+#         sqlalchemy_logger.addHandler(file_handler)
 
 
+# def setup_httpx_logging():
+#     httpx_logger = logging.getLogger("httpx")
+#     # httpx_logger.setLevel(logging.DEBUG)
+
+#     # if is_in_dev():
+#     target_file = pathlib.Path(logs_dir) / "httpx.log"
+#     print(f"httpx logger level set to: {httpx_logger.level}, logfile: {target_file}")
+
+#     if not target_file.parent.exists():
+#         target_file.parent.mkdir(parents=True, exist_ok=True)
+
+
+#     file_handler = RotatingFileHandler(
+#         target_file, maxBytes=10 * 1024 * 1024, backupCount=5
+#     )
+#     file_handler.setLevel(logging.DEBUG)
+#     formatter = logging.Formatter(
+#         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+#     )
+#     file_handler.setFormatter(formatter)
+#     httpx_logger.addHandler(file_handler)
 def setup_httpx_logging():
     httpx_logger = logging.getLogger("httpx")
-    # httpx_logger.setLevel(logging.DEBUG)
+    httpx_logger.setLevel(
+        logging.WARNING
+    )  # 将日志级别改为 WARNING，这样就不会显示 INFO 级别的日志
 
-    # if is_in_dev():
     target_file = pathlib.Path(logs_dir) / "httpx.log"
     print(f"httpx logger level set to: {httpx_logger.level}, logfile: {target_file}")
 
@@ -133,7 +151,9 @@ def setup_httpx_logging():
     file_handler = RotatingFileHandler(
         target_file, maxBytes=10 * 1024 * 1024, backupCount=5
     )
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(
+        logging.DEBUG
+    )  # 文件日志仍然保持 DEBUG 级别，以便需要时可以查看详细日志
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
@@ -141,23 +161,23 @@ def setup_httpx_logging():
     httpx_logger.addHandler(file_handler)
 
 
-def setup_openai_base_logging():
-    openai_base_client_logger = logging.getLogger("openai._base_client")
-    openai_base_client_logger.setLevel(logging.ERROR)
-    print(f"openai._base_client logger level set to: {openai_base_client_logger.level}")
+# def setup_openai_base_logging():
+#     openai_base_client_logger = logging.getLogger("openai._base_client")
+#     openai_base_client_logger.setLevel(logging.ERROR)
+#     print(f"openai._base_client logger level set to: {openai_base_client_logger.level}")
 
-    # if is_in_dev():
-    target_file = pathlib.Path(logs_dir) / "openai._base_client.log"
+#     # if is_in_dev():
+#     target_file = pathlib.Path(logs_dir) / "openai._base_client.log"
 
-    if not target_file.parent.exists():
-        target_file.parent.mkdir(parents=True, exist_ok=True)
+#     if not target_file.parent.exists():
+#         target_file.parent.mkdir(parents=True, exist_ok=True)
 
-    file_handler = RotatingFileHandler(
-        target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-    )
-    file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    file_handler.setFormatter(formatter)
-    openai_base_client_logger.addHandler(file_handler)
+#     file_handler = RotatingFileHandler(
+#         target_file, maxBytes=10 * 1024 * 1024, backupCount=5
+#     )
+#     file_handler.setLevel(logging.DEBUG)
+#     formatter = logging.Formatter(
+#         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+#     )
+#     file_handler.setFormatter(formatter)
+#     openai_base_client_logger.addHandler(file_handler)
