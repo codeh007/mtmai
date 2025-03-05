@@ -19,6 +19,7 @@ class SysTeamConfig(BaseModel):
     # max_turns: int | None = None
     ...
 
+
 class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     component_type = "mtmai.teams.sys_team.SysTeam"
 

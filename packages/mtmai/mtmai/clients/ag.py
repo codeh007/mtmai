@@ -2,11 +2,7 @@ from autogen_agentchat.base import Team
 from connecpy.context import ClientContext
 from loguru import logger
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder.article_gen_teambuilder import ArticleGenTeamBuilder
-from mtmai.agents.team_builder.assisant_team_builder import AssistantTeamBuilder
-from mtmai.agents.team_builder.m1_web_builder import M1WebTeamBuilder
-from mtmai.agents.team_builder.swram_team_builder import SwramTeamBuilder
-from mtmai.agents.team_builder.travel_builder import TravelTeamBuilder
+from mtmai.agents.team_builder import default_team_name, team_builder_map
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -17,20 +13,8 @@ from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.ctx import get_tenant_id
+from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
-
-default_team_name = "assistant_team"
-
-team_builders = [
-    AssistantTeamBuilder(),
-    SwramTeamBuilder(),
-    ArticleGenTeamBuilder(),
-    M1WebTeamBuilder(),
-    TravelTeamBuilder(),
-]
-
-
-team_builder_map = {team_builder.name: team_builder for team_builder in team_builders}
 
 
 class AgClient:
@@ -104,7 +88,6 @@ class AgClient:
                 tenant=tenant_id,
                 chat=chat_id,
             )
-            # logger.info(f"成功加载团队状态: {ag_state}")
             return ag_state
 
         except NotFoundException:
@@ -154,11 +137,14 @@ class AgClient:
             # component_data = components.rows[0]
             return Team.load_component(component_data.component)
         except NotFoundException:
+            team = await team_builder_map.get(component_id_or_name).create_team(
+                model_client
+            )
             new_team = await self.upsert_team(
                 tid,
-                team_builder_map.get(component_id_or_name).create_team(model_client),
+                team,
             )
-            return Team.load_component(component_data.component)
+            return team
         # else:
         # team_builder = team_builder_map.get(component_id_or_name)
         # if not team_builder:
@@ -206,10 +192,18 @@ class AgClient:
             **model_dict,
         )
 
-    async def upsert_team(self, tenant_id: str, team: Team):
+    async def upsert_team(
+        self, tenant_id: str, team: Team, component_id: str | None = None
+    ):
         team_comp = team.dump_component()
         await self.coms_api.coms_upsert(
             tenant=tenant_id,
-            com=team_comp.id,
-            mt_component=team_comp.model_dump(),
+            com=component_id or generate_uuid(),
+            mt_component=MtComponent(
+                label=team.component_label,
+                description=team.component_description,
+                componentType=team.component_type,
+                # version=team.component_version,
+                component=team_comp.model_dump(),
+            ).model_dump(),
         )

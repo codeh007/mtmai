@@ -309,19 +309,19 @@ wheels = [
 
 [[package]]
 name = "autogen-agentchat"
-version = "0.4.7"
+version = "0.4.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "autogen-core" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ec/37/a3083794ee00d3abc51ca24adf009b96f0896def06c0a41f9d8a646fd61f/autogen_agentchat-0.4.7.tar.gz", hash = "sha256:83ab5050e1983e64bddb46a9f10048b315e17bd2a20f083bb5d99844ed36fa7f", size = 62274 }
+sdist = { url = "https://files.pythonhosted.org/packages/30/ef/2635ffc27cecabf4d5eb62e8142a2374e70f3c12430e89ef99f214fa8b52/autogen_agentchat-0.4.8.tar.gz", hash = "sha256:30f8b0ab5e37d7729e3bd3894a51a8f21b588e94ebe46284ec687bc5b74619f9", size = 68295 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/80/6d5b1ecf5e2288f98d8942d57f9442e11eacf3e761517fd9174f370372d8/autogen_agentchat-0.4.7-py3-none-any.whl", hash = "sha256:542fefbfb0cd382c551ced715a93bdf845d8d510b4be85a061550c0a7a08a42f", size = 66229 },
+    { url = "https://files.pythonhosted.org/packages/7a/53/f943fcf10fea4ba6b91b4d92cdd93794e78a694df413221b0f9002ac1697/autogen_agentchat-0.4.8-py3-none-any.whl", hash = "sha256:acd514fbc7ecf4d817bc31fd21a66e659a5362b5dca6cbad8cf02a9f6d8400ad", size = 71644 },
 ]
 
 [[package]]
 name = "autogen-core"
-version = "0.4.7"
+version = "0.4.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsonref" },
@@ -331,21 +331,21 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c7/cf/4b3cdc3fc6c5296344dfacb46fd290562da6fe0f678c3417cacf65fe638a/autogen_core-0.4.7.tar.gz", hash = "sha256:51955b3d7b7b43583373627f25af5cc1214d358350c9fd8a9ded74065ff3ca93", size = 2376802 }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/82/8b1986856b82b172869bd6195c47e9167f827d79211bce79149d451b8865/autogen_core-0.4.8.tar.gz", hash = "sha256:02e018a8dd4cf7ea63a3222aa014a7752d5ababe14fea640c227e1f7619599b8", size = 2389660 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3a/ad/d2bac3d2adb11388b8147bc682de8dabcb82cf8d774a9f13e43d152e9ab8/autogen_core-0.4.7-py3-none-any.whl", hash = "sha256:31a73b68369c7fa4006e349aedb909c198d887646b0443810d8d5a4694df44bf", size = 81043 },
+    { url = "https://files.pythonhosted.org/packages/03/37/a566ebca1698e65a9e05f7aa8b33cd752de45c88a3734e4644c866aea87d/autogen_core-0.4.8-py3-none-any.whl", hash = "sha256:523f2da09878a59aaa04a6c1a2d083ccca97a1ea83da2238696abedcc5d3b89f", size = 82825 },
 ]
 
 [[package]]
 name = "autogen-ext"
-version = "0.4.7"
+version = "0.4.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "autogen-core" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/25/86/28da8045f05d00c095cc592e0a39bc66461aef684bbd57c0bf770588a633/autogen_ext-0.4.7.tar.gz", hash = "sha256:461f992ffebed87075c02d3be7f3b8355262bcf507d012e084eac231ea951b1a", size = 164974 }
+sdist = { url = "https://files.pythonhosted.org/packages/86/5f/cd8c93bbe3ea269ff06aff6f539e8ff5a16fcb62a4d03bee17007cff3c98/autogen_ext-0.4.8.tar.gz", hash = "sha256:caf12c0bb81e24731e5906e1052306a3039b88ef51f0ee91f9b2c06e384d8a0c", size = 196347 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/40/5b7460d5fbf52f18da7c77ff8a6e5186d63d6ad4c8dadef8e8b851ded8a0/autogen_ext-0.4.7-py3-none-any.whl", hash = "sha256:58f23e9e0127de2863ee40fc5bcc64a65596775813dedf44f5765dc17f1d9206", size = 161872 },
+    { url = "https://files.pythonhosted.org/packages/b8/a2/36e23907e1451c46131200ba7eb25d76eaa2e06d957d88e781ded4485b90/autogen_ext-0.4.8-py3-none-any.whl", hash = "sha256:5bd3438016b42c43d7603b093bfb552296b74ed1c1c4c3e8d7170ec90071c91c", size = 192421 },
 ]
 
 [package.optional-dependencies]
@@ -3167,8 +3167,8 @@ requires-dist = [
     { name = "aiostream", specifier = ">=0.5.2" },
     { name = "alembic", specifier = ">=1.14.1" },
     { name = "async-timeout", specifier = ">=4.0.3" },
-    { name = "autogen-agentchat", specifier = ">=0.4.7,<0.5" },
-    { name = "autogen-core", specifier = ">=0.4.7,<0.5" },
+    { name = "autogen-agentchat", specifier = ">=0.4.8,<0.5" },
+    { name = "autogen-core", specifier = ">=0.4.8,<0.5" },
     { name = "autogen-ext", extras = ["magentic-one", "openai", "azure", "mcp", "http-tool"], specifier = ">=0.4.7,<0.5" },
     { name = "autogenstudio", specifier = ">=0.4.1" },
     { name = "beautifulsoup4", specifier = ">=4.12.3" },

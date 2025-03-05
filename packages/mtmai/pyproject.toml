@@ -85,14 +85,13 @@ dependencies = [
     # "newspaper4k>=0.9.3.1",
     "lxml-html-clean>=0.4.1",
     "huggingface-hub>=0.27.1",
-    # "prefect>=3.1.13",
-    "autogen-core>=0.4.7,<0.5",
-    "autogen-agentchat>=0.4.7,<0.5",
+    "autogen-core>=0.4.8,<0.5",
+    "autogen-agentchat>=0.4.8,<0.5",
     "autogen-ext[magentic-one, openai, azure, mcp, http-tool]>=0.4.7,<0.5",
     "autogenstudio>=0.4.1",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
-    # "opentelemetry-instrumentation-openai>=0.33.9",
+
     "json-repair>=0.35.0",
     "typer>=0.13.1",
     "pydantic>=2.10.5",
@@ -124,6 +123,11 @@ dev = [
     "gradio>=5.12.0",
     "prometheus-client>=0.21.1",
     "pytest-watcher>=0.4.3",
+
+    # other
+    # "prefect>=3.1.13",
+    # "opentelemetry-instrumentation-openai>=0.33.9",
+
 ]
 
 # Group 1: Other Language Models
