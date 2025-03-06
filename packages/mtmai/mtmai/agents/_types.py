@@ -1,6 +1,7 @@
-from typing import Dict
+from typing import Dict, List
 
 from autogen_agentchat.base import TaskResult
+from autogen_core.models import LLMMessage
 from pydantic import BaseModel
 
 
@@ -56,3 +57,20 @@ class MsgStartWebServer(BaseModel):
 class MsgGetTeam(BaseModel):
     tenant_id: str
     team_id: str
+
+
+class MyMessage(BaseModel):
+    content: str
+
+
+class UserLogin(BaseModel):
+    pass
+
+
+class UserTask(BaseModel):
+    context: List[LLMMessage]
+
+
+class AgentResponse(BaseModel):
+    reply_to_topic_type: str
+    context: List[LLMMessage]

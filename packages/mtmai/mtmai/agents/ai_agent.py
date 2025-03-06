@@ -14,16 +14,11 @@ from autogen_core.models import (
     FunctionExecutionResult,
     FunctionExecutionResultMessage,
     SystemMessage,
-    UserMessage,
 )
 from autogen_core.tools import Tool
 from loguru import logger
-from mtmai.teams.sys_team._types import (
-    AgentResponse,
-    Hello2Message,
-    UserLogin,
-    UserTask,
-)
+
+from mtmai.agents._types import AgentResponse, UserTask
 
 
 class AIAgent(RoutedAgent):
@@ -151,84 +146,3 @@ class AIAgent(RoutedAgent):
             ),
             topic_id=TopicId(self._user_topic_type, source=self.id.key),
         )
-
-
-class HumanAgent(RoutedAgent):
-    def __init__(
-        self, description: str, agent_topic_type: str, user_topic_type: str
-    ) -> None:
-        super().__init__(description)
-        self._agent_topic_type = agent_topic_type
-        self._user_topic_type = user_topic_type
-
-    @message_handler
-    async def handle_user_task(self, message: UserTask, ctx: MessageContext) -> None:
-        human_input = input("Human agent input: ")
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{human_input}", flush=True)
-        message.context.append(
-            AssistantMessage(content=human_input, source=self.id.type)
-        )
-        await self.publish_message(
-            AgentResponse(
-                context=message.context, reply_to_topic_type=self._agent_topic_type
-            ),
-            topic_id=TopicId(self._user_topic_type, source=self.id.key),
-        )
-
-
-class UserAgent(RoutedAgent):
-    def __init__(
-        self, description: str, user_topic_type: str, agent_topic_type: str
-    ) -> None:
-        super().__init__(description)
-        # self._user_topic_type = user_topic_type
-        self._agent_topic_type = agent_topic_type
-
-    @message_handler
-    async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
-        logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
-        # Get the user's initial input after login.
-        user_input = input("User: ")
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-        await self.publish_message(
-            UserTask(context=[UserMessage(content=user_input, source="User")]),
-            topic_id=TopicId(self._agent_topic_type, source=self.id.key),
-        )
-
-    @message_handler
-    async def handle_task_result(
-        self, message: AgentResponse, ctx: MessageContext
-    ) -> None:
-        # Get the user's input after receiving a response from an agent.
-        user_input = input("User (type 'exit' to close the session): ")
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-        if user_input.strip().lower() == "exit":
-            logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
-            return
-        message.context.append(UserMessage(content=user_input, source="User"))
-        await self.publish_message(
-            UserTask(context=message.context),
-            topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
-        )
-
-
-class Hello2Agent(RoutedAgent):
-    def __init__(self, description: str) -> None:
-        super().__init__(description)
-        # 不需要这些注释掉的代码
-        # self._user_topic_type = user_topic_type
-        # self._agent_topic_type = agent_topic_type
-
-    @message_handler
-    async def handle_hello2_message(
-        self, message: Hello2Message, ctx: MessageContext
-    ) -> None:
-        logger.info(f"{'-'*80}\nReceived hello2 message in session: {self.id.key}")
-        logger.info(f"Message content: {message.content}")
-        response = f"Hello2 agent received: {message.content}"
-        logger.info(response)
-        await self.publish_message(
-            UserTask(context=message.context),
-            topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
-        )
-        # return {"content": response}

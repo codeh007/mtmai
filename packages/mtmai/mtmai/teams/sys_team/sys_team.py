@@ -18,18 +18,19 @@ from autogen_core import (
 from autogen_core.models import SystemMessage, UserMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_chat_session_id_ctx
-from mtmai.mtmpb.ag_pb2 import AgentRunInput
-from mtmai.teams.base_team import MtBaseTeam
-from mtmai.teams.sys_team._agents import AIAgent, Hello2Agent, HumanAgent, UserAgent
-from mtmai.teams.sys_team._types import (
+from mtmai.agents._agents import AIAgent, HumanAgent
+from mtmai.agents._types import (
     AgentResponse,
     Hello2Message,
     MyMessage,
     UserLogin,
     UserTask,
 )
+from mtmai.agents.user_agent import UserAgent
+from mtmai.context.context_client import TenantClient
+from mtmai.context.ctx import get_chat_session_id_ctx
+from mtmai.mtmpb.ag_pb2 import AgentRunInput
+from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
 sales_agent_topic_type = "SalesAgent"
@@ -311,18 +312,18 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             )
         )
 
-        hello2_agent_type = await Hello2Agent.register(
-            runtime=self._runtime,
-            type=hello2_topic_type,
-            factory=lambda: Hello2Agent(
-                description="A hello2 agent.",
-            ),
-        )
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
-            )
-        )
+        # hello2_agent_type = await Hello2Agent.register(
+        #     runtime=self._runtime,
+        #     type=hello2_topic_type,
+        #     factory=lambda: Hello2Agent(
+        #         description="A hello2 agent.",
+        #     ),
+        # )
+        # await self._runtime.add_subscription(
+        #     TypeSubscription(
+        #         topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
+        #     )
+        # )
 
         # await ClosureAgent.register_closure(
         #     runtime=self._runtime,
@@ -375,27 +376,13 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
                 message=UserLogin(),
                 topic_id=TopicId(user_topic_type, source=session_id),
             )
-        elif user_content.startswith("/hello2"):
-            await self._runtime.publish_message(
-                message=Hello2Message(),
-                topic_id=TopicId(hello2_topic_type, source=session_id),
-            )
-        elif user_content.startswith("/user_content"):
-            # await self._runtime.publish_message(
-            #     message=UserTask(
-            #         context=[UserMessage(content="user_content123", source="User")]
-            #     ),
-            #     topic_id=TopicId(triage_agent_topic_type, source=session_id),
-            # )
+        else:
             await self._runtime.publish_message(
                 message=UserTask(
-                    context=[UserMessage(content="user_content123", source="User")]
+                    context=[UserMessage(content=user_content, source="User")]
                 ),
                 topic_id=TopicId(triage_agent_topic_type, source=session_id),
             )
-
-        else:
-            raise ValueError(f"Invalid user content: {user_content}")
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
         # await self._runtime.stop_when_idle()
