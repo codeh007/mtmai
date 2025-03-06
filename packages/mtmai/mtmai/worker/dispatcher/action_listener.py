@@ -145,7 +145,6 @@ class ActionListener:
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {self.config.token}",
-                # "X-Tid": config.tenant_id,
             }
         )
 
@@ -402,8 +401,6 @@ class ActionListener:
 
         self.aio_client = DispatcherStub(new_conn(self.config, True))
 
-        # if self.listen_strategy == "v2":
-        # we should await for the listener to be established before
         # starting the heartbeater
         listener = self.aio_client.ListenV2(
             WorkerListenRequest(workerId=self.worker_id),
@@ -411,8 +408,6 @@ class ActionListener:
             metadata=get_metadata(self.token),
         )
         await self.start_heartbeater()
-        # else:
-        #     raise Exception("v1 listener not implemented")
 
         self.last_connection_attempt = current_time
 
@@ -434,14 +429,14 @@ class ActionListener:
         self.run_heartbeat = False
         self.heartbeat_task.cancel()
 
-        try:
-            req = self.aio_client.Unsubscribe(
-                WorkerUnsubscribeRequest(workerId=self.worker_id),
-                timeout=5,
-                metadata=get_metadata(self.token),
-            )
-            if self.interrupt is not None:
-                self.interrupt.set()
-            return req
-        except grpc.RpcError as e:
-            raise Exception(f"Failed to unsubscribe: {e}")
+        # try:
+        req = self.aio_client.Unsubscribe(
+            WorkerUnsubscribeRequest(workerId=self.worker_id),
+            timeout=5,
+            metadata=get_metadata(self.token),
+        )
+        if self.interrupt is not None:
+            self.interrupt.set()
+        return req
+        # except grpc.RpcError as e:
+        #     raise Exception(f"Failed to unsubscribe: {e}")

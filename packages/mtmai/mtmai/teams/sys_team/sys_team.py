@@ -11,52 +11,52 @@ from autogen_core import (
     ClosureContext,
     Component,
     DefaultSubscription,
-    DefaultTopicId,
     MessageContext,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from autogen_core.models import SystemMessage
+from autogen_core.models import SystemMessage, UserMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
+from mtmai.teams.sys_team._agents import AIAgent, HumanAgent, UserAgent
 from mtmai.teams.sys_team._types import MyMessage, UserLogin
 from pydantic import BaseModel
 
-from ._agents import AIAgent, HumanAgent, UserAgent
+from ._types import UserTask
 
 
 def execute_order(product: str, price: int) -> str:
-    print("\n\n=== Order Summary ===")
-    print(f"Product: {product}")
-    print(f"Price: ${price}")
-    print("=================\n")
+    logger.info("\n\n=== Order Summary ===")
+    logger.info(f"Product: {product}")
+    logger.info(f"Price: ${price}")
+    logger.info("=================\n")
     confirm = input("Confirm order? y/n: ").strip().lower()
     if confirm == "y":
-        print("Order execution successful!")
+        logger.info("Order execution successful!")
         return "Success"
     else:
-        print("Order cancelled!")
+        logger.info("Order cancelled!")
         return "User cancelled order."
 
 
 def look_up_item(search_query: str) -> str:
     item_id = "item_132612938"
-    print("Found item:", item_id)
+    logger.info("Found item:", item_id)
     return item_id
 
 
 def execute_refund(item_id: str, reason: str = "not provided") -> str:
-    print("\n\n=== Refund Summary ===")
-    print(f"Item ID: {item_id}")
-    print(f"Reason: {reason}")
-    print("=================\n")
-    print("Refund execution successful!")
+    logger.info("\n\n=== Refund Summary ===")
+    logger.info(f"Item ID: {item_id}")
+    logger.info(f"Reason: {reason}")
+    logger.info("=================\n")
+    logger.info("Refund execution successful!")
     return "success"
 
 
@@ -325,10 +325,11 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         )
 
         self._initialized = True
+        self._runtime.start()
 
     async def run(
         self,
-        task=AgentRunInput | str,
+        task=AgentRunInput,
         cancellation_token: CancellationToken | None = None,
     ):
         if cancellation_token and cancellation_token.is_cancelled():
@@ -337,33 +338,49 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         if not self._initialized:
             await self._init(self._runtime)
 
-        async def output_result(
-            _ctx: ClosureContext,
-            # message: MyMessage,
-            message: BaseModel,
-            ctx: MessageContext,
-        ) -> None:
-            # await queue.put(message)
-            logger.info(f"收到消息: message: {message}")
+        # async def output_result(
+        #     _ctx: ClosureContext,
+        #     # message: MyMessage,
+        #     message: BaseModel,
+        #     ctx: MessageContext,
+        # ) -> None:
+        #     # await queue.put(message)
+        #     logger.info(f"收到消息: message: {message}")
 
-        await ClosureAgent.register_closure(
-            runtime=self._runtime,
-            type="closure_agent123",
-            closure=output_result,
-            subscriptions=lambda: [DefaultSubscription()],
-        )
+        # await ClosureAgent.register_closure(
+        #     runtime=self._runtime,
+        #     type="closure_agent123",
+        #     closure=output_result,
+        #     subscriptions=lambda: [DefaultSubscription()],
+        # )
 
-        self._runtime.start()
-        await self._runtime.publish_message(
-            MyMessage(content="Hello, world!"), DefaultTopicId()
-        )
+        # try:
+        #     self._runtime.start()
+        # except Exception:
+        #     # logger.error(f"Error starting runtime: {e}")
+        #     # raise e
+        #     pass
+        # await self._runtime.publish_message(
+        #     MyMessage(content="Hello, world!"), DefaultTopicId()
+        # )
 
         # Create a new session for the user.
-        # session_id = str(uuid.uuid4())
         session_id = get_chat_session_id_ctx()
-        await self._runtime.publish_message(
-            UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
-        )
+
+        user_content = task.content
+        if user_content == "/test_login":
+            await self._runtime.publish_message(
+                UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
+            )
+        elif user_content.startswith("/user_content"):
+            await self._runtime.publish_message(
+                UserTask(
+                    context=[UserMessage(content="user_content123", source="User")]
+                ),
+                topic_id=TopicId(triage_agent_topic_type, source="User"),
+            )
+        else:
+            raise ValueError(f"Invalid user content: {user_content}")
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
         # await self._runtime.stop_when_idle()

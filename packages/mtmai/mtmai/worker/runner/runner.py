@@ -40,7 +40,6 @@ from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
 )
 from mtmai.run_event_listener import new_listener
-from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
@@ -48,6 +47,7 @@ from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
+from teams.sys_team.sys_team import DemoHandoffsTeam
 
 
 class WorkerStatus(Enum):

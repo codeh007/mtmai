@@ -24,11 +24,11 @@ from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
 from mtmai.mtmpb.dispatcher_pb2 import OverridesData
 from mtmai.run_event_listener import RunEventListenerClient
-from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
+from teams.sys_team.sys_team import DemoHandoffsTeam
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 

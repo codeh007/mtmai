@@ -4,7 +4,6 @@ from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greetin
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
-from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 
 mtmapp = Hatchet()
 
@@ -13,19 +12,14 @@ serializer_types = [ChatSessionStartEvent, AskToGreet, Greeting, Feedback]
 
 def get_workflows_types():
     from mtmai.flows.flow_ag import FlowAg
-    from mtmai.flows.flow_ag2 import FlowAg2
 
-    return [FlowAg, FlowAg2]
+    # from mtmai.flows.flow_ag2 import FlowAg2
+
+    return [FlowAg]
 
 
 async def run_worker():
     await mtmapp.boot()
-
-    # ag_runtime = mtmapp.agent_runtime
-    # ag_runtime = MtmAgentRuntime(config=mtmapp.config)
-
-    # await ag_runtime.start()
-
     # await greeter_team.run("greeter_team", ag_runtime)
     # 确保 durable 函数注册发送在 mtmapp.worker()函数之前.
     # from mtmai.flows.flow_dur import my_durable_func  # noqa
@@ -42,7 +36,7 @@ async def run_worker():
     await greeter_team.setup(worker.agent_runtime)
 
     # 另外一个持续运行的团队
-    team2 = DemoHandoffsTeam()
+    # team2 = DemoHandoffsTeam()
     # 注册工作流
     for workflow_type in get_workflows_types():
         worker.register_workflow(workflow_type())

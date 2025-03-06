@@ -1,6 +1,7 @@
 from .article_gen_teambuilder import ArticleGenTeamBuilder
 from .assisant_team_builder import AssistantTeamBuilder
-from .demo_human_in_loop import DemoHumanInLoopTeamBuilder
+
+# from .demo_human_in_loop import DemoHumanInLoopTeamBuilder
 from .m1_web_builder import M1WebTeamBuilder
 from .swram_team_builder import SwramTeamBuilder
 from .travel_builder import TravelTeamBuilder
@@ -17,7 +18,7 @@ team_builders = [
     ArticleGenTeamBuilder(),
     M1WebTeamBuilder(),
     TravelTeamBuilder(),
-    DemoHumanInLoopTeamBuilder(),
+    # DemoHumanInLoopTeamBuilder(),
 ]
 
 

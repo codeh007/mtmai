@@ -21,10 +21,10 @@ from mtmai.mtlibs.callable import HatchetCallable
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtlibs.typing import is_basemodel_subclass
 from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
-from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
+from teams.sys_team.sys_team import DemoHandoffsTeam
 
 T = TypeVar("T")
 TWorkflow = TypeVar("TWorkflow", bound=object)

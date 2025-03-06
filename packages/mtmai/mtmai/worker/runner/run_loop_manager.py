@@ -9,10 +9,10 @@ from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
-from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
+from teams.sys_team.sys_team import DemoHandoffsTeam
 
 STOP_LOOP = "STOP_LOOP"
 
