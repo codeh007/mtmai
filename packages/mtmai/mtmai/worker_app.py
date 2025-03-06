@@ -4,7 +4,7 @@ from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greetin
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
-from mtmai.teams.demo_handoffs_team import DemoHandoffsTeam
+from mtmai.teams.sys_team.demo_handoffs_team import DemoHandoffsTeam
 
 mtmapp = Hatchet()
 

@@ -27,38 +27,17 @@ from autogen_core.models import (
     ChatCompletionClient,
     FunctionExecutionResult,
     FunctionExecutionResultMessage,
-    LLMMessage,
     SystemMessage,
     UserMessage,
 )
 from autogen_core.tools import FunctionTool, Tool
 from loguru import logger
 from mtmai.context.context_client import TenantClient
+from mtmai.context.ctx import get_chat_session_id_ctx
+from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
+from mtmai.teams.sys_team._types import AgentResponse, MyMessage, UserLogin, UserTask
 from pydantic import BaseModel
-
-from ..mtmpb.ag_pb2 import AgentRunInput
-
-
-class MyMessage(BaseModel):
-    content: str
-
-
-class UserLogin(BaseModel):
-    pass
-
-
-class UserTask(BaseModel):
-    context: List[LLMMessage]
-
-
-class AgentResponse(BaseModel):
-    reply_to_topic_type: str
-    context: List[LLMMessage]
-
-
-# def percentage_change_tool(start: float, end: float) -> float:
-#     return ((end - start) / start) * 100
 
 
 class AIAgent(RoutedAgent):
@@ -333,8 +312,6 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
     def __init__(
         self,
-        # participants: List[ChatAgent],
-        # group_chat_manager_class: type[SequentialRoutedAgent],
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
     ) -> None:
@@ -576,15 +553,10 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         await self._runtime.publish_message(
             MyMessage(content="Hello, world!"), DefaultTopicId()
         )
-        # await self._runtime.stop_when_idle()
-
-        # 阶段2
-        # Start the runtime.
-        # TODO: The runtime should be started by a managed context.
-        # self._runtime.start()
 
         # Create a new session for the user.
-        session_id = str(uuid.uuid4())
+        # session_id = str(uuid.uuid4())
+        session_id = get_chat_session_id_ctx()
         await self._runtime.publish_message(
             UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
         )
