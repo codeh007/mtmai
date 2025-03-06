@@ -15,7 +15,7 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from autogen_core.models import SystemMessage, UserMessage
+from autogen_core.models import SystemMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
 from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
@@ -381,18 +381,18 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         user_content = task.content
-        if user_content == "/test_login":
-            await self._runtime.publish_message(
-                message=UserLogin(),
-                topic_id=TopicId(user_topic_type, source=session_id),
-            )
-        else:
-            await self._runtime.publish_message(
-                message=UserTask(
-                    context=[UserMessage(content=user_content, source="User")]
-                ),
-                topic_id=TopicId(triage_agent_topic_type, source=session_id),
-            )
+        # if user_content == "/test_login":
+        await self._runtime.publish_message(
+            message=UserLogin(task=user_content),
+            topic_id=TopicId(user_topic_type, source=session_id),
+        )
+        # else:
+        #     await self._runtime.publish_message(
+        #         message=UserTask(
+        #             context=[UserMessage(content=user_content, source="User")]
+        #         ),
+        #         topic_id=TopicId(triage_agent_topic_type, source=session_id),
+        #     )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
         # await self._runtime.stop_when_idle()

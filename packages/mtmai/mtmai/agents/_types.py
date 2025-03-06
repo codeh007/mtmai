@@ -64,7 +64,7 @@ class MyMessage(BaseModel):
 
 
 class UserLogin(BaseModel):
-    pass
+    task: str
 
 
 class UserTask(BaseModel):

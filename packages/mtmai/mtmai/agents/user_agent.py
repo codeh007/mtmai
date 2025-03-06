@@ -14,10 +14,14 @@ class UserAgent(RoutedAgent):
 
     @message_handler
     async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
+        """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
         logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
         # Get the user's initial input after login.
-        user_input = input("User: ")
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
+        # user_input = input("User: ")
+        # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
+        logger.info(f"TODO: 新的用户对话开始,加载用户上下文信息: {ctx}")
+        # user_input = "TODO: 新的用户对话开始,加载用户上下文信息: {ctx}"
+        user_input = message.task
         await self.publish_message(
             UserTask(context=[UserMessage(content=user_input, source="User")]),
             topic_id=TopicId(self._agent_topic_type, source=self.id.key),
@@ -55,9 +59,9 @@ class UserAgent(RoutedAgent):
             topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
         )
 
-    async def get_user_input(self, prompt: str) -> str:
+    async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
         """Get user input from the console. Override this method to customize how user input is retrieved."""
-
+        logger.info(f"TODO: need user input, ctx: {ctx}")
         user_input = "TODO: need user input"
         # loop = asyncio.get_event_loop()
         # return await loop.run_in_executor(None, input, prompt)
