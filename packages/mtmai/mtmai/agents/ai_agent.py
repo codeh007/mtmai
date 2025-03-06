@@ -130,7 +130,6 @@ class AIAgent(RoutedAgent):
                     tools=self._tool_schema + self._delegate_tool_schema,
                     cancellation_token=ctx.cancellation_token,
                 )
-                # print(f"{'-'*80}\n{self.id.type}:\n{llm_result.content}", flush=True)
                 logger.info(f"{'-'*80}\n{self.id.type}:\n{llm_result.content}")
             else:
                 # The task has been delegated, so we are done.

@@ -18,14 +18,10 @@ from autogen_core import (
 from autogen_core.models import SystemMessage, UserMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._agents import AIAgent, HumanAgent
-from mtmai.agents._types import (
-    AgentResponse,
-    Hello2Message,
-    MyMessage,
-    UserLogin,
-    UserTask,
-)
+from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
+from mtmai.agents.ai_agent import AIAgent
+from mtmai.agents.human_agent import HumanAgent
+from mtmai.agents.team_runner_agent import RunTeamMessage, TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -38,14 +34,11 @@ issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
 triage_agent_topic_type = "TriageAgent"
 human_agent_topic_type = "HumanAgent"
 user_topic_type = "User"
-hello2_topic_type = "Hello2"
+run_team_topic_type = "RunTeam"
 
 
 def execute_order(product: str, price: int) -> str:
-    logger.info("\n\n=== Order Summary ===")
-    logger.info(f"Product: {product}")
-    logger.info(f"Price: ${price}")
-    logger.info("=================\n")
+    logger.info(f"\n\n=== Order Summary ===\nProduct: {product}\nPrice: ${price}")
     confirm = input("Confirm order? y/n: ").strip().lower()
     if confirm == "y":
         logger.info("Order execution successful!")
@@ -110,7 +103,7 @@ escalate_to_human_tool = FunctionTool(
 )
 
 
-class DemoHandoffsTeamConfig(BaseModel):
+class SysTeamConfig(BaseModel):
     # participants: List[ComponentModel]
     # termination_condition: ComponentModel | None = None
     # max_turns: int | None = None
@@ -138,7 +131,7 @@ async def collect_output_messages(
     logger.info(f"收到消息: message: {message}")
 
 
-class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
+class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
     component_type = "team"
 
     def __init__(
@@ -176,6 +169,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         )
         self._initialized = False
         self._is_running = False
+        self._runtime.process_next()
 
     async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
@@ -312,6 +306,19 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             )
         )
 
+        run_team_agent_type = await TeamRunnerAgent.register(
+            runtime=self._runtime,
+            type=run_team_topic_type,
+            factory=lambda: TeamRunnerAgent(
+                description="A team runner agent.",
+            ),
+        )
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=run_team_topic_type, agent_type=run_team_agent_type.type
+            )
+        )
+
         # hello2_agent_type = await Hello2Agent.register(
         #     runtime=self._runtime,
         #     type=hello2_topic_type,
@@ -341,9 +348,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(MyMessage)
         )
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(Hello2Message)
-        )
+        # self._runtime.add_message_serializer(
+        #     try_get_known_serializers_for_type(Hello2Message)
+        # )
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(UserLogin)
         )
@@ -352,6 +359,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         )
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(AgentResponse)
+        )
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(RunTeamMessage)
         )
 
         self._initialized = True

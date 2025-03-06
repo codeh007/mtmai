@@ -15,7 +15,9 @@ class HumanAgent(RoutedAgent):
 
     @message_handler
     async def handle_user_task(self, message: UserTask, ctx: MessageContext) -> None:
-        human_input = input("Human agent input: ")
+        # human_input = input("Human agent input: ")
+        human_input = await self.get_user_input("Human agent input: ")
+        logger.info("TODO: need human input")
         logger.info(f"{'-'*80}\n{self.id.type}:\n{human_input}", flush=True)
         message.context.append(
             AssistantMessage(content=human_input, source=self.id.type)
@@ -26,3 +28,9 @@ class HumanAgent(RoutedAgent):
             ),
             topic_id=TopicId(self._user_topic_type, source=self.id.key),
         )
+
+    async def get_user_input(self, prompt: str) -> str:
+        """Get user input from the console. Override this method to customize how user input is retrieved."""
+        # loop = asyncio.get_event_loop()
+        # return await loop.run_in_executor(None, input, prompt)
+        return "TODO: need human input"

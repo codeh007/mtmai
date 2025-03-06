@@ -74,3 +74,9 @@ class UserTask(BaseModel):
 class AgentResponse(BaseModel):
     reply_to_topic_type: str
     context: List[LLMMessage]
+
+
+class TerminationMessage(BaseModel):
+    """A message that is sent from the system to the user, indicating that the conversation has ended."""
+
+    reason: str
