@@ -18,8 +18,12 @@ from autogen_core.models import (
 )
 from autogen_core.tools import Tool
 from loguru import logger
-
-from ._types import AgentResponse, Hello2Message, UserLogin, UserTask
+from mtmai.teams.sys_team._types import (
+    AgentResponse,
+    Hello2Message,
+    UserLogin,
+    UserTask,
+)
 
 
 class AIAgent(RoutedAgent):
@@ -177,7 +181,7 @@ class UserAgent(RoutedAgent):
         self, description: str, user_topic_type: str, agent_topic_type: str
     ) -> None:
         super().__init__(description)
-        self._user_topic_type = user_topic_type
+        # self._user_topic_type = user_topic_type
         self._agent_topic_type = agent_topic_type
 
     @message_handler
@@ -197,7 +201,7 @@ class UserAgent(RoutedAgent):
     ) -> None:
         # Get the user's input after receiving a response from an agent.
         user_input = input("User (type 'exit' to close the session): ")
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}", flush=True)
+        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
         if user_input.strip().lower() == "exit":
             logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
             return
@@ -211,9 +215,20 @@ class UserAgent(RoutedAgent):
 class Hello2Agent(RoutedAgent):
     def __init__(self, description: str) -> None:
         super().__init__(description)
+        # 不需要这些注释掉的代码
         # self._user_topic_type = user_topic_type
         # self._agent_topic_type = agent_topic_type
 
     @message_handler
-    async def handle_1(self, message: Hello2Message, ctx: MessageContext) -> None:
-        logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
+    async def handle_hello2_message(
+        self, message: Hello2Message, ctx: MessageContext
+    ) -> None:
+        logger.info(f"{'-'*80}\nReceived hello2 message in session: {self.id.key}")
+        logger.info(f"Message content: {message.content}")
+        response = f"Hello2 agent received: {message.content}"
+        logger.info(response)
+        await self.publish_message(
+            UserTask(context=message.context),
+            topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
+        )
+        # return {"content": response}

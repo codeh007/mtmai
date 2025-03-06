@@ -7,10 +7,8 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
-    ClosureAgent,
     ClosureContext,
     Component,
-    DefaultSubscription,
     MessageContext,
     SingleThreadedAgentRuntime,
     TopicId,
@@ -25,10 +23,14 @@ from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
 from mtmai.teams.sys_team._agents import AIAgent, Hello2Agent, HumanAgent, UserAgent
-from mtmai.teams.sys_team._types import MyMessage, UserLogin
+from mtmai.teams.sys_team._types import (
+    AgentResponse,
+    Hello2Message,
+    MyMessage,
+    UserLogin,
+    UserTask,
+)
 from pydantic import BaseModel
-
-from ._types import Hello2Message, UserTask
 
 sales_agent_topic_type = "SalesAgent"
 issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
@@ -168,7 +170,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         # Create a runtime for the team.
         # TODO: The runtime should be created by a managed context.
         # Background exceptions must not be ignored as it results in non-surfaced exceptions and early team termination.
-        self._runtime = SingleThreadedAgentRuntime(ignore_unhandled_exceptions=False)
+        self._runtime = SingleThreadedAgentRuntime(
+            # ignore_unhandled_exceptions=False,
+        )
         self._initialized = False
         self._is_running = False
 
@@ -312,36 +316,41 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             type=hello2_topic_type,
             factory=lambda: Hello2Agent(
                 description="A hello2 agent.",
-                # user_topic_type=user_topic_type,
-                # agent_topic_type=triage_agent_topic_type,  # Start with the triage agent.
             ),
         )
-        # await self._runtime.add_subscription(
-        #     TypeSubscription(
-        #         topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
-        #     )
-        # )
         await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
             )
         )
 
-        await ClosureAgent.register_closure(
-            runtime=self._runtime,
-            type="collector",
-            closure=collect_output_messages,
-            # subscriptions=lambda: [
-            #     TypeSubscription(
-            #         topic_type=self._output_topic_type,
-            #         agent_type=self._collector_agent_type,
-            #     ),
-            # ],
-            subscriptions=lambda: [DefaultSubscription()],
-        )
+        # await ClosureAgent.register_closure(
+        #     runtime=self._runtime,
+        #     type="collector",
+        #     closure=collect_output_messages,
+        #     # subscriptions=lambda: [
+        #     #     TypeSubscription(
+        #     #         topic_type=self._output_topic_type,
+        #     #         agent_type=self._collector_agent_type,
+        #     #     ),
+        #     # ],
+        #     subscriptions=lambda: [DefaultSubscription()],
+        # )
 
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(MyMessage)
+        )
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(Hello2Message)
+        )
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(UserLogin)
+        )
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(UserTask)
+        )
+        self._runtime.add_message_serializer(
+            try_get_known_serializers_for_type(AgentResponse)
         )
 
         self._initialized = True
@@ -366,6 +375,11 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
                 message=UserLogin(),
                 topic_id=TopicId(user_topic_type, source=session_id),
             )
+        elif user_content.startswith("/hello2"):
+            await self._runtime.publish_message(
+                message=Hello2Message(),
+                topic_id=TopicId(hello2_topic_type, source=session_id),
+            )
         elif user_content.startswith("/user_content"):
             # await self._runtime.publish_message(
             #     message=UserTask(
@@ -377,13 +391,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
                 message=UserTask(
                     context=[UserMessage(content="user_content123", source="User")]
                 ),
-                topic_id=TopicId(triage_agent_topic_type, source="default"),
+                topic_id=TopicId(triage_agent_topic_type, source=session_id),
             )
-        elif user_content.startswith("/hello2"):
-            await self._runtime.publish_message(
-                message=Hello2Message(content="hello2"),
-                topic_id=TopicId(hello2_topic_type, source="default"),
-            )
+
         else:
             raise ValueError(f"Invalid user content: {user_content}")
 

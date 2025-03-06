@@ -22,4 +22,4 @@ class AgentResponse(BaseModel):
 
 
 class Hello2Message(BaseModel):
-    content: str
+    content: str | None
