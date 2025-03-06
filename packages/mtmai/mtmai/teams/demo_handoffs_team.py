@@ -37,6 +37,8 @@ from mtmai.context.context_client import TenantClient
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
+from ..mtmpb.ag_pb2 import AgentRunInput
+
 
 class MyMessage(BaseModel):
     content: str
@@ -543,8 +545,14 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         self._initialized = True
 
-    async def run(self, task=None, cancellation_token: CancellationToken | None = None):
-        # queue = asyncio.Queue[MyMessage]()
+    async def run(
+        self,
+        task=AgentRunInput | str,
+        cancellation_token: CancellationToken | None = None,
+    ):
+        if cancellation_token and cancellation_token.is_cancelled():
+            logger.info("cancellation_token is cancelled")
+            return
         if not self._initialized:
             await self._init(self._runtime)
 

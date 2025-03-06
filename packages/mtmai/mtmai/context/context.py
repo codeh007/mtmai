@@ -93,6 +93,7 @@ class ContextAioImpl(BaseContext):
         ag_client2: AgClient,
         config: ClientConfig,
         ag_runtime: AgentRuntime,
+        sys_team: DemoHandoffsTeam,
         namespace: str = "",
     ):
         self.action = action
@@ -109,6 +110,7 @@ class ContextAioImpl(BaseContext):
         self.ag_client2 = ag_client2
         self.config = config
         self.ag_runtime = ag_runtime
+        self.sys_team = sys_team
 
     @tenacity_retry
     async def spawn_workflow(

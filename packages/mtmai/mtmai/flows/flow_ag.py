@@ -6,7 +6,6 @@ from autogen_core import SingleThreadedAgentRuntime
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
-from mtmai.teams.demo_handoffs_team import DemoHandoffsTeam
 from mtmai.worker_app import mtmapp
 from opentelemetry.trace import TracerProvider
 
@@ -26,8 +25,10 @@ class FlowAg:
     async def step_entry(self, hatctx: Context):
         input = AgentRunInput.model_validate(hatctx.input)
         message = cast(AgentRunInput, input)
-        task = message.content
+        # task = message.content
         # team = TeamTeam()
-        print(hatctx.sys_team)
-        team = DemoHandoffsTeam()
-        return await team.run(task=task, cancellation_token=MtCancelToken())
+        # print(hatctx.sys_team)
+        # team = DemoHandoffsTeam()
+        return await hatctx.sys_team.run(
+            task=message, cancellation_token=MtCancelToken()
+        )

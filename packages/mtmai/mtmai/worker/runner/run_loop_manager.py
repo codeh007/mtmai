@@ -86,6 +86,7 @@ class WorkerActionRunLoopManager:
             config=self.config,
             labels=self.labels,
             ag_runtime=self.ag_runtime,
+            sys_team=self.sys_team,
         )
 
         logger.debug(f"'{self.name}' waiting for {list(self.action_registry.keys())}")
