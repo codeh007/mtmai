@@ -29,6 +29,8 @@ from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
 from pydantic import BaseModel, StrictStr
 
+from ..teams.demo_handoffs_team import DemoHandoffsTeam
+
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
@@ -179,6 +181,7 @@ class Context(BaseContext):
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
         ag_runtime: AgentRuntime,
+        sys_team: DemoHandoffsTeam,
         config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
@@ -199,6 +202,7 @@ class Context(BaseContext):
             ag_client=ag_client,
             ag_client2=ag_client2,
             ag_runtime=ag_runtime,
+            sys_team=sys_team,
             config=config,
         )
         self.ag = ag_client
@@ -208,6 +212,7 @@ class Context(BaseContext):
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
         self.ag_runtime = ag_runtime
+        self.sys_team = sys_team
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):

@@ -48,6 +48,8 @@ from mtmai.workflow_listener import PooledWorkflowRunListener
 from opentelemetry.trace import StatusCode
 from pydantic import BaseModel
 
+from ...teams.demo_handoffs_team import DemoHandoffsTeam
+
 
 class WorkerStatus(Enum):
     INITIALIZED = 1
@@ -62,6 +64,7 @@ class Runner:
         name: str,
         ag_runtime: AgentRuntime,
         event_queue: "Queue[Any]",
+        sys_team: DemoHandoffsTeam,
         max_runs: int | None = None,
         handle_kill: bool = True,
         action_registry: dict[str, Callable[..., Any]] = {},
@@ -109,6 +112,7 @@ class Runner:
             self.ag,
         )
         self.ag_runtime = ag_runtime
+        self.sys_team = sys_team
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -334,6 +338,7 @@ class Runner:
             validator_registry=self.validator_registry,
             config=self.config,
             ag_runtime=self.ag_runtime,
+            sys_team=self.sys_team,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:

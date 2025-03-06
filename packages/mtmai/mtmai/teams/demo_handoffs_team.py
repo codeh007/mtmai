@@ -6,6 +6,7 @@ from typing import List, Tuple
 from autogen_agentchat.base import TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
+    AgentRuntime,
     CancellationToken,
     ClosureAgent,
     ClosureContext,
@@ -328,14 +329,6 @@ class DemoHandoffsTeamConfig(BaseModel):
 class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
     component_type = "team"
 
-    # @property
-    # def name(self):
-    #     return "demo_handoffs_team"
-
-    # @property
-    # def description(self):
-    #     return "人机交互团队"
-
     def __init__(
         self,
         # participants: List[ChatAgent],
@@ -376,10 +369,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         # Flag to track if the group chat is running.
         self._is_running = False
 
-    async def _init(self) -> None:
-        # self._runtime = self._runtime
-        # self._runtime = SingleThreadedAgentRuntime()
-
+    async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
         model_client = await tenant_client.ag.default_model_client(tid)
@@ -547,7 +537,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             subscriptions=lambda: [DefaultSubscription()],
         )
 
-        await self._runtime.add_message_serializer(
+        self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(MyMessage)
         )
 
@@ -565,7 +555,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             ctx: MessageContext,
         ) -> None:
             # await queue.put(message)
-            print(f"收到消息: message: {message}")
+            logger.info(f"收到消息: message: {message}")
 
         await ClosureAgent.register_closure(
             runtime=self._runtime,
@@ -583,7 +573,9 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         # result = await queue.get()
 
         # 阶段2
-        # self._runtime.start()
+        # Start the runtime.
+        # TODO: The runtime should be started by a managed context.
+        self._runtime.start()
 
         # Create a new session for the user.
         session_id = str(uuid.uuid4())

@@ -5,7 +5,6 @@ from typing import Callable, TypeVar
 
 from autogen_core import AgentRuntime
 from loguru import logger
-
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
@@ -13,6 +12,8 @@ from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
+
+from ...teams.demo_handoffs_team import DemoHandoffsTeam
 
 STOP_LOOP = "STOP_LOOP"
 
@@ -30,6 +31,7 @@ class WorkerActionRunLoopManager:
     event_queue: Queue
     loop: asyncio.AbstractEventLoop
     ag_runtime: AgentRuntime
+    sys_team: DemoHandoffsTeam
 
     handle_kill: bool = True
     debug: bool = False
@@ -50,6 +52,7 @@ class WorkerActionRunLoopManager:
         k = self.loop.create_task(self.async_start(retry_count))
 
     async def async_start(self, retry_count=1):
+        # await self.sys_team.setup(self.ag_runtime)
         await capture_logs(
             self.client.logInterceptor,
             self.client.event,

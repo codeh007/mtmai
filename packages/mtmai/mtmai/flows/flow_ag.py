@@ -28,5 +28,6 @@ class FlowAg:
         message = cast(AgentRunInput, input)
         task = message.content
         # team = TeamTeam()
+        print(hatctx.sys_team)
         team = DemoHandoffsTeam()
         return await team.run(task=task, cancellation_token=MtCancelToken())

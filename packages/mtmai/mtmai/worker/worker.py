@@ -25,6 +25,7 @@ from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
 
 from ..clients.agent_runtime.mtm_runtime import MtmAgentRuntime
+from ..teams.demo_handoffs_team import DemoHandoffsTeam
 
 T = TypeVar("T")
 TWorkflow = TypeVar("TWorkflow", bound=object)
@@ -83,6 +84,12 @@ class Worker:
             # self._agent_runtime = MtmAgentRuntime(config=self.config)
             self._agent_runtime = SingleThreadedAgentRuntime()
         return self._agent_runtime
+
+    @property
+    def sys_team(self) -> DemoHandoffsTeam:
+        if not hasattr(self, "_sys_team"):
+            self._sys_team = DemoHandoffsTeam()
+        return self._sys_team
 
     def register_function(self, action: str, func: Callable[[Context], Any]) -> None:
         self.action_registry[action] = func
@@ -194,6 +201,7 @@ class Worker:
             debug=self.client.debug,
             labels=self.labels,
             ag_runtime=self.agent_runtime,
+            sys_team=self.sys_team,
         )
 
     def _start_listener(self) -> multiprocessing.context.SpawnProcess:

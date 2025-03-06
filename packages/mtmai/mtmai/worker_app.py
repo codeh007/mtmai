@@ -4,6 +4,7 @@ from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greetin
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
+from mtmai.teams.demo_handoffs_team import DemoHandoffsTeam
 
 mtmapp = Hatchet()
 
@@ -40,6 +41,9 @@ async def run_worker():
     greeter_team = GreeterTeam()
     await greeter_team.setup(worker.agent_runtime)
 
+    # 另外一个持续运行的团队
+    team2 = DemoHandoffsTeam()
+    # 注册工作流
     for workflow_type in get_workflows_types():
         worker.register_workflow(workflow_type())
 
