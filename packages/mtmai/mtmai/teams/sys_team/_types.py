@@ -19,3 +19,7 @@ class UserTask(BaseModel):
 class AgentResponse(BaseModel):
     reply_to_topic_type: str
     context: List[LLMMessage]
+
+
+class Hello2Message(BaseModel):
+    content: str

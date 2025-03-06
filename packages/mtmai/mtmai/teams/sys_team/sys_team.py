@@ -24,11 +24,18 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
-from mtmai.teams.sys_team._agents import AIAgent, HumanAgent, UserAgent
+from mtmai.teams.sys_team._agents import AIAgent, Hello2Agent, HumanAgent, UserAgent
 from mtmai.teams.sys_team._types import MyMessage, UserLogin
 from pydantic import BaseModel
 
-from ._types import UserTask
+from ._types import Hello2Message, UserTask
+
+sales_agent_topic_type = "SalesAgent"
+issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
+triage_agent_topic_type = "TriageAgent"
+human_agent_topic_type = "HumanAgent"
+user_topic_type = "User"
+hello2_topic_type = "Hello2"
 
 
 def execute_order(product: str, price: int) -> str:
@@ -66,13 +73,6 @@ look_up_item_tool = FunctionTool(
     description="Use to find item ID.\nSearch query can be a description or keywords.",
 )
 execute_refund_tool = FunctionTool(execute_refund, description="")
-
-
-sales_agent_topic_type = "SalesAgent"
-issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
-triage_agent_topic_type = "TriageAgent"
-human_agent_topic_type = "HumanAgent"
-user_topic_type = "User"
 
 
 def transfer_to_sales_agent() -> str:
@@ -179,7 +179,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
 
         # Register the triage agent.
         triage_agent_type = await AIAgent.register(
-            self._runtime,
+            runtime=self._runtime,
             type=triage_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: AIAgent(
                 description="A triage agent.",
@@ -202,7 +202,7 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         )
         # Add subscriptions for the triage agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
-            TypeSubscription(
+            subscription=TypeSubscription(
                 topic_type=triage_agent_topic_type, agent_type=triage_agent_type.type
             )
         )
@@ -307,6 +307,26 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
             )
         )
 
+        hello2_agent_type = await Hello2Agent.register(
+            runtime=self._runtime,
+            type=hello2_topic_type,
+            factory=lambda: Hello2Agent(
+                description="A hello2 agent.",
+                # user_topic_type=user_topic_type,
+                # agent_topic_type=triage_agent_topic_type,  # Start with the triage agent.
+            ),
+        )
+        # await self._runtime.add_subscription(
+        #     TypeSubscription(
+        #         topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
+        #     )
+        # )
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
+            )
+        )
+
         await ClosureAgent.register_closure(
             runtime=self._runtime,
             type="collector",
@@ -338,46 +358,31 @@ class DemoHandoffsTeam(MtBaseTeam, Component[DemoHandoffsTeamConfig]):
         if not self._initialized:
             await self._init(self._runtime)
 
-        # async def output_result(
-        #     _ctx: ClosureContext,
-        #     # message: MyMessage,
-        #     message: BaseModel,
-        #     ctx: MessageContext,
-        # ) -> None:
-        #     # await queue.put(message)
-        #     logger.info(f"收到消息: message: {message}")
-
-        # await ClosureAgent.register_closure(
-        #     runtime=self._runtime,
-        #     type="closure_agent123",
-        #     closure=output_result,
-        #     subscriptions=lambda: [DefaultSubscription()],
-        # )
-
-        # try:
-        #     self._runtime.start()
-        # except Exception:
-        #     # logger.error(f"Error starting runtime: {e}")
-        #     # raise e
-        #     pass
-        # await self._runtime.publish_message(
-        #     MyMessage(content="Hello, world!"), DefaultTopicId()
-        # )
-
-        # Create a new session for the user.
         session_id = get_chat_session_id_ctx()
 
         user_content = task.content
         if user_content == "/test_login":
             await self._runtime.publish_message(
-                UserLogin(), topic_id=TopicId(user_topic_type, source=session_id)
+                message=UserLogin(),
+                topic_id=TopicId(user_topic_type, source=session_id),
             )
         elif user_content.startswith("/user_content"):
+            # await self._runtime.publish_message(
+            #     message=UserTask(
+            #         context=[UserMessage(content="user_content123", source="User")]
+            #     ),
+            #     topic_id=TopicId(triage_agent_topic_type, source=session_id),
+            # )
             await self._runtime.publish_message(
-                UserTask(
+                message=UserTask(
                     context=[UserMessage(content="user_content123", source="User")]
                 ),
-                topic_id=TopicId(triage_agent_topic_type, source="User"),
+                topic_id=TopicId(triage_agent_topic_type, source="default"),
+            )
+        elif user_content.startswith("/hello2"):
+            await self._runtime.publish_message(
+                message=Hello2Message(content="hello2"),
+                topic_id=TopicId(hello2_topic_type, source="default"),
             )
         else:
             raise ValueError(f"Invalid user content: {user_content}")

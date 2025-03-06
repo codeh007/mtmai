@@ -18,7 +18,8 @@ from autogen_core.models import (
 )
 from autogen_core.tools import Tool
 from loguru import logger
-from mtmai.teams.sys_team._types import AgentResponse, UserLogin, UserTask
+
+from ._types import AgentResponse, Hello2Message, UserLogin, UserTask
 
 
 class AIAgent(RoutedAgent):
@@ -205,3 +206,14 @@ class UserAgent(RoutedAgent):
             UserTask(context=message.context),
             topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
         )
+
+
+class Hello2Agent(RoutedAgent):
+    def __init__(self, description: str) -> None:
+        super().__init__(description)
+        # self._user_topic_type = user_topic_type
+        # self._agent_topic_type = agent_topic_type
+
+    @message_handler
+    async def handle_1(self, message: Hello2Message, ctx: MessageContext) -> None:
+        logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
