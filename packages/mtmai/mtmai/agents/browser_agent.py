@@ -22,7 +22,7 @@ class BrowserAgent(RoutedAgent):
     async def handle_browser_open_task(
         self, message: BrowserOpenTask, ctx: MessageContext
     ) -> None:
-        from browser_use import Agent, Browser
+        from mtmai.browser_use import Agent, Browser
 
         ag_model_config: OpenAIClientConfigurationConfigModel = (
             self.model_client._to_config()
