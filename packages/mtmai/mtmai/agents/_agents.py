@@ -46,7 +46,7 @@ class MtRoundRobinGroupChat(
         super().__init__(participants, termination_condition, max_turns)
 
 
-class MtAssisantAgent(AssistantAgent):
+class MtAssistantAgent(AssistantAgent):
     pass
 
 

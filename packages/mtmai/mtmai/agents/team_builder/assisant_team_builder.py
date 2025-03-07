@@ -5,7 +5,7 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from mtmai.agents._agents import MtAssisantAgent, MtUserProxyAgent
+from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
 from mtmai.agents.tools.web_search import search_web_tool
 
 
@@ -29,7 +29,7 @@ class AssistantTeamBuilder:
         # If your tool does not return a well-formed string in natural language format,
         # you may want to add a reflection step within the agent by setting reflect_on_tool_use=True when creating the agent.
         # This will allow the agent to reflect on the tool output and provide a natural language response.
-        planning_agent = MtAssisantAgent(
+        planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
             model_client=model_client,
@@ -48,7 +48,7 @@ class AssistantTeamBuilder:
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
-        web_search_agent = MtAssisantAgent(
+        web_search_agent = MtAssistantAgent(
             "WebSearchAgent",
             description="An agent for searching information on the web.",
             tools=[search_web_tool],
@@ -61,7 +61,7 @@ class AssistantTeamBuilder:
             """,
         )
 
-        data_analyst_agent = MtAssisantAgent(
+        data_analyst_agent = MtAssistantAgent(
             "DataAnalystAgent",
             description="An agent for performing calculations.",
             model_client=model_client,

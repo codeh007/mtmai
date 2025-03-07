@@ -1,10 +1,11 @@
-from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.teams import MagenticOneGroupChat
 from autogen_agentchat.ui import Console
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
+from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from loguru import logger
 
+from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents._types import TeamRunnerTask
 
 # class RunTeamMessage(BaseModel):
@@ -27,13 +28,21 @@ class TeamRunnerAgent(RoutedAgent):
     async def handle_run_team(
         self, message: TeamRunnerTask, ctx: MessageContext
     ) -> None:
-        logger.info("TODO: TeamRunnerTask")
-
-        assistant = AssistantAgent(
+        logger.info("(TeamRunnerTask)")
+        task = message.task
+        assistant = MtAssistantAgent(
             "Assistant",
             model_client=self._model_client,
         )
-        team = MagenticOneGroupChat([assistant], model_client=self._model_client)
+
+        surfer = MultimodalWebSurfer(
+            "WebSurfer",
+            model_client=self._model_client,
+        )
+
+        team = MagenticOneGroupChat(
+            [assistant, surfer], model_client=self._model_client
+        )
         await Console(
             team.run_stream(task="Provide a different proof for Fermat's Last Theorem")
         )

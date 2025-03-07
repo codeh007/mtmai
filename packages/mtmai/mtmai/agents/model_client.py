@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Mapping, Optional, Sequence, Unpack
 
 import openai
@@ -77,9 +78,11 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
                     "family": ModelFamily.R1,
                 },
             ),
+            max_retries=self.config.get("max_retries", 10),
         )
 
         response: CreateResult = None
+
         try:
             response = await custom_model_client.create(
                 # response = await super().create(
@@ -102,17 +105,13 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             # )
             return response
         except openai.RateLimitError as e:
+            logger.info("RateLimitError, sleep 10 seconds")
+            await asyncio.sleep(10)
             raise e
         except Exception as e:
             logger.exception(
                 "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
             )
-            # logger.info(
-            #     "model_client_error",
-            #     messages=messages,
-            #     tools=tools,
-            #     # content=response.,
-            # )
             raise e
 
 
