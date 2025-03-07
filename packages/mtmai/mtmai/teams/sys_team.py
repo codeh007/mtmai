@@ -22,6 +22,7 @@ from mtmai.agents._types import (
     AgentResponse,
     CodeWritingTask,
     MyMessage,
+    TeamRunnerTask,
     UserLogin,
     UserTask,
 )
@@ -29,7 +30,7 @@ from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.coder_agent import CoderAgent
 from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
-from mtmai.agents.team_runner_agent import RunTeamMessage, TeamRunnerAgent
+from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -45,6 +46,7 @@ user_topic_type = "User"
 run_team_topic_type = "RunTeam"
 reviewer_agent_topic_type = "ReviewerAgent"
 coder_agent_topic_type = "CoderAgent"
+team_runner_topic_type = "TeamRunner"
 
 
 def execute_order(product: str, price: int) -> str:
@@ -316,18 +318,18 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
-        run_team_agent_type = await TeamRunnerAgent.register(
-            runtime=self._runtime,
-            type=run_team_topic_type,
-            factory=lambda: TeamRunnerAgent(
-                description="A team runner agent.",
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=run_team_topic_type, agent_type=run_team_agent_type.type
-            )
-        )
+        # run_team_agent_type = await TeamRunnerAgent.register(
+        #     runtime=self._runtime,
+        #     type=run_team_topic_type,
+        #     factory=lambda: TeamRunnerAgent(
+        #         description="A team runner agent.",
+        #     ),
+        # )
+        # await self._runtime.add_subscription(
+        #     subscription=TypeSubscription(
+        #         topic_type=run_team_topic_type, agent_type=run_team_agent_type.type
+        #     )
+        # )
 
         reviewer_agent_type = await ReviewerAgent.register(
             runtime=runtime,
@@ -350,6 +352,20 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             TypeSubscription(
                 topic_type=coder_agent_topic_type,
                 agent_type=coder_agent_type.type,
+            )
+        )
+
+        team_runner_agent_type = await TeamRunnerAgent.register(
+            runtime=runtime,
+            type=team_runner_topic_type,
+            factory=lambda: TeamRunnerAgent(
+                description="A team runner agent.", model_client=model_client
+            ),
+        )
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=team_runner_topic_type,
+                agent_type=team_runner_agent_type.type,
             )
         )
 
@@ -381,9 +397,9 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(AgentResponse)
         )
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(RunTeamMessage)
-        )
+        # self._runtime.add_message_serializer(
+        #     try_get_known_serializers_for_type(RunTeamMessage)
+        # )
 
         self._initialized = True
         self._runtime.start()
@@ -408,6 +424,11 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
                     task="Write a function to find the sum of all even numbers in a list."
                 ),
                 topic_id=TopicId(coder_agent_topic_type, source=session_id),
+            )
+        elif user_content == "/test_team":
+            await self._runtime.publish_message(
+                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+                topic_id=TopicId(team_runner_topic_type, source=session_id),
             )
         else:
             await self._runtime.publish_message(

@@ -103,3 +103,8 @@ class CodeReviewResult(BaseModel):
     review: str
     session_id: str
     approved: bool
+
+
+class TeamRunnerTask(BaseModel):
+    task: str
+    team: str
