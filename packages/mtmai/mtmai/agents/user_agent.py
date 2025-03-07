@@ -2,7 +2,14 @@ from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.models import UserMessage
 from loguru import logger
 
-from mtmai.agents._types import AgentResponse, TerminationMessage, UserLogin, UserTask
+from mtmai.agents._types import (
+    AgentResponse,
+    CodeReviewResult,
+    CodeReviewTask,
+    TerminationMessage,
+    UserLogin,
+    UserTask,
+)
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.context.context_client import TenantClient
 
@@ -115,3 +122,18 @@ class UserAgent(RoutedAgent):
     #     # loop = asyncio.get_event_loop()
     #     # return await loop.run_in_executor(None, input, prompt)
     #     return user_input
+
+    @message_handler
+    async def handle_code_review_task(
+        self, message: CodeReviewTask, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_user_message: {message}")
+        tenant_client = TenantClient()
+        await tenant_client.emit(message)
+
+    async def handle_code_review_result(
+        self, message: CodeReviewResult, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_code_review_result: {message}")
+        tenant_client = TenantClient()
+        await tenant_client.emit(message)

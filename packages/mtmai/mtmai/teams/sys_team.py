@@ -18,9 +18,17 @@ from autogen_core import (
 from autogen_core.models import SystemMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
+from mtmai.agents._types import (
+    AgentResponse,
+    CodeWritingTask,
+    MyMessage,
+    UserLogin,
+    UserTask,
+)
 from mtmai.agents.ai_agent import AIAgent
+from mtmai.agents.coder_agent import CoderAgent
 from mtmai.agents.human_agent import HumanAgent
+from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_runner_agent import RunTeamMessage, TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.context.context_client import TenantClient
@@ -35,6 +43,8 @@ triage_agent_topic_type = "TriageAgent"
 human_agent_topic_type = "HumanAgent"
 user_topic_type = "User"
 run_team_topic_type = "RunTeam"
+reviewer_agent_topic_type = "ReviewerAgent"
+coder_agent_topic_type = "CoderAgent"
 
 
 def execute_order(product: str, price: int) -> str:
@@ -266,7 +276,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
         # Add subscriptions for the issues and repairs agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
-            TypeSubscription(
+            subscription=TypeSubscription(
                 topic_type=issues_and_repairs_agent_topic_type,
                 agent_type=issues_and_repairs_agent_type.type,
             )
@@ -274,7 +284,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         # Register the human agent.
         human_agent_type = await HumanAgent.register(
-            self._runtime,
+            runtime=self._runtime,
             type=human_agent_topic_type,  # Using the topic type as the agent type.
             factory=lambda: HumanAgent(
                 description="A human agent.",
@@ -284,14 +294,14 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
         # Add subscriptions for the human agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
-            TypeSubscription(
+            subscription=TypeSubscription(
                 topic_type=human_agent_topic_type, agent_type=human_agent_type.type
             )
         )
 
         # Register the user agent.
         user_agent_type = await UserAgent.register(
-            self._runtime,
+            runtime=self._runtime,
             type=user_topic_type,
             factory=lambda: UserAgent(
                 description="A user agent.",
@@ -301,7 +311,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
         # Add subscriptions for the user agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
-            TypeSubscription(
+            subscription=TypeSubscription(
                 topic_type=user_topic_type, agent_type=user_agent_type.type
             )
         )
@@ -314,23 +324,34 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             ),
         )
         await self._runtime.add_subscription(
-            TypeSubscription(
+            subscription=TypeSubscription(
                 topic_type=run_team_topic_type, agent_type=run_team_agent_type.type
             )
         )
 
-        # hello2_agent_type = await Hello2Agent.register(
-        #     runtime=self._runtime,
-        #     type=hello2_topic_type,
-        #     factory=lambda: Hello2Agent(
-        #         description="A hello2 agent.",
-        #     ),
-        # )
-        # await self._runtime.add_subscription(
-        #     TypeSubscription(
-        #         topic_type=hello2_topic_type, agent_type=hello2_agent_type.type
-        #     )
-        # )
+        reviewer_agent_type = await ReviewerAgent.register(
+            runtime=runtime,
+            type=reviewer_agent_topic_type,
+            factory=lambda: ReviewerAgent(model_client=model_client),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=reviewer_agent_topic_type,
+                agent_type=reviewer_agent_type.type,
+            )
+        )
+
+        coder_agent_type = await CoderAgent.register(
+            runtime=runtime,
+            type=coder_agent_topic_type,
+            factory=lambda: CoderAgent(model_client=model_client),
+        )
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=coder_agent_topic_type,
+                agent_type=coder_agent_type.type,
+            )
+        )
 
         # await ClosureAgent.register_closure(
         #     runtime=self._runtime,
@@ -367,7 +388,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         self._initialized = True
         self._runtime.start()
 
-    async def run(
+    async def run_stream(
         self,
         task=AgentRunInput,
         cancellation_token: CancellationToken | None = None,
@@ -381,11 +402,18 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         user_content = task.content
-        # if user_content == "/test_login":
-        await self._runtime.publish_message(
-            message=UserLogin(task=user_content),
-            topic_id=TopicId(user_topic_type, source=session_id),
-        )
+        if user_content == "/test_code":
+            await self._runtime.publish_message(
+                message=CodeWritingTask(
+                    task="Write a function to find the sum of all even numbers in a list."
+                ),
+                topic_id=TopicId(coder_agent_topic_type, source=session_id),
+            )
+        else:
+            await self._runtime.publish_message(
+                message=UserLogin(task=user_content),
+                topic_id=TopicId(user_topic_type, source=session_id),
+            )
         # else:
         #     await self._runtime.publish_message(
         #         message=UserTask(
@@ -442,4 +470,5 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         pass
 
     async def show_state(self) -> None:
+        pass
         pass

@@ -10,6 +10,7 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
+from loguru import logger
 
 from mtmai.agents._types import (
     CodeReviewResult,
@@ -103,14 +104,13 @@ Code: <Your code>
                 ),
                 topic_id=TopicId("default", self.id.key),
             )
-            print("Code Writing Result:")
-            print("-" * 80)
-            print(f"Task:\n{review_request.code_writing_task}")
-            print("-" * 80)
-            print(f"Code:\n{review_request.code}")
-            print("-" * 80)
-            print(f"Review:\n{message.review}")
-            print("-" * 80)
+            logger.info(
+                "Code Writing Result:"
+                + "-" * 80
+                + f"\nTask:\n{review_request.code_writing_task}"
+                + f"\nCode:\n{review_request.code}"
+                + f"\nReview:\n{message.review}"
+            )
         else:
             # Create a list of LLM messages to send to the model.
             messages: List[LLMMessage] = [*self._system_messages]

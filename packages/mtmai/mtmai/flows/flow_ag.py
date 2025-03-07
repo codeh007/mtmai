@@ -11,7 +11,7 @@ from mtmai.worker_app import mtmapp
 class FlowAg:
     @mtmapp.step(timeout="60m")
     async def step_entry(self, hatctx: Context):
-        return await hatctx.sys_team.run(
+        return await hatctx.sys_team.run_stream(
             task=AgentRunInput.model_validate(hatctx.input),
             cancellation_token=MtCancelToken(),
         )
