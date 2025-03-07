@@ -29,6 +29,13 @@ class UserAgent(RoutedAgent):
             f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.task}"
         )
         user_input = message.task
+
+        # 加载对话历史
+        message_history = await tenant_client.ag.chat_api.chat_messages_list(
+            tenant=tid,
+            chat=session_id,
+        )
+
         await self.publish_message(
             UserTask(context=[UserMessage(content=user_input, source="User")]),
             topic_id=TopicId(self._agent_topic_type, source=session_id),
