@@ -82,37 +82,39 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         )
 
         response: CreateResult = None
+        max_retries = self.config.get("max_retries", 10)
+        for i in range(max_retries):
+            try:
+                response = await custom_model_client.create(
+                    # response = await super().create(
+                    messages=messages,
+                    tools=tools,
+                    json_output=json_output,
+                    extra_create_args=extra_create_args,
+                    cancellation_token=cancellation_token,
+                )
+                if json_output:
+                    # 修正json格式
+                    if isinstance(response.content, str):
+                        response.content = repair_json(response.content)
 
-        try:
-            response = await custom_model_client.create(
-                # response = await super().create(
-                messages=messages,
-                tools=tools,
-                json_output=json_output,
-                extra_create_args=extra_create_args,
-                cancellation_token=cancellation_token,
-            )
-            if json_output:
-                # 修正json格式
-                if isinstance(response.content, str):
-                    response.content = repair_json(response.content)
-
-            # logger.info(
-            #     "OpenAI API Response",
-            #     request_args=args,
-            #     request_kwargs=kwargs,
-            #     response_content=response.content,
-            # )
-            return response
-        except openai.RateLimitError as e:
-            logger.info("RateLimitError, sleep 10 seconds")
-            await asyncio.sleep(10)
-            raise e
-        except Exception as e:
-            logger.exception(
-                "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
-            )
-            raise e
+                # logger.info(
+                #     "OpenAI API Response",
+                #     request_args=args,
+                #     request_kwargs=kwargs,
+                #     response_content=response.content,
+                # )
+                return response
+            except openai.RateLimitError as e:
+                logger.info("RateLimitError, sleep 10 seconds")
+                await asyncio.sleep(10)
+                if i == max_retries - 1:
+                    raise e
+            except Exception as e:
+                logger.exception(
+                    "Mtm Model Client Error", error=str(e), error_type=type(e).__name__
+                )
+                raise e
 
 
 async def test_model_client(apikey: str):

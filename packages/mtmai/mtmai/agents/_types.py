@@ -108,3 +108,14 @@ class CodeReviewResult(BaseModel):
 class TeamRunnerTask(BaseModel):
     task: str
     team: str
+
+
+# browser
+
+
+class BrowserOpenTask(BaseModel):
+    url: str
+
+
+class BrowserTask(BaseModel):
+    task: str

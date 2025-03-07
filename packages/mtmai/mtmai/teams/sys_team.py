@@ -318,19 +318,6 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
-        # run_team_agent_type = await TeamRunnerAgent.register(
-        #     runtime=self._runtime,
-        #     type=run_team_topic_type,
-        #     factory=lambda: TeamRunnerAgent(
-        #         description="A team runner agent.",
-        #     ),
-        # )
-        # await self._runtime.add_subscription(
-        #     subscription=TypeSubscription(
-        #         topic_type=run_team_topic_type, agent_type=run_team_agent_type.type
-        #     )
-        # )
-
         reviewer_agent_type = await ReviewerAgent.register(
             runtime=runtime,
             type=reviewer_agent_topic_type,
@@ -425,6 +412,11 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
                 ),
                 topic_id=TopicId(coder_agent_topic_type, source=session_id),
             )
+        if user_content == "/test_browser":
+            await self._runtime.publish_message(
+                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+                topic_id=TopicId(team_runner_topic_type, source=session_id),
+            )
         elif user_content == "/test_team":
             await self._runtime.publish_message(
                 message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
@@ -435,13 +427,6 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
                 message=UserLogin(task=user_content),
                 topic_id=TopicId(user_topic_type, source=session_id),
             )
-        # else:
-        #     await self._runtime.publish_message(
-        #         message=UserTask(
-        #             context=[UserMessage(content=user_content, source="User")]
-        #         ),
-        #         topic_id=TopicId(triage_agent_topic_type, source=session_id),
-        #     )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
         # await self._runtime.stop_when_idle()
