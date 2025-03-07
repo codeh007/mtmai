@@ -1,14 +1,14 @@
 from autogen_core import MessageContext, RoutedAgent, message_handler
+from autogen_core.models import ChatCompletionClient
 from loguru import logger
 
 from mtmai.agents._types import BrowserOpenTask, BrowserTask
 
 
 class BrowserAgent(RoutedAgent):
-    def __init__(
-        self, description: str, agent_topic_type: str, user_topic_type: str
-    ) -> None:
+    def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
         super().__init__(description)
+        self.model_client = model_client
 
     @message_handler
     async def handle_browser_open_task(
@@ -16,7 +16,9 @@ class BrowserAgent(RoutedAgent):
     ) -> None:
         from browser_use import Agent, Browser
 
-        agent = Agent()
+        agent1 = Agent()
+        await agent1.run()
+
         browser = Browser()
         page = browser.new_page()
         page.goto("https://playwright.dev/")
