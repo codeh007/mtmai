@@ -21,6 +21,7 @@ from loguru import logger
 from mtmai.agents._types import (
     AgentResponse,
     BrowserOpenTask,
+    BrowserTask,
     CodeWritingTask,
     MyMessage,
     TeamRunnerTask,
@@ -419,17 +420,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         user_content = task.content
-        # case_map = {
-        #     "/test_code": CodeWritingTask(
-        #         task="Write a function to find the sum of all even numbers in a list."
-        #     ),
-        #     "/test_open_browser": BrowserOpenTask(url="https://playwright.dev/"),
-        #     "/test_team": TeamRunnerTask(
-        #         task=user_content, team=team_runner_topic_type
-        #     ),
-        #     default: None,
-        # }
-        # msg=None
+
         match user_content:
             case "/test_code":
                 await self._runtime.publish_message(
@@ -444,6 +435,11 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             case "/test_open_browser":
                 await self._runtime.publish_message(
                     message=BrowserOpenTask(url="https://playwright.dev/"),
+                    topic_id=TopicId(browser_topic_type, source=session_id),
+                )
+            case "/test_browser_task":
+                await self._runtime.publish_message(
+                    message=BrowserTask(task="Open an online code editor programiz."),
                     topic_id=TopicId(browser_topic_type, source=session_id),
                 )
             case "/test_team":

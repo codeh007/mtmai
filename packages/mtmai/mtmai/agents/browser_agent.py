@@ -1,7 +1,6 @@
 import logging
 
 from autogen_core import MessageContext, RoutedAgent, message_handler
-from autogen_ext.models.openai import OpenAIClientConfigurationConfigModel
 from loguru import logger
 
 from mtmai.agents._types import BrowserOpenTask, BrowserTask
@@ -22,11 +21,27 @@ class BrowserAgent(RoutedAgent):
     async def handle_browser_open_task(
         self, message: BrowserOpenTask, ctx: MessageContext
     ) -> None:
+        from mtmai.browser_use import Browser
+
+        browser = Browser()
+        browser_context = await browser.new_context()
+        # async with await browser.new_context() as context:
+        page = await browser_context.get_current_page()
+        page.goto("https://playwright.dev/")
+
+        ...
+
+        # browser = Browser()
+        # page = browser.new_page()
+        # page.goto("https://playwright.dev/")
+
+    @message_handler
+    async def handle_browser_task(
+        self, message: BrowserTask, ctx: MessageContext
+    ) -> None:
         from mtmai.browser_use import Agent, Browser
 
-        ag_model_config: OpenAIClientConfigurationConfigModel = (
-            self.model_client._to_config()
-        )
+        logger.info("(BrowserTask)")
         lc_model = self.model_client.convert_to_lc_model()
         browser = Browser()
         async with await browser.new_context() as context:
@@ -38,14 +53,3 @@ class BrowserAgent(RoutedAgent):
                 use_vision_for_planner=False,
             )
             await agent1.run()
-
-        # browser = Browser()
-        page = browser.new_page()
-        page.goto("https://playwright.dev/")
-
-    @message_handler
-    async def handle_browser_task(
-        self, message: BrowserTask, ctx: MessageContext
-    ) -> None:
-        logger.info("(BrowserTask)")
-        pass

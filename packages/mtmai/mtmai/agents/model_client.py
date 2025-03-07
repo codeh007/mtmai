@@ -65,12 +65,22 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         #     api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
         #     base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
         # )
-        return ChatNVIDIA(
-            model="deepseek-ai/deepseek-r1",
-            api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
+        api_key = self.config.get("api_key", settings.OPENAI_API_KEY)
+        if api_key.startswith("nvapi-"):
+            return ChatNVIDIA(
+                model="deepseek-ai/deepseek-r1",
+                api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
+                temperature=self.config.get("temperature", 0.6),
+                top_p=self.config.get("top_p", 0.7),
+                max_tokens=self.config.get("max_tokens", 8192),
+            )
+        return ChatOpenAI(
+            model=self.config.get("model", "deepseek-ai/deepseek-r1"),
             temperature=self.config.get("temperature", 0.6),
             top_p=self.config.get("top_p", 0.7),
-            max_tokens=self.config.get("max_tokens", 8192),
+            max_tokens=self.config.get("max_tokens", 4096),
+            api_key=api_key,
+            base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
         )
 
     async def create(
