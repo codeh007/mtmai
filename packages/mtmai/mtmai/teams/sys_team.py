@@ -350,7 +350,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             runtime=runtime,
             type=team_runner_topic_type,
             factory=lambda: TeamRunnerAgent(
-                description="A team runner agent.", model_client=model_client
+                description="Team runner agent.", model_client=model_client
             ),
         )
         await self._runtime.add_subscription(
@@ -363,7 +363,9 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         browser_agent_type = await BrowserAgent.register(
             runtime=runtime,
             type=browser_topic_type,
-            factory=lambda: BrowserAgent(model_client=model_client),
+            factory=lambda: BrowserAgent(
+                description="browser agent.", model_client=model_client
+            ),
         )
         await self._runtime.add_subscription(
             TypeSubscription(
@@ -400,10 +402,6 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         self._runtime.add_message_serializer(
             try_get_known_serializers_for_type(AgentResponse)
         )
-        # self._runtime.add_message_serializer(
-        #     try_get_known_serializers_for_type(RunTeamMessage)
-        # )
-
         self._initialized = True
         self._runtime.start()
 

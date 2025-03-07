@@ -17,6 +17,7 @@ from autogen_ext.models.openai.config import (
     OpenAIClientConfigurationConfigModel,
 )
 from json_repair import repair_json
+from langchain_openai import ChatOpenAI
 from loguru import logger
 from openai import OpenAI
 
@@ -52,6 +53,16 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
 
     # def _to_config(self) -> OpenAIClientConfigurationConfigModel:
     #     return super()._to_config()
+
+    def convert_to_lc_model(self) -> ChatOpenAI:
+        return ChatOpenAI(
+            model=self.config.get("model", "deepseek-ai/deepseek-r1"),
+            temperature=self.config.get("temperature", 0.6),
+            top_p=self.config.get("top_p", 0.7),
+            max_tokens=self.config.get("max_tokens", 4096),
+            api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
+            base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
+        )
 
     async def create(
         self,
@@ -154,6 +165,7 @@ async def test_model_client2(apikey: str):
             "family": ModelFamily.R1,
         },
     )
+
     result = await custom_model_client.create(
         [UserMessage(content="hello", source="user")]
     )  # type: ignore
