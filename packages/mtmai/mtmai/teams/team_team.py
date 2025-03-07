@@ -4,7 +4,7 @@ from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import CancellationToken, Component, ComponentModel
 from loguru import logger
-from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
+# from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_team_id_ctx
 from mtmai.mtlibs.id import generate_uuid
@@ -30,13 +30,13 @@ class TeamTeam(MtBaseTeam, Component[TeamTeamConfig]):
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
-        if task.startswith("/tenant/seed"):
-            logger.info("通知 TanantAgent 初始化(或重置)租户信息")
-            result = await self._runtime.send_message(
-                MsgResetTenant(tenant_id=tid),
-                self.tenant_agent_id,
-            )
-            return
+        # if task.startswith("/tenant/seed"):
+        #     logger.info("通知 TanantAgent 初始化(或重置)租户信息")
+        #     result = await self._runtime.send_message(
+        #         MsgResetTenant(tenant_id=tid),
+        #         self.tenant_agent_id,
+        #     )
+        #     return
 
         team_id = get_team_id_ctx() or generate_uuid()
         chat_id = get_chat_session_id_ctx() or generate_uuid()

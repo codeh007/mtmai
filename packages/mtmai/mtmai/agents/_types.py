@@ -80,3 +80,26 @@ class TerminationMessage(BaseModel):
     """A message that is sent from the system to the user, indicating that the conversation has ended."""
 
     reason: str
+
+
+class CodeWritingTask(BaseModel):
+    task: str
+
+
+class CodeWritingResult(BaseModel):
+    task: str
+    code: str
+    review: str
+
+
+class CodeReviewTask(BaseModel):
+    session_id: str
+    code_writing_task: str
+    code_writing_scratchpad: str
+    code: str
+
+
+class CodeReviewResult(BaseModel):
+    review: str
+    session_id: str
+    approved: bool
