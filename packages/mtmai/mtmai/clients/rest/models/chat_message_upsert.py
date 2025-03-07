@@ -28,11 +28,11 @@ class ChatMessageUpsert(BaseModel):
     """ # noqa: E501
     tenant_id: StrictStr = Field(alias="tenantId")
     content: StrictStr
-    component_id: StrictStr = Field(alias="componentId")
+    component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
     thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
     run_id: Optional[StrictStr] = Field(default=None, alias="runId")
     role: Optional[StrictStr] = None
-    source: Optional[StrictStr] = 'user'
+    source: StrictStr
     message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
     agent_type: Optional[StrictStr] = Field(default=None, alias="agentType")
     workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
