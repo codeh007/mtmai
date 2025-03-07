@@ -3,6 +3,9 @@ from autogen_core.models import UserMessage
 from loguru import logger
 
 from mtmai.agents._types import AgentResponse, TerminationMessage, UserLogin, UserTask
+from mtmai.context.context_client import TenantClient
+from mtmai.context.ctx import get_chat_session_id_ctx
+from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
 
 
 class UserAgent(RoutedAgent):
@@ -15,16 +18,20 @@ class UserAgent(RoutedAgent):
     @message_handler
     async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
         """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
+        session_id = get_chat_session_id_ctx()
+        tenant_client = TenantClient()
         logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
-        # Get the user's initial input after login.
-        # user_input = input("User: ")
-        # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-        logger.info(f"TODO: 新的用户对话开始,加载用户上下文信息: {ctx}")
-        # user_input = "TODO: 新的用户对话开始,加载用户上下文信息: {ctx}"
+        # logger.info(f"TODO: 新的用户对话开始,加载用户上下文信息: {ctx}")
         user_input = message.task
         await self.publish_message(
             UserTask(context=[UserMessage(content=user_input, source="User")]),
             topic_id=TopicId(self._agent_topic_type, source=self.id.key),
+        )
+
+        await tenant_client.emit(
+            ChatSessionStartEvent(
+                threadId=session_id,
+            )
         )
 
     # When a conversation ends
@@ -44,20 +51,25 @@ class UserAgent(RoutedAgent):
     async def handle_task_result(
         self, message: AgentResponse, ctx: MessageContext
     ) -> None:
-        # Get the user's input after receiving a response from an agent.
-        # user_input = input("User (type 'exit' to close the session): ")
-        user_input = await self.get_user_input(
-            "User (type 'exit' to close the session): "
-        )
-        logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-        if user_input.strip().lower() == "exit":
-            logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
-            return
-        message.context.append(UserMessage(content=user_input, source="User"))
-        await self.publish_message(
-            UserTask(context=message.context),
-            topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
-        )
+        tenant_client = TenantClient()
+
+        llm_message = message.context[-1]
+        await tenant_client.emit(llm_message)
+        # await tenant_client.emit(message)
+        # user_input = await self.get_user_input(
+        #     "User (type 'exit' to close the session): ",
+        #     ctx,
+        # )
+        # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
+
+        # if user_input.strip().lower() == "exit":
+        #     logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
+        #     return
+        # message.context.append(UserMessage(content=user_input, source="User"))
+        # await self.publish_message(
+        #     UserTask(context=message.context),
+        #     topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
+        # )
 
     async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
         """Get user input from the console. Override this method to customize how user input is retrieved."""

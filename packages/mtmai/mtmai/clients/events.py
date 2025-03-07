@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 from autogen_agentchat.base import TaskResult
 from autogen_core import try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
+from autogen_core.models import AssistantMessage
 from connecpy.context import ClientContext
 from fastapi.encoders import jsonable_encoder
 from google.protobuf import message as pb_message
@@ -13,6 +14,7 @@ from google.protobuf.json_format import MessageToDict
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
+from mtmai.mtlibs.typing import get_type_name
 from mtmai.mtmpb import agent_worker_pb2, events_connecpy
 from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
@@ -59,7 +61,6 @@ class EventClient:
         self.client_context = ClientContext(
             headers={
                 "Authorization": f"Bearer {token}",
-                # "X-Tid": tenant_id,
             }
         )
         self.namespace = namespace
@@ -183,6 +184,8 @@ class EventClient:
             await self.stream(event, step_run_id)
         elif isinstance(event, BaseModel):
             json_bytes = event.model_dump_json()
+        elif isinstance(event, AssistantMessage):
+            json_bytes = event.model_dump_json()
         elif isinstance(event, pb_message.Message):
             result_type = self._serialization_registry.type_name(event)
             # serialized_result = self._serialization_registry.serialize(
@@ -209,6 +212,7 @@ class EventClient:
             #     # proto_data=event,
             # )
             # json2 = MessageToDict(any_proto)
+            type_name = get_type_name(event)
             json2 = MessageToDict(event)
             json2["@type"] = (
                 result_type  # json2["@type"].removeprefix("type.googleapis.com/")

@@ -1,12 +1,10 @@
 import gzip
+import importlib
 import json
 import os
-import shutil
-import subprocess
-from nanoid import generate
-import importlib
 import random
 import re
+import shutil
 import subprocess
 import sys
 import urllib
@@ -14,6 +12,8 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
+from nanoid import generate
+
 
 def gen_orm_id_key():
     return generate("1234567890abcdef", 16)
@@ -279,7 +279,6 @@ def command_exists(cmd_name: str) -> bool:
     # 方式2：
     # from distutils.spawn import find_executable
     # return find_executable(cmd_name) is not None
-
 
 
 def gen_orm_id_key():
