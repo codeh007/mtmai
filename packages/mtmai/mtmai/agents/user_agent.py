@@ -23,7 +23,8 @@ class UserAgent(RoutedAgent):
         # session_id = get_chat_session_id_ctx()
         # session_id = ctx.topic_id.source
         session_id = self.id.key
-        # tenant_client = TenantClient()
+        tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
         logger.info(
             f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.task}"
         )
@@ -31,6 +32,18 @@ class UserAgent(RoutedAgent):
         await self.publish_message(
             UserTask(context=[UserMessage(content=user_input, source="User")]),
             topic_id=TopicId(self._agent_topic_type, source=session_id),
+        )
+
+        await tenant_client.ag.chat_api.chat_message_upsert(
+            tenant=tid,
+            chat_message_upsert=ChatMessageUpsert(
+                tenant_id=tid,
+                content=user_input,
+                # component_id=self.id.key,
+                thread_id=self.id.key,
+                role="user",
+                source="user",
+            ),
         )
 
         # 似乎不需要
@@ -88,10 +101,10 @@ class UserAgent(RoutedAgent):
         #     topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
         # )
 
-    async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
-        """Get user input from the console. Override this method to customize how user input is retrieved."""
-        logger.info(f"TODO: need user input, ctx: {ctx}")
-        user_input = "TODO: need user input"
-        # loop = asyncio.get_event_loop()
-        # return await loop.run_in_executor(None, input, prompt)
-        return user_input
+    # async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
+    #     """Get user input from the console. Override this method to customize how user input is retrieved."""
+    #     logger.info(f"TODO: need user input, ctx: {ctx}")
+    #     user_input = "TODO: need user input"
+    #     # loop = asyncio.get_event_loop()
+    #     # return await loop.run_in_executor(None, input, prompt)
+    #     return user_input
