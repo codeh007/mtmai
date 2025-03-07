@@ -8,15 +8,6 @@ from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents._types import TeamRunnerTask
 
-# class RunTeamMessage(BaseModel):
-#     task: str
-#     team_id: str
-#     chat_id: str
-
-
-# class MsgResetTenant(BaseModel):
-#     tenant_id: str
-
 
 class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str, model_client: ChatCompletionClient) -> None:

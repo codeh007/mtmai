@@ -38,6 +38,8 @@ from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
+from ..agents.browser_agent import BrowserAgent
+
 sales_agent_topic_type = "SalesAgent"
 issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
 triage_agent_topic_type = "TriageAgent"
@@ -47,6 +49,7 @@ run_team_topic_type = "RunTeam"
 reviewer_agent_topic_type = "ReviewerAgent"
 coder_agent_topic_type = "CoderAgent"
 team_runner_topic_type = "TeamRunner"
+browser_topic_type = "Browser"
 
 
 def execute_order(product: str, price: int) -> str:
@@ -353,6 +356,18 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             TypeSubscription(
                 topic_type=team_runner_topic_type,
                 agent_type=team_runner_agent_type.type,
+            )
+        )
+
+        browser_agent_type = await BrowserAgent.register(
+            runtime=runtime,
+            type=browser_topic_type,
+            factory=lambda: BrowserAgent(model_client=model_client),
+        )
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=browser_topic_type,
+                agent_type=browser_agent_type.type,
             )
         )
 

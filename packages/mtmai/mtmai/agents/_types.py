@@ -114,6 +114,8 @@ class TeamRunnerTask(BaseModel):
 
 
 class BrowserOpenTask(BaseModel):
+    """打开浏览器备用,一般用于调试目的Open a browser and navigate to a URL."""
+
     url: str
 
 

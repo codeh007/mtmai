@@ -1,6 +1,7 @@
 from autogen_core import MessageContext, RoutedAgent, message_handler
+from loguru import logger
 
-from mtmai.agents._types import BrowserOpenTask
+from mtmai.agents._types import BrowserOpenTask, BrowserTask
 
 
 class BrowserAgent(RoutedAgent):
@@ -10,7 +11,7 @@ class BrowserAgent(RoutedAgent):
         super().__init__(description)
 
     @message_handler
-    async def handle_user_task(
+    async def handle_browser_open_task(
         self, message: BrowserOpenTask, ctx: MessageContext
     ) -> None:
         from browser_use import Agent, Browser
@@ -19,3 +20,10 @@ class BrowserAgent(RoutedAgent):
         browser = Browser()
         page = browser.new_page()
         page.goto("https://playwright.dev/")
+
+    @message_handler
+    async def handle_browser_task(
+        self, message: BrowserTask, ctx: MessageContext
+    ) -> None:
+        logger.info("(BrowserTask)")
+        pass
