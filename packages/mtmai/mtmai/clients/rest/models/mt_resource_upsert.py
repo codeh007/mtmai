@@ -31,8 +31,10 @@ class MtResourceUpsert(BaseModel):
     title: StrictStr = Field(description="The resource title")
     type: StrictStr = Field(description="The resource type")
     content: Optional[Any] = None
+    description: Optional[StrictStr] = Field(default=None, description="The resource description")
     version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content", "version"]
+    url: Optional[StrictStr] = Field(default=None, description="The resource url")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content", "description", "version", "url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,7 +99,9 @@ class MtResourceUpsert(BaseModel):
             "title": obj.get("title"),
             "type": obj.get("type"),
             "content": obj.get("content"),
-            "version": obj.get("version")
+            "description": obj.get("description"),
+            "version": obj.get("version"),
+            "url": obj.get("url")
         })
         return _obj
 
