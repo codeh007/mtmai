@@ -21,7 +21,7 @@ from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from mtmai.clients.rest.models.chat_session import ChatSession
+from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
@@ -59,7 +59,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatSession:
+    ) -> MtResource:
         """获取租户下的资源
 
         获取资源
@@ -100,7 +100,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -133,7 +133,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatSession]:
+    ) -> ApiResponse[MtResource]:
         """获取租户下的资源
 
         获取资源
@@ -174,7 +174,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -248,7 +248,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatSession",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
