@@ -18,17 +18,21 @@ from autogen_core import (
 from autogen_core.models import SystemMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._types import (
-    AgentResponse,
-    BrowserOpenTask,
-    BrowserTask,
-    CodeWritingTask,
-    MyMessage,
-    TeamRunnerTask,
-    UserLogin,
-    UserTask,
+from mtmai.agents._agents import (
+    browser_topic_type,
+    coder_agent_topic_type,
+    human_agent_topic_type,
+    issues_and_repairs_agent_topic_type,
+    reviewer_agent_topic_type,
+    sales_agent_topic_type,
+    team_runner_topic_type,
+    triage_agent_topic_type,
+    user_topic_type,
 )
+from mtmai.agents._semantic_router_components import IntentClassifierBase
+from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
 from mtmai.agents.ai_agent import AIAgent
+from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.coder_agent import CoderAgent
 from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
@@ -39,19 +43,6 @@ from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
-
-from ..agents.browser_agent import BrowserAgent
-
-sales_agent_topic_type = "SalesAgent"
-issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
-triage_agent_topic_type = "TriageAgent"
-human_agent_topic_type = "HumanAgent"
-user_topic_type = "User"
-run_team_topic_type = "RunTeam"
-reviewer_agent_topic_type = "ReviewerAgent"
-coder_agent_topic_type = "CoderAgent"
-team_runner_topic_type = "TeamRunner"
-browser_topic_type = "Browser"
 
 
 def execute_order(product: str, price: int) -> str:
@@ -146,6 +137,21 @@ async def collect_output_messages(
     #     event_logger.info(message.message)
     #     self._stop_reason = message.message.content
     logger.info(f"收到消息: message: {message}")
+
+
+class MockIntentClassifier(IntentClassifierBase):
+    def __init__(self):
+        self.intents = {
+            "finance_intent": ["finance", "money", "budget"],
+            "hr_intent": ["hr", "human resources", "employee"],
+        }
+
+    async def classify_intent(self, message: str) -> str:
+        for intent, keywords in self.intents.items():
+            for keyword in keywords:
+                if keyword in message:
+                    return intent
+        return "general"
 
 
 class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
@@ -421,39 +427,44 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         user_content = task.content
 
-        match user_content:
-            case "/test_code":
-                await self._runtime.publish_message(
-                    message=CodeWritingTask(
-                        task="Write a function to find the sum of all even numbers in a list."
-                    ),
-                    topic_id=TopicId(coder_agent_topic_type, source=session_id),
-                )
-                # CodeWritingTask(
-                #         task="Write a function to find the sum of all even numbers in a list."
-                #     )
-            case "/test_open_browser":
-                await self._runtime.publish_message(
-                    message=BrowserOpenTask(url="https://playwright.dev/"),
-                    topic_id=TopicId(browser_topic_type, source=session_id),
-                )
-            case "/test_browser_task":
-                await self._runtime.publish_message(
-                    message=BrowserTask(task="Open an online code editor programiz."),
-                    topic_id=TopicId(browser_topic_type, source=session_id),
-                )
-            case "/test_team":
-                await self._runtime.publish_message(
-                    message=TeamRunnerTask(
-                        task=user_content, team=team_runner_topic_type
-                    ),
-                    topic_id=TopicId(team_runner_topic_type, source=session_id),
-                )
-            case _:
-                await self._runtime.publish_message(
-                    message=UserLogin(task=user_content),
-                    topic_id=TopicId(user_topic_type, source=session_id),
-                )
+        # match user_content:
+        #     case "/test_code":
+        #         await self._runtime.publish_message(
+        #             message=CodeWritingTask(
+        #                 task="Write a function to find the sum of all even numbers in a list."
+        #             ),
+        #             topic_id=TopicId(coder_agent_topic_type, source=session_id),
+        #         )
+        #         # CodeWritingTask(
+        #         #         task="Write a function to find the sum of all even numbers in a list."
+        #         #     )
+        #     case "/test_open_browser":
+        #         await self._runtime.publish_message(
+        #             message=BrowserOpenTask(url="https://playwright.dev/"),
+        #             topic_id=TopicId(browser_topic_type, source=session_id),
+        #         )
+        #     case "/test_browser_task":
+        #         await self._runtime.publish_message(
+        #             message=BrowserTask(task="Open an online code editor programiz."),
+        #             topic_id=TopicId(browser_topic_type, source=session_id),
+        #         )
+        #     case "/test_team":
+        #         await self._runtime.publish_message(
+        #             message=TeamRunnerTask(
+        #                 task=user_content, team=team_runner_topic_type
+        #             ),
+        #             topic_id=TopicId(team_runner_topic_type, source=session_id),
+        #         )
+        #     case _:
+        #         await self._runtime.publish_message(
+        #             message=UserLogin(task=user_content),
+        #             topic_id=TopicId(user_topic_type, source=session_id),
+        #         )
+
+        await self._runtime.publish_message(
+            message=UserLogin(task=user_content),
+            topic_id=TopicId(user_topic_type, source=session_id),
+        )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
         # await self._runtime.stop_when_idle()

@@ -2,16 +2,28 @@ from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.models import UserMessage
 from loguru import logger
 
+from mtmai.agents._agents import (
+    browser_topic_type,
+    coder_agent_topic_type,
+    team_runner_topic_type,
+    user_topic_type,
+)
 from mtmai.agents._types import (
     AgentResponse,
+    BrowserOpenTask,
+    BrowserTask,
     CodeReviewResult,
     CodeReviewTask,
+    CodeWritingTask,
+    TeamRunnerTask,
     TerminationMessage,
     UserLogin,
     UserTask,
 )
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.context.context_client import TenantClient
+
+from ._semantic_router_components import UserProxyMessage
 
 
 class UserAgent(RoutedAgent):
@@ -36,6 +48,40 @@ class UserAgent(RoutedAgent):
             f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.task}"
         )
         user_input = message.task
+
+        match user_input:
+            case "/test_code":
+                await self._runtime.publish_message(
+                    message=CodeWritingTask(
+                        task="Write a function to find the sum of all even numbers in a list."
+                    ),
+                    topic_id=TopicId(coder_agent_topic_type, source=session_id),
+                )
+                # CodeWritingTask(
+                #         task="Write a function to find the sum of all even numbers in a list."
+                #     )
+            case "/test_open_browser":
+                await self._runtime.publish_message(
+                    message=BrowserOpenTask(url="https://playwright.dev/"),
+                    topic_id=TopicId(browser_topic_type, source=session_id),
+                )
+            case "/test_browser_task":
+                await self._runtime.publish_message(
+                    message=BrowserTask(task="Open an online code editor programiz."),
+                    topic_id=TopicId(browser_topic_type, source=session_id),
+                )
+            case "/test_team":
+                await self._runtime.publish_message(
+                    message=TeamRunnerTask(
+                        task=user_input, team=team_runner_topic_type
+                    ),
+                    topic_id=TopicId(team_runner_topic_type, source=session_id),
+                )
+            case _:
+                await self._runtime.publish_message(
+                    message=UserLogin(task=user_input),
+                    topic_id=TopicId(user_topic_type, source=session_id),
+                )
 
         # 加载对话历史
         message_history = await tenant_client.ag.chat_api.chat_messages_list(
@@ -66,6 +112,18 @@ class UserAgent(RoutedAgent):
         #         threadId=session_id,
         #     )
         # )
+
+    # The User has sent a message that needs to be routed
+    @message_handler
+    async def route_to_agent(
+        self, message: UserProxyMessage, ctx: MessageContext
+    ) -> None:
+        assert ctx.topic_id is not None
+        logger.debug(f"Received message from {message.source}: {message.content}")
+        session_id = ctx.topic_id.source
+        intent = await self._identify_intent(message)
+        agent = await self._find_agent(intent)
+        await self.contact_agent(agent, message, session_id)
 
     # When a conversation ends
     @message_handler

@@ -27,7 +27,7 @@ class BrowserAgent(RoutedAgent):
         browser_context = await browser.new_context()
         # async with await browser.new_context() as context:
         page = await browser_context.get_current_page()
-        page.goto("https://playwright.dev/")
+        await page.goto("https://playwright.dev/")
 
         ...
 

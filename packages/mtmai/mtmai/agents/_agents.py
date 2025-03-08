@@ -9,6 +9,16 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
 )
 from autogen_core import Component
 
+sales_agent_topic_type = "SalesAgent"
+issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
+triage_agent_topic_type = "TriageAgent"
+human_agent_topic_type = "HumanAgent"
+user_topic_type = "User"
+run_team_topic_type = "RunTeam"
+reviewer_agent_topic_type = "ReviewerAgent"
+coder_agent_topic_type = "CoderAgent"
+team_runner_topic_type = "TeamRunner"
+browser_topic_type = "Browser"
 
 class MtWebUserProxyAgent(UserProxyAgent):
     """扩展 UserProxyAgent"""
