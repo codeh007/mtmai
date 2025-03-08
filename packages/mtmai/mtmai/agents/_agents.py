@@ -19,8 +19,8 @@ reviewer_agent_topic_type = "ReviewerAgent"
 coder_agent_topic_type = "CoderAgent"
 team_runner_topic_type = "TeamRunner"
 browser_topic_type = "Browser"
-
 router_topic_type = "Router"
+platform_account_topic_type = "PlatformAccount"
 
 
 class MtWebUserProxyAgent(UserProxyAgent):

@@ -145,6 +145,13 @@ class BaseMessage:
     source: str
 
 
+class PlatformAccountTask(BaseMessage):
+    """A task that is sent to the platform account agent."""
+
+    id: str
+    task: str
+
+
 agent_message_types = [
     UserLogin,
     TerminationMessage,
@@ -153,4 +160,5 @@ agent_message_types = [
     CodeReviewTask,
     CodeReviewResult,
     TeamRunnerTask,
+    PlatformAccountTask,
 ]

@@ -24,7 +24,7 @@ from mtmai.context.context_client import TenantClient
 
 class UserAgent(RoutedAgent):
     def __init__(
-        self, description: str, user_topic_type: str, agent_topic_type: str
+        self, description: str,agent_topic_type: str
     ) -> None:
         super().__init__(description)
         self._agent_topic_type = agent_topic_type

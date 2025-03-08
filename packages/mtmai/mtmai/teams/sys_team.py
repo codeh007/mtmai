@@ -21,6 +21,7 @@ from mtmai.agents._agents import (
     coder_agent_topic_type,
     human_agent_topic_type,
     issues_and_repairs_agent_topic_type,
+    platform_account_topic_type,
     reviewer_agent_topic_type,
     router_topic_type,
     sales_agent_topic_type,
@@ -47,6 +48,8 @@ from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
+
+from ..agents.platorm_account_agent import PlatformAccountAgent
 
 
 def execute_order(product: str, price: int) -> str:
@@ -414,6 +417,20 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             TypeSubscription(
                 topic_type=router_topic_type,
                 agent_type=router_agent_type.type,
+            )
+        )
+
+        platform_account_agent_type = await PlatformAccountAgent.register(
+            runtime=self._runtime,
+            type=platform_account_topic_type,
+            factory=lambda: PlatformAccountAgent(
+                description="A platform account agent.",
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=platform_account_topic_type,
+                agent_type=platform_account_agent_type.type,
             )
         )
 
