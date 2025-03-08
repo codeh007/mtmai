@@ -632,6 +632,11 @@ class ChatApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
+        topic: Annotated[Optional[StrictStr], Field(description="The topic id")] = None,
+        message_type: Annotated[Optional[StrictStr], Field(description="The message type")] = None,
+        role: Annotated[Optional[StrictStr], Field(description="The role")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        step_run_id: Annotated[Optional[StrictStr], Field(description="The step run id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -653,6 +658,16 @@ class ChatApi:
         :type tenant: str
         :param session: The session id
         :type session: str
+        :param topic: The topic id
+        :type topic: str
+        :param message_type: The message type
+        :type message_type: str
+        :param role: The role
+        :type role: str
+        :param source: The source
+        :type source: str
+        :param step_run_id: The step run id
+        :type step_run_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -678,6 +693,11 @@ class ChatApi:
         _param = self._chat_session_get_serialize(
             tenant=tenant,
             session=session,
+            topic=topic,
+            message_type=message_type,
+            role=role,
+            source=source,
+            step_run_id=step_run_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -706,6 +726,11 @@ class ChatApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
+        topic: Annotated[Optional[StrictStr], Field(description="The topic id")] = None,
+        message_type: Annotated[Optional[StrictStr], Field(description="The message type")] = None,
+        role: Annotated[Optional[StrictStr], Field(description="The role")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        step_run_id: Annotated[Optional[StrictStr], Field(description="The step run id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -727,6 +752,16 @@ class ChatApi:
         :type tenant: str
         :param session: The session id
         :type session: str
+        :param topic: The topic id
+        :type topic: str
+        :param message_type: The message type
+        :type message_type: str
+        :param role: The role
+        :type role: str
+        :param source: The source
+        :type source: str
+        :param step_run_id: The step run id
+        :type step_run_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -752,6 +787,11 @@ class ChatApi:
         _param = self._chat_session_get_serialize(
             tenant=tenant,
             session=session,
+            topic=topic,
+            message_type=message_type,
+            role=role,
+            source=source,
+            step_run_id=step_run_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -780,6 +820,11 @@ class ChatApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
+        topic: Annotated[Optional[StrictStr], Field(description="The topic id")] = None,
+        message_type: Annotated[Optional[StrictStr], Field(description="The message type")] = None,
+        role: Annotated[Optional[StrictStr], Field(description="The role")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        step_run_id: Annotated[Optional[StrictStr], Field(description="The step run id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -801,6 +846,16 @@ class ChatApi:
         :type tenant: str
         :param session: The session id
         :type session: str
+        :param topic: The topic id
+        :type topic: str
+        :param message_type: The message type
+        :type message_type: str
+        :param role: The role
+        :type role: str
+        :param source: The source
+        :type source: str
+        :param step_run_id: The step run id
+        :type step_run_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -826,6 +881,11 @@ class ChatApi:
         _param = self._chat_session_get_serialize(
             tenant=tenant,
             session=session,
+            topic=topic,
+            message_type=message_type,
+            role=role,
+            source=source,
+            step_run_id=step_run_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -849,6 +909,11 @@ class ChatApi:
         self,
         tenant,
         session,
+        topic,
+        message_type,
+        role,
+        source,
+        step_run_id,
         _request_auth,
         _content_type,
         _headers,
@@ -875,6 +940,26 @@ class ChatApi:
         if session is not None:
             _path_params['session'] = session
         # process the query parameters
+        if topic is not None:
+            
+            _query_params.append(('topic', topic))
+            
+        if message_type is not None:
+            
+            _query_params.append(('messageType', message_type))
+            
+        if role is not None:
+            
+            _query_params.append(('role', role))
+            
+        if source is not None:
+            
+            _query_params.append(('source', source))
+            
+        if step_run_id is not None:
+            
+            _query_params.append(('stepRunId', step_run_id))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter

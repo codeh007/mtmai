@@ -134,7 +134,6 @@ class UserAgent(RoutedAgent):
                     # component_id=self.id.key,
                     thread_id=self.id.key,
                     role="user",
-                    # source="user",
                     source=session_id,
                     # topic=self._agent_topic_type,
                     topic=ctx.topic_id.type,

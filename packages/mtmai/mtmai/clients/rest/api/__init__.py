@@ -39,5 +39,4 @@ from mtmai.clients.rest.api.prompt_api import PromptApi
 from mtmai.clients.rest.api.proxy_api import ProxyApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
-from mtmai.clients.rest.api.ui_agent_api import UiAgentApi
 
