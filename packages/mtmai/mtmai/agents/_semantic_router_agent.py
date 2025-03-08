@@ -1,13 +1,26 @@
-from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, message_handler
-from loguru import logger
-
-from mtmai.agents._semantic_router_components import (
-    AgentRegistryBase,
-    IntentClassifierBase,
-    TerminationMessage,
+from autogen_core import (
+    DefaultTopicId,
+    MessageContext,
+    RoutedAgent,
+    TopicId,
+    message_handler,
 )
-
-from ._types import UserLogin
+from loguru import logger
+from mtmai.agents._agents import (
+    browser_topic_type,
+    coder_agent_topic_type,
+    team_runner_topic_type,
+)
+from mtmai.agents._types import (
+    AgentRegistryBase,
+    BrowserOpenTask,
+    BrowserTask,
+    CodeWritingTask,
+    IntentClassifierBase,
+    TeamRunnerTask,
+    TerminationMessage,
+    UserLogin,
+)
 
 
 class SemanticRouterAgent(RoutedAgent):
@@ -24,13 +37,40 @@ class SemanticRouterAgent(RoutedAgent):
 
     # The User has sent a message that needs to be routed
     @message_handler
-    async def route_to_agent(self, message: UserLogin, ctx: MessageContext) -> None:
+    async def handle_route_to_agent(
+        self, message: UserLogin, ctx: MessageContext
+    ) -> None:
         assert ctx.topic_id is not None
         logger.info(f"Received message from {message.source}: {message.content}")
         session_id = ctx.topic_id.source
-        intent = await self._identify_intent(message)
-        agent = await self._find_agent(intent)
-        await self.contact_agent(agent, message, session_id)
+
+        user_content = message.content
+        if user_content.startswith("/test_code"):
+            await self._runtime.publish_message(
+                message=CodeWritingTask(
+                    task="Write a function to find the sum of all even numbers in a list."
+                ),
+                topic_id=TopicId(coder_agent_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_open_browser"):
+            await self._runtime.publish_message(
+                message=BrowserOpenTask(url="https://playwright.dev/"),
+                topic_id=TopicId(browser_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_browser_task"):
+            await self._runtime.publish_message(
+                message=BrowserTask(task="Open an online code editor programiz."),
+                topic_id=TopicId(browser_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_team"):
+            await self._runtime.publish_message(
+                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+                topic_id=TopicId(team_runner_topic_type, source=session_id),
+            )
+        else:
+            intent = await self._identify_intent(user_content)
+            agent = await self._find_agent(intent)
+            await self.contact_agent(agent, message, session_id)
 
     ## Identify the intent of the user message
     async def _identify_intent(self, message: UserLogin) -> str:

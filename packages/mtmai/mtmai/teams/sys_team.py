@@ -29,11 +29,12 @@ from mtmai.agents._agents import (
     user_topic_type,
 )
 from mtmai.agents._semantic_router_agent import SemanticRouterAgent
-from mtmai.agents._semantic_router_components import (
+from mtmai.agents._types import (
     AgentRegistryBase,
     IntentClassifierBase,
+    UserLogin,
+    agent_message_types,
 )
-from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.coder_agent import CoderAgent
@@ -203,7 +204,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
         self._initialized = False
         self._is_running = False
-        self._runtime.process_next()
+        # self._runtime.process_next()
 
     async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
@@ -341,7 +342,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
 
         reviewer_agent_type = await ReviewerAgent.register(
-            runtime=runtime,
+            runtime=self._runtime,
             type=reviewer_agent_topic_type,
             factory=lambda: ReviewerAgent(model_client=model_client),
         )
@@ -353,7 +354,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
 
         coder_agent_type = await CoderAgent.register(
-            runtime=runtime,
+            runtime=self._runtime,
             type=coder_agent_topic_type,
             factory=lambda: CoderAgent(model_client=model_client),
         )
@@ -365,7 +366,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
 
         team_runner_agent_type = await TeamRunnerAgent.register(
-            runtime=runtime,
+            runtime=self._runtime,
             type=team_runner_topic_type,
             factory=lambda: TeamRunnerAgent(
                 description="Team runner agent.", model_client=model_client
@@ -379,7 +380,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         )
 
         browser_agent_type = await BrowserAgent.register(
-            runtime=runtime,
+            runtime=self._runtime,
             type=browser_topic_type,
             factory=lambda: BrowserAgent(
                 description="browser agent.", model_client=model_client
@@ -396,9 +397,9 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         agent_registry = MockAgentRegistry()
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
-            self._runtime,
-            "router",
-            lambda: SemanticRouterAgent(
+            runtime=self._runtime,
+            type=router_topic_type,
+            factory=lambda: SemanticRouterAgent(
                 name="router",
                 agent_registry=agent_registry,
                 intent_classifier=intent_classifier,
@@ -425,21 +426,10 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         #     subscriptions=lambda: [DefaultSubscription()],
         # )
 
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(MyMessage)
-        )
-        # self._runtime.add_message_serializer(
-        #     try_get_known_serializers_for_type(Hello2Message)
-        # )
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(UserLogin)
-        )
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(UserTask)
-        )
-        self._runtime.add_message_serializer(
-            try_get_known_serializers_for_type(AgentResponse)
-        )
+        for message_type in agent_message_types:
+            self._runtime.add_message_serializer(
+                try_get_known_serializers_for_type(message_type)
+            )
         self._initialized = True
         self._runtime.start()
 
@@ -458,47 +448,9 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         user_content = task.content
 
-        # match user_content:
-        #     case "/test_code":
-        #         await self._runtime.publish_message(
-        #             message=CodeWritingTask(
-        #                 task="Write a function to find the sum of all even numbers in a list."
-        #             ),
-        #             topic_id=TopicId(coder_agent_topic_type, source=session_id),
-        #         )
-        #         # CodeWritingTask(
-        #         #         task="Write a function to find the sum of all even numbers in a list."
-        #         #     )
-        #     case "/test_open_browser":
-        #         await self._runtime.publish_message(
-        #             message=BrowserOpenTask(url="https://playwright.dev/"),
-        #             topic_id=TopicId(browser_topic_type, source=session_id),
-        #         )
-        #     case "/test_browser_task":
-        #         await self._runtime.publish_message(
-        #             message=BrowserTask(task="Open an online code editor programiz."),
-        #             topic_id=TopicId(browser_topic_type, source=session_id),
-        #         )
-        #     case "/test_team":
-        #         await self._runtime.publish_message(
-        #             message=TeamRunnerTask(
-        #                 task=user_content, team=team_runner_topic_type
-        #             ),
-        #             topic_id=TopicId(team_runner_topic_type, source=session_id),
-        #         )
-        #     case _:
-        #         await self._runtime.publish_message(
-        #             message=UserLogin(task=user_content),
-        #             topic_id=TopicId(user_topic_type, source=session_id),
-        #         )
-
-        # await self._runtime.publish_message(
-        #     message=UserLogin(task=user_content),
-        #     topic_id=TopicId(user_topic_type, source=session_id),
-        # )
         await self._runtime.publish_message(
             message=UserLogin(content=user_content, source=session_id),
-            topic_id=TopicId(user_topic_type, source=session_id),
+            topic_id=TopicId(router_topic_type, source=session_id),
         )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
@@ -549,5 +501,4 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         pass
 
     async def show_state(self) -> None:
-        pass
         pass

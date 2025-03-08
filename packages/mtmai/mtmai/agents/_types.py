@@ -67,6 +67,7 @@ class MyMessage(BaseModel):
 
 class UserLogin(BaseModel):
     content: str
+    source: str
 
 
 class UserTask(BaseModel):
@@ -144,30 +145,12 @@ class BaseMessage:
     source: str
 
 
-# @dataclass
-# class TextMessage(BaseMessage):
-#     content: str
-
-#     def __len__(self):
-#         return len(self.content)
-
-
-# @dataclass
-# class TerminationMessage(TextMessage):
-#     """A message that is sent from the system to the user, indicating that the conversation has ended."""
-
-#     reason: str
-
-
-# @dataclass
-# class WorkerAgentMessage(TextMessage):
-#     """A message that is sent from a worker agent to the user."""
-
-#     pass
-
-
-# @dataclass
-# class FinalResult(TextMessage):
-#     """A message sent from the agent to the user, indicating the end of a conversation"""
-
-#     pass
+agent_message_types = [
+    UserLogin,
+    TerminationMessage,
+    CodeWritingTask,
+    CodeWritingResult,
+    CodeReviewTask,
+    CodeReviewResult,
+    TeamRunnerTask,
+]

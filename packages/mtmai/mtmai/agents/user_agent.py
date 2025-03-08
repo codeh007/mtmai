@@ -1,7 +1,6 @@
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
 
-# from mtmai.agents._semantic_router_components import UserProxyMessage
 from mtmai.agents._types import (
     AgentResponse,
     CodeReviewResult,
