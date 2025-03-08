@@ -1,29 +1,15 @@
-from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
-from autogen_core.models import UserMessage
+from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
 
-from mtmai.agents._agents import (
-    browser_topic_type,
-    coder_agent_topic_type,
-    team_runner_topic_type,
-    user_topic_type,
-)
+# from mtmai.agents._semantic_router_components import UserProxyMessage
 from mtmai.agents._types import (
     AgentResponse,
-    BrowserOpenTask,
-    BrowserTask,
     CodeReviewResult,
     CodeReviewTask,
-    CodeWritingTask,
-    TeamRunnerTask,
     TerminationMessage,
-    UserLogin,
-    UserTask,
 )
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.context.context_client import TenantClient
-
-from ._semantic_router_components import UserProxyMessage
 
 
 class UserAgent(RoutedAgent):
@@ -33,97 +19,120 @@ class UserAgent(RoutedAgent):
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
 
-    @message_handler
-    async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
-        """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
-        if ctx.cancellation_token.is_cancelled():
-            return
+    # @message_handler
+    # async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
+    #     """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
+    #     if ctx.cancellation_token.is_cancelled():
+    #         return
 
-        # session_id = get_chat_session_id_ctx()
-        # session_id = ctx.topic_id.source
-        session_id = self.id.key
-        tenant_client = TenantClient()
-        tid = tenant_client.tenant_id
-        logger.info(
-            f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.task}"
-        )
-        user_input = message.task
+    #     # session_id = ctx.topic_id.source
+    #     session_id = self.id.key
+    #     tenant_client = TenantClient()
+    #     tid = tenant_client.tenant_id
+    #     logger.info(
+    #         f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.content}"
+    #     )
+    #     user_input = message.content
 
-        match user_input:
-            case "/test_code":
-                await self._runtime.publish_message(
-                    message=CodeWritingTask(
-                        task="Write a function to find the sum of all even numbers in a list."
-                    ),
-                    topic_id=TopicId(coder_agent_topic_type, source=session_id),
-                )
-                # CodeWritingTask(
-                #         task="Write a function to find the sum of all even numbers in a list."
-                #     )
-            case "/test_open_browser":
-                await self._runtime.publish_message(
-                    message=BrowserOpenTask(url="https://playwright.dev/"),
-                    topic_id=TopicId(browser_topic_type, source=session_id),
-                )
-            case "/test_browser_task":
-                await self._runtime.publish_message(
-                    message=BrowserTask(task="Open an online code editor programiz."),
-                    topic_id=TopicId(browser_topic_type, source=session_id),
-                )
-            case "/test_team":
-                await self._runtime.publish_message(
-                    message=TeamRunnerTask(
-                        task=user_input, team=team_runner_topic_type
-                    ),
-                    topic_id=TopicId(team_runner_topic_type, source=session_id),
-                )
-            case _:
-                await self._runtime.publish_message(
-                    message=UserLogin(task=user_input),
-                    topic_id=TopicId(user_topic_type, source=session_id),
-                )
+    #     match user_input:
+    #         case "/test_code":
+    #             await self._runtime.publish_message(
+    #                 message=CodeWritingTask(
+    #                     task="Write a function to find the sum of all even numbers in a list."
+    #                 ),
+    #                 topic_id=TopicId(coder_agent_topic_type, source=session_id),
+    #             )
+    #             # CodeWritingTask(
+    #             #         task="Write a function to find the sum of all even numbers in a list."
+    #             #     )
+    #         case "/test_open_browser":
+    #             await self._runtime.publish_message(
+    #                 message=BrowserOpenTask(url="https://playwright.dev/"),
+    #                 topic_id=TopicId(browser_topic_type, source=session_id),
+    #             )
+    #         case "/test_browser_task":
+    #             await self._runtime.publish_message(
+    #                 message=BrowserTask(task="Open an online code editor programiz."),
+    #                 topic_id=TopicId(browser_topic_type, source=session_id),
+    #             )
+    #         case "/test_team":
+    #             await self._runtime.publish_message(
+    #                 message=TeamRunnerTask(
+    #                     task=user_input, team=team_runner_topic_type
+    #                 ),
+    #                 topic_id=TopicId(team_runner_topic_type, source=session_id),
+    #             )
+    #         # case _:
+    #         #     await self._runtime.publish_message(
+    #         #         message=UserLogin(task=user_input),
+    #         #         topic_id=TopicId(user_topic_type, source=session_id),
+    #         #     )
 
-        # 加载对话历史
-        message_history = await tenant_client.ag.chat_api.chat_messages_list(
-            tenant=tid,
-            chat=session_id,
-        )
+    #     # 加载对话历史
+    #     message_history = await tenant_client.ag.chat_api.chat_messages_list(
+    #         tenant=tid,
+    #         chat=session_id,
+    #     )
 
-        await self.publish_message(
-            UserTask(context=[UserMessage(content=user_input, source="User")]),
-            topic_id=TopicId(self._agent_topic_type, source=session_id),
-        )
+    #     await self.publish_message(
+    #         UserTask(context=[UserMessage(content=user_input, source="User")]),
+    #         topic_id=TopicId(self._agent_topic_type, source=session_id),
+    #     )
 
-        await tenant_client.ag.chat_api.chat_message_upsert(
-            tenant=tid,
-            chat_message_upsert=ChatMessageUpsert(
-                tenant_id=tid,
-                content=user_input,
-                # component_id=self.id.key,
-                thread_id=self.id.key,
-                role="user",
-                source="user",
-            ),
-        )
-
-        # 似乎不需要
-        # await tenant_client.emit(
-        #     ChatSessionStartEvent(
-        #         threadId=session_id,
-        #     )
-        # )
+    #     await tenant_client.ag.chat_api.chat_message_upsert(
+    #         tenant=tid,
+    #         chat_message_upsert=ChatMessageUpsert(
+    #             tenant_id=tid,
+    #             content=user_input,
+    #             # component_id=self.id.key,
+    #             thread_id=self.id.key,
+    #             role="user",
+    #             source="user",
+    #         ),
+    #     )
 
     # The User has sent a message that needs to be routed
-    @message_handler
-    async def route_to_agent(
-        self, message: UserProxyMessage, ctx: MessageContext
-    ) -> None:
-        assert ctx.topic_id is not None
-        logger.debug(f"Received message from {message.source}: {message.content}")
-        session_id = ctx.topic_id.source
-        intent = await self._identify_intent(message)
-        agent = await self._find_agent(intent)
-        await self.contact_agent(agent, message, session_id)
+    # @message_handler
+    # async def route_to_agent(
+    #     self, message: UserProxyMessage, ctx: MessageContext
+    # ) -> None:
+    #     assert ctx.topic_id is not None
+    #     logger.debug(f"Received message from {message.source}: {message.content}")
+    #     session_id = ctx.topic_id.source
+    #     intent = await self._identify_intent(message)
+    #     agent = await self._find_agent(intent)
+    #     await self.contact_agent(agent, message, session_id)
+
+    ## Use a lookup, search, or LLM to identify the most relevant agent for the intent
+    # async def _find_agent(self, intent: str) -> str:
+    #     logger.debug(f"Identified intent: {intent}")
+    #     try:
+    #         agent = await self._registry.get_agent(intent)
+    #         return agent
+    #     except KeyError:
+    #         logger.debug("No relevant agent found for intent: " + intent)
+    #         return "termination"
+
+    # ## Forward user message to the appropriate agent, or end the thread.
+    # async def contact_agent(
+    #     self, agent: str, message: UserProxyMessage, session_id: str
+    # ) -> None:
+    #     if agent == "termination":
+    #         logger.debug("No relevant agent found")
+    #         await self.publish_message(
+    #             TerminationMessage(
+    #                 reason="No relevant agent found",
+    #                 content=message.content,
+    #                 source=self.type,
+    #             ),
+    #             DefaultTopicId(type="user_proxy", source=session_id),
+    #         )
+    #     else:
+    #         logger.debug("Routing to agent: " + agent)
+    #         await self.publish_message(
+    #             UserProxyMessage(content=message.content, source=message.source),
+    #             DefaultTopicId(type=agent, source=session_id),
+    #         )
 
     # When a conversation ends
     @message_handler

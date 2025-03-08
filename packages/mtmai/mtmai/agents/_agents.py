@@ -20,6 +20,9 @@ coder_agent_topic_type = "CoderAgent"
 team_runner_topic_type = "TeamRunner"
 browser_topic_type = "Browser"
 
+router_topic_type = "Router"
+
+
 class MtWebUserProxyAgent(UserProxyAgent):
     """扩展 UserProxyAgent"""
 

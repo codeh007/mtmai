@@ -7,9 +7,7 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
-    ClosureContext,
     Component,
-    MessageContext,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
@@ -24,12 +22,17 @@ from mtmai.agents._agents import (
     human_agent_topic_type,
     issues_and_repairs_agent_topic_type,
     reviewer_agent_topic_type,
+    router_topic_type,
     sales_agent_topic_type,
     team_runner_topic_type,
     triage_agent_topic_type,
     user_topic_type,
 )
-from mtmai.agents._semantic_router_components import IntentClassifierBase
+from mtmai.agents._semantic_router_agent import SemanticRouterAgent
+from mtmai.agents._semantic_router_components import (
+    AgentRegistryBase,
+    IntentClassifierBase,
+)
 from mtmai.agents._types import AgentResponse, MyMessage, UserLogin, UserTask
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.browser_agent import BrowserAgent
@@ -119,24 +122,24 @@ class SysTeamConfig(BaseModel):
 
 
 # Closure
-async def collect_output_messages(
-    _runtime: ClosureContext,
-    message: UserLogin,
-    ctx: MessageContext,
-) -> None:
-    """Collect output messages from the group chat."""
-    # if isinstance(message, GroupChatStart):
-    #     if message.messages is not None:
-    #         for msg in message.messages:
-    #             event_logger.info(msg)
-    #             await self._output_message_queue.put(msg)
-    # elif isinstance(message, GroupChatMessage):
-    #     event_logger.info(message.message)
-    #     await self._output_message_queue.put(message.message)
-    # elif isinstance(message, GroupChatTermination):
-    #     event_logger.info(message.message)
-    #     self._stop_reason = message.message.content
-    logger.info(f"收到消息: message: {message}")
+# async def collect_output_messages(
+#     _runtime: ClosureContext,
+#     message: UserLogin,
+#     ctx: MessageContext,
+# ) -> None:
+#     """Collect output messages from the group chat."""
+#     # if isinstance(message, GroupChatStart):
+#     #     if message.messages is not None:
+#     #         for msg in message.messages:
+#     #             event_logger.info(msg)
+#     #             await self._output_message_queue.put(msg)
+#     # elif isinstance(message, GroupChatMessage):
+#     #     event_logger.info(message.message)
+#     #     await self._output_message_queue.put(message.message)
+#     # elif isinstance(message, GroupChatTermination):
+#     #     event_logger.info(message.message)
+#     #     self._stop_reason = message.message.content
+#     logger.info(f"收到消息: message: {message}")
 
 
 class MockIntentClassifier(IntentClassifierBase):
@@ -152,6 +155,14 @@ class MockIntentClassifier(IntentClassifierBase):
                 if keyword in message:
                     return intent
         return "general"
+
+
+class MockAgentRegistry(AgentRegistryBase):
+    def __init__(self):
+        self.agents = {"finance_intent": "finance", "hr_intent": "hr"}
+
+    async def get_agent(self, intent: str) -> str:
+        return self.agents[intent]
 
 
 class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
@@ -381,6 +392,26 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
+        # Create the Semantic Router
+        agent_registry = MockAgentRegistry()
+        intent_classifier = MockIntentClassifier()
+        router_agent_type = await SemanticRouterAgent.register(
+            self._runtime,
+            "router",
+            lambda: SemanticRouterAgent(
+                name="router",
+                agent_registry=agent_registry,
+                intent_classifier=intent_classifier,
+            ),
+        )
+
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=router_topic_type,
+                agent_type=router_agent_type.type,
+            )
+        )
+
         # await ClosureAgent.register_closure(
         #     runtime=self._runtime,
         #     type="collector",
@@ -461,8 +492,12 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         #             topic_id=TopicId(user_topic_type, source=session_id),
         #         )
 
+        # await self._runtime.publish_message(
+        #     message=UserLogin(task=user_content),
+        #     topic_id=TopicId(user_topic_type, source=session_id),
+        # )
         await self._runtime.publish_message(
-            message=UserLogin(task=user_content),
+            message=UserLogin(content=user_content, source=session_id),
             topic_id=TopicId(user_topic_type, source=session_id),
         )
 
