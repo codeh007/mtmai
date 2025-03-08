@@ -26,8 +26,10 @@ class MtResourceProperties(BaseModel):
     """
     MtResourceProperties
     """ # noqa: E501
-    id: Optional[StrictStr] = Field(default=None, description="The resource id")
-    __properties: ClassVar[List[str]] = ["id"]
+    title: Optional[StrictStr] = Field(default=None, description="The resource title")
+    type: Optional[StrictStr] = Field(default=None, description="The resource type")
+    content: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["title", "type", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,6 +70,11 @@ class MtResourceProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if content (nullable) is None
+        # and model_fields_set contains the field
+        if self.content is None and "content" in self.model_fields_set:
+            _dict['content'] = None
+
         return _dict
 
     @classmethod
@@ -80,7 +87,9 @@ class MtResourceProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id")
+            "title": obj.get("title"),
+            "type": obj.get("type"),
+            "content": obj.get("content")
         })
         return _obj
 
