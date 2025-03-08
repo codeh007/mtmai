@@ -159,6 +159,7 @@ from mtmai.clients.rest.models.mt_component_properties import MtComponentPropert
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
+from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmai.clients.rest.models.node_run_action import NodeRunAction

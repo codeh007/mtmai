@@ -19,10 +19,9 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.chat_message import ChatMessage
-from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
+from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -605,7 +604,7 @@ class ResourceApi:
     async def resource_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_message_upsert: ChatMessageUpsert,
+        mt_resource_upsert: MtResourceUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -618,15 +617,15 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ChatMessage:
+    ) -> MtResource:
         """resource_upsert
 
         保存 资源
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_message_upsert: (required)
-        :type chat_message_upsert: ChatMessageUpsert
+        :param mt_resource_upsert: (required)
+        :type mt_resource_upsert: MtResourceUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -651,7 +650,7 @@ class ResourceApi:
 
         _param = self._resource_upsert_serialize(
             tenant=tenant,
-            chat_message_upsert=chat_message_upsert,
+            mt_resource_upsert=mt_resource_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -659,7 +658,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessage",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -678,7 +677,7 @@ class ResourceApi:
     async def resource_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_message_upsert: ChatMessageUpsert,
+        mt_resource_upsert: MtResourceUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -691,15 +690,15 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ChatMessage]:
+    ) -> ApiResponse[MtResource]:
         """resource_upsert
 
         保存 资源
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_message_upsert: (required)
-        :type chat_message_upsert: ChatMessageUpsert
+        :param mt_resource_upsert: (required)
+        :type mt_resource_upsert: MtResourceUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -724,7 +723,7 @@ class ResourceApi:
 
         _param = self._resource_upsert_serialize(
             tenant=tenant,
-            chat_message_upsert=chat_message_upsert,
+            mt_resource_upsert=mt_resource_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -732,7 +731,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessage",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -751,7 +750,7 @@ class ResourceApi:
     async def resource_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        chat_message_upsert: ChatMessageUpsert,
+        mt_resource_upsert: MtResourceUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -771,8 +770,8 @@ class ResourceApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param chat_message_upsert: (required)
-        :type chat_message_upsert: ChatMessageUpsert
+        :param mt_resource_upsert: (required)
+        :type mt_resource_upsert: MtResourceUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -797,7 +796,7 @@ class ResourceApi:
 
         _param = self._resource_upsert_serialize(
             tenant=tenant,
-            chat_message_upsert=chat_message_upsert,
+            mt_resource_upsert=mt_resource_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -805,7 +804,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ChatMessage",
+            '200': "MtResource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -819,7 +818,7 @@ class ResourceApi:
     def _resource_upsert_serialize(
         self,
         tenant,
-        chat_message_upsert,
+        mt_resource_upsert,
         _request_auth,
         _content_type,
         _headers,
@@ -847,8 +846,8 @@ class ResourceApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if chat_message_upsert is not None:
-            _body_params = chat_message_upsert
+        if mt_resource_upsert is not None:
+            _body_params = mt_resource_upsert
 
 
         # set the HTTP header `Accept`
