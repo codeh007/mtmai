@@ -42,6 +42,7 @@ class BrowserApi:
     @validate_call
     async def browser_create(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         browser: Browser,
         _request_timeout: Union[
             None,
@@ -60,6 +61,8 @@ class BrowserApi:
 
         create browser
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: (required)
         :type browser: Browser
         :param _request_timeout: timeout setting for this request. If one
@@ -85,6 +88,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_create_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -111,6 +115,7 @@ class BrowserApi:
     @validate_call
     async def browser_create_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         browser: Browser,
         _request_timeout: Union[
             None,
@@ -129,6 +134,8 @@ class BrowserApi:
 
         create browser
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: (required)
         :type browser: Browser
         :param _request_timeout: timeout setting for this request. If one
@@ -154,6 +161,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_create_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -180,6 +188,7 @@ class BrowserApi:
     @validate_call
     async def browser_create_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         browser: Browser,
         _request_timeout: Union[
             None,
@@ -198,6 +207,8 @@ class BrowserApi:
 
         create browser
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: (required)
         :type browser: Browser
         :param _request_timeout: timeout setting for this request. If one
@@ -223,6 +234,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_create_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -244,6 +256,7 @@ class BrowserApi:
 
     def _browser_create_serialize(
         self,
+        tenant,
         browser,
         _request_auth,
         _content_type,
@@ -266,6 +279,8 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -305,7 +320,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/browsers',
+            resource_path='/api/v1/tenants/{tenant}/browsers',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -324,7 +339,8 @@ class BrowserApi:
     @validate_call
     async def browser_get(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -341,7 +357,9 @@ class BrowserApi:
         """browser_get
 
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -366,6 +384,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_get_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -390,7 +409,8 @@ class BrowserApi:
     @validate_call
     async def browser_get_with_http_info(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -407,7 +427,9 @@ class BrowserApi:
         """browser_get
 
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -432,6 +454,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_get_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -456,7 +479,8 @@ class BrowserApi:
     @validate_call
     async def browser_get_without_preload_content(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -473,7 +497,9 @@ class BrowserApi:
         """browser_get
 
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -498,6 +524,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_get_serialize(
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -517,6 +544,7 @@ class BrowserApi:
 
     def _browser_get_serialize(
         self,
+        tenant,
         browser,
         _request_auth,
         _content_type,
@@ -539,6 +567,8 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if browser is not None:
             _path_params['browser'] = browser
         # process the query parameters
@@ -565,7 +595,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/browsers/{browser}',
+            resource_path='/api/v1/tenants/{tenant}/browsers/{browser}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -584,6 +614,7 @@ class BrowserApi:
     @validate_call
     async def browser_list(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -600,6 +631,8 @@ class BrowserApi:
         """browser_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -623,6 +656,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -649,6 +683,7 @@ class BrowserApi:
     @validate_call
     async def browser_list_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -665,6 +700,8 @@ class BrowserApi:
         """browser_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -688,6 +725,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -714,6 +752,7 @@ class BrowserApi:
     @validate_call
     async def browser_list_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -730,6 +769,8 @@ class BrowserApi:
         """browser_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -753,6 +794,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -774,6 +816,7 @@ class BrowserApi:
 
     def _browser_list_serialize(
         self,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -795,6 +838,8 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -819,7 +864,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/browsers',
+            resource_path='/api/v1/tenants/{tenant}/browsers',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -838,7 +883,8 @@ class BrowserApi:
     @validate_call
     async def browser_update(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         browser2: Annotated[Browser, Field(description="The browser properties to update")],
         _request_timeout: Union[
             None,
@@ -857,7 +903,9 @@ class BrowserApi:
 
         Update an browser
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param browser2: The browser properties to update (required)
         :type browser2: Browser
@@ -884,6 +932,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_update_serialize(
+            tenant=tenant,
             browser=browser,
             browser2=browser2,
             _request_auth=_request_auth,
@@ -911,7 +960,8 @@ class BrowserApi:
     @validate_call
     async def browser_update_with_http_info(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         browser2: Annotated[Browser, Field(description="The browser properties to update")],
         _request_timeout: Union[
             None,
@@ -930,7 +980,9 @@ class BrowserApi:
 
         Update an browser
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param browser2: The browser properties to update (required)
         :type browser2: Browser
@@ -957,6 +1009,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_update_serialize(
+            tenant=tenant,
             browser=browser,
             browser2=browser2,
             _request_auth=_request_auth,
@@ -984,7 +1037,8 @@ class BrowserApi:
     @validate_call
     async def browser_update_without_preload_content(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The browser id")],
         browser2: Annotated[Browser, Field(description="The browser properties to update")],
         _request_timeout: Union[
             None,
@@ -1003,7 +1057,9 @@ class BrowserApi:
 
         Update an browser
 
-        :param browser: The platform id (required)
+        :param tenant: The tenant id (required)
+        :type tenant: str
+        :param browser: The browser id (required)
         :type browser: str
         :param browser2: The browser properties to update (required)
         :type browser2: Browser
@@ -1030,6 +1086,7 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_update_serialize(
+            tenant=tenant,
             browser=browser,
             browser2=browser2,
             _request_auth=_request_auth,
@@ -1052,6 +1109,7 @@ class BrowserApi:
 
     def _browser_update_serialize(
         self,
+        tenant,
         browser,
         browser2,
         _request_auth,
@@ -1075,6 +1133,8 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if browser is not None:
             _path_params['browser'] = browser
         # process the query parameters
@@ -1116,7 +1176,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/browsers/{browser}',
+            resource_path='/api/v1/tenants/{tenant}/browsers/{browser}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

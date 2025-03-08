@@ -42,6 +42,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_create(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: PlatformAccount,
         _request_timeout: Union[
             None,
@@ -60,6 +61,8 @@ class PlatformAccountApi:
 
         create platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: (required)
         :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
@@ -85,6 +88,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_create_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -111,6 +115,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_create_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: PlatformAccount,
         _request_timeout: Union[
             None,
@@ -129,6 +134,8 @@ class PlatformAccountApi:
 
         create platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: (required)
         :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
@@ -154,6 +161,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_create_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -180,6 +188,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_create_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: PlatformAccount,
         _request_timeout: Union[
             None,
@@ -198,6 +207,8 @@ class PlatformAccountApi:
 
         create platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: (required)
         :type platform_account: PlatformAccount
         :param _request_timeout: timeout setting for this request. If one
@@ -223,6 +234,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_create_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -244,6 +256,7 @@ class PlatformAccountApi:
 
     def _platform_account_create_serialize(
         self,
+        tenant,
         platform_account,
         _request_auth,
         _content_type,
@@ -266,6 +279,8 @@ class PlatformAccountApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -305,7 +320,7 @@ class PlatformAccountApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/platform_accounts',
+            resource_path='/api/v1/tenants/{tenant}/platform_accounts',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -324,6 +339,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_get(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         _request_timeout: Union[
             None,
@@ -341,6 +357,8 @@ class PlatformAccountApi:
         """platform_account_get
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param _request_timeout: timeout setting for this request. If one
@@ -366,6 +384,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_get_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -390,6 +409,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_get_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         _request_timeout: Union[
             None,
@@ -407,6 +427,8 @@ class PlatformAccountApi:
         """platform_account_get
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param _request_timeout: timeout setting for this request. If one
@@ -432,6 +454,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_get_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -456,6 +479,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_get_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         _request_timeout: Union[
             None,
@@ -473,6 +497,8 @@ class PlatformAccountApi:
         """platform_account_get
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param _request_timeout: timeout setting for this request. If one
@@ -498,6 +524,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_get_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -517,6 +544,7 @@ class PlatformAccountApi:
 
     def _platform_account_get_serialize(
         self,
+        tenant,
         platform_account,
         _request_auth,
         _content_type,
@@ -539,6 +567,8 @@ class PlatformAccountApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if platform_account is not None:
             _path_params['platform_account'] = platform_account
         # process the query parameters
@@ -565,7 +595,7 @@ class PlatformAccountApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/platform_accounts/{platform_account}',
+            resource_path='/api/v1/tenants/{tenant}/platform_accounts/{platform_account}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -584,6 +614,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_list(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -600,6 +631,8 @@ class PlatformAccountApi:
         """platform_account_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -623,6 +656,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -649,6 +683,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_list_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -665,6 +700,8 @@ class PlatformAccountApi:
         """platform_account_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -688,6 +725,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -714,6 +752,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_list_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -730,6 +769,8 @@ class PlatformAccountApi:
         """platform_account_list
 
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -753,6 +794,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -774,6 +816,7 @@ class PlatformAccountApi:
 
     def _platform_account_list_serialize(
         self,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -795,6 +838,8 @@ class PlatformAccountApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -819,7 +864,7 @@ class PlatformAccountApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/platform_accounts',
+            resource_path='/api/v1/tenants/{tenant}/platform_accounts',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -838,6 +883,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
@@ -857,6 +903,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param platform_account2: The platform_account properties to update (required)
@@ -884,6 +932,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             platform_account2=platform_account2,
             _request_auth=_request_auth,
@@ -911,6 +960,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
@@ -930,6 +980,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param platform_account2: The platform_account properties to update (required)
@@ -957,6 +1009,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             platform_account2=platform_account2,
             _request_auth=_request_auth,
@@ -984,6 +1037,7 @@ class PlatformAccountApi:
     @validate_call
     async def platform_account_update_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
         platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
@@ -1003,6 +1057,8 @@ class PlatformAccountApi:
 
         Update an platform_account
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
         :param platform_account2: The platform_account properties to update (required)
@@ -1030,6 +1086,7 @@ class PlatformAccountApi:
         """ # noqa: E501
 
         _param = self._platform_account_update_serialize(
+            tenant=tenant,
             platform_account=platform_account,
             platform_account2=platform_account2,
             _request_auth=_request_auth,
@@ -1052,6 +1109,7 @@ class PlatformAccountApi:
 
     def _platform_account_update_serialize(
         self,
+        tenant,
         platform_account,
         platform_account2,
         _request_auth,
@@ -1075,6 +1133,8 @@ class PlatformAccountApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if platform_account is not None:
             _path_params['platform_account'] = platform_account
         # process the query parameters
@@ -1116,7 +1176,7 @@ class PlatformAccountApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/platform_accounts/{platform_account}',
+            resource_path='/api/v1/tenants/{tenant}/platform_accounts/{platform_account}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
