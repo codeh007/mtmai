@@ -17,26 +17,22 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.mt_resource import MtResource
+from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PlatformAccountUpdate(BaseModel):
+class MtResourceList(BaseModel):
     """
-    PlatformAccountUpdate
+    MtResourceList
     """ # noqa: E501
-    username: StrictStr
-    email: Optional[StrictStr] = None
-    password: Optional[StrictStr] = None
-    token: Optional[StrictStr] = None
-    type: Optional[StrictStr] = None
-    platform: StrictStr
-    enabled: Optional[StrictBool] = None
-    comment: Optional[StrictStr] = None
-    tags: Optional[List[StrictStr]] = None
-    properties: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
+    metadata: Optional[APIResourceMeta] = None
+    rows: Optional[List[MtResource]] = None
+    pagination: Optional[PaginationResponse] = None
+    __properties: ClassVar[List[str]] = ["metadata", "rows", "pagination"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +52,7 @@ class PlatformAccountUpdate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PlatformAccountUpdate from a JSON string"""
+        """Create an instance of MtResourceList from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,16 +73,24 @@ class PlatformAccountUpdate(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if properties (nullable) is None
-        # and model_fields_set contains the field
-        if self.properties is None and "properties" in self.model_fields_set:
-            _dict['properties'] = None
-
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in rows (list)
+        _items = []
+        if self.rows:
+            for _item_rows in self.rows:
+                if _item_rows:
+                    _items.append(_item_rows.to_dict())
+            _dict['rows'] = _items
+        # override the default output from pydantic by calling `to_dict()` of pagination
+        if self.pagination:
+            _dict['pagination'] = self.pagination.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PlatformAccountUpdate from a dict"""
+        """Create an instance of MtResourceList from a dict"""
         if obj is None:
             return None
 
@@ -94,16 +98,9 @@ class PlatformAccountUpdate(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "username": obj.get("username"),
-            "email": obj.get("email"),
-            "password": obj.get("password"),
-            "token": obj.get("token"),
-            "type": obj.get("type"),
-            "platform": obj.get("platform"),
-            "enabled": obj.get("enabled"),
-            "comment": obj.get("comment"),
-            "tags": obj.get("tags"),
-            "properties": obj.get("properties")
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "rows": [MtResource.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None,
+            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None
         })
         return _obj
 

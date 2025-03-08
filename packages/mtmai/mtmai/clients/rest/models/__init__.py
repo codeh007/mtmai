@@ -156,6 +156,9 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
+from mtmai.clients.rest.models.mt_resource import MtResource
+from mtmai.clients.rest.models.mt_resource_list import MtResourceList
+from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmai.clients.rest.models.node_run_action import NodeRunAction
@@ -166,6 +169,7 @@ from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
+from mtmai.clients.rest.models.platform_account_properties import PlatformAccountProperties
 from mtmai.clients.rest.models.platform_account_update import PlatformAccountUpdate
 from mtmai.clients.rest.models.platform_list import PlatformList
 from mtmai.clients.rest.models.platform_update import PlatformUpdate

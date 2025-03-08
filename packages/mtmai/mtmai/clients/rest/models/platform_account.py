@@ -37,7 +37,7 @@ class PlatformAccount(BaseModel):
     enabled: Optional[StrictBool] = None
     comment: Optional[StrictStr] = None
     tags: Optional[List[StrictStr]] = None
-    properties: Optional[Dict[str, Any]] = None
+    properties: Optional[Any] = None
     __properties: ClassVar[List[str]] = ["metadata", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
 
     model_config = ConfigDict(
@@ -82,6 +82,11 @@ class PlatformAccount(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # set to None if properties (nullable) is None
+        # and model_fields_set contains the field
+        if self.properties is None and "properties" in self.model_fields_set:
+            _dict['properties'] = None
+
         return _dict
 
     @classmethod
