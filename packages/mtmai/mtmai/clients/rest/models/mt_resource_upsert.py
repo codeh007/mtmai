@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +27,12 @@ class MtResourceUpsert(BaseModel):
     """
     MtResourceUpsert
     """ # noqa: E501
-    id: Optional[StrictStr] = Field(default=None, description="The resource id")
-    __properties: ClassVar[List[str]] = ["id"]
+    metadata: Optional[APIResourceMeta] = None
+    title: StrictStr = Field(description="The resource title")
+    type: StrictStr = Field(description="The resource type")
+    content: Optional[Any] = None
+    version: Optional[StrictStr] = Field(default=None, description="The resource version")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content", "version"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,6 +73,14 @@ class MtResourceUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
+        # set to None if content (nullable) is None
+        # and model_fields_set contains the field
+        if self.content is None and "content" in self.model_fields_set:
+            _dict['content'] = None
+
         return _dict
 
     @classmethod
@@ -80,7 +93,11 @@ class MtResourceUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id")
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "title": obj.get("title"),
+            "type": obj.get("type"),
+            "content": obj.get("content"),
+            "version": obj.get("version")
         })
         return _obj
 

@@ -28,10 +28,11 @@ class MtResource(BaseModel):
     MtResource
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    title: Optional[StrictStr] = Field(default=None, description="The resource title")
-    type: Optional[StrictStr] = Field(default=None, description="The resource type")
+    title: StrictStr = Field(description="The resource title")
+    type: StrictStr = Field(description="The resource type")
     content: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content"]
+    version: Optional[StrictStr] = Field(default=None, description="The resource version")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content", "version"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -95,7 +96,8 @@ class MtResource(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "title": obj.get("title"),
             "type": obj.get("type"),
-            "content": obj.get("content")
+            "content": obj.get("content"),
+            "version": obj.get("version")
         })
         return _obj
 

@@ -26,10 +26,11 @@ class MtResourceProperties(BaseModel):
     """
     MtResourceProperties
     """ # noqa: E501
-    title: Optional[StrictStr] = Field(default=None, description="The resource title")
-    type: Optional[StrictStr] = Field(default=None, description="The resource type")
+    title: StrictStr = Field(description="The resource title")
+    type: StrictStr = Field(description="The resource type")
     content: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["title", "type", "content"]
+    version: Optional[StrictStr] = Field(default=None, description="The resource version")
+    __properties: ClassVar[List[str]] = ["title", "type", "content", "version"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,7 +90,8 @@ class MtResourceProperties(BaseModel):
         _obj = cls.model_validate({
             "title": obj.get("title"),
             "type": obj.get("type"),
-            "content": obj.get("content")
+            "content": obj.get("content"),
+            "version": obj.get("version")
         })
         return _obj
 
