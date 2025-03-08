@@ -32,12 +32,13 @@ class ChatMessageUpsert(BaseModel):
     thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
     run_id: Optional[StrictStr] = Field(default=None, alias="runId")
     role: Optional[StrictStr] = None
+    topic: Optional[StrictStr] = None
     source: StrictStr
     message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
     agent_type: Optional[StrictStr] = Field(default=None, alias="agentType")
     workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
     step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
-    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "source", "messageType", "agentType", "workflowRunId", "stepRunId"]
+    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "topic", "source", "messageType", "agentType", "workflowRunId", "stepRunId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,6 +97,7 @@ class ChatMessageUpsert(BaseModel):
             "threadId": obj.get("threadId"),
             "runId": obj.get("runId"),
             "role": obj.get("role"),
+            "topic": obj.get("topic"),
             "source": obj.get("source") if obj.get("source") is not None else 'user',
             "messageType": obj.get("messageType"),
             "agentType": obj.get("agentType"),

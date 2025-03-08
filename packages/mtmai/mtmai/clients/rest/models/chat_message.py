@@ -32,8 +32,9 @@ class ChatMessage(BaseModel):
     role: StrictStr
     content: StrictStr
     source: Optional[StrictStr] = None
+    topic: StrictStr
     config: Optional[ChatMessageConfig] = None
-    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "config"]
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,6 +97,7 @@ class ChatMessage(BaseModel):
             "role": obj.get("role"),
             "content": obj.get("content"),
             "source": obj.get("source"),
+            "topic": obj.get("topic"),
             "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

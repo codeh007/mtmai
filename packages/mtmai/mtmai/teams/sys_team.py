@@ -160,7 +160,11 @@ class MockIntentClassifier(IntentClassifierBase):
 
 class MockAgentRegistry(AgentRegistryBase):
     def __init__(self):
-        self.agents = {"finance_intent": "finance", "hr_intent": "hr"}
+        self.agents = {
+            "finance_intent": "finance",
+            "hr_intent": "hr",
+            "general": triage_agent_topic_type,
+        }
 
     async def get_agent(self, intent: str) -> str:
         return self.agents[intent]
@@ -450,7 +454,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         await self._runtime.publish_message(
             message=UserLogin(content=user_content, source=session_id),
-            topic_id=TopicId(router_topic_type, source=session_id),
+            topic_id=TopicId(type=user_topic_type, source=session_id),
         )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
