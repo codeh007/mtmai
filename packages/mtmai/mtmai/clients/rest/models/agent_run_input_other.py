@@ -20,6 +20,7 @@ import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
 from mtmai.clients.rest.models.browser_data import BrowserData
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from mtmai.clients.rest.models.instagram_task import InstagramTask
@@ -30,7 +31,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask"]
+AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "ChatSessionStartEvent", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask"]
 
 class AgentRunInputOther(BaseModel):
     """
@@ -55,11 +56,13 @@ class AgentRunInputOther(BaseModel):
     anyof_schema_8_validator: Optional[PlatformAccountData] = None
     # data type: InstagramTask
     anyof_schema_9_validator: Optional[InstagramTask] = None
+    # data type: ChatSessionStartEvent
+    anyof_schema_10_validator: Optional[ChatSessionStartEvent] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[BrowserData, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask]] = None
+        actual_instance: Optional[Union[BrowserData, ChatSessionStartEvent, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "BrowserData", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask" }
+    any_of_schemas: Set[str] = { "BrowserData", "ChatSessionStartEvent", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask" }
 
     model_config = {
         "validate_assignment": True,
@@ -134,9 +137,15 @@ class AgentRunInputOther(BaseModel):
         else:
             return v
 
+        # validate data type: ChatSessionStartEvent
+        if not isinstance(v, ChatSessionStartEvent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ChatSessionStartEvent`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, ChatSessionStartEvent, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -203,10 +212,16 @@ class AgentRunInputOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_10_validator: Optional[ChatSessionStartEvent] = None
+        try:
+            instance.actual_instance = ChatSessionStartEvent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, ChatSessionStartEvent, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -220,7 +235,7 @@ class AgentRunInputOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, ChatSessionStartEvent, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

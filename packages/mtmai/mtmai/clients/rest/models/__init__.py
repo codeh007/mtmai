@@ -74,6 +74,7 @@ from mtmai.clients.rest.models.chat_message_list import ChatMessageList
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_highlight import CodeHighlight
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult

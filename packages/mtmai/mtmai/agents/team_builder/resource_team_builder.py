@@ -1,5 +1,6 @@
 from loguru import logger
 from mtmai.agents.team_builder.instagram_team_builder import InstagramTeamBuilder
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 
 
@@ -18,7 +19,7 @@ class ResourceTeamBuilder:
     def description(self):
         return "resource_team"
 
-    async def create_team(self, resource_id: str):
+    async def create_team(self, message: AgentRunInput):
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
         model_client = await tenant_client.ag.default_model_client(
@@ -26,7 +27,7 @@ class ResourceTeamBuilder:
         )
         resource_data = await tenant_client.ag.resource_api.resource_get(
             tenant=tid,
-            resource=resource_id,
+            resource=message.resource_id,
         )
         # platform_account_data = PlatformAccountData.model_validate(
         #     platform_account.content
