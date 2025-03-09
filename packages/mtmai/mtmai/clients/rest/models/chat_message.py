@@ -26,7 +26,7 @@ from typing_extensions import Self
 
 class ChatMessage(BaseModel):
     """
-    单个聊天消息
+    ChatMessage
     """ # noqa: E501
     metadata: APIResourceMeta
     role: StrictStr

@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from autogen_agentchat.base import TaskResult
 from autogen_core.models import LLMMessage
+from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from pydantic import BaseModel
 
 
@@ -52,22 +53,13 @@ class LogItemMsg(BaseModel):
     content: str
 
 
-class MsgStartWebServer(BaseModel):
-    pass
+# class MsgStartWebServer(BaseModel):
+#     pass
 
 
 class MsgGetTeam(BaseModel):
     tenant_id: str
     team_id: str
-
-
-class MyMessage(BaseModel):
-    content: str
-
-
-class UserLogin(BaseModel):
-    content: str
-    source: str
 
 
 class UserTask(BaseModel):
@@ -85,8 +77,8 @@ class TerminationMessage(BaseModel):
     reason: str
 
 
-class CodeWritingTask(BaseModel):
-    task: str
+# class CodeWritingTask(BaseModel):
+#     task: str
 
 
 class CodeWritingResult(BaseModel):
@@ -153,7 +145,6 @@ class PlatformAccountTask(BaseMessage):
 
 
 agent_message_types = [
-    UserLogin,
     TerminationMessage,
     CodeWritingTask,
     CodeWritingResult,

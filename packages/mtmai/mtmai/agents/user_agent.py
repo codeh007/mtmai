@@ -15,22 +15,24 @@ from mtmai.agents._types import (
     CodeWritingTask,
     TeamRunnerTask,
     TerminationMessage,
-    UserLogin,
     UserTask,
 )
+
+# from mtmai.mtmpb.ag_pb2 import AgentRunInput
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.context.context_client import TenantClient
 
 
 class UserAgent(RoutedAgent):
-    def __init__(
-        self, description: str,agent_topic_type: str
-    ) -> None:
+    def __init__(self, description: str, agent_topic_type: str) -> None:
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
 
     @message_handler
-    async def handle_user_login(self, message: UserLogin, ctx: MessageContext) -> None:
+    async def handle_agent_run_input(
+        self, message: AgentRunInput, ctx: MessageContext
+    ) -> None:
         """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
         if ctx.cancellation_token.is_cancelled():
             return
@@ -114,6 +116,8 @@ class UserAgent(RoutedAgent):
             #     UserTask(context=[UserMessage(content=user_input, source=session_id)]),
             #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
             # )
+
+            resource_id = "platform_account"
 
             # 加载对话历史
             message_history = await tenant_client.ag.chat_api.chat_messages_list(

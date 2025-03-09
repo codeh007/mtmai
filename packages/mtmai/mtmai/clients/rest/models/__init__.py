@@ -36,6 +36,7 @@ from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_node_create_request import AgentNodeCreateRequest
 from mtmai.clients.rest.models.agent_node_update_request import AgentNodeUpdateRequest
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
 from mtmai.clients.rest.models.agent_step import AgentStep
 from mtmai.clients.rest.models.agent_task_step import AgentTaskStep
 from mtmai.clients.rest.models.agent_types import AgentTypes
@@ -74,6 +75,8 @@ from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_highlight import CodeHighlight
+from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
+from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from mtmai.clients.rest.models.common_result import CommonResult
 from mtmai.clients.rest.models.component_get import ComponentGet
 from mtmai.clients.rest.models.component_model import ComponentModel
@@ -162,6 +165,7 @@ from mtmai.clients.rest.models.mt_resource_properties import MtResourcePropertie
 from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
+from mtmai.clients.rest.models.my_message import MyMessage
 from mtmai.clients.rest.models.node_run_action import NodeRunAction
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmai.clients.rest.models.operation_enum import OperationEnum

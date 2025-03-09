@@ -19,8 +19,10 @@ from mtmai.agents._types import (
     IntentClassifierBase,
     TeamRunnerTask,
     TerminationMessage,
-    UserLogin,
 )
+
+# from mtmai.mtmpb.ag_pb2 import AgentRunInput
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 
 
 class SemanticRouterAgent(RoutedAgent):
@@ -38,7 +40,7 @@ class SemanticRouterAgent(RoutedAgent):
     # The User has sent a message that needs to be routed
     @message_handler
     async def handle_route_to_agent(
-        self, message: UserLogin, ctx: MessageContext
+        self, message: AgentRunInput, ctx: MessageContext
     ) -> None:
         assert ctx.topic_id is not None
         logger.info(f"Received message from {message.source}: {message.content}")
@@ -78,7 +80,7 @@ class SemanticRouterAgent(RoutedAgent):
             await self.contact_agent(agent, message, session_id)
 
     ## Identify the intent of the user message
-    async def _identify_intent(self, message: UserLogin) -> str:
+    async def _identify_intent(self, message: AgentRunInput) -> str:
         return await self._classifier.classify_intent(message.content)
 
     ## Use a lookup, search, or LLM to identify the most relevant agent for the intent
@@ -93,7 +95,7 @@ class SemanticRouterAgent(RoutedAgent):
 
     ## Forward user message to the appropriate agent, or end the thread.
     async def contact_agent(
-        self, agent: str, message: UserLogin, session_id: str
+        self, agent: str, message: AgentRunInput, session_id: str
     ) -> None:
         if agent == "termination":
             logger.info("No relevant agent found")
@@ -108,7 +110,7 @@ class SemanticRouterAgent(RoutedAgent):
         else:
             logger.debug("Routing to agent: " + agent)
             await self.publish_message(
-                UserLogin(content=message.content, source=message.source),
+                AgentRunInput(content=message.content, source=message.source),
                 # DefaultTopicId(type=agent, source=session_id),
                 TopicId(agent, source=session_id),
             )

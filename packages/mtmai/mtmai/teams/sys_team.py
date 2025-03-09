@@ -33,23 +33,23 @@ from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import (
     AgentRegistryBase,
     IntentClassifierBase,
-    UserLogin,
     agent_message_types,
 )
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.coder_agent import CoderAgent
 from mtmai.agents.human_agent import HumanAgent
+from mtmai.agents.platorm_account_agent import PlatformAccountAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
+
+# from mtmai.mtmpb.ag_pb2 import AgentRunInput
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
-from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
-
-from ..agents.platorm_account_agent import PlatformAccountAgent
 
 
 def execute_order(product: str, price: int) -> str:
@@ -337,7 +337,7 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             type=user_topic_type,
             factory=lambda: UserAgent(
                 description="A user agent.",
-                user_topic_type=user_topic_type,
+                # user_topic_type=user_topic_type,
                 agent_topic_type=triage_agent_topic_type,  # Start with the triage agent.
             ),
         )
@@ -467,10 +467,11 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         session_id = get_chat_session_id_ctx()
 
-        user_content = task.content
+        # user_content = task.content
 
         await self._runtime.publish_message(
-            message=UserLogin(content=user_content, source=session_id),
+            # message=AgentRunInput(content=user_content, source=session_id),
+            message=task,
             topic_id=TopicId(type=user_topic_type, source=session_id),
         )
 

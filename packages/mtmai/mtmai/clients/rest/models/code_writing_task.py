@@ -17,27 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentRunInput(BaseModel):
+class CodeWritingTask(BaseModel):
     """
-    AgentRunInput
+    CodeWritingTask
     """ # noqa: E501
-    team_id: Optional[StrictStr] = Field(default=None, alias="teamId")
-    session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
-    content: StrictStr
-    tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
-    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
-    step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
-    resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
-    source: Optional[StrictStr] = None
-    topic: Optional[StrictStr] = None
-    other: Optional[AgentRunInputOther] = None
-    __properties: ClassVar[List[str]] = ["teamId", "sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "source", "topic", "other"]
+    task: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["task"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -57,7 +47,7 @@ class AgentRunInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentRunInput from a JSON string"""
+        """Create an instance of CodeWritingTask from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,14 +68,11 @@ class AgentRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of other
-        if self.other:
-            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentRunInput from a dict"""
+        """Create an instance of CodeWritingTask from a dict"""
         if obj is None:
             return None
 
@@ -93,16 +80,7 @@ class AgentRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "teamId": obj.get("teamId"),
-            "sessionId": obj.get("sessionId"),
-            "content": obj.get("content"),
-            "tenantId": obj.get("tenantId"),
-            "runId": obj.get("runId"),
-            "stepRunId": obj.get("stepRunId"),
-            "resourceId": obj.get("resourceId"),
-            "source": obj.get("source"),
-            "topic": obj.get("topic"),
-            "other": AgentRunInputOther.from_dict(obj["other"]) if obj.get("other") is not None else None
+            "task": obj.get("task")
         })
         return _obj
 
