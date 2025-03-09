@@ -5,7 +5,6 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
-from mtmai.agents.tools.web_search import search_web_tool
 from mtmai.context.context_client import TenantClient
 
 
@@ -49,30 +48,6 @@ class InstagramTeamBuilder:
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
-        web_search_agent = MtAssistantAgent(
-            "WebSearchAgent",
-            description="An agent for searching information on the web.",
-            tools=[search_web_tool],
-            model_client=model_client,
-            system_message="""
-            You are a web search agent.
-            Your only tool is search_tool - use it to find information.
-            You make only one search call at a time.
-            Once you have the results, you never do calculations based on them.
-            """,
-        )
-
-        data_analyst_agent = MtAssistantAgent(
-            "DataAnalystAgent",
-            description="An agent for performing calculations.",
-            model_client=model_client,
-            tools=[percentage_change_tool],
-            system_message="""
-            You are a data analyst.
-            Given the tasks you have been assigned, you should analyze the data and provide results using the tools provided.
-            If you have not seen the data, ask for it.
-            """,
-        )
 
         # termination = TextMentionTermination(text="TERMINATE")
         # max_msg_termination = MaxMessageTermination(max_messages=6)
@@ -81,7 +56,6 @@ class InstagramTeamBuilder:
         # 团队成员提及 "TERMINATE" 时, 会自动终止团队
         max_messages_termination = MaxMessageTermination(max_messages=25)
         termination = max_messages_termination
-        # combined_termination = max_messages_termination & termination
 
         selector_prompt = """Select an agent to perform task.
 
@@ -131,13 +105,14 @@ Only select one agent.
             return None
 
         team = SelectorGroupChat(
-            participants=[planning_agent, web_search_agent, data_analyst_agent],
+            participants=[planning_agent, user_proxy_agent],
             model_client=model_client,
             termination_condition=termination,
             selector_prompt=selector_prompt,
             allow_repeated_speaker=True,  # Allow an agent to speak multiple turns in a row.
             # selector_func=selector_func,  # 可选,(自定义选择器)
             selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
+            max_turns=3,
         )
         # team.component_version = current_team_version
         team.component_label = self.name
