@@ -5,11 +5,6 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
-from mtmai.context.context_client import TenantClient
-
-
-def percentage_change_tool(start: float, end: float) -> float:
-    return ((end - start) / start) * 100
 
 
 class InstagramTeamBuilder:
@@ -24,11 +19,11 @@ class InstagramTeamBuilder:
         return "instagram_team"
 
     async def create_team(self, model_client: ChatCompletionClient = None):
-        tenant_client = TenantClient()
-        if not model_client:
-            model_client = await tenant_client.ag.default_model_client(
-                tenant_client.tenant_id
-            )
+        # tenant_client = TenantClient()
+        # if not model_client:
+        #     model_client = await tenant_client.ag.default_model_client(
+        #         tenant_client.tenant_id
+        #     )
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",

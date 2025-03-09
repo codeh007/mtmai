@@ -22,11 +22,11 @@ class FlowResource:
         tenant_client = TenantClient()
         cancellation_token = MtCancelToken()
         async for event in team.run_stream(
-            task=input,
+            task=input.content,
             cancellation_token=cancellation_token,
         ):
-            if cancellation_token and cancellation_token.is_cancelled():
-                break
+            # if cancellation_token and cancellation_token.is_cancelled():
+            #     break
             if isinstance(event, TaskResult):
                 result = event
                 return result
