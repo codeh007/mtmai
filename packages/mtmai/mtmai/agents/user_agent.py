@@ -46,40 +46,6 @@ class UserAgent(RoutedAgent):
         )
         user_input = message.content
 
-        # match user_input:
-        #     case "/test_code":
-        #         await self._runtime.publish_message(
-        #             message=CodeWritingTask(
-        #                 task="Write a function to find the sum of all even numbers in a list."
-        #             ),
-        #             topic_id=TopicId(coder_agent_topic_type, source=session_id),
-        #         )
-        #         # CodeWritingTask(
-        #         #         task="Write a function to find the sum of all even numbers in a list."
-        #         #     )
-        #     case "/test_open_browser":
-        #         await self._runtime.publish_message(
-        #             message=BrowserOpenTask(url="https://playwright.dev/"),
-        #             topic_id=TopicId(browser_topic_type, source=session_id),
-        #         )
-        #     case "/test_browser_task":
-        #         await self._runtime.publish_message(
-        #             message=BrowserTask(task="Open an online code editor programiz."),
-        #             topic_id=TopicId(browser_topic_type, source=session_id),
-        #         )
-        #     case "/test_team":
-        #         await self._runtime.publish_message(
-        #             message=TeamRunnerTask(
-        #                 task=user_input, team=team_runner_topic_type
-        #             ),
-        #             topic_id=TopicId(team_runner_topic_type, source=session_id),
-        #         )
-        #     # case _:
-        #     #     await self._runtime.publish_message(
-        #     #         message=UserLogin(task=user_input),
-        #     #         topic_id=TopicId(user_topic_type, source=session_id),
-        #     #     )
-
         user_content = message.content
         if user_content.startswith("/test_code"):
             await self._runtime.publish_message(
@@ -117,7 +83,17 @@ class UserAgent(RoutedAgent):
             #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
             # )
 
-            resource_id = "platform_account"
+            resource_id = message.resource_id
+
+            try:
+                resource = await tenant_client.ag.resource_api.resource_get(
+                    tenant=tid,
+                    resource=resource_id,
+                )
+                logger.info(f"resource: {resource}")
+            except Exception as e:
+                logger.exception(f"get resource error: {e}")
+                return None
 
             # 加载对话历史
             message_history = await tenant_client.ag.chat_api.chat_messages_list(

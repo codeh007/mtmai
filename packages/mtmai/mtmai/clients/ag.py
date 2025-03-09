@@ -16,6 +16,8 @@ from mtmai.context.ctx import get_tenant_id
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
+from .rest.api.resource_api import ResourceApi
+
 
 class AgClient:
     def __init__(
@@ -77,6 +79,13 @@ class AgClient:
             return self._coms_api
         self._coms_api = ComsApi(self.api_client)
         return self._coms_api
+
+    @property
+    def resource_api(self):
+        if hasattr(self, "_resource_api"):
+            return self._resource_api
+        self._resource_api = ResourceApi(self.api_client)
+        return self._resource_api
 
     async def load_team_state(
         self,
