@@ -1,31 +1,29 @@
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
 from mtmai.agents._types import PlatformAccountTask
+from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
+from mtmai.context.context_client import TenantClient
 
 
 class PlatformAccountAgent(RoutedAgent):
     def __init__(
         self,
         description: str,
-        # system_message: SystemMessage,
-        # model_client: ChatCompletionClient,
-        # tools: List[Tool],
-        # delegate_tools: List[Tool],
-        # agent_topic_type: str,
-        # user_topic_type: str,
     ) -> None:
         super().__init__(description)
-        # self._system_message = system_message
-        # self._model_client = model_client
-        # self._tools = dict([(tool.name, tool) for tool in tools])
-        # self._tool_schema = [tool.schema for tool in tools]
-        # self._delegate_tools = dict([(tool.name, tool) for tool in delegate_tools])
-        # self._delegate_tool_schema = [tool.schema for tool in delegate_tools]
-        # self._agent_topic_type = agent_topic_type
-        # self._user_topic_type = user_topic_type
 
     @message_handler
     async def handle_task(
         self, message: PlatformAccountTask, ctx: MessageContext
     ) -> None:
         logger.info(f"Platform account agent received task: {message}")
+        tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
+        platform_account = await tenant_client.ag.resource_api.resource_get(
+            tenant=tid,
+            resource=message.id,
+        )
+        platform_account_data = PlatformAccountData.model_validate(
+            platform_account.content
+        )
+        logger.info(f"platform_account_data: {platform_account_data}")

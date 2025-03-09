@@ -27,12 +27,12 @@ class MtResourceProperties(BaseModel):
     MtResourceProperties
     """ # noqa: E501
     title: StrictStr = Field(description="The resource title")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Any] = None
     description: Optional[StrictStr] = Field(default=None, description="The resource description")
     version: Optional[StrictStr] = Field(default=None, description="The resource version")
     url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    __properties: ClassVar[List[str]] = ["title", "type", "content", "description", "version", "url"]
+    type: StrictStr = Field(description="The resource type")
+    content: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["title", "description", "version", "url", "type", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,11 +73,6 @@ class MtResourceProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if content (nullable) is None
-        # and model_fields_set contains the field
-        if self.content is None and "content" in self.model_fields_set:
-            _dict['content'] = None
-
         return _dict
 
     @classmethod
@@ -91,11 +86,11 @@ class MtResourceProperties(BaseModel):
 
         _obj = cls.model_validate({
             "title": obj.get("title"),
-            "type": obj.get("type"),
-            "content": obj.get("content"),
             "description": obj.get("description"),
             "version": obj.get("version"),
-            "url": obj.get("url")
+            "url": obj.get("url"),
+            "type": obj.get("type"),
+            "content": obj.get("content")
         })
         return _obj
 

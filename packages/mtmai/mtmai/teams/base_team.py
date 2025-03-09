@@ -1,9 +1,10 @@
 from abc import ABC
 from typing import Any, List, Mapping, Sequence
 
-from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import ChatMessage
 from autogen_agentchat.state import TeamState
+from autogen_agentchat.teams import BaseGroupChat
 from autogen_core import CancellationToken, Component, ComponentModel
 from pydantic import BaseModel
 
@@ -14,7 +15,7 @@ class BaseTeamConfig(BaseModel):
     max_turns: int | None = None
 
 
-class MtBaseTeam(Team, ABC, Component[BaseTeamConfig]):
+class MtBaseTeam(BaseGroupChat, ABC, Component[BaseTeamConfig]):
     component_type = "mtmai.teams.base_team.MtBaseTeam"
 
     def __init__(self):

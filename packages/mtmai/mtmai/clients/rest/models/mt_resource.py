@@ -29,12 +29,12 @@ class MtResource(BaseModel):
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
     title: StrictStr = Field(description="The resource title")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Any] = None
     description: Optional[StrictStr] = Field(default=None, description="The resource description")
     version: Optional[StrictStr] = Field(default=None, description="The resource version")
     url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    __properties: ClassVar[List[str]] = ["metadata", "title", "type", "content", "description", "version", "url"]
+    type: StrictStr = Field(description="The resource type")
+    content: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -78,11 +78,6 @@ class MtResource(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # set to None if content (nullable) is None
-        # and model_fields_set contains the field
-        if self.content is None and "content" in self.model_fields_set:
-            _dict['content'] = None
-
         return _dict
 
     @classmethod
@@ -97,11 +92,11 @@ class MtResource(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "title": obj.get("title"),
-            "type": obj.get("type"),
-            "content": obj.get("content"),
             "description": obj.get("description"),
             "version": obj.get("version"),
-            "url": obj.get("url")
+            "url": obj.get("url"),
+            "type": obj.get("type"),
+            "content": obj.get("content")
         })
         return _obj
 

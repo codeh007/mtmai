@@ -4,9 +4,10 @@ from loguru import logger
 from mtmai.agents._agents import (
     browser_topic_type,
     coder_agent_topic_type,
+    platform_account_topic_type,
     team_runner_topic_type,
 )
-from mtmai.agents._types import (
+from mtmai.agents._types import (  # PlatformAccountTask,
     AgentResponse,
     BrowserOpenTask,
     BrowserTask,
@@ -21,6 +22,7 @@ from mtmai.agents._types import (
 # from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
 from mtmai.context.context_client import TenantClient
 
 
@@ -95,30 +97,39 @@ class UserAgent(RoutedAgent):
                 logger.exception(f"get resource error: {e}")
                 return None
 
-            # 加载对话历史
-            message_history = await tenant_client.ag.chat_api.chat_messages_list(
-                tenant=tid,
-                chat=session_id,
-            )
+            if resource is None:
+                return None
 
-            await self.publish_message(
-                UserTask(context=[UserMessage(content=user_input, source="User")]),
-                topic_id=TopicId(self._agent_topic_type, source=session_id),
-            )
+            if resource.type == "platform_account":
+                await self.publish_message(
+                    PlatformAccountTask(id=resource_id, task=user_input),
+                    topic_id=TopicId(platform_account_topic_type, source=session_id),
+                )
+            else:
+                # 加载对话历史
+                message_history = await tenant_client.ag.chat_api.chat_messages_list(
+                    tenant=tid,
+                    chat=session_id,
+                )
 
-            await tenant_client.ag.chat_api.chat_message_upsert(
-                tenant=tid,
-                chat_message_upsert=ChatMessageUpsert(
-                    tenant_id=tid,
-                    content=user_input,
-                    # component_id=self.id.key,
-                    thread_id=self.id.key,
-                    role="user",
-                    source=session_id,
-                    # topic=self._agent_topic_type,
-                    topic=ctx.topic_id.type,
-                ),
-            )
+                await self.publish_message(
+                    UserTask(context=[UserMessage(content=user_input, source="User")]),
+                    topic_id=TopicId(self._agent_topic_type, source=session_id),
+                )
+
+                await tenant_client.ag.chat_api.chat_message_upsert(
+                    tenant=tid,
+                    chat_message_upsert=ChatMessageUpsert(
+                        tenant_id=tid,
+                        content=user_input,
+                        # component_id=self.id.key,
+                        thread_id=self.id.key,
+                        role="user",
+                        source=session_id,
+                        # topic=self._agent_topic_type,
+                        topic=ctx.topic_id.type,
+                    ),
+                )
 
     # When a conversation ends
     @message_handler

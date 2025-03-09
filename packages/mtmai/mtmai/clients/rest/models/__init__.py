@@ -60,6 +60,7 @@ from mtmai.clients.rest.models.blog_post_list import BlogPostList
 from mtmai.clients.rest.models.blog_post_state import BlogPostState
 from mtmai.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
 from mtmai.clients.rest.models.browser import Browser
+from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_list import BrowserList
 from mtmai.clients.rest.models.browser_params import BrowserParams
 from mtmai.clients.rest.models.browser_update import BrowserUpdate
@@ -132,6 +133,7 @@ from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfi
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.inner_message_config import InnerMessageConfig
+from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -173,8 +175,10 @@ from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
+from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmai.clients.rest.models.platform_account_properties import PlatformAccountProperties
+from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
 from mtmai.clients.rest.models.platform_account_update import PlatformAccountUpdate
 from mtmai.clients.rest.models.platform_list import PlatformList
 from mtmai.clients.rest.models.platform_update import PlatformUpdate

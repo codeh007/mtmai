@@ -1,9 +1,16 @@
 import asyncio
 import uuid
-from typing import Any, Mapping
+from typing import Any, Callable, List, Mapping
 
 from autogen_agentchat.base import TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
+    BaseGroupChatManager,
+)
+from autogen_agentchat.teams._group_chat._events import GroupChatTermination
+from autogen_agentchat.teams._group_chat._selector_group_chat import (
+    SelectorGroupChatManager,
+)
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
@@ -43,8 +50,6 @@ from mtmai.agents.platorm_account_agent import PlatformAccountAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
-
-# from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -212,6 +217,37 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
         self._initialized = False
         self._is_running = False
         # self._runtime.process_next()
+
+    def _create_group_chat_manager_factory(
+        self,
+        name: str,
+        group_topic_type: str,
+        output_topic_type: str,
+        participant_topic_types: List[str],
+        participant_names: List[str],
+        participant_descriptions: List[str],
+        output_message_queue: asyncio.Queue[
+            AgentEvent | ChatMessage | GroupChatTermination
+        ],
+        termination_condition: TerminationCondition | None,
+        max_turns: int | None,
+    ) -> Callable[[], BaseGroupChatManager]:
+        return lambda: SelectorGroupChatManager(
+            name,
+            group_topic_type,
+            output_topic_type,
+            participant_topic_types,
+            participant_names,
+            participant_descriptions,
+            output_message_queue,
+            termination_condition,
+            max_turns,
+            self._model_client,
+            self._selector_prompt,
+            self._allow_repeated_speaker,
+            self._selector_func,
+            self._max_selector_attempts,
+        )
 
     async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
@@ -434,19 +470,6 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
-        # await ClosureAgent.register_closure(
-        #     runtime=self._runtime,
-        #     type="collector",
-        #     closure=collect_output_messages,
-        #     # subscriptions=lambda: [
-        #     #     TypeSubscription(
-        #     #         topic_type=self._output_topic_type,
-        #     #         agent_type=self._collector_agent_type,
-        #     #     ),
-        #     # ],
-        #     subscriptions=lambda: [DefaultSubscription()],
-        # )
-
         for message_type in agent_message_types:
             self._runtime.add_message_serializer(
                 try_get_known_serializers_for_type(message_type)
@@ -466,8 +489,6 @@ class SystemHandoffsTeam(MtBaseTeam, Component[SysTeamConfig]):
             await self._init(self._runtime)
 
         session_id = get_chat_session_id_ctx()
-
-        # user_content = task.content
 
         await self._runtime.publish_message(
             # message=AgentRunInput(content=user_content, source=session_id),

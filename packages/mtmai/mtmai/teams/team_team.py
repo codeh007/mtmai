@@ -4,7 +4,6 @@ from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import CancellationToken, Component, ComponentModel
 from loguru import logger
-# from mtmai.agents.tenant_agent.tenant_agent import MsgResetTenant
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_team_id_ctx
 from mtmai.mtlibs.id import generate_uuid

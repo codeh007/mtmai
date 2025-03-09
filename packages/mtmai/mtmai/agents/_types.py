@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Dict, List
 
 from autogen_agentchat.base import TaskResult
 from autogen_core.models import LLMMessage
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
+from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
 from pydantic import BaseModel
 
 
@@ -130,18 +130,11 @@ class AgentRegistryBase(ABC):
         pass
 
 
-@dataclass(kw_only=True)
-class BaseMessage:
-    """A basic message that stores the source of the message."""
+# @dataclass(kw_only=True)
+# class BaseMessage:
+#     """A basic message that stores the source of the message."""
 
-    source: str
-
-
-class PlatformAccountTask(BaseMessage):
-    """A task that is sent to the platform account agent."""
-
-    id: str
-    task: str
+#     source: str
 
 
 agent_message_types = [
