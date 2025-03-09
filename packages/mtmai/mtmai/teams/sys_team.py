@@ -559,6 +559,7 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             set_step_canceled_ctx(True)
             pass
         else:
+            set_step_canceled_ctx(False)
             tenant_client = TenantClient()
             team = await tenant_client.ag.get_team_by_resource(
                 # cancellation_token=cancellation_token,
