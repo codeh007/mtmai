@@ -63,5 +63,5 @@ class MtAssistantAgent(AssistantAgent):
     pass
 
 
-class MtUserProxyAgent(UserProxyAgent):
-    pass
+# class MtUserProxyAgent(UserProxyAgent):
+#     pass

@@ -1,11 +1,11 @@
 from typing import Sequence
 
+from autogen_agentchat.agents import UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
-
-from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
+from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.tools.web_search import search_web_tool
 
 
@@ -100,7 +100,7 @@ Only select one agent.
                 return planning_agent.name
             return None
 
-        user_proxy_agent = MtUserProxyAgent(
+        user_proxy_agent = UserProxyAgent(
             "UserProxyAgent",
             description="A proxy for the user to approve or disapprove tasks.",
         )

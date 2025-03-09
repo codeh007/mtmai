@@ -1,12 +1,17 @@
 from typing import Sequence
 
-from autogen_agentchat.conditions import MaxMessageTermination, SourceMatchTermination
+from autogen_agentchat.conditions import (
+    MaxMessageTermination,
+    SourceMatchTermination,
+    StopMessageTermination,
+    TextMentionTermination,
+)
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
-from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
-
-from ..termination import MyFunctionCallTermination
+from mtmai.agents._agents import MtAssistantAgent
+from mtmai.agents.termination import MyFunctionCallTermination
+from mtmai.agents.user_agent import UserAgent
 
 
 class InstagramTeamBuilder:
@@ -60,8 +65,13 @@ class InstagramTeamBuilder:
             function_name="TERMINATE"
         )
         source_termination = SourceMatchTermination(sources=["UserProxyAgent"])
+        text_mention_termination = TextMentionTermination("TERMINATE")
+        stop_termination = StopMessageTermination()
         termination = (
-            max_messages_termination & my_function_call_termination & source_termination
+            max_messages_termination
+            & my_function_call_termination
+            & source_termination
+            & stop_termination
         )
 
         selector_prompt = """Select an agent to perform task.
@@ -82,8 +92,8 @@ Only select one agent.
                 return planning_agent.name
             return None
 
-        user_proxy_agent = MtUserProxyAgent(
-            "UserProxyAgent",
+        user_proxy_agent = UserAgent(
+            name="UserProxyAgent",
             description="A proxy for the user to approve or disapprove tasks.",
         )
 

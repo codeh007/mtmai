@@ -160,7 +160,7 @@ class ActionListener:
                 break
 
             try:
-                # logger.info("sending heartbeat")
+                logger.info("sending heartbeat")
                 # await self.aio_client.Heartbeat(
                 #     HeartbeatRequest(
                 #         workerId=self.worker_id,
