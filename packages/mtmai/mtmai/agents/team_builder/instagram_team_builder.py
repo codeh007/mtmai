@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from autogen_agentchat.conditions import MaxMessageTermination
+from autogen_agentchat.conditions import MaxMessageTermination, SourceMatchTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
@@ -59,7 +59,10 @@ class InstagramTeamBuilder:
         my_function_call_termination = MyFunctionCallTermination(
             function_name="TERMINATE"
         )
-        termination = max_messages_termination & my_function_call_termination
+        source_termination = SourceMatchTermination(sources=["UserProxyAgent"])
+        termination = (
+            max_messages_termination & my_function_call_termination & source_termination
+        )
 
         selector_prompt = """Select an agent to perform task.
 
