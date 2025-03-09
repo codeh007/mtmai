@@ -40,7 +40,7 @@ from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
 )
 from mtmai.run_event_listener import new_listener
-from mtmai.teams.sys_team import SystemHandoffsTeam
+from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
@@ -63,7 +63,7 @@ class Runner:
         name: str,
         ag_runtime: AgentRuntime,
         event_queue: "Queue[Any]",
-        sys_team: SystemHandoffsTeam,
+        sys_team: SysTeam,
         max_runs: int | None = None,
         handle_kill: bool = True,
         action_registry: dict[str, Callable[..., Any]] = {},

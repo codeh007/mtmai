@@ -21,7 +21,7 @@ from mtmai.mtlibs.callable import HatchetCallable
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtlibs.typing import is_basemodel_subclass
 from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
-from mtmai.teams.sys_team import SystemHandoffsTeam
+from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
@@ -85,9 +85,9 @@ class Worker:
         return self._agent_runtime
 
     @property
-    def sys_team(self) -> SystemHandoffsTeam:
+    def sys_team(self) -> SysTeam:
         if not hasattr(self, "_sys_team"):
-            self._sys_team = SystemHandoffsTeam()
+            self._sys_team = SysTeam()
         return self._sys_team
 
     def register_function(self, action: str, func: Callable[[Context], Any]) -> None:

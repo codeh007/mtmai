@@ -2,6 +2,7 @@ import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping
 
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
+from autogen_agentchat.conditions import ExternalTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage, HandoffMessage
 from autogen_agentchat.state import SwarmManagerState
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
@@ -128,33 +129,35 @@ class InstagramTeam(MtBaseTeam, Component[InstagramTeamConfig]):
     def __init__(
         self,
         participants: List[ChatAgent] = [],
+        stop_condition: ExternalTermination | None = None,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
     ) -> None:
         # 初始化参与者
-        if not participants:
-            participants = [
-                MtAssistantAgent(
-                    "InstagramAgent",
-                    description="An agent for performing Instagram tasks.",
-                )
-            ]
+        # if not participants:
+        #     participants = [
+        #         MtAssistantAgent(
+        #             "InstagramAgent",
+        #             description="An agent for performing Instagram tasks.",
+        #         )
+        #     ]
 
-        super().__init__(
-            participants,
-            group_chat_manager_name="InstagramGroupChatManager",
-            group_chat_manager_class=InstagramGroupChatManager,
-            termination_condition=termination_condition,
-            max_turns=max_turns,
-            runtime=runtime,
-        )
-        # The first participant must be able to produce handoff messages.
-        first_participant = self._participants[0]
-        if HandoffMessage not in first_participant.produced_message_types:
-            raise ValueError(
-                "The first participant must be able to produce a handoff messages."
-            )
+        # super().__init__(
+        #     participants,
+        #     group_chat_manager_name="InstagramGroupChatManager",
+        #     group_chat_manager_class=InstagramGroupChatManager,
+        #     termination_condition=termination_condition,
+        #     max_turns=max_turns,
+        #     runtime=runtime,
+        # )
+        # # The first participant must be able to produce handoff messages.
+        # first_participant = self._participants[0]
+        # if HandoffMessage not in first_participant.produced_message_types:
+        #     raise ValueError(
+        #         "The first participant must be able to produce a handoff messages."
+        #     )
+        pass
 
     def _create_group_chat_manager_factory(
         self,
@@ -191,60 +194,60 @@ class InstagramTeam(MtBaseTeam, Component[InstagramTeamConfig]):
         task: InstagramTask,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
-        tenant_client = TenantClient()
-        tid = tenant_client.tenant_id
-        # if task.startswith("/tenant/seed"):
-        #     logger.info("通知 TanantAgent 初始化(或重置)租户信息")
-        #     result = await self._runtime.send_message(
-        #         MsgResetTenant(tenant_id=tid),
-        #         self.tenant_agent_id,
+        # tenant_client = TenantClient()
+        # tid = tenant_client.tenant_id
+        # # if task.startswith("/tenant/seed"):
+        # #     logger.info("通知 TanantAgent 初始化(或重置)租户信息")
+        # #     result = await self._runtime.send_message(
+        # #         MsgResetTenant(tenant_id=tid),
+        # #         self.tenant_agent_id,
+        # #     )
+        # #     return
+
+        # logger.info(f"Platform account agent received task: {task}")
+        # tenant_client = TenantClient()
+        # tid = tenant_client.tenant_id
+        # platform_account = await tenant_client.ag.resource_api.resource_get(
+        #     tenant=tid,
+        #     resource=task.resource_id,
+        # )
+        # platform_account_data = PlatformAccountData.model_validate(
+        #     platform_account.content
+        # )
+        # logger.info(f"platform_account_data: {platform_account_data}")
+
+        # team_id = get_team_id_ctx() or generate_uuid()
+        # chat_id = get_chat_session_id_ctx() or generate_uuid()
+        # team = await tenant_client.ag.get_team()
+        # ag_state = await tenant_client.ag.load_team_state(
+        #     tenant_id=tenant_client.tenant_id,
+        #     chat_id=chat_id,
+        # )
+        # if ag_state:
+        #     await team.load_state(ag_state.state)
+
+        # logger.info(f"运行: task: {task}, chat_id:{chat_id}")
+
+        # await tenant_client.emit(
+        #     ChatSessionStartEvent(
+        #         threadId=chat_id,
         #     )
-        #     return
+        # )
 
-        logger.info(f"Platform account agent received task: {task}")
-        tenant_client = TenantClient()
-        tid = tenant_client.tenant_id
-        platform_account = await tenant_client.ag.resource_api.resource_get(
-            tenant=tid,
-            resource=task.resource_id,
-        )
-        platform_account_data = PlatformAccountData.model_validate(
-            platform_account.content
-        )
-        logger.info(f"platform_account_data: {platform_account_data}")
+        # try:
+        #     async for event in team.run_stream(
+        #         task=task,
+        #         cancellation_token=cancellation_token,
+        #     ):
+        #         if cancellation_token and cancellation_token.is_cancelled():
+        #             break
+        #         yield event
+        #         await tenant_client.event.emit(event)
 
-        team_id = get_team_id_ctx() or generate_uuid()
-        chat_id = get_chat_session_id_ctx() or generate_uuid()
-        team = await tenant_client.ag.get_team()
-        ag_state = await tenant_client.ag.load_team_state(
-            tenant_id=tenant_client.tenant_id,
-            chat_id=chat_id,
-        )
-        if ag_state:
-            await team.load_state(ag_state.state)
-
-        logger.info(f"运行: task: {task}, chat_id:{chat_id}")
-
-        await tenant_client.emit(
-            ChatSessionStartEvent(
-                threadId=chat_id,
-            )
-        )
-
-        try:
-            async for event in team.run_stream(
-                task=task,
-                cancellation_token=cancellation_token,
-            ):
-                if cancellation_token and cancellation_token.is_cancelled():
-                    break
-                yield event
-                await tenant_client.event.emit(event)
-
-        finally:
-            await tenant_client.ag.save_team_state(
-                team=team,
-                team_id=team_id,
-                tenant_id=tenant_client.tenant_id,
-                chat_id=chat_id,
-            )
+        # finally:
+        #     await tenant_client.ag.save_team_state(
+        #         team=team,
+        #         team_id=team_id,
+        #         tenant_id=tenant_client.tenant_id,
+        #         chat_id=chat_id,
+        #     )

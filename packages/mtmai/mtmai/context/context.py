@@ -24,7 +24,7 @@ from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
 from mtmai.mtmpb.dispatcher_pb2 import OverridesData
 from mtmai.run_event_listener import RunEventListenerClient
-from mtmai.teams.sys_team import SystemHandoffsTeam
+from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
@@ -92,7 +92,7 @@ class ContextAioImpl(BaseContext):
         ag_client2: AgClient,
         config: ClientConfig,
         ag_runtime: AgentRuntime,
-        sys_team: SystemHandoffsTeam,
+        sys_team: SysTeam,
         namespace: str = "",
     ):
         self.action = action
@@ -182,7 +182,7 @@ class Context(BaseContext):
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
         ag_runtime: AgentRuntime,
-        sys_team: SystemHandoffsTeam,
+        sys_team: SysTeam,
         config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},

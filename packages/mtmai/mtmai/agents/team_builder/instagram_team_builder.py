@@ -6,6 +6,8 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent, MtUserProxyAgent
 
+from ..termination import MyFunctionCallTermination
+
 
 class InstagramTeamBuilder:
     """instagram团队"""
@@ -18,7 +20,11 @@ class InstagramTeamBuilder:
     def description(self):
         return "instagram_team"
 
-    async def create_team(self, model_client: ChatCompletionClient = None):
+    async def create_team(
+        self,
+        # stop_condition: ExternalTermination | None = None,
+        model_client: ChatCompletionClient = None,
+    ):
         # tenant_client = TenantClient()
         # if not model_client:
         #     model_client = await tenant_client.ag.default_model_client(
@@ -50,7 +56,10 @@ class InstagramTeamBuilder:
         # 提示: 不要加:"TERMINATE" 这个条件,因为团队的相关agents自己会提及 "TERMINATE",
         # 团队成员提及 "TERMINATE" 时, 会自动终止团队
         max_messages_termination = MaxMessageTermination(max_messages=25)
-        termination = max_messages_termination
+        my_function_call_termination = MyFunctionCallTermination(
+            function_name="TERMINATE"
+        )
+        termination = max_messages_termination & my_function_call_termination
 
         selector_prompt = """Select an agent to perform task.
 

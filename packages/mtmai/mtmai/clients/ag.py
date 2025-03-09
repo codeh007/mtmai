@@ -128,6 +128,7 @@ class AgClient:
 
     async def get_team_by_resource(
         self,
+        # cancellation_token: CancellationToken,
         resource_id: str | None = None,
         tid: str = None,
     ):
@@ -148,7 +149,7 @@ class AgClient:
             raise ValueError(
                 f"cant create team for unsupported resource type: {resource_data.type}"
             )
-        team = await team_builder.create_team(model_client)
+        team = await team_builder.create_team(model_client=model_client)
 
         return team
 

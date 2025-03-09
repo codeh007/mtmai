@@ -1,14 +1,8 @@
-from autogen_agentchat.base import TaskResult
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
-
-# from mtmai.agents.team_builder.resource_team_builder import ResourceTeamBuilder
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
-from mtmai.context.context_client import TenantClient
 from mtmai.worker_app import mtmapp
-
-from ..clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 
 
 @mtmapp.workflow(
@@ -24,20 +18,6 @@ class FlowAg:
         # )
 
         input = AgentRunInput.model_validate(hatctx.input)
-        tenant_client = TenantClient()
-        team = await tenant_client.ag.get_team_by_resource(input.resource_id)
         cancellation_token = MtCancelToken()
-
-        await tenant_client.emit(ChatSessionStartEvent(threadId=input.session_id))
-        async for event in team.run_stream(
-            task=input.content,
-            cancellation_token=cancellation_token,
-        ):
-            # if cancellation_token and cancellation_token.is_cancelled():
-            #     break
-            if isinstance(event, TaskResult):
-                result = event
-                return result
-            await tenant_client.emit(event)
-
-        logger.info("(FlowResource)工作流结束")
+        await hatctx.sys_team.run_team(input, cancellation_token)
+        logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
