@@ -1,11 +1,8 @@
 from loguru import logger
-from mtmai.agents.team_builder.instagram_team_builder import InstagramTeamBuilder
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 
-
-def percentage_change_tool(start: float, end: float) -> float:
-    return ((end - start) / start) * 100
+from .__init__ import resource_team_map
 
 
 class ResourceTeamBuilder:
@@ -34,8 +31,12 @@ class ResourceTeamBuilder:
         # )
         logger.info(f"resource_data: {resource_data}")
         # return team
-        if resource_data.type == "platform_account":
-            return await InstagramTeamBuilder().create_team(model_client)
-        raise ValueError(
-            f"cant create team for unsupported resource type: {resource_data.type}"
-        )
+        # if resource_data.type == "platform_account":
+        #     return await InstagramTeamBuilder().create_team(model_client)
+        team_builder = resource_team_map.get(resource_data.type)
+        if not team_builder:
+            raise ValueError(
+                f"cant create team for unsupported resource type: {resource_data.type}"
+            )
+        team = await team_builder.create_team(model_client)
+        return team

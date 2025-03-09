@@ -8,22 +8,17 @@ from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
-
-# from autogen_agentchat.teams._group_chat._sequential_routed_agent import (
-#     SequentialRoutedAgent,
-# )
 from autogen_core import AgentRuntime, CancellationToken, Component, ComponentModel
 from loguru import logger
+from mtmai.agents._agents import MtAssistantAgent
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_team_id_ctx
 from mtmai.mtlibs.id import generate_uuid
-from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
-
-from ..agents._agents import MtAssistantAgent
 
 
 class InstagramGroupChatManager(BaseGroupChatManager):

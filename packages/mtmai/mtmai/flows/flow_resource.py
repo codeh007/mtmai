@@ -17,15 +17,16 @@ class FlowResource:
     async def step_entry(self, hatctx: Context):
         input = AgentRunInput.model_validate(hatctx.input)
         builder = ResourceTeamBuilder()
-        team = await builder.create_team(input.resource_id)
+        team = await builder.create_team(input)
 
         tenant_client = TenantClient()
+        cancellation_token = MtCancelToken()
         async for event in team.run_stream(
-            task=input.content,
-            cancellation_token=MtCancelToken(),
+            task=input,
+            cancellation_token=cancellation_token,
         ):
-            # if cancellation_token and cancellation_token.is_cancelled():
-            #         break
+            if cancellation_token and cancellation_token.is_cancelled():
+                break
             if isinstance(event, TaskResult):
                 result = event
                 return result

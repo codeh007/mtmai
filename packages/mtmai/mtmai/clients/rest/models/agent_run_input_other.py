@@ -46,18 +46,16 @@ class AgentRunInputOther(BaseModel):
     anyof_schema_3_validator: Optional[MyMessage] = None
     # data type: PlatformAccountTask
     anyof_schema_4_validator: Optional[PlatformAccountTask] = None
-    # data type: CodeWritingTask
-    anyof_schema_5_validator: Optional[CodeWritingTask] = None
     # data type: PlatformAccountTask
-    anyof_schema_6_validator: Optional[PlatformAccountTask] = None
+    anyof_schema_5_validator: Optional[PlatformAccountTask] = None
     # data type: BrowserData
-    anyof_schema_7_validator: Optional[BrowserData] = None
+    anyof_schema_6_validator: Optional[BrowserData] = None
     # data type: PlatformAccountData
-    anyof_schema_8_validator: Optional[PlatformAccountData] = None
+    anyof_schema_7_validator: Optional[PlatformAccountData] = None
     # data type: InstagramTask
-    anyof_schema_9_validator: Optional[InstagramTask] = None
+    anyof_schema_8_validator: Optional[InstagramTask] = None
     # data type: ChatSessionStartEvent
-    anyof_schema_10_validator: Optional[ChatSessionStartEvent] = None
+    anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
     if TYPE_CHECKING:
         actual_instance: Optional[Union[BrowserData, ChatSessionStartEvent, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask]] = None
     else:
@@ -104,12 +102,6 @@ class AgentRunInputOther(BaseModel):
         # validate data type: PlatformAccountTask
         if not isinstance(v, PlatformAccountTask):
             error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountTask`")
-        else:
-            return v
-
-        # validate data type: CodeWritingTask
-        if not isinstance(v, CodeWritingTask):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `CodeWritingTask`")
         else:
             return v
 
@@ -182,37 +174,31 @@ class AgentRunInputOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_5_validator: Optional[CodeWritingTask] = None
-        try:
-            instance.actual_instance = CodeWritingTask.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_6_validator: Optional[PlatformAccountTask] = None
+        # anyof_schema_5_validator: Optional[PlatformAccountTask] = None
         try:
             instance.actual_instance = PlatformAccountTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_7_validator: Optional[BrowserData] = None
+        # anyof_schema_6_validator: Optional[BrowserData] = None
         try:
             instance.actual_instance = BrowserData.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_8_validator: Optional[PlatformAccountData] = None
+        # anyof_schema_7_validator: Optional[PlatformAccountData] = None
         try:
             instance.actual_instance = PlatformAccountData.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_9_validator: Optional[InstagramTask] = None
+        # anyof_schema_8_validator: Optional[InstagramTask] = None
         try:
             instance.actual_instance = InstagramTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_10_validator: Optional[ChatSessionStartEvent] = None
+        # anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
         try:
             instance.actual_instance = ChatSessionStartEvent.from_json(json_str)
             return instance

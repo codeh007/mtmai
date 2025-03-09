@@ -231,13 +231,6 @@ class Worker:
 
     async def _start_ag_runtime(self) -> AgentRuntime:
         self.agent_runtime = MtmAgentRuntime(config=self.config)
-
-        # self.agent_runtime.add_message_serializer(
-        #     try_get_known_serializers_for_type(ChatSessionStartEvent)
-        # )
-        # self.agent_runtime.add_message_serializer(
-        #     try_get_known_serializers_for_type(AskToGreet)
-        # )
         await self.agent_runtime.start()
         return self.agent_runtime
 

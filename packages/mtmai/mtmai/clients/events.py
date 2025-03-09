@@ -11,14 +11,14 @@ from fastapi.encoders import jsonable_encoder
 from google.protobuf import message as pb_message
 from google.protobuf import timestamp_pb2
 from google.protobuf.json_format import MessageToDict
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.typing import get_type_name
 from mtmai.mtmpb import agent_worker_pb2, events_connecpy
-from mtmai.mtmpb.events_pb2 import (
+from mtmai.mtmpb.events_pb2 import (  # ChatSessionStartEvent,
     BulkPushEventRequest,
-    ChatSessionStartEvent,
     Event,
     PushEventRequest,
     PutLogRequest,
@@ -188,30 +188,6 @@ class EventClient:
             json_bytes = event.model_dump_json()
         elif isinstance(event, pb_message.Message):
             result_type = self._serialization_registry.type_name(event)
-            # serialized_result = self._serialization_registry.serialize(
-            #     event,
-            #     type_name=result_type,
-            #     data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
-            # )
-
-            # serialized_message = self._serialization_registry.serialize(data)
-            # any_proto = any_pb2.Any()
-            # any_proto.type_url = result_type
-            # any_proto.value = serialized_result
-
-            # pb_message.Message.
-            # any_proto.ParseFromString(serialized_result)
-            # any_proto.ParseFromString(serialized_result)
-            # ce_message = cloudevent_pb2.CloudEvent(
-            #     # id=message_id,
-            #     spec_version="1.0",
-            #     # type=topic_id.type,
-            #     source="event_source",
-            #     # attributes=attributes,
-            #     proto_data=any_proto,
-            #     # proto_data=event,
-            # )
-            # json2 = MessageToDict(any_proto)
             type_name = get_type_name(event)
             json2 = MessageToDict(event)
             json2["@type"] = (
@@ -232,27 +208,6 @@ class EventClient:
             data_bytes = data
         elif isinstance(data, BaseModel):
             data_bytes = data.model_dump_json()
-        # elif isinstance(data, ChatSessionStartEvent):
-        #     result_type = self._serialization_registry.type_name(data)
-        #     serialized_result = self._serialization_registry.serialize(
-        #         data,
-        #         type_name=result_type,
-        #         data_content_type=PROTOBUF_DATA_CONTENT_TYPE,
-        #     )
-
-        #     # serialized_message = self._serialization_registry.serialize(data)
-        #     any_proto = any_pb2.Any()
-        #     any_proto.ParseFromString(serialized_result)
-        #     ce_message = cloudevent_pb2.CloudEvent(
-        #         # id=message_id,
-        #         spec_version="1.0",
-        #         # type=topic_id.type,
-        #         source="event_source",
-        #         # attributes=attributes,
-        #         proto_data=any_proto,
-        #     )
-
-        #     data_bytes = ce_message.SerializeToString()
         elif isinstance(data, agent_worker_pb2.Message):
             data_bytes = data.SerializeToString()
         elif isinstance(data, pb_message.Message):

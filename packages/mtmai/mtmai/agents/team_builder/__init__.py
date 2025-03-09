@@ -1,5 +1,6 @@
 from .article_gen_teambuilder import ArticleGenTeamBuilder
 from .assisant_team_builder import AssistantTeamBuilder
+from .instagram_team_builder import InstagramTeamBuilder
 
 # from .demo_human_in_loop import DemoHumanInLoopTeamBuilder
 from .m1_web_builder import M1WebTeamBuilder
@@ -23,3 +24,7 @@ team_builders = [
 
 
 team_builder_map = {team_builder.name: team_builder for team_builder in team_builders}
+
+resource_team_map = {
+    "platform_account": InstagramTeamBuilder(),
+}

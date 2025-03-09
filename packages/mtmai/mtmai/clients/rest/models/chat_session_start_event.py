@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,8 +26,10 @@ class ChatSessionStartEvent(BaseModel):
     """
     ChatSessionStartEvent
     """ # noqa: E501
-    some: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["some"]
+    type: Optional[StrictStr] = None
+    thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
+    source: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "threadId", "source"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +82,9 @@ class ChatSessionStartEvent(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "some": obj.get("some")
+            "type": obj.get("type"),
+            "threadId": obj.get("threadId"),
+            "source": obj.get("source")
         })
         return _obj
 

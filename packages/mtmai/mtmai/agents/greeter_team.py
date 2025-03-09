@@ -13,10 +13,10 @@ from autogen_core import (
     message_handler,
 )
 from loguru import logger
+from pydantic import BaseModel
 
 
-@dataclass
-class AskToGreet:
+class AskToGreet(BaseModel):
     content: str
 
 

@@ -1,9 +1,9 @@
 from autogen_core import try_get_known_serializers_for_type
 
 from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greeting
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
-from mtmai.mtmpb.events_pb2 import ChatSessionStartEvent
 
 mtmapp = Hatchet()
 
