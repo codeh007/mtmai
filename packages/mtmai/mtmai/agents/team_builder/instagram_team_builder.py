@@ -75,6 +75,12 @@ Only select one agent.
             description="A proxy for the user to approve or disapprove tasks.",
         )
 
+        instagram_assistant = MtAssistantAgent(
+            "InstagramAssistant",
+            description="An agent for instagram tasks.",
+            model_client=model_client,
+        )
+
         def selector_func_with_user_proxy(
             messages: Sequence[AgentEvent | ChatMessage],
         ) -> str | None:
@@ -100,7 +106,7 @@ Only select one agent.
             return None
 
         team = SelectorGroupChat(
-            participants=[planning_agent, user_proxy_agent],
+            participants=[planning_agent, user_proxy_agent, instagram_assistant],
             model_client=model_client,
             termination_condition=termination,
             selector_prompt=selector_prompt,

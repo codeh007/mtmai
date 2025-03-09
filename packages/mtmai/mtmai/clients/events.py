@@ -5,12 +5,9 @@ from typing import Any, Dict, List, Optional, TypedDict
 from autogen_agentchat.base import TaskResult
 from autogen_core import try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
-from autogen_core.models import AssistantMessage
 from connecpy.context import ClientContext
-from fastapi.encoders import jsonable_encoder
 from google.protobuf import message as pb_message
 from google.protobuf import timestamp_pb2
-from google.protobuf.json_format import MessageToDict
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
@@ -180,24 +177,30 @@ class EventClient:
     async def emit(self, event: Any):
         step_run_id = get_step_run_id()
         json_bytes = None
-        if isinstance(event, str) or isinstance(event, bytes):
-            await self.stream(event, step_run_id)
-        elif isinstance(event, BaseModel):
-            json_bytes = event.model_dump_json()
-        elif isinstance(event, AssistantMessage):
-            json_bytes = event.model_dump_json()
-        elif isinstance(event, pb_message.Message):
-            result_type = self._serialization_registry.type_name(event)
-            type_name = get_type_name(event)
-            json2 = MessageToDict(event)
-            json2["@type"] = (
-                result_type  # json2["@type"].removeprefix("type.googleapis.com/")
-            )
-            json_bytes = json.dumps(json2)
+        result_type = get_type_name(event)
+        # if isinstance(event, str) or isinstance(event, bytes):
+        #     await self.stream(event, step_run_id)
+        obj_dict = {}
+        if isinstance(event, BaseModel):
+            obj_dict = event.model_dump()
+        # elif isinstance(event, AssistantMessage):
+        #     json_bytes = event.model_dump_json()
+        # elif isinstance(event, pb_message.Message):
+        #     result_type = self._serialization_registry.type_name(event)
+        #     type_name = get_type_name(event)
+        #     json2 = MessageToDict(event)
+        #     json2["@type"] = (
+        #         result_type  # json2["@type"].removeprefix("type.googleapis.com/")
+        #     )
+        #     json_bytes = json.dumps(json2)
         elif isinstance(event, TaskResult):
-            json_bytes = json.dumps(jsonable_encoder(event))
-        else:
-            json_bytes = json.dumps(event)
+            # json_bytes = json.dumps(jsonable_encoder(event))
+            # obj_dict = event.model_dump()
+            obj_dict = event
+            obj_dict["type"] = result_type
+        # else:
+        # obj_dict["type"] = result_type
+        json_bytes = json.dumps(obj_dict)
 
         await self.stream(json_bytes, step_run_id=step_run_id)
 

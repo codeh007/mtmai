@@ -8,6 +8,8 @@ from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.worker_app import mtmapp
 
+from ..clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+
 
 @mtmapp.workflow(
     name="ag",
@@ -22,12 +24,11 @@ class FlowAg:
         # )
 
         input = AgentRunInput.model_validate(hatctx.input)
-        # builder = ResourceTeamBuilder()
         tenant_client = TenantClient()
         team = await tenant_client.ag.get_team_by_resource(input.resource_id)
-        # team = await builder.create_team(input)
-
         cancellation_token = MtCancelToken()
+
+        await tenant_client.emit(ChatSessionStartEvent(threadId=input.session_id))
         async for event in team.run_stream(
             task=input.content,
             cancellation_token=cancellation_token,
