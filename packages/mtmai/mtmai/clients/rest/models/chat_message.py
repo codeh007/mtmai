@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
@@ -33,8 +33,9 @@ class ChatMessage(BaseModel):
     content: StrictStr
     source: Optional[StrictStr] = None
     topic: StrictStr
+    resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
     config: Optional[ChatMessageConfig] = None
-    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "config"]
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "resourceId", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -98,6 +99,7 @@ class ChatMessage(BaseModel):
             "content": obj.get("content"),
             "source": obj.get("source"),
             "topic": obj.get("topic"),
+            "resourceId": obj.get("resourceId"),
             "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
