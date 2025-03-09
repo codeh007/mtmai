@@ -2,7 +2,11 @@ from autogen_agentchat.base import Team
 from connecpy.context import ClientContext
 from loguru import logger
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder import default_team_name, team_builder_map
+from mtmai.agents.team_builder import (
+    default_team_name,
+    resource_team_map,
+    team_builder_map,
+)
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -122,7 +126,33 @@ class AgClient:
             ),
         )
 
-    async def get_team(
+    async def get_team_by_resource(
+        self,
+        resource_id: str | None = None,
+        tid: str = None,
+    ):
+        if not tid:
+            tid = get_tenant_id()
+        if not tid:
+            raise ValueError("tenant_id is required")
+        if not resource_id:
+            raise ValueError("resource_id is required")
+        model_client = await self.default_model_client(tid)
+
+        resource_data = await self.resource_api.resource_get(
+            tenant=tid,
+            resource=resource_id,
+        )
+        team_builder = resource_team_map.get(resource_data.type)
+        if not team_builder:
+            raise ValueError(
+                f"cant create team for unsupported resource type: {resource_data.type}"
+            )
+        team = await team_builder.create_team(model_client)
+
+        return team
+
+    async def create_team(
         self,
         component_id_or_name: str | None = None,
         tid: str = None,
@@ -134,6 +164,19 @@ class AgClient:
         if not component_id_or_name:
             component_id_or_name = default_team_name
         model_client = await self.default_model_client(tid)
+
+        resource_data = await self.resource_api.resource_get(
+            tenant=tid,
+            resource=component_id_or_name,
+        )
+        team_builder = resource_team_map.get(resource_data.type)
+        if not team_builder:
+            raise ValueError(
+                f"cant create team for unsupported resource type: {resource_data.type}"
+            )
+        team = await team_builder.create_team(model_client)
+
+        return team
         component_data: MtComponent = None
         # if is_uuid(component_id_or_name):
         component_data: MtComponent = None
