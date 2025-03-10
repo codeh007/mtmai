@@ -1,6 +1,5 @@
 import datetime
 import json
-from dataclasses import dataclass
 from typing import Any, Mapping
 
 from autogen_core import (
@@ -20,33 +19,14 @@ from autogen_core.models import (
     UserMessage,
 )
 from autogen_core.tools import BaseTool
+from mtmai.agents._types import (
+    AssistantTextMessage,
+    GetSlowUserMessage,
+    ScheduleMeetingOutput,
+    TerminateMessage,
+    UserTextMessage,
+)
 from pydantic import BaseModel, Field
-
-
-@dataclass
-class TextMessage:
-    source: str
-    content: str
-
-
-@dataclass
-class UserTextMessage(TextMessage):
-    pass
-
-
-@dataclass
-class AssistantTextMessage(TextMessage):
-    pass
-
-
-@dataclass
-class GetSlowUserMessage:
-    content: str
-
-
-@dataclass
-class TerminateMessage:
-    content: str
 
 
 class MockPersistence:
@@ -63,7 +43,6 @@ class MockPersistence:
 state_persister = MockPersistence()
 
 
-# @type_subscription("scheduling_assistant_conversation")
 class SlowUserProxyAgent(RoutedAgent):
     def __init__(
         self,
@@ -102,10 +81,6 @@ class ScheduleMeetingInput(BaseModel):
     time: str = Field(description="Time of meeting")
 
 
-class ScheduleMeetingOutput(BaseModel):
-    pass
-
-
 class ScheduleMeetingTool(BaseTool[ScheduleMeetingInput, ScheduleMeetingOutput]):
     def __init__(self):
         super().__init__(
@@ -122,7 +97,6 @@ class ScheduleMeetingTool(BaseTool[ScheduleMeetingInput, ScheduleMeetingOutput])
         return ScheduleMeetingOutput()
 
 
-# @type_subscription("scheduling_assistant_conversation")
 class SchedulingAssistantAgent(RoutedAgent):
     def __init__(
         self,

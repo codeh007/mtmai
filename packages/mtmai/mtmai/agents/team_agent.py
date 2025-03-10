@@ -13,13 +13,12 @@ from autogen_core import (
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents._agents import scheduling_assistant_topic_type, user_topic_type
-from mtmai.agents.slow_user_proxy_agent import (
-    AssistantTextMessage,
+from mtmai.agents._types import AssistantTextMessage, UserTextMessage
+from mtmai.agents.slow_user_proxy_agent import (  # AssistantTextMessage,; UserTextMessage,
     NeedsUserInputHandler,
     SchedulingAssistantAgent,
     SlowUserProxyAgent,
     TerminationHandler,
-    UserTextMessage,
 )
 from mtmai.agents.team_builder import default_team_name
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask

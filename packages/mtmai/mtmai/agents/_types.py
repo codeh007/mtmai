@@ -56,6 +56,28 @@ class AgentRegistryBase(ABC):
         pass
 
 
+class UserTextMessage(BaseModel):
+    source: str
+    content: str
+
+
+class AssistantTextMessage(BaseModel):
+    source: str
+    content: str
+
+
+class GetSlowUserMessage:
+    content: str
+
+
+class TerminateMessage:
+    content: str
+
+
+class ScheduleMeetingOutput(BaseModel):
+    pass
+
+
 agent_message_types = [
     TerminationMessage,
     CodeWritingTask,
