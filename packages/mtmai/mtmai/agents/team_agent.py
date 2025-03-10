@@ -1,6 +1,5 @@
 import inspect
 
-from agents import SlowUserProxyAgent
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import (
     AgentRuntime,
@@ -15,8 +14,16 @@ from mtmai.agents.slow_user_proxy_agent import (
     AssistantTextMessage,
     NeedsUserInputHandler,
     SchedulingAssistantAgent,
+    SlowUserProxyAgent,
     TerminationHandler,
 )
+
+# from mtmai.agents.slow_user_proxy_agent import (
+#     AssistantTextMessage,
+#     NeedsUserInputHandler,
+#     SchedulingAssistantAgent,
+#     TerminationHandler,
+# )
 from mtmai.agents.team_builder import default_team_name
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
@@ -169,7 +176,7 @@ class TeamRunnerAgent(RoutedAgent):
                 return event
             await tenant_client.emit(event)
 
-        _team_runtime.stop_when_idle()
+        runtime.stop_when_idle()
 
     async def build_team(
         self, runtime: AgentRuntime, component_id_or_name: str | None = None
