@@ -191,12 +191,26 @@ class TeamRunnerAgent(RoutedAgent):
         if state:
             await runtime.load_state(state)
         await runtime.publish_message(
-            runtime_initiation_message,
-            # Toppici("scheduling_assistant_conversation"),
+            message=runtime_initiation_message,
             topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
         )
 
         runtime.start()
+        await runtime.stop_when(
+            lambda: termination_handler.is_terminated
+            or needs_user_input_handler.needs_user_input
+        )
+
+        user_input_needed = None
+        if needs_user_input_handler.user_input_content is not None:
+            user_input_needed = needs_user_input_handler.user_input_content
+        elif termination_handler.is_terminated:
+            logger.info("Terminated - ", termination_handler.termination_msg)
+
+        state_to_persist = await runtime.save_state()
+        state_persister.save_content(state_to_persist)
+
+        return user_input_needed
 
         # team = await self.build_team(
         #     runtime=runtime, component_id_or_name=message.resource_id
