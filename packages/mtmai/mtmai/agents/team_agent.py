@@ -1,4 +1,5 @@
 import inspect
+from typing import Any, Mapping
 
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import (
@@ -17,19 +18,26 @@ from mtmai.agents.slow_user_proxy_agent import (
     SlowUserProxyAgent,
     TerminationHandler,
 )
-
-# from mtmai.agents.slow_user_proxy_agent import (
-#     AssistantTextMessage,
-#     NeedsUserInputHandler,
-#     SchedulingAssistantAgent,
-#     TerminationHandler,
-# )
 from mtmai.agents.team_builder import default_team_name
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 from mtmai.teams.instagram_team import InstagramTeam
+
+
+class MockPersistence:
+    def __init__(self):
+        self._content: Mapping[str, Any] = {}
+
+    def load_content(self) -> Mapping[str, Any]:
+        return self._content
+
+    def save_content(self, content: Mapping[str, Any]) -> None:
+        self._content = content
+
+
+state_persister = MockPersistence()
 
 
 class TeamRunnerAgent(RoutedAgent):
@@ -124,6 +132,8 @@ class TeamRunnerAgent(RoutedAgent):
 
     @message_handler
     async def run_team(self, message: TeamRunnerTask, ctx: MessageContext) -> None:
+        global state_persister
+
         logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
