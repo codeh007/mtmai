@@ -4,7 +4,7 @@ from autogen_agentchat.base import TaskResult, Team
 from autogen_core import AgentRuntime, MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
-from mtmai.agents.team_builder import default_team_name, resource_team_map
+from mtmai.agents.team_builder import default_team_name
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
@@ -150,14 +150,14 @@ class TeamRunnerAgent(RoutedAgent):
         )
 
         # 方式1
-        team_builder = resource_team_map.get(resource_data.type)
-        if not team_builder:
-            raise ValueError(
-                f"cant create team for unsupported resource type: {resource_data.type}"
-            )
-        team = await team_builder.create_team(
-            runtime=runtime, model_client=model_client
-        )
+        # team_builder = resource_team_map.get(resource_data.type)
+        # if not team_builder:
+        #     raise ValueError(
+        #         f"cant create team for unsupported resource type: {resource_data.type}"
+        #     )
+        # team = await team_builder.create_team(
+        #     runtime=runtime, model_client=model_client
+        # )
 
         # 方式2
         team = InstagramTeam(

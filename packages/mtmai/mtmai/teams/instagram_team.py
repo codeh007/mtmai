@@ -1,12 +1,7 @@
 from typing import AsyncGenerator, List, Sequence
 
 from autogen_agentchat.base import TaskResult, TerminationCondition
-from autogen_agentchat.conditions import (
-    MaxMessageTermination,
-    SourceMatchTermination,
-    StopMessageTermination,
-    TextMentionTermination,
-)
+from autogen_agentchat.conditions import MaxMessageTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core import AgentRuntime, CancellationToken, Component, ComponentModel
@@ -17,10 +12,10 @@ from mtmai.agents.termination import MyFunctionCallTermination
 from pydantic import BaseModel
 
 
-def wait_admin_approval(prompt: str) -> str:
-    """等待管理员批准"""
-    logger.info(f"等待管理员批准: {prompt}")
-    return f"等待管理员批准: {prompt}"
+def wait_user_approval(prompt: str) -> str:
+    """暂停对话,等用户通过UI批准后,继续对话"""
+    logger.info(f"(wait_user_approval): {prompt}")
+    return f"等待用户确认: {prompt}"
 
 
 class InstagramTeamConfig(BaseModel):
@@ -33,6 +28,8 @@ class InstagramTeamConfig(BaseModel):
 
 class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
     component_type = "mtmai.teams.instagram_team.InstagramTeam"
+    component_label = "InstagramTeam"
+    component_description = "InstagramTeam"
 
     def __init__(
         self,
@@ -52,7 +49,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
             model_client=model_client,
-            tools=[wait_admin_approval],
+            # tools=[wait_user_approval],
             system_message="""
             You are a planning agent.
             Your job is to break down complex tasks into smaller, manageable subtasks.
@@ -64,8 +61,6 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
             When assigning tasks, use this format:
             1. <agent> : <task>
-
-            生成了规划后, 等待管理员批准, 批准后, 继续执行规划的任务
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
@@ -73,9 +68,13 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         participants.append(planning_agent)
 
         instagram_assistant = MtAssistantAgent(
-            "InstagramAssistant",
-            description="An agent for instagram tasks.",
+            name="UserProxyAssistant",
+            description="用户确认助理,当任务计划编排完成后, 用户需要确认后, 你再执行任务",
             model_client=model_client,
+            tools=[wait_user_approval],
+            system_message="""
+            你是一个instagram助手, 当用户需要你执行任务时, 你应该主动调用"wait_user_approval"工具, 等待用户通过UI批准后, 继续执行任务
+            """,
         )
         participants.append(instagram_assistant)
 
@@ -83,21 +82,17 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         def selector_func(messages: Sequence[AgentEvent | ChatMessage]) -> str | None:
             if messages[-1].source != planning_agent.name:
                 return planning_agent.name
+
+            if len(messages) > 4:
+                return instagram_assistant.name
+
             return None
 
         max_messages_termination = MaxMessageTermination(max_messages=25)
         my_function_call_termination = MyFunctionCallTermination(
             function_name="TERMINATE"
         )
-        source_termination = SourceMatchTermination(sources=["UserProxyAgent"])
-        text_mention_termination = TextMentionTermination("TERMINATE")
-        stop_termination = StopMessageTermination()
-        termination = (
-            max_messages_termination
-            & my_function_call_termination
-            & source_termination
-            & stop_termination
-        )
+        termination = max_messages_termination & my_function_call_termination
         selector_prompt = """Select an agent to perform task.
 
 {roles}
@@ -105,9 +100,14 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 Current conversation context:
 {history}
 
-Read the above conversation, then select an agent from {participants} to perform the next task.
+Read the above conversation, then select an agent from:
+{participants}"
+to perform the next task.
 Make sure the planner agent has assigned tasks before other agents start working.
 Only select one agent.
+
+当任务计划编排完成后, 应该由 UserProxyAssistant 请求用户的确认.
+
 """
 
         super().__init__(
@@ -118,6 +118,7 @@ Only select one agent.
             max_turns=10,
             runtime=runtime,
             selector_prompt=selector_prompt,
+            selector_func=selector_func,
         )
 
     async def run_stream(

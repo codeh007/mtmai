@@ -2,11 +2,7 @@ from autogen_agentchat.base import Team
 from connecpy.context import ClientContext
 from loguru import logger
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder import (
-    default_team_name,
-    resource_team_map,
-    team_builder_map,
-)
+from mtmai.agents.team_builder import resource_team_map
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -151,84 +147,84 @@ class AgClient:
 
         return team
 
-    async def create_team(
-        self,
-        component_id_or_name: str | None = None,
-        tid: str = None,
-    ):
-        if not tid:
-            tid = get_tenant_id()
-        if not tid:
-            raise ValueError("tenant_id is required")
-        if not component_id_or_name:
-            component_id_or_name = default_team_name
-        model_client = await self.default_model_client(tid)
+    # async def create_team(
+    #     self,
+    #     component_id_or_name: str | None = None,
+    #     tid: str = None,
+    # ):
+    #     if not tid:
+    #         tid = get_tenant_id()
+    #     if not tid:
+    #         raise ValueError("tenant_id is required")
+    #     if not component_id_or_name:
+    #         component_id_or_name = default_team_name
+    #     model_client = await self.default_model_client(tid)
 
-        resource_data = await self.resource_api.resource_get(
-            tenant=tid,
-            resource=component_id_or_name,
-        )
-        team_builder = resource_team_map.get(resource_data.type)
-        if not team_builder:
-            raise ValueError(
-                f"cant create team for unsupported resource type: {resource_data.type}"
-            )
-        team = await team_builder.create_team(model_client)
+    #     resource_data = await self.resource_api.resource_get(
+    #         tenant=tid,
+    #         resource=component_id_or_name,
+    #     )
+    #     team_builder = resource_team_map.get(resource_data.type)
+    #     if not team_builder:
+    #         raise ValueError(
+    #             f"cant create team for unsupported resource type: {resource_data.type}"
+    #         )
+    #     team = await team_builder.create_team(model_client)
 
-        return team
-        component_data: MtComponent = None
-        # if is_uuid(component_id_or_name):
-        component_data: MtComponent = None
-        try:
-            # TODO: 缓存优化
-            component_data = await self.coms_api.coms_get(
-                tenant=tid, com=component_id_or_name
-            )
-            # components = await self.coms_api.coms_list(tenant=tid,label=n)
-            # component_data = components.rows[0]
-            return Team.load_component(component_data.component)
-        except NotFoundException:
-            team = await team_builder_map.get(component_id_or_name).create_team(
-                model_client
-            )
-            component_data = await self.upsert_team(
-                tid,
-                team,
-            )
-        if not component_data:
-            raise ValueError("component_data is None")
-        team = Team.load_component(component_data.component)
-        return team
-        # else:
-        # team_builder = team_builder_map.get(component_id_or_name)
-        # if not team_builder:
-        #     raise ValueError(f"未找到团队构建器: {component_id_or_name}")
-        # return await team_builder.create_team(model_client)
+    #     return team
+    #     component_data: MtComponent = None
+    #     # if is_uuid(component_id_or_name):
+    #     component_data: MtComponent = None
+    #     try:
+    #         # TODO: 缓存优化
+    #         component_data = await self.coms_api.coms_get(
+    #             tenant=tid, com=component_id_or_name
+    #         )
+    #         # components = await self.coms_api.coms_list(tenant=tid,label=n)
+    #         # component_data = components.rows[0]
+    #         return Team.load_component(component_data.component)
+    #     except NotFoundException:
+    #         team = await team_builder_map.get(component_id_or_name).create_team(
+    #             model_client
+    #         )
+    #         component_data = await self.upsert_team(
+    #             tid,
+    #             team,
+    #         )
+    #     if not component_data:
+    #         raise ValueError("component_data is None")
+    #     team = Team.load_component(component_data.component)
+    #     return team
+    #     # else:
+    #     # team_builder = team_builder_map.get(component_id_or_name)
+    #     # if not team_builder:
+    #     #     raise ValueError(f"未找到团队构建器: {component_id_or_name}")
+    #     # return await team_builder.create_team(model_client)
 
-        # results = []
-        # teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
-        # if teams_list.rows and len(teams_list.rows) > 0:
-        #     logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
-        #     results.append(teams_list.rows[0])
+    #     # results = []
+    #     # teams_list = await self.coms_api.coms_list(tenant=tid, label="default")
+    #     # if teams_list.rows and len(teams_list.rows) > 0:
+    #     #     logger.info(f"获取到默认聊天团队 {teams_list.rows[0].metadata.id}")
+    #     #     results.append(teams_list.rows[0])
 
-        # for team_builder in team_builders:
-        #     label = team_builder.name
-        #     logger.info(f"create team for tenant {tid}")
+    #     # for team_builder in team_builders:
+    #     #     label = team_builder.name
+    #     #     logger.info(f"create team for tenant {tid}")
 
-        #     team_comp = await team_builder.create_team(model_client)
-        #     component_model = team_comp.dump_component()
-        #     new_team = await self.coms_api.coms_upsert(
-        #         tenant=tid,
-        #         com=generate_uuid(),
-        #         mt_component=MtComponent(
-        #             label=label,
-        #             description=component_model.description or "",
-        #             componentType="team",
-        #             component=component_model.model_dump(),
-        #         ).model_dump(),
-        #     )
-        #     results.append(new_team)
-        # return results
+    #     #     team_comp = await team_builder.create_team(model_client)
+    #     #     component_model = team_comp.dump_component()
+    #     #     new_team = await self.coms_api.coms_upsert(
+    #     #         tenant=tid,
+    #     #         com=generate_uuid(),
+    #     #         mt_component=MtComponent(
+    #     #             label=label,
+    #     #             description=component_model.description or "",
+    #     #             componentType="team",
+    #     #             component=component_model.model_dump(),
+    #     #         ).model_dump(),
+    #     #     )
+    #     #     results.append(new_team)
+    #     # return results
 
     # async def handle_message_create(self, message: ChatMessageUpsert) -> None:
     #     await self.chat_api.chat_message_upsert(

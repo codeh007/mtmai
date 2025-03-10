@@ -9,10 +9,9 @@ from autogen_agentchat.messages import (
 )
 from autogen_core import Component
 from loguru import logger
+from mtmai.context.ctx import get_step_canceled_ctx
 from pydantic import BaseModel
 from typing_extensions import Self
-
-from ..context.ctx import get_step_canceled_ctx
 
 
 class MyFunctionCallTerminationConfig(BaseModel):
@@ -55,6 +54,7 @@ class MyFunctionCallTermination(
                 source="MyFunctionCallTermination",
             )
         for message in messages:
+            logger.info(f"(MyFunctionCallTermination)\nmessages: {messages}\n")
             if isinstance(message, ToolCallExecutionEvent):
                 for execution in message.content:
                     if execution.name == self._function_name:
