@@ -4,11 +4,11 @@ from typing import Any, Mapping
 
 from autogen_core import (
     CancellationToken,
-    DefaultInterventionHandler,
     DefaultTopicId,
     FunctionCall,
     MessageContext,
     RoutedAgent,
+    TopicId,
     message_handler,
 )
 from autogen_core.model_context import BufferedChatCompletionContext
@@ -19,6 +19,7 @@ from autogen_core.models import (
     UserMessage,
 )
 from autogen_core.tools import BaseTool
+from mtmai.agents._agents import scheduling_assistant_topic_type
 from mtmai.agents._types import (
     AssistantTextMessage,
     GetSlowUserMessage,
@@ -60,9 +61,11 @@ class SlowUserProxyAgent(RoutedAgent):
         await self._model_context.add_message(
             AssistantMessage(content=message.content, source=message.source)
         )
+        session_id = self.id.key
         await self.publish_message(
             GetSlowUserMessage(content=message.content),
-            topic_id=DefaultTopicId("scheduling_assistant_conversation"),
+            # topic_id=DefaultTopicId("scheduling_assistant_conversation"),
+            topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
         )
 
     async def save_state(self) -> Mapping[str, Any]:
@@ -177,43 +180,3 @@ Today's date is {datetime.datetime.now().strftime("%Y-%m-%d")}
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._model_context.load_state(state["memory"])
-
-
-class NeedsUserInputHandler(DefaultInterventionHandler):
-    def __init__(self):
-        self.question_for_user: GetSlowUserMessage | None = None
-
-    async def on_publish(self, message: Any, *, message_context: MessageContext) -> Any:
-        if isinstance(message, GetSlowUserMessage):
-            self.question_for_user = message
-        return message
-
-    @property
-    def needs_user_input(self) -> bool:
-        return self.question_for_user is not None
-
-    @property
-    def user_input_content(self) -> str | None:
-        if self.question_for_user is None:
-            return None
-        return self.question_for_user.content
-
-
-class TerminationHandler(DefaultInterventionHandler):
-    def __init__(self):
-        self.terminateMessage: TerminateMessage | None = None
-
-    async def on_publish(self, message: Any, *, message_context: MessageContext) -> Any:
-        if isinstance(message, TerminateMessage):
-            self.terminateMessage = message
-        return message
-
-    @property
-    def is_terminated(self) -> bool:
-        return self.terminateMessage is not None
-
-    @property
-    def termination_msg(self) -> str | None:
-        if self.terminateMessage is None:
-            return None
-        return self.terminateMessage.content

@@ -65,7 +65,7 @@ class AssistantTextMessage(BaseModel):
     content: str
 
 
-class GetSlowUserMessage:
+class GetSlowUserMessage(BaseModel):
     content: str
 
 
