@@ -1,3 +1,5 @@
+import inspect
+
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import AgentRuntime, MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
@@ -7,6 +9,7 @@ from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartE
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
+from mtmai.teams.instagram_team import InstagramTeam
 
 
 class TeamRunnerAgent(RoutedAgent):
@@ -101,8 +104,7 @@ class TeamRunnerAgent(RoutedAgent):
 
     @message_handler
     async def run_team(self, message: TeamRunnerTask, ctx: MessageContext) -> None:
-        logger.info("(TeamRunnerTask)")
-        user_input = message.content
+        logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
         # team = await tenant_client.ag.get_team_by_resource(
@@ -117,15 +119,18 @@ class TeamRunnerAgent(RoutedAgent):
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
-        async for event in team.run_stream(
+        stream = team.run_stream(
             task=message.content,
             cancellation_token=ctx.cancellation_token,
-        ):
+        )
+        if inspect.isawaitable(stream):
+            stream = await stream
+
+        async for event in stream:
             if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
                 break
             if isinstance(event, TaskResult):
-                result = event
-                return result
+                return event
             await tenant_client.emit(event)
 
     async def build_team(
@@ -143,6 +148,8 @@ class TeamRunnerAgent(RoutedAgent):
             tenant=tid,
             resource=component_id_or_name,
         )
+
+        # 方式1
         team_builder = resource_team_map.get(resource_data.type)
         if not team_builder:
             raise ValueError(
@@ -150,6 +157,15 @@ class TeamRunnerAgent(RoutedAgent):
             )
         team = await team_builder.create_team(
             runtime=runtime, model_client=model_client
+        )
+
+        # 方式2
+        team = InstagramTeam(
+            participants=[],
+            model_client=model_client,
+            # termination_condition=None,
+            # max_turns=None,
+            runtime=runtime,
         )
 
         return team
