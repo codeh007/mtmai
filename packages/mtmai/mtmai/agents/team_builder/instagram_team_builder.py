@@ -8,10 +8,18 @@ from autogen_agentchat.conditions import (
 )
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
+from autogen_core import SingleThreadedAgentRuntime
 from autogen_core.models import ChatCompletionClient
+from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.termination import MyFunctionCallTermination
 from mtmai.agents.user_agent import UserAgent
+
+
+def wait_admin_approval(prompt: str) -> str:
+    """等待管理员批准"""
+    logger.info(f"等待管理员批准: {prompt}")
+    return f"等待管理员批准: {prompt}"
 
 
 class InstagramTeamBuilder:
@@ -39,6 +47,7 @@ class InstagramTeamBuilder:
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
             model_client=model_client,
+            tools=[wait_admin_approval],
             system_message="""
             You are a planning agent.
             Your job is to break down complex tasks into smaller, manageable subtasks.
@@ -51,6 +60,7 @@ class InstagramTeamBuilder:
             When assigning tasks, use this format:
             1. <agent> : <task>
 
+            生成了规划后, 等待管理员批准, 批准后, 继续执行规划的任务
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
@@ -127,6 +137,7 @@ Only select one agent.
                     return planning_agent.name
             return None
 
+        runtime = SingleThreadedAgentRuntime(ignore_unhandled_exceptions=False)
         team = SelectorGroupChat(
             participants=[planning_agent, user_proxy_agent, instagram_assistant],
             model_client=model_client,
@@ -135,9 +146,11 @@ Only select one agent.
             allow_repeated_speaker=True,  # Allow an agent to speak multiple turns in a row.
             # selector_func=selector_func,  # 可选,(自定义选择器)
             selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
-            max_turns=3,
+            max_turns=10,
+            runtime=runtime,
         )
         # team.component_version = current_team_version
         team.component_label = self.name
         team.component_description = self.description
+
         return team

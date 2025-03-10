@@ -19,9 +19,8 @@ from autogen_ext.models.openai.config import (
 from json_repair import repair_json
 from langchain_openai import ChatOpenAI
 from loguru import logger
-from openai import OpenAI
-
 from mtmai.core.config import settings
+from openai import OpenAI
 
 # 常见错误代码:
 # 402: Payment Required
@@ -83,6 +82,9 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
         )
 
+    async def close(self) -> None:
+        logger.info("MtmOpenAIChatCompletionClient close")
+
     async def create(
         self,
         messages: Sequence[LLMMessage],
@@ -92,6 +94,7 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         extra_create_args: Mapping[str, Any] = {},
         cancellation_token: Optional[CancellationToken] = None,
     ) -> CreateResult:
+        logger.info("MtmOpenAIChatCompletionClient create")
         custom_model_client = OpenAIChatCompletionClient(
             model=self.config.get("model", "deepseek-ai/deepseek-r1"),
             base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
