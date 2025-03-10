@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from typing import Any, Callable, List, Mapping
 
-from autogen_agentchat.base import TaskResult, Team, TerminationCondition
+from autogen_agentchat.base import Team, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
@@ -12,6 +12,7 @@ from autogen_agentchat.teams._group_chat._selector_group_chat import (
     SelectorGroupChatManager,
 )
 from autogen_core import (
+    AgentId,
     AgentRuntime,
     CancellationToken,
     Component,
@@ -49,19 +50,13 @@ from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
-from mtmai.agents.team_builder import default_team_name, resource_team_map
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import (
-    get_chat_session_id_ctx,
-    get_tenant_id,
-    set_step_canceled_ctx,
-)
+from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
-
-from ..clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 
 
 def execute_order(product: str, price: int) -> str:
@@ -547,61 +542,78 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     async def show_state(self) -> None:
         pass
 
+    # async def run_team(
+    #     self, message: AgentRunInput, cancellation_token: CancellationToken
+    # ) -> None:
+    #     user_input = message.content
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
+
+    #     self._runtime.send
+    #     if user_input == "/stop":
+    #         set_step_canceled_ctx(True)
+    #         pass
+    #     else:
+    #         set_step_canceled_ctx(False)
+    #         tenant_client = TenantClient()
+    #         # team = await tenant_client.ag.get_team_by_resource(
+    #         #     # cancellation_token=cancellation_token,
+    #         #     resource_id=message.resource_id,
+    #         # )
+    #         team = await self.build_team(
+    #             runtime=self._runtime, component_id_or_name=message.resource_id
+    #         )
+    #         await tenant_client.emit(ChatSessionStartEvent(threadId=message.session_id))
+    #         self.teams.append(team)
+    #         async for event in team.run_stream(
+    #             task=message.content,
+    #             cancellation_token=cancellation_token,
+    #         ):
+    #             # if cancellation_token and cancellation_token.is_cancelled():
+    #             #     break
+    #             if isinstance(event, TaskResult):
+    #                 result = event
+    #                 return result
+    #             await tenant_client.emit(event)
+
+    # async def build_team(
+    #     self, runtime: AgentRuntime, component_id_or_name: str | None = None
+    # ):
+    #     tenant_client = TenantClient()
+    #     tid = get_tenant_id()
+    #     if not tid:
+    #         raise ValueError("tenant_id is required")
+    #     if not component_id_or_name:
+    #         component_id_or_name = default_team_name
+    #     model_client = await tenant_client.ag.default_model_client(tid)
+
+    #     resource_data = await tenant_client.ag.resource_api.resource_get(
+    #         tenant=tid,
+    #         resource=component_id_or_name,
+    #     )
+    #     team_builder = resource_team_map.get(resource_data.type)
+    #     if not team_builder:
+    #         raise ValueError(
+    #             f"cant create team for unsupported resource type: {resource_data.type}"
+    #         )
+    #     team = await team_builder.create_team(
+    #         runtime=runtime, model_client=model_client
+    #     )
+
+    #     return team
+
     async def run_team(
         self, message: AgentRunInput, cancellation_token: CancellationToken
-    ) -> None:
-        user_input = message.content
+    ):
         if not self._initialized:
             await self._init(self._runtime)
+        component_id_or_name = message.resource_id
+        session_id = get_chat_session_id_ctx()
 
-        if user_input == "/stop":
-            set_step_canceled_ctx(True)
-            pass
-        else:
-            set_step_canceled_ctx(False)
-            tenant_client = TenantClient()
-            # team = await tenant_client.ag.get_team_by_resource(
-            #     # cancellation_token=cancellation_token,
-            #     resource_id=message.resource_id,
-            # )
-            team = await self.build_team(
-                runtime=self._runtime, component_id_or_name=message.resource_id
-            )
-            await tenant_client.emit(ChatSessionStartEvent(threadId=message.session_id))
-            self.teams.append(team)
-            async for event in team.run_stream(
-                task=message.content,
-                cancellation_token=cancellation_token,
-            ):
-                # if cancellation_token and cancellation_token.is_cancelled():
-                #     break
-                if isinstance(event, TaskResult):
-                    result = event
-                    return result
-                await tenant_client.emit(event)
-
-    async def build_team(
-        self, runtime: AgentRuntime, component_id_or_name: str | None = None
-    ):
-        tenant_client = TenantClient()
-        tid = get_tenant_id()
-        if not tid:
-            raise ValueError("tenant_id is required")
-        if not component_id_or_name:
-            component_id_or_name = default_team_name
-        model_client = await tenant_client.ag.default_model_client(tid)
-
-        resource_data = await tenant_client.ag.resource_api.resource_get(
-            tenant=tid,
-            resource=component_id_or_name,
+        result = await self._runtime.send_message(
+            message=TeamRunnerTask(task="run_team", team=component_id_or_name),
+            recipient=AgentId(type=team_runner_topic_type, key=session_id),
+            # topic_id=TopicId(type=team_runner_topic_type, source=session_id),
+            cancellation_token=cancellation_token,
         )
-        team_builder = resource_team_map.get(resource_data.type)
-        if not team_builder:
-            raise ValueError(
-                f"cant create team for unsupported resource type: {resource_data.type}"
-            )
-        team = await team_builder.create_team(
-            runtime=runtime, model_client=model_client
-        )
-
-        return team
+        return result

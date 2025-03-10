@@ -3,8 +3,13 @@ from typing import Dict, List
 
 from autogen_agentchat.base import TaskResult
 from autogen_core.models import LLMMessage
+from mtmai.clients.rest.models.code_review_result import CodeReviewResult
+from mtmai.clients.rest.models.code_review_task import CodeReviewTask
+from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
+from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
+from mtmai.clients.rest.models.termination_message import TerminationMessage
 from pydantic import BaseModel
 
 
@@ -49,10 +54,8 @@ class SetupHfSpaceMsg(BaseModel):
     password: str
 
 
-class LogItemMsg(BaseModel):
-    content: str
-
-
+# class LogItemMsg(BaseModel):
+#     content: str
 # class MsgStartWebServer(BaseModel):
 #     pass
 
@@ -69,43 +72,6 @@ class UserTask(BaseModel):
 class AgentResponse(BaseModel):
     reply_to_topic_type: str
     context: List[LLMMessage]
-
-
-class TerminationMessage(BaseModel):
-    """A message that is sent from the system to the user, indicating that the conversation has ended."""
-
-    reason: str
-
-
-# class CodeWritingTask(BaseModel):
-#     task: str
-
-
-class CodeWritingResult(BaseModel):
-    task: str
-    code: str
-    review: str
-
-
-class CodeReviewTask(BaseModel):
-    session_id: str
-    code_writing_task: str
-    code_writing_scratchpad: str
-    code: str
-
-
-class CodeReviewResult(BaseModel):
-    review: str
-    session_id: str
-    approved: bool
-
-
-class TeamRunnerTask(BaseModel):
-    task: str
-    team: str
-
-
-# browser
 
 
 class BrowserOpenTask(BaseModel):
@@ -128,13 +94,6 @@ class AgentRegistryBase(ABC):
     @abstractmethod
     async def get_agent(self, intent: str) -> str:
         pass
-
-
-# @dataclass(kw_only=True)
-# class BaseMessage:
-#     """A basic message that stores the source of the message."""
-
-#     source: str
 
 
 agent_message_types = [
