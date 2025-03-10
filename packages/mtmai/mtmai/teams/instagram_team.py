@@ -1,25 +1,19 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping
 
-from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
-from autogen_agentchat.conditions import ExternalTermination
+from autogen_agentchat.base import TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage, HandoffMessage
 from autogen_agentchat.state import SwarmManagerState
+from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import AgentRuntime, CancellationToken, Component, ComponentModel
-from loguru import logger
-from mtmai.agents._agents import MtAssistantAgent
-from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.instagram_task import InstagramTask
-from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
-from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_chat_session_id_ctx, get_team_id_ctx
-from mtmai.mtlibs.id import generate_uuid
-from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
+
+from ..agents._agents import MtAssistantAgent
 
 
 class InstagramGroupChatManager(BaseGroupChatManager):
@@ -123,41 +117,28 @@ class InstagramTeamConfig(BaseModel):
     result_id: str = None
 
 
-class InstagramTeam(MtBaseTeam, Component[InstagramTeamConfig]):
+class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     component_type = "mtmai.teams.instagram_team.InstagramTeam"
 
     def __init__(
         self,
-        participants: List[ChatAgent] = [],
-        stop_condition: ExternalTermination | None = None,
+        participants: List[ComponentModel] = [],
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
     ) -> None:
-        # 初始化参与者
-        # if not participants:
-        #     participants = [
-        #         MtAssistantAgent(
-        #             "InstagramAgent",
-        #             description="An agent for performing Instagram tasks.",
-        #         )
-        #     ]
-
-        # super().__init__(
-        #     participants,
-        #     group_chat_manager_name="InstagramGroupChatManager",
-        #     group_chat_manager_class=InstagramGroupChatManager,
-        #     termination_condition=termination_condition,
-        #     max_turns=max_turns,
-        #     runtime=runtime,
-        # )
-        # # The first participant must be able to produce handoff messages.
-        # first_participant = self._participants[0]
-        # if HandoffMessage not in first_participant.produced_message_types:
-        #     raise ValueError(
-        #         "The first participant must be able to produce a handoff messages."
-        #     )
-        pass
+        test_assisant = MtAssistantAgent(
+            name="test_assisant",
+            description="test_assisant",
+        )
+        participants.append(test_assisant)
+        super().__init__(
+            participants,
+            group_chat_manager_name="InstagramGroupChatManager",
+            group_chat_manager_class=InstagramGroupChatManager,
+            termination_condition=termination_condition,
+            max_turns=max_turns,
+        )
 
     def _create_group_chat_manager_factory(
         self,
@@ -194,6 +175,7 @@ class InstagramTeam(MtBaseTeam, Component[InstagramTeamConfig]):
         task: InstagramTask,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+        pass
         # tenant_client = TenantClient()
         # tid = tenant_client.tenant_id
         # # if task.startswith("/tenant/seed"):
