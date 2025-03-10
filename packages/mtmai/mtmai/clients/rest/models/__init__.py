@@ -58,7 +58,9 @@ from mtmai.clients.rest.models.blog_post_state_outlines_inner import BlogPostSta
 from mtmai.clients.rest.models.browser import Browser
 from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_list import BrowserList
+from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_params import BrowserParams
+from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.browser_update import BrowserUpdate
 from mtmai.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmai.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse

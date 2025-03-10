@@ -539,8 +539,8 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         pass
 
-    async def show_state(self) -> None:
-        pass
+    # async def show_state(self) -> None:
+    #     pass
 
     # async def run_team(
     #     self, message: AgentRunInput, cancellation_token: CancellationToken
@@ -611,9 +611,12 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         result = await self._runtime.send_message(
-            message=TeamRunnerTask(task="run_team", team=component_id_or_name),
+            message=TeamRunnerTask(
+                content=message.content,
+                team=component_id_or_name,
+                resource_id=message.resource_id,
+            ),
             recipient=AgentId(type=team_runner_topic_type, key=session_id),
-            # topic_id=TopicId(type=team_runner_topic_type, source=session_id),
             cancellation_token=cancellation_token,
         )
         return result

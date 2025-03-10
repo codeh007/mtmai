@@ -1,4 +1,4 @@
-from autogen_agentchat.base import TaskResult
+from autogen_agentchat.base import TaskResult, Team
 from autogen_core import AgentRuntime, MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
@@ -13,6 +13,7 @@ class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
         super().__init__(description)
         self._model_client = model_client
+        self.teams: list[Team] = []
 
     # @message_handler
     # async def handle_run_team(
@@ -100,33 +101,28 @@ class TeamRunnerAgent(RoutedAgent):
 
     @message_handler
     async def run_team(self, message: TeamRunnerTask, ctx: MessageContext) -> None:
-        logger.info("(TeamRunnerTask)(run_team)")
+        logger.info("(TeamRunnerTask)")
         user_input = message.content
-        if not self._initialized:
-            await self._init(self._runtime)
-
-        self._runtime.send
-        # if user_input == "/stop":
-        #     set_step_canceled_ctx(True)
-        #     pass
-        # else:
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
         # team = await tenant_client.ag.get_team_by_resource(
         #     # cancellation_token=cancellation_token,
         #     resource_id=message.resource_id,
         # )
+        session_id = self.id.key
+
         team = await self.build_team(
             runtime=self._runtime, component_id_or_name=message.resource_id
         )
-        await tenant_client.emit(ChatSessionStartEvent(threadId=message.session_id))
+        await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
+
         async for event in team.run_stream(
             task=message.content,
-            # cancellation_token=cancellation_token,
+            cancellation_token=ctx.cancellation_token,
         ):
-            # if cancellation_token and cancellation_token.is_cancelled():
-            #     break
+            if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
+                break
             if isinstance(event, TaskResult):
                 result = event
                 return result

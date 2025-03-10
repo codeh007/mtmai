@@ -20,6 +20,8 @@ import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
 from mtmai.clients.rest.models.browser_data import BrowserData
+from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
+from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
@@ -35,7 +37,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage"]
+AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage"]
 
 class AgentRunInputOther(BaseModel):
     """
@@ -50,29 +52,31 @@ class AgentRunInputOther(BaseModel):
     anyof_schema_3_validator: Optional[MyMessage] = None
     # data type: PlatformAccountTask
     anyof_schema_4_validator: Optional[PlatformAccountTask] = None
-    # data type: PlatformAccountTask
-    anyof_schema_5_validator: Optional[PlatformAccountTask] = None
     # data type: BrowserData
-    anyof_schema_6_validator: Optional[BrowserData] = None
+    anyof_schema_5_validator: Optional[BrowserData] = None
     # data type: PlatformAccountData
-    anyof_schema_7_validator: Optional[PlatformAccountData] = None
+    anyof_schema_6_validator: Optional[PlatformAccountData] = None
     # data type: InstagramTask
-    anyof_schema_8_validator: Optional[InstagramTask] = None
+    anyof_schema_7_validator: Optional[InstagramTask] = None
     # data type: ChatSessionStartEvent
-    anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
+    anyof_schema_8_validator: Optional[ChatSessionStartEvent] = None
     # data type: TeamRunnerTask
-    anyof_schema_10_validator: Optional[TeamRunnerTask] = None
+    anyof_schema_9_validator: Optional[TeamRunnerTask] = None
     # data type: TerminationMessage
-    anyof_schema_11_validator: Optional[TerminationMessage] = None
+    anyof_schema_10_validator: Optional[TerminationMessage] = None
     # data type: CodeReviewTask
-    anyof_schema_12_validator: Optional[CodeReviewTask] = None
+    anyof_schema_11_validator: Optional[CodeReviewTask] = None
     # data type: CodeReviewResult
-    anyof_schema_13_validator: Optional[CodeReviewResult] = None
+    anyof_schema_12_validator: Optional[CodeReviewResult] = None
+    # data type: BrowserTask
+    anyof_schema_13_validator: Optional[BrowserTask] = None
+    # data type: BrowserOpenTask
+    anyof_schema_14_validator: Optional[BrowserOpenTask] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[BrowserData, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]] = None
+        actual_instance: Optional[Union[BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "BrowserData", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage" }
+    any_of_schemas: Set[str] = { "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage" }
 
     model_config = {
         "validate_assignment": True,
@@ -108,12 +112,6 @@ class AgentRunInputOther(BaseModel):
         # validate data type: MyMessage
         if not isinstance(v, MyMessage):
             error_messages.append(f"Error! Input type `{type(v)}` is not `MyMessage`")
-        else:
-            return v
-
-        # validate data type: PlatformAccountTask
-        if not isinstance(v, PlatformAccountTask):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountTask`")
         else:
             return v
 
@@ -171,9 +169,21 @@ class AgentRunInputOther(BaseModel):
         else:
             return v
 
+        # validate data type: BrowserTask
+        if not isinstance(v, BrowserTask):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserTask`")
+        else:
+            return v
+
+        # validate data type: BrowserOpenTask
+        if not isinstance(v, BrowserOpenTask):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserOpenTask`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -210,64 +220,70 @@ class AgentRunInputOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_5_validator: Optional[PlatformAccountTask] = None
-        try:
-            instance.actual_instance = PlatformAccountTask.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_6_validator: Optional[BrowserData] = None
+        # anyof_schema_5_validator: Optional[BrowserData] = None
         try:
             instance.actual_instance = BrowserData.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_7_validator: Optional[PlatformAccountData] = None
+        # anyof_schema_6_validator: Optional[PlatformAccountData] = None
         try:
             instance.actual_instance = PlatformAccountData.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_8_validator: Optional[InstagramTask] = None
+        # anyof_schema_7_validator: Optional[InstagramTask] = None
         try:
             instance.actual_instance = InstagramTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
+        # anyof_schema_8_validator: Optional[ChatSessionStartEvent] = None
         try:
             instance.actual_instance = ChatSessionStartEvent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_10_validator: Optional[TeamRunnerTask] = None
+        # anyof_schema_9_validator: Optional[TeamRunnerTask] = None
         try:
             instance.actual_instance = TeamRunnerTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_11_validator: Optional[TerminationMessage] = None
+        # anyof_schema_10_validator: Optional[TerminationMessage] = None
         try:
             instance.actual_instance = TerminationMessage.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_12_validator: Optional[CodeReviewTask] = None
+        # anyof_schema_11_validator: Optional[CodeReviewTask] = None
         try:
             instance.actual_instance = CodeReviewTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_13_validator: Optional[CodeReviewResult] = None
+        # anyof_schema_12_validator: Optional[CodeReviewResult] = None
         try:
             instance.actual_instance = CodeReviewResult.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_13_validator: Optional[BrowserTask] = None
+        try:
+            instance.actual_instance = BrowserTask.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_14_validator: Optional[BrowserOpenTask] = None
+        try:
+            instance.actual_instance = BrowserOpenTask.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -281,7 +297,7 @@ class AgentRunInputOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

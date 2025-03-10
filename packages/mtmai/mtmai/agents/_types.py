@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from autogen_agentchat.base import TaskResult
 from autogen_core.models import LLMMessage
+from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
+from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
@@ -34,24 +35,24 @@ class UIAgentConfig(BaseModel):
         return self.artificial_stream_delay_seconds.get("max", 0.0)
 
 
-class ApiSaveTeamState(BaseModel):
-    tenant_id: str
-    # team_id: str
-    state: dict
-    componentId: str
-    runId: str
+# class ApiSaveTeamState(BaseModel):
+#     tenant_id: str
+#     # team_id: str
+#     state: dict
+#     componentId: str
+#     runId: str
 
 
-class ApiSaveTeamTaskResult(BaseModel):
-    tenant_id: str
-    team_id: str
-    task_result: TaskResult
+# class ApiSaveTeamTaskResult(BaseModel):
+#     tenant_id: str
+#     team_id: str
+#     task_result: TaskResult
 
 
-class SetupHfSpaceMsg(BaseModel):
-    tenant_id: str
-    username: str
-    password: str
+# class SetupHfSpaceMsg(BaseModel):
+#     tenant_id: str
+#     username: str
+#     password: str
 
 
 # class LogItemMsg(BaseModel):
@@ -60,9 +61,9 @@ class SetupHfSpaceMsg(BaseModel):
 #     pass
 
 
-class MsgGetTeam(BaseModel):
-    tenant_id: str
-    team_id: str
+# class MsgGetTeam(BaseModel):
+#     tenant_id: str
+#     team_id: str
 
 
 class UserTask(BaseModel):
@@ -72,16 +73,6 @@ class UserTask(BaseModel):
 class AgentResponse(BaseModel):
     reply_to_topic_type: str
     context: List[LLMMessage]
-
-
-class BrowserOpenTask(BaseModel):
-    """打开浏览器备用,一般用于调试目的Open a browser and navigate to a URL."""
-
-    url: str
-
-
-class BrowserTask(BaseModel):
-    task: str
 
 
 class IntentClassifierBase(ABC):
@@ -104,4 +95,6 @@ agent_message_types = [
     CodeReviewResult,
     TeamRunnerTask,
     PlatformAccountTask,
+    BrowserOpenTask,
+    BrowserTask,
 ]
