@@ -4,7 +4,6 @@ from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
 from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from loguru import logger
-
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents._types import TeamRunnerTask
 
@@ -12,7 +11,6 @@ from mtmai.agents._types import TeamRunnerTask
 class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
         super().__init__(description)
-        # self._agent_topic_type = agent_topic_type
         self._model_client = model_client
 
     @message_handler

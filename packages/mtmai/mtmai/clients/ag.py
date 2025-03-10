@@ -11,6 +11,7 @@ from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.model_api import ModelApi
+from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
@@ -19,8 +20,6 @@ from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.context.ctx import get_tenant_id
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
-
-from .rest.api.resource_api import ResourceApi
 
 
 class AgClient:
@@ -128,7 +127,6 @@ class AgClient:
 
     async def get_team_by_resource(
         self,
-        # cancellation_token: CancellationToken,
         resource_id: str | None = None,
         tid: str = None,
     ):

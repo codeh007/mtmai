@@ -49,10 +49,15 @@ from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
 from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
+from mtmai.agents.team_builder import default_team_name, resource_team_map
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_chat_session_id_ctx, set_step_canceled_ctx
+from mtmai.context.ctx import (
+    get_chat_session_id_ctx,
+    get_tenant_id,
+    set_step_canceled_ctx,
+)
 from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
@@ -345,7 +350,6 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                 user_topic_type=user_topic_type,
             ),
         )
-        # Add subscriptions for the issues and repairs agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=issues_and_repairs_agent_topic_type,
@@ -353,7 +357,6 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
-        # Register the human agent.
         human_agent_type = await HumanAgent.register(
             runtime=self._runtime,
             type=human_agent_topic_type,  # Using the topic type as the agent type.
@@ -363,24 +366,19 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                 user_topic_type=user_topic_type,
             ),
         )
-        # Add subscriptions for the human agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=human_agent_topic_type, agent_type=human_agent_type.type
             )
         )
 
-        # Register the user agent.
         user_agent_type = await UserAgent.register(
             runtime=self._runtime,
             type=user_topic_type,
             factory=lambda: UserAgent(
                 description="A user agent.",
-                # user_topic_type=user_topic_type,
-                agent_topic_type=triage_agent_topic_type,  # Start with the triage agent.
             ),
         )
-        # Add subscriptions for the user agent: it will receive messages published to its own topic only.
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=user_topic_type, agent_type=user_agent_type.type
@@ -553,17 +551,21 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         self, message: AgentRunInput, cancellation_token: CancellationToken
     ) -> None:
         user_input = message.content
+        if not self._initialized:
+            await self._init(self._runtime)
+
         if user_input == "/stop":
-            # for team in self.teams:
-            #     await team.()
             set_step_canceled_ctx(True)
             pass
         else:
             set_step_canceled_ctx(False)
             tenant_client = TenantClient()
-            team = await tenant_client.ag.get_team_by_resource(
-                # cancellation_token=cancellation_token,
-                resource_id=message.resource_id,
+            # team = await tenant_client.ag.get_team_by_resource(
+            #     # cancellation_token=cancellation_token,
+            #     resource_id=message.resource_id,
+            # )
+            team = await self.build_team(
+                runtime=self._runtime, component_id_or_name=message.resource_id
             )
             await tenant_client.emit(ChatSessionStartEvent(threadId=message.session_id))
             self.teams.append(team)
@@ -577,3 +579,29 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
                     result = event
                     return result
                 await tenant_client.emit(event)
+
+    async def build_team(
+        self, runtime: AgentRuntime, component_id_or_name: str | None = None
+    ):
+        tenant_client = TenantClient()
+        tid = get_tenant_id()
+        if not tid:
+            raise ValueError("tenant_id is required")
+        if not component_id_or_name:
+            component_id_or_name = default_team_name
+        model_client = await tenant_client.ag.default_model_client(tid)
+
+        resource_data = await tenant_client.ag.resource_api.resource_get(
+            tenant=tid,
+            resource=component_id_or_name,
+        )
+        team_builder = resource_team_map.get(resource_data.type)
+        if not team_builder:
+            raise ValueError(
+                f"cant create team for unsupported resource type: {resource_data.type}"
+            )
+        team = await team_builder.create_team(
+            runtime=runtime, model_client=model_client
+        )
+
+        return team

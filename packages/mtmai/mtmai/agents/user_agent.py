@@ -1,117 +1,133 @@
-from typing import AsyncGenerator, Sequence
-
-from autogen_agentchat.agents import UserProxyAgent
-from autogen_agentchat.base import Response
-from autogen_agentchat.messages import AgentEvent, ChatMessage, StopMessage
-from autogen_core import CancellationToken, MessageContext, message_handler
+from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
+from autogen_core.models import UserMessage
 from loguru import logger
-from mtmai.agents._types import TerminationMessage  # PlatformAccountTask,
+from mtmai.agents._agents import (
+    browser_topic_type,
+    coder_agent_topic_type,
+    platform_account_topic_type,
+    team_runner_topic_type,
+)
+from mtmai.agents._types import (  # PlatformAccountTask,
+    AgentResponse,
+    BrowserOpenTask,
+    BrowserTask,
+    CodeReviewResult,
+    CodeReviewTask,
+    CodeWritingTask,
+    TeamRunnerTask,
+    TerminationMessage,
+    UserTask,
+)
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
+from mtmai.context.context_client import TenantClient
 
 
-class UserAgent(UserProxyAgent):
-    def __init__(self, name: str, description: str) -> None:
-        super().__init__(name=name, description=description)
-        # self._agent_topic_type = agent_topic_type
+class UserAgent(RoutedAgent):
+    def __init__(self, description: str, agent_topic_type: str = None) -> None:
+        super().__init__(description)
+        self._agent_topic_type = agent_topic_type
 
-    # @message_handler
-    # async def handle_agent_run_input(
-    #     self, message: AgentRunInput, ctx: MessageContext
-    # ) -> None:
-    #     """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
-    #     if ctx.cancellation_token.is_cancelled():
-    #         return
+    @message_handler
+    async def handle_agent_run_input(
+        self, message: AgentRunInput, ctx: MessageContext
+    ) -> None:
+        """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
+        if ctx.cancellation_token.is_cancelled():
+            return
 
-    #     # session_id = ctx.topic_id.source
-    #     session_id = self.id.key
-    #     tenant_client = TenantClient()
-    #     tid = tenant_client.tenant_id
-    #     logger.info(
-    #         f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.content}"
-    #     )
-    #     user_input = message.content
+        # session_id = ctx.topic_id.source
+        session_id = self.id.key
+        tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
+        logger.info(
+            f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.content}"
+        )
+        user_input = message.content
 
-    #     user_content = message.content
-    #     if user_content.startswith("/test_code"):
-    #         await self._runtime.publish_message(
-    #             message=CodeWritingTask(
-    #                 task="Write a function to find the sum of all even numbers in a list."
-    #             ),
-    #             topic_id=TopicId(coder_agent_topic_type, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test_open_browser"):
-    #         await self._runtime.publish_message(
-    #             message=BrowserOpenTask(url="https://playwright.dev/"),
-    #             topic_id=TopicId(browser_topic_type, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test_browser_task"):
-    #         await self._runtime.publish_message(
-    #             message=BrowserTask(task="Open an online code editor programiz."),
-    #             topic_id=TopicId(browser_topic_type, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test_team"):
-    #         await self._runtime.publish_message(
-    #             message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
-    #             topic_id=TopicId(team_runner_topic_type, source=session_id),
-    #         )
-    #     else:
-    #         # # 意图识别
-    #         # # 意图识别, 通常用于同一个 type 的用户输入,根据路由规则, 找到最合适的agent
-    #         # # 关键点在于当有多个 agent 都能处理相同的 输入类型的时候,可以根据意图将用户的输入转发的**单个** agent
-    #         # intent = await self._identify_intent(message)
-    #         # # 找到最合适的agent
-    #         # agent = await self._find_agent(intent)
-    #         # # 联系agent
-    #         # await self.contact_agent(agent, message, session_id)
-    #         # await self.publish_message(
-    #         #     UserTask(context=[UserMessage(content=user_input, source=session_id)]),
-    #         #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
-    #         # )
+        user_content = message.content
+        if user_content.startswith("/test_code"):
+            await self._runtime.publish_message(
+                message=CodeWritingTask(
+                    task="Write a function to find the sum of all even numbers in a list."
+                ),
+                topic_id=TopicId(coder_agent_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_open_browser"):
+            await self._runtime.publish_message(
+                message=BrowserOpenTask(url="https://playwright.dev/"),
+                topic_id=TopicId(browser_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_browser_task"):
+            await self._runtime.publish_message(
+                message=BrowserTask(task="Open an online code editor programiz."),
+                topic_id=TopicId(browser_topic_type, source=session_id),
+            )
+        elif user_content.startswith("/test_team"):
+            await self._runtime.publish_message(
+                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+                topic_id=TopicId(team_runner_topic_type, source=session_id),
+            )
+        else:
+            # # 意图识别
+            # # 意图识别, 通常用于同一个 type 的用户输入,根据路由规则, 找到最合适的agent
+            # # 关键点在于当有多个 agent 都能处理相同的 输入类型的时候,可以根据意图将用户的输入转发的**单个** agent
+            # intent = await self._identify_intent(message)
+            # # 找到最合适的agent
+            # agent = await self._find_agent(intent)
+            # # 联系agent
+            # await self.contact_agent(agent, message, session_id)
+            # await self.publish_message(
+            #     UserTask(context=[UserMessage(content=user_input, source=session_id)]),
+            #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
+            # )
 
-    #         resource_id = message.resource_id
+            resource_id = message.resource_id
 
-    #         try:
-    #             resource = await tenant_client.ag.resource_api.resource_get(
-    #                 tenant=tid,
-    #                 resource=resource_id,
-    #             )
-    #             logger.info(f"resource: {resource}")
-    #         except Exception as e:
-    #             logger.exception(f"get resource error: {e}")
-    #             return None
+            try:
+                resource = await tenant_client.ag.resource_api.resource_get(
+                    tenant=tid,
+                    resource=resource_id,
+                )
+                logger.info(f"resource: {resource}")
+            except Exception as e:
+                logger.exception(f"get resource error: {e}")
+                return None
 
-    #         if resource is None:
-    #             return None
+            if resource is None:
+                return None
 
-    #         if resource.type == "platform_account":
-    #             await self.publish_message(
-    #                 PlatformAccountTask(id=resource_id, task=user_input),
-    #                 topic_id=TopicId(platform_account_topic_type, source=session_id),
-    #             )
-    #         else:
-    #             # 加载对话历史
-    #             message_history = await tenant_client.ag.chat_api.chat_messages_list(
-    #                 tenant=tid,
-    #                 chat=session_id,
-    #             )
+            if resource.type == "platform_account":
+                await self.publish_message(
+                    PlatformAccountTask(id=resource_id, task=user_input),
+                    topic_id=TopicId(platform_account_topic_type, source=session_id),
+                )
+            else:
+                # 加载对话历史
+                message_history = await tenant_client.ag.chat_api.chat_messages_list(
+                    tenant=tid,
+                    chat=session_id,
+                )
 
-    #             await self.publish_message(
-    #                 UserTask(context=[UserMessage(content=user_input, source="User")]),
-    #                 topic_id=TopicId(self._agent_topic_type, source=session_id),
-    #             )
+                await self.publish_message(
+                    UserTask(context=[UserMessage(content=user_input, source="User")]),
+                    topic_id=TopicId(self._agent_topic_type, source=session_id),
+                )
 
-    #             await tenant_client.ag.chat_api.chat_message_upsert(
-    #                 tenant=tid,
-    #                 chat_message_upsert=ChatMessageUpsert(
-    #                     tenant_id=tid,
-    #                     content=user_input,
-    #                     # component_id=self.id.key,
-    #                     thread_id=self.id.key,
-    #                     role="user",
-    #                     source=session_id,
-    #                     # topic=self._agent_topic_type,
-    #                     topic=ctx.topic_id.type,
-    #                 ),
-    #             )
+                await tenant_client.ag.chat_api.chat_message_upsert(
+                    tenant=tid,
+                    chat_message_upsert=ChatMessageUpsert(
+                        tenant_id=tid,
+                        content=user_input,
+                        # component_id=self.id.key,
+                        thread_id=self.id.key,
+                        role="user",
+                        source=session_id,
+                        # topic=self._agent_topic_type,
+                        topic=ctx.topic_id.type,
+                    ),
+                )
 
     # When a conversation ends
     @message_handler
@@ -125,73 +141,43 @@ class UserAgent(UserProxyAgent):
         #     topic_id=DefaultTopicId(type="response", source=ctx.topic_id.source),
         # )
 
-    async def on_messages_stream(
-        self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
-    ) -> AsyncGenerator[AgentEvent | ChatMessage | Response, None]:
-        """Handle incoming messages by requesting user input."""
-        # try:
-        #     # Check for handoff first
-        #     handoff = self._get_latest_handoff(messages)
-        #     prompt = (
-        #         f"Handoff received from {handoff.source}. Enter your response: " if handoff else "Enter your response: "
-        #     )
+    @message_handler
+    async def handle_task_result(
+        self, message: AgentResponse, ctx: MessageContext
+    ) -> None:
+        tenant_client = TenantClient()
+        tid = tenant_client.tenant_id
+        llm_message = message.context[-1]
+        await tenant_client.emit(llm_message)
+        await tenant_client.ag.chat_api.chat_message_upsert(
+            tenant=tid,
+            chat_message_upsert=ChatMessageUpsert(
+                tenant_id=tid,
+                content=llm_message.content,
+                # component_id=self.id.key,
+                thread_id=self.id.key,
+                role="assistant",
+                # source="assistant",
+                source=ctx.topic_id.source,
+                topic=ctx.topic_id.type,
+            ),
+        )
 
-        #     request_id = str(uuid.uuid4())
+        # await tenant_client.emit(message)
+        # user_input = await self.get_user_input(
+        #     "User (type 'exit' to close the session): ",
+        #     ctx,
+        # )
+        # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
 
-        #     input_requested_event = UserInputRequestedEvent(request_id=request_id, source=self.name)
-        #     yield input_requested_event
-        #     with UserProxyAgent.InputRequestContext.populate_context(request_id):
-        #         user_input = await self._get_input(prompt, cancellation_token)
-
-        #     # Return appropriate message type based on handoff presence
-        #     if handoff:
-        #         yield Response(chat_message=HandoffMessage(content=user_input, target=handoff.source, source=self.name))
-        #     else:
-        #         yield Response(chat_message=TextMessage(content=user_input, source=self.name))
-
-        # except asyncio.CancelledError:
-        #     raise
-        # except Exception as e:
-        #     raise RuntimeError(f"Failed to get user input: {str(e)}") from e
-        yield StopMessage(content="user input", source="UserProxyAgent")
-
-    # @message_handler
-    # async def handle_task_result(
-    #     self, message: AgentResponse, ctx: MessageContext
-    # ) -> None:
-    #     tenant_client = TenantClient()
-    #     tid = tenant_client.tenant_id
-    #     llm_message = message.context[-1]
-    #     await tenant_client.emit(llm_message)
-    #     await tenant_client.ag.chat_api.chat_message_upsert(
-    #         tenant=tid,
-    #         chat_message_upsert=ChatMessageUpsert(
-    #             tenant_id=tid,
-    #             content=llm_message.content,
-    #             # component_id=self.id.key,
-    #             thread_id=self.id.key,
-    #             role="assistant",
-    #             # source="assistant",
-    #             source=ctx.topic_id.source,
-    #             topic=ctx.topic_id.type,
-    #         ),
-    #     )
-
-    # await tenant_client.emit(message)
-    # user_input = await self.get_user_input(
-    #     "User (type 'exit' to close the session): ",
-    #     ctx,
-    # )
-    # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-
-    # if user_input.strip().lower() == "exit":
-    #     logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
-    #     return
-    # message.context.append(UserMessage(content=user_input, source="User"))
-    # await self.publish_message(
-    #     UserTask(context=message.context),
-    #     topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
-    # )
+        # if user_input.strip().lower() == "exit":
+        #     logger.info(f"{'-'*80}\nUser session ended, session ID: {self.id.key}.")
+        #     return
+        # message.context.append(UserMessage(content=user_input, source="User"))
+        # await self.publish_message(
+        #     UserTask(context=message.context),
+        #     topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
+        # )
 
     # async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
     #     """Get user input from the console. Override this method to customize how user input is retrieved."""
@@ -201,17 +187,17 @@ class UserAgent(UserProxyAgent):
     #     # return await loop.run_in_executor(None, input, prompt)
     #     return user_input
 
-    # @message_handler
-    # async def handle_code_review_task(
-    #     self, message: CodeReviewTask, ctx: MessageContext
-    # ) -> None:
-    #     logger.info(f"handle_user_message: {message}")
-    #     tenant_client = TenantClient()
-    #     await tenant_client.emit(message)
+    @message_handler
+    async def handle_code_review_task(
+        self, message: CodeReviewTask, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_user_message: {message}")
+        tenant_client = TenantClient()
+        await tenant_client.emit(message)
 
-    # async def handle_code_review_result(
-    #     self, message: CodeReviewResult, ctx: MessageContext
-    # ) -> None:
-    #     logger.info(f"handle_code_review_result: {message}")
-    #     tenant_client = TenantClient()
-    #     await tenant_client.emit(message)
+    async def handle_code_review_result(
+        self, message: CodeReviewResult, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_code_review_result: {message}")
+        tenant_client = TenantClient()
+        await tenant_client.emit(message)

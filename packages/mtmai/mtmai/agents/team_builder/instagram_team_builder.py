@@ -8,12 +8,11 @@ from autogen_agentchat.conditions import (
 )
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
-from autogen_core import SingleThreadedAgentRuntime
+from autogen_core import AgentRuntime
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.termination import MyFunctionCallTermination
-from mtmai.agents.user_agent import UserAgent
 
 
 def wait_admin_approval(prompt: str) -> str:
@@ -35,14 +34,9 @@ class InstagramTeamBuilder:
 
     async def create_team(
         self,
-        # stop_condition: ExternalTermination | None = None,
+        runtime: AgentRuntime,
         model_client: ChatCompletionClient = None,
     ):
-        # tenant_client = TenantClient()
-        # if not model_client:
-        #     model_client = await tenant_client.ag.default_model_client(
-        #         tenant_client.tenant_id
-        #     )
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
@@ -102,10 +96,10 @@ Only select one agent.
                 return planning_agent.name
             return None
 
-        user_proxy_agent = UserAgent(
-            name="UserProxyAgent",
-            description="A proxy for the user to approve or disapprove tasks.",
-        )
+        # user_proxy_agent = UserAgent(
+        #     name="UserProxyAgent",
+        #     description="A proxy for the user to approve or disapprove tasks.",
+        # )
 
         instagram_assistant = MtAssistantAgent(
             "InstagramAssistant",
@@ -113,39 +107,39 @@ Only select one agent.
             model_client=model_client,
         )
 
-        def selector_func_with_user_proxy(
-            messages: Sequence[AgentEvent | ChatMessage],
-        ) -> str | None:
-            if (
-                messages[-1].source != planning_agent.name
-                and messages[-1].source != user_proxy_agent.name
-            ):
-                # Planning agent should be the first to engage when given a new task, or check progress.
-                return planning_agent.name
-            if messages[-1].source == planning_agent.name:
-                if (
-                    messages[-2].source == user_proxy_agent.name
-                    and "APPROVE" in messages[-1].content.upper()
-                ):  # type: ignore
-                    # User has approved the plan, proceed to the next agent.
-                    return None
-                # Use the user proxy agent to get the user's approval to proceed.
-                return user_proxy_agent.name
-            if messages[-1].source == user_proxy_agent.name:
-                # If the user does not approve, return to the planning agent.
-                if "APPROVE" not in messages[-1].content.upper():  # type: ignore
-                    return planning_agent.name
-            return None
+        # def selector_func_with_user_proxy(
+        #     messages: Sequence[AgentEvent | ChatMessage],
+        # ) -> str | None:
+        #     if (
+        #         messages[-1].source != planning_agent.name
+        #         and messages[-1].source != user_proxy_agent.name
+        #     ):
+        #         # Planning agent should be the first to engage when given a new task, or check progress.
+        #         return planning_agent.name
+        #     if messages[-1].source == planning_agent.name:
+        #         if (
+        #             messages[-2].source == user_proxy_agent.name
+        #             and "APPROVE" in messages[-1].content.upper()
+        #         ):  # type: ignore
+        #             # User has approved the plan, proceed to the next agent.
+        #             return None
+        #         # Use the user proxy agent to get the user's approval to proceed.
+        #         return user_proxy_agent.name
+        #     if messages[-1].source == user_proxy_agent.name:
+        #         # If the user does not approve, return to the planning agent.
+        #         if "APPROVE" not in messages[-1].content.upper():  # type: ignore
+        #             return planning_agent.name
+        #     return None
 
-        runtime = SingleThreadedAgentRuntime(ignore_unhandled_exceptions=False)
+        # runtime = SingleThreadedAgentRuntime(ignore_unhandled_exceptions=False)
         team = SelectorGroupChat(
-            participants=[planning_agent, user_proxy_agent, instagram_assistant],
+            participants=[planning_agent, instagram_assistant],
             model_client=model_client,
             termination_condition=termination,
             selector_prompt=selector_prompt,
             allow_repeated_speaker=True,  # Allow an agent to speak multiple turns in a row.
             # selector_func=selector_func,  # 可选,(自定义选择器)
-            selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
+            # selector_func=selector_func_with_user_proxy,  # 选择器: 由用户确认后继续执行 planer 安排的任务
             max_turns=10,
             runtime=runtime,
         )
