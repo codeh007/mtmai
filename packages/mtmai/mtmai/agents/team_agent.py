@@ -152,7 +152,7 @@ class TeamRunnerAgent(RoutedAgent):
         user_agent_type = await SlowUserProxyAgent.register(
             runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
         )
-        runtime.add_subscription(
+        await runtime.add_subscription(
             TypeSubscription(
                 topic_type=user_topic_type, agent_type=user_agent_type.type
             )
@@ -191,7 +191,8 @@ class TeamRunnerAgent(RoutedAgent):
             await runtime.load_state(state)
         await runtime.publish_message(
             message=runtime_initiation_message,
-            topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
+            # topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
+            topic_id=TopicId(type=user_agent_type.type, source=session_id),
         )
 
         runtime.start()
