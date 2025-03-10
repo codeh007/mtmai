@@ -35,37 +35,6 @@ class UIAgentConfig(BaseModel):
         return self.artificial_stream_delay_seconds.get("max", 0.0)
 
 
-# class ApiSaveTeamState(BaseModel):
-#     tenant_id: str
-#     # team_id: str
-#     state: dict
-#     componentId: str
-#     runId: str
-
-
-# class ApiSaveTeamTaskResult(BaseModel):
-#     tenant_id: str
-#     team_id: str
-#     task_result: TaskResult
-
-
-# class SetupHfSpaceMsg(BaseModel):
-#     tenant_id: str
-#     username: str
-#     password: str
-
-
-# class LogItemMsg(BaseModel):
-#     content: str
-# class MsgStartWebServer(BaseModel):
-#     pass
-
-
-# class MsgGetTeam(BaseModel):
-#     tenant_id: str
-#     team_id: str
-
-
 class UserTask(BaseModel):
     context: List[LLMMessage]
 
