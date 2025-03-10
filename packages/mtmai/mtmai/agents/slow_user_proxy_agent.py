@@ -11,7 +11,6 @@ from autogen_core import (
     MessageContext,
     RoutedAgent,
     message_handler,
-    type_subscription,
 )
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
@@ -123,7 +122,7 @@ class ScheduleMeetingTool(BaseTool[ScheduleMeetingInput, ScheduleMeetingOutput])
         return ScheduleMeetingOutput()
 
 
-@type_subscription("scheduling_assistant_conversation")
+# @type_subscription("scheduling_assistant_conversation")
 class SchedulingAssistantAgent(RoutedAgent):
     def __init__(
         self,

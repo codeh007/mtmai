@@ -1,25 +1,27 @@
-import inspect
 from typing import Any, Mapping
 
-from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.base import Team
 from autogen_core import (
     AgentRuntime,
     MessageContext,
     RoutedAgent,
     SingleThreadedAgentRuntime,
+    TopicId,
+    TypeSubscription,
     message_handler,
 )
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+from mtmai.agents._agents import scheduling_assistant_topic_type, user_topic_type
 from mtmai.agents.slow_user_proxy_agent import (
     AssistantTextMessage,
     NeedsUserInputHandler,
     SchedulingAssistantAgent,
     SlowUserProxyAgent,
     TerminationHandler,
+    UserTextMessage,
 )
 from mtmai.agents.team_builder import default_team_name
-from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
@@ -151,13 +153,18 @@ class TeamRunnerAgent(RoutedAgent):
         user_agent_type = await SlowUserProxyAgent.register(
             runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
         )
+        runtime.add_subscription(
+            TypeSubscription(
+                topic_type=user_topic_type, agent_type=user_agent_type.type
+            )
+        )
         initial_schedule_assistant_message = AssistantTextMessage(
             content="Hi! How can I help you? I can help schedule meetings",
             source="User",
         )
-        await SchedulingAssistantAgent.register(
+        scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
             runtime,
-            "SchedulingAssistant",
+            scheduling_assistant_topic_type,
             lambda: SchedulingAssistantAgent(
                 "SchedulingAssistant",
                 description="AI that helps you schedule meetings",
@@ -165,28 +172,53 @@ class TeamRunnerAgent(RoutedAgent):
                 initial_message=initial_schedule_assistant_message,
             ),
         )
-
-        team = await self.build_team(
-            runtime=runtime, component_id_or_name=message.resource_id
+        await runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=scheduling_assistant_topic_type,
+                agent_type=scheduling_assistant_agent_type.type,
+            )
         )
-        await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
-        self.teams.append(team)
+        runtime_initiation_message: UserTextMessage | AssistantTextMessage
+        latest_user_input = None
+        if latest_user_input is not None:
+            runtime_initiation_message = UserTextMessage(
+                content=latest_user_input, source="User"
+            )
+        else:
+            runtime_initiation_message = initial_schedule_assistant_message
+        state = state_persister.load_content()
 
-        stream = team.run_stream(
-            task=message.content,
-            cancellation_token=ctx.cancellation_token,
+        if state:
+            await runtime.load_state(state)
+        await runtime.publish_message(
+            runtime_initiation_message,
+            # Toppici("scheduling_assistant_conversation"),
+            topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
         )
-        if inspect.isawaitable(stream):
-            stream = await stream
 
-        async for event in stream:
-            if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
-                break
-            if isinstance(event, TaskResult):
-                return event
-            await tenant_client.emit(event)
+        runtime.start()
 
-        runtime.stop_when_idle()
+        # team = await self.build_team(
+        #     runtime=runtime, component_id_or_name=message.resource_id
+        # )
+        # await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
+        # self.teams.append(team)
+
+        # stream = team.run_stream(
+        #     task=message.content,
+        #     cancellation_token=ctx.cancellation_token,
+        # )
+        # if inspect.isawaitable(stream):
+        #     stream = await stream
+
+        # async for event in stream:
+        #     if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
+        #         break
+        #     if isinstance(event, TaskResult):
+        #         return event
+        #     await tenant_client.emit(event)
+
+        # runtime.stop_when_idle()
 
     async def build_team(
         self, runtime: AgentRuntime, component_id_or_name: str | None = None

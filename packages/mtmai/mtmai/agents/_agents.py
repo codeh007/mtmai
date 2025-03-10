@@ -21,6 +21,8 @@ team_runner_topic_type = "TeamRunner"
 browser_topic_type = "Browser"
 router_topic_type = "Router"
 platform_account_topic_type = "PlatformAccount"
+scheduling_assistant_topic_type = "scheduling_assistant_conversation"
+
 
 
 class MtWebUserProxyAgent(UserProxyAgent):
