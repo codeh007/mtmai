@@ -1,32 +1,23 @@
-from typing import AsyncGenerator, List, Sequence
+from typing import Any, Dict, List, Mapping, Sequence
 
-from autogen_agentchat.base import TaskResult, TerminationCondition
+from autogen_agentchat.base import TerminationCondition
 from autogen_agentchat.conditions import MaxMessageTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.state import TeamState
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core import (
+    AgentId,
     AgentRuntime,
-    CancellationToken,
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
-    TopicId,
-    TypeSubscription,
 )
 from loguru import logger
-from mtmai.agents._agents import (
-    MtAssistantAgent,
-    scheduling_assistant_topic_type,
-    user_topic_type,
-)
+from mtmai.agents._agents import MtAssistantAgent
+from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.termination import MyFunctionCallTermination
-from pydantic import BaseModel
-
-from ..agents._types import AssistantTextMessage, UserTextMessage
-from ..agents.intervention_handlers import NeedsUserInputHandler, TerminationHandler
-from ..agents.slow_user_proxy_agent import SchedulingAssistantAgent, SlowUserProxyAgent
-from ..context.ctx import get_chat_session_id_ctx
+from pydantic import BaseModel, ValidationError
 
 
 def wait_user_approval(prompt: str) -> str:
@@ -56,16 +47,20 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
     ) -> None:
-        # if runtime is None:
-        # runtime = SingleThreadedAgentRuntime()
-
-        # termination_handler = TerminationHandler()
-        # needs_user_input_handler = NeedsUserInputHandler()
-        # runtime = SingleThreadedAgentRuntime(
-        #     intervention_handlers=[needs_user_input_handler, termination_handler]
-        # )
         self._runtime = runtime
+
+        if self._runtime is None:
+            needs_user_input_handler = NeedsUserInputHandler()
+            self._runtime = SingleThreadedAgentRuntime(
+                intervention_handlers=[
+                    needs_user_input_handler,
+                    # termination_handler,
+                ]
+            )
         self._initialized = False
+        self._is_running = False
+
+        self._model_client = model_client
 
         test_assisant = MtAssistantAgent(
             name="test_assisant",
@@ -149,89 +144,236 @@ Only select one agent.
             selector_func=selector_func,
         )
 
-    async def _init(self):
-        self.termination_handler = TerminationHandler()
-        self.needs_user_input_handler = NeedsUserInputHandler()
-        if self._runtime is None:
-            self._runtime = SingleThreadedAgentRuntime(
-                intervention_handlers=[
-                    self.needs_user_input_handler,
-                    self.termination_handler,
-                ]
-            )
-        self.user_agent_type = await SlowUserProxyAgent.register(
-            self._runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
-        )
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=user_topic_type, agent_type=self.user_agent_type.type
-            )
-        )
+    # async def _init(self, runtime: AgentRuntime):
+    #     self.session_id = get_chat_session_id_ctx()
 
-        self.initial_schedule_assistant_message = AssistantTextMessage(
-            content="Hi! How can I help you? I can help schedule meetings",
-            source="User",
-        )
-        self.scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
-            self._runtime,
-            scheduling_assistant_topic_type,
-            lambda: SchedulingAssistantAgent(
-                "SchedulingAssistant",
-                description="AI that helps you schedule meetings",
-                model_client=self._model_client,
-                initial_message=self.initial_schedule_assistant_message,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=scheduling_assistant_topic_type,
-                agent_type=self.scheduling_assistant_agent_type.type,
-            )
-        )
+    #     self.user_agent_type = await SlowUserProxyAgent.register(
+    #         self._runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
+    #     )
+    #     await self._runtime.add_subscription(
+    #         TypeSubscription(
+    #             topic_type=user_topic_type, agent_type=self.user_agent_type.type
+    #         )
+    #     )
 
-        self._initialized = True
+    #     self.initial_schedule_assistant_message = AssistantTextMessage(
+    #         content="Hi! How can I help you? I can help schedule meetings",
+    #         source="User",
+    #     )
+    #     self.scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
+    #         runtime=self._runtime,
+    #         type=scheduling_assistant_topic_type,
+    #         factory=lambda: SchedulingAssistantAgent(
+    #             "SchedulingAssistant",
+    #             description="AI that helps you schedule meetings",
+    #             model_client=self._model_client,
+    #             initial_message=self.initial_schedule_assistant_message,
+    #         ),
+    #     )
+    #     await self._runtime.add_subscription(
+    #         subscription=TypeSubscription(
+    #             topic_type=scheduling_assistant_topic_type,
+    #             agent_type=self.scheduling_assistant_agent_type.type,
+    #         )
+    #     )
 
-    async def run_stream(
-        self,
-        *,
-        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
-        cancellation_token: CancellationToken | None = None,
-    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    #     for message_type in agent_message_types:
+    #         self._runtime.add_message_serializer(
+    #             try_get_known_serializers_for_type(message_type)
+    #         )
+    #     self._initialized = True
+    #     self._runtime.start()
+
+    # async def run_stream(
+    #     self,
+    #     *,
+    #     task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
+
+    #     # Create the messages list if the task is a string or a chat message.
+    #     messages: List[ChatMessage] | None = None
+    #     if task is None:
+    #         pass
+    #     elif isinstance(task, str):
+    #         messages = [TextMessage(content=task, source="user")]
+    #     elif isinstance(task, BaseChatMessage):
+    #         messages = [task]
+    #     else:
+    #         if not task:
+    #             raise ValueError("Task list cannot be empty.")
+    #         messages = []
+    #         for msg in task:
+    #             if not isinstance(msg, BaseChatMessage):
+    #                 raise ValueError(
+    #                     "All messages in task list must be valid ChatMessage types"
+    #                 )
+    #             messages.append(msg)
+    #     if self._is_running:
+    #         raise ValueError(
+    #             "The team is already running, it cannot run again until it is stopped."
+    #         )
+    #     self._is_running = True
+    #     initial_schedule_assistant_message = AssistantTextMessage(
+    #         content="Hi! How can I help you? I can help schedule meetings",
+    #         source="User",
+    #     )
+    #     runtime_initiation_message: UserTextMessage | AssistantTextMessage
+    #     latest_user_input = None
+    #     if latest_user_input is not None:
+    #         runtime_initiation_message = UserTextMessage(
+    #             content=latest_user_input, source="User"
+    #         )
+    #     else:
+    #         runtime_initiation_message = initial_schedule_assistant_message
+    #     # state = state_persister.load_content()
+    #     await self._runtime.publish_message(
+    #         message=runtime_initiation_message,
+    #         topic_id=TopicId(type=self.user_agent_type.type, source=self.session_id),
+    #     )
+
+    #     # state_persister.save_content(state_to_persist)
+
+    async def reset(self) -> None:
+        # if not self._initialized:
+        #     await self._init(self._runtime)
+
+        # if self._is_running:
+        #     raise RuntimeError("The group chat is currently running. It must be stopped before it can be reset.")
+        # self._is_running = True
+
+        # if self._embedded_runtime:
+        #     # Start the runtime.
+        #     assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+        #     self._runtime.start()
+
+        # try:
+        #     # Send a reset messages to all participants.
+        #     for participant_topic_type in self._participant_topic_types:
+        #         await self._runtime.send_message(
+        #             GroupChatReset(),
+        #             recipient=AgentId(type=participant_topic_type, key=self._team_id),
+        #         )
+        #     # Send a reset message to the group chat manager.
+        #     await self._runtime.send_message(
+        #         GroupChatReset(),
+        #         recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
+        #     )
+        # finally:
+        #     if self._embedded_runtime:
+        #         # Stop the runtime.
+        #         assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+        #         await self._runtime.stop_when_idle()
+
+        #     # Reset the output message queue.
+        #     while not self._output_message_queue.empty():
+        #         self._output_message_queue.get_nowait()
+
+        #     # Indicate that the team is no longer running.
+        self._is_running = False
+
+    async def save_state(self) -> Mapping[str, Any]:
+        """Save the state of the group chat team.
+
+        The state is saved by calling the :meth:`~autogen_core.AgentRuntime.agent_save_state` method
+        on each participant and the group chat manager with their internal agent ID.
+        The state is returned as a nested dictionary: a dictionary with key `agent_states`,
+        which is a dictionary the agent names as keys and the state as values.
+
+        .. code-block:: text
+
+            {
+                "agent_states": {
+                    "agent1": ...,
+                    "agent2": ...,
+                    "RoundRobinGroupChatManager": ...
+                }
+            }
+
+        .. note::
+
+            Starting v0.4.9, the state is using the agent name as the key instead of the agent ID,
+            and the `team_id` field is removed from the state. This is to allow the state to be
+            portable across different teams and runtimes. States saved with the old format
+            may not be compatible with the new format in the future.
+
+        .. caution::
+
+            When calling :func:`~autogen_agentchat.teams.BaseGroupChat.save_state` on a team
+            while it is running, the state may not be consistent and may result in an unexpected state.
+            It is recommended to call this method when the team is not running or after it is stopped.
+
+        """
         if not self._initialized:
-            await self._init()
+            await self._init(self._runtime)
 
-        session_id = get_chat_session_id_ctx()
+        # Store state of each agent by their name.
+        # NOTE: we don't use the agent ID as the key here because we need to be able to decouple
+        # the state of the agents from their identities in the agent runtime.
+        agent_states: Dict[str, Mapping[str, Any]] = {}
+        # Save the state of all participants.
+        for name, agent_type in zip(
+            self._participant_names, self._participant_topic_types, strict=True
+        ):
+            agent_id = AgentId(type=agent_type, key=self._team_id)
+            # NOTE: We are using the runtime's save state method rather than the agent instance's
+            # save_state method because we want to support saving state of remote agents.
+            agent_states[name] = await self._runtime.agent_save_state(agent_id)
+        # Save the state of the group chat manager.
+        agent_id = AgentId(type=self._group_chat_manager_topic_type, key=self._team_id)
+        agent_states[
+            self._group_chat_manager_name
+        ] = await self._runtime.agent_save_state(agent_id)
+        return TeamState(agent_states=agent_states).model_dump()
 
-        initial_schedule_assistant_message = AssistantTextMessage(
-            content="Hi! How can I help you? I can help schedule meetings",
-            source="User",
-        )
-        runtime_initiation_message: UserTextMessage | AssistantTextMessage
-        latest_user_input = None
-        if latest_user_input is not None:
-            runtime_initiation_message = UserTextMessage(
-                content=latest_user_input, source="User"
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        """Load an external state and overwrite the current state of the group chat team.
+
+        The state is loaded by calling the :meth:`~autogen_core.AgentRuntime.agent_load_state` method
+        on each participant and the group chat manager with their internal agent ID.
+        See :meth:`~autogen_agentchat.teams.BaseGroupChat.save_state` for the expected format of the state.
+        """
+        if not self._initialized:
+            await self._init(self._runtime)
+
+        if self._is_running:
+            raise RuntimeError("The team cannot be loaded while it is running.")
+        self._is_running = True
+
+        try:
+            team_state = TeamState.model_validate(state)
+            # Load the state of all participants.
+            for name, agent_type in zip(
+                self._participant_names, self._participant_topic_types, strict=True
+            ):
+                agent_id = AgentId(type=agent_type, key=self._team_id)
+                if name not in team_state.agent_states:
+                    raise ValueError(
+                        f"Agent state for {name} not found in the saved state."
+                    )
+                await self._runtime.agent_load_state(
+                    agent_id, team_state.agent_states[name]
+                )
+            # Load the state of the group chat manager.
+            agent_id = AgentId(
+                type=self._group_chat_manager_topic_type, key=self._team_id
             )
-        else:
-            runtime_initiation_message = initial_schedule_assistant_message
-        # state = state_persister.load_content()
+            if self._group_chat_manager_name not in team_state.agent_states:
+                raise ValueError(
+                    f"Agent state for {self._group_chat_manager_name} not found in the saved state."
+                )
+            await self._runtime.agent_load_state(
+                agent_id, team_state.agent_states[self._group_chat_manager_name]
+            )
 
-        await self._runtime.publish_message(
-            message=runtime_initiation_message,
-            # topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
-            topic_id=TopicId(type=self.user_agent_type.type, source=session_id),
-        )
-        self._runtime.start()
-        await self._runtime.stop_when(
-            lambda: self.termination_handler.is_terminated
-            or self.needs_user_input_handler.needs_user_input
-        )
+        except ValidationError as e:
+            raise ValueError(
+                "Invalid state format. The expected state format has changed since v0.4.9. "
+                "Please read the release note on GitHub."
+            ) from e
 
-        user_input_needed = None
-        if self.needs_user_input_handler.user_input_content is not None:
-            user_input_needed = self.needs_user_input_handler.user_input_content
-        elif self.termination_handler.is_terminated:
-            logger.info("Terminated - ", self.termination_handler.termination_msg)
-
-        state_to_persist = await self._runtime.save_state()
-        # state_persister.save_content(state_to_persist)
+        finally:
+            # Indicate that the team is no longer running.
+            self._is_running = False

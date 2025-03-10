@@ -1,17 +1,22 @@
-import inspect
+import asyncio
 from typing import Any, Mapping
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_core import MessageContext, RoutedAgent, message_handler
+from autogen_core import (
+    MessageContext,
+    RoutedAgent,
+    SingleThreadedAgentRuntime,
+    message_handler,
+)
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.team_builder import default_team_name
+from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 from mtmai.teams.instagram_team import InstagramTeam
-
-from ..clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 
 
 class MockPersistence:
@@ -211,21 +216,40 @@ class TeamRunnerAgent(RoutedAgent):
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
-        stream = team.run_stream(
-            task=message.content,
-            cancellation_token=ctx.cancellation_token,
+        # stream = team.run_stream(
+        #     task=message.content,
+        #     cancellation_token=ctx.cancellation_token,
+        # )
+        # if inspect.isawaitable(stream):
+        #     stream = await stream
+        stream = asyncio.ensure_future(
+            team.run_stream(
+                task=message.content,
+                cancellation_token=ctx.cancellation_token,
+            )
         )
-        if inspect.isawaitable(stream):
-            stream = await stream
 
-        async for event in stream:
+        async for event in aiter(await stream):
             if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
                 break
             if isinstance(event, TaskResult):
                 return event
             await tenant_client.emit(event)
 
-        # runtime.stop_when_idle()
+        await self._runtime.stop_when(
+            # lambda: self.termination_handler.is_terminated
+            # or self.needs_user_input_handler.needs_user_input
+            lambda: self.needs_user_input_handler.needs_user_input
+        )
+
+        user_input_needed = None
+        if self.needs_user_input_handler.user_input_content is not None:
+            user_input_needed = self.needs_user_input_handler.user_input_content
+        elif self.termination_handler.is_terminated:
+            logger.info("Terminated - ", self.termination_handler.termination_msg)
+
+        state_to_persist = await self._runtime.save_state()
+        logger.info(f"state_to_persist: {state_to_persist}")
 
     async def build_team(self, component_id_or_name: str | None = None):
         tenant_client = TenantClient()
@@ -252,12 +276,22 @@ class TeamRunnerAgent(RoutedAgent):
         # )
 
         # 方式2
+        # _runtime = runtime
+
+        termination_handler = TerminationHandler()
+        needs_user_input_handler = NeedsUserInputHandler()
+        _runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[
+                needs_user_input_handler,
+                termination_handler,
+            ]
+        )
         team = InstagramTeam(
             participants=[],
             model_client=model_client,
             # termination_condition=None,
             # max_turns=None,
-            # runtime=runtime,
+            runtime=_runtime,
         )
 
         return team

@@ -87,4 +87,9 @@ agent_message_types = [
     PlatformAccountTask,
     BrowserOpenTask,
     BrowserTask,
+    #
+    ScheduleMeetingOutput,
+    GetSlowUserMessage,
+    AssistantTextMessage,
+    UserTextMessage,
 ]

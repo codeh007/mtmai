@@ -64,7 +64,6 @@ class SlowUserProxyAgent(RoutedAgent):
         session_id = self.id.key
         await self.publish_message(
             GetSlowUserMessage(content=message.content),
-            # topic_id=DefaultTopicId("scheduling_assistant_conversation"),
             topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
         )
 
