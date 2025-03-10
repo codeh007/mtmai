@@ -1,9 +1,22 @@
 import inspect
 
+from agents import SlowUserProxyAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_core import AgentRuntime, MessageContext, RoutedAgent, message_handler
+from autogen_core import (
+    AgentRuntime,
+    MessageContext,
+    RoutedAgent,
+    SingleThreadedAgentRuntime,
+    message_handler,
+)
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+from mtmai.agents.slow_user_proxy_agent import (
+    AssistantTextMessage,
+    NeedsUserInputHandler,
+    SchedulingAssistantAgent,
+    TerminationHandler,
+)
 from mtmai.agents.team_builder import default_team_name
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
@@ -113,8 +126,31 @@ class TeamRunnerAgent(RoutedAgent):
         # )
         session_id = self.id.key
 
+        termination_handler = TerminationHandler()
+        needs_user_input_handler = NeedsUserInputHandler()
+        runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[needs_user_input_handler, termination_handler]
+        )
+        user_agent_type = await SlowUserProxyAgent.register(
+            runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
+        )
+        initial_schedule_assistant_message = AssistantTextMessage(
+            content="Hi! How can I help you? I can help schedule meetings",
+            source="User",
+        )
+        await SchedulingAssistantAgent.register(
+            runtime,
+            "SchedulingAssistant",
+            lambda: SchedulingAssistantAgent(
+                "SchedulingAssistant",
+                description="AI that helps you schedule meetings",
+                model_client=self._model_client,
+                initial_message=initial_schedule_assistant_message,
+            ),
+        )
+
         team = await self.build_team(
-            runtime=self._runtime, component_id_or_name=message.resource_id
+            runtime=runtime, component_id_or_name=message.resource_id
         )
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
@@ -132,6 +168,8 @@ class TeamRunnerAgent(RoutedAgent):
             if isinstance(event, TaskResult):
                 return event
             await tenant_client.emit(event)
+
+        _team_runtime.stop_when_idle()
 
     async def build_team(
         self, runtime: AgentRuntime, component_id_or_name: str | None = None
