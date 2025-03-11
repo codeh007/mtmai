@@ -30,6 +30,7 @@ from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.galleries_api import GalleriesApi
 from mtmai.clients.rest.api.hf_api import HfApi
 from mtmai.clients.rest.api.model_api import ModelApi
+from mtmai.clients.rest.api.model_run_api import ModelRunApi
 from mtmai.clients.rest.api.mtmai_api import MtmaiApi
 from mtmai.clients.rest.api.platform_api import PlatformApi
 from mtmai.clients.rest.api.platform_account_api import PlatformAccountApi

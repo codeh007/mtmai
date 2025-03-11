@@ -158,6 +158,9 @@ from mtmai.clients.rest.models.model_context import ModelContext
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
+from mtmai.clients.rest.models.model_run import ModelRun
+from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
+from mtmai.clients.rest.models.model_run_upsert import ModelRunUpsert
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList

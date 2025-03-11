@@ -23,6 +23,8 @@ from mtmai.mtmpb.events_pb2 import (  # ChatSessionStartEvent,
 )
 from pydantic import BaseModel
 
+from .rest.models.mt_task_result import MtTaskResult
+
 
 def proto_timestamp_now():
     t = datetime.datetime.now().timestamp()
@@ -196,8 +198,13 @@ class EventClient:
         elif isinstance(event, TaskResult):
             # json_bytes = json.dumps(jsonable_encoder(event))
             # obj_dict = event.model_dump()
-            obj_dict = event
-            obj_dict["type"] = result_type
+            mt_result = MtTaskResult(
+                messages=event.messages,
+                stop_reason=event.stop_reason,
+            )
+            obj_dict = mt_result.model_dump()
+            # obj_dict = mt_result.model_dump()
+            # obj_dict["type"] = result_type
         # else:
         # obj_dict["type"] = result_type
         json_bytes = json.dumps(obj_dict)
