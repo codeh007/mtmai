@@ -28,7 +28,7 @@ class AgStateUpsert(BaseModel):
     """ # noqa: E501
     version: Optional[StrictStr] = '1.0.0'
     type: Optional[StrictStr] = 'TeamState'
-    component_id: StrictStr = Field(description="组件id", alias="componentId")
+    component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
     chat_id: StrictStr = Field(description="聊天id", alias="chatId")
     state: Dict[str, Any]
     state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")

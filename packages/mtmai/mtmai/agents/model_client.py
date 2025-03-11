@@ -102,15 +102,21 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
             max_tokens=self.config.get("max_tokens", 64 * 1024),
             temperature=self.config.get("temperature", 0.6),
             top_p=self.config.get("top_p", 0.7),
-            model_info=self.config.get(
-                "model_info",
-                {
-                    "vision": False,
-                    "function_calling": False,
-                    "json_output": False,
-                    "family": ModelFamily.R1,
-                },
-            ),
+            # model_info=self.config.get(
+            #     "model_info",
+            #     {
+            #         "vision": False,
+            #         "function_calling": True,
+            #         "json_output": True,
+            #         "family": ModelFamily.R1,
+            #     },
+            # ),
+            model_info={
+                "vision": False,
+                "function_calling": True,
+                "json_output": False,
+                "family": ModelFamily.R1,
+            },
             max_retries=self.config.get("max_retries", 10),
         )
 

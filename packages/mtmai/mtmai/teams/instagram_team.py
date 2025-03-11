@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, List, Sequence
+from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Handoff, TaskResult, TerminationCondition
@@ -16,7 +16,7 @@ from autogen_core import (
     ComponentModel,
     SingleThreadedAgentRuntime,
 )
-from autogen_ext.tools.mcp import SseServerParams, mcp_server_tools
+from autogen_ext.tools.mcp import SseServerParams, StdioMcpToolAdapter, mcp_server_tools
 from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -24,11 +24,46 @@ from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.termination import MyFunctionCallTermination
 from pydantic import BaseModel
 
+# from autogen_ext.ui import RichConsole
+from rich.console import Console as RichConsole
+
 
 def wait_user_approval(prompt: str) -> str:
     """暂停对话,等用户通过UI批准后,继续对话"""
     logger.info(f"(wait_user_approval): {prompt}")
     return f"等待用户确认: {prompt}"
+
+
+def print_tools(tools: List[StdioMcpToolAdapter]) -> None:
+    """Print available MCP tools and their parameters in a formatted way."""
+    console = RichConsole()
+    console.print("\n[bold blue]📦 Loaded MCP Tools:[/bold blue]\n")
+
+    for tool in tools:
+        # Tool name and description
+        console.print(
+            f"[bold green]🔧 {tool.schema.get('name', 'Unnamed Tool')}[/bold green]"
+        )
+        if description := tool.schema.get("description"):
+            console.print(f"[italic]{description}[/italic]\n")
+
+        # Parameters section
+        if params := tool.schema.get("parameters"):
+            console.print("[yellow]Parameters:[/yellow]")
+            if properties := params.get("properties", {}):
+                required_params = params.get("required", [])
+                for prop_name, prop_details in properties.items():
+                    required_mark = (
+                        "[red]*[/red]" if prop_name in required_params else ""
+                    )
+                    param_type = prop_details.get("type", "any")
+                    console.print(
+                        f"  • [cyan]{prop_name}{required_mark}[/cyan]: {param_type}"
+                    )
+                    if param_desc := prop_details.get("description"):
+                        console.print(f"    [dim]{param_desc}[/dim]")
+
+        console.print("─" * 60 + "\n")
 
 
 class InstagramTeamConfig(BaseModel):
@@ -126,11 +161,12 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         #     self._runtime.start()
 
         server_params = SseServerParams(
-            url="http://localhost:8989/mcp/sse",
+            url="http://localhost:8989/sse",
             headers={"Authorization": "Bearer token"},
         )
         tools = await mcp_server_tools(server_params)
 
+        print_tools(tools)
         agent_mcp_example = AssistantAgent(
             name="fetcher",
             model_client=self._model_client,
@@ -239,8 +275,8 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         text_termination = TextMentionTermination("TERMINATE")
         termination = (
             max_messages_termination
-            | my_function_call_termination
-            | handoff_termination
+            # | my_function_call_termination
+            # | handoff_termination
             | text_termination
         )
         if self.termination_condition:
@@ -371,59 +407,11 @@ Only select one agent.
     #     #     # Indicate that the team is no longer running.
     #     self._is_running = False
 
-    # async def save_state(self) -> Mapping[str, Any]:
-    #     """Save the state of the group chat team.
+    async def save_state(self) -> Mapping[str, Any]:
+        if not self._initialized:
+            await self._init(self._runtime)
 
-    #     The state is saved by calling the :meth:`~autogen_core.AgentRuntime.agent_save_state` method
-    #     on each participant and the group chat manager with their internal agent ID.
-    #     The state is returned as a nested dictionary: a dictionary with key `agent_states`,
-    #     which is a dictionary the agent names as keys and the state as values.
-
-    #     .. code-block:: text
-
-    #         {
-    #             "agent_states": {
-    #                 "agent1": ...,
-    #                 "agent2": ...,
-    #                 "RoundRobinGroupChatManager": ...
-    #             }
-    #         }
-
-    #     .. note::
-
-    #         Starting v0.4.9, the state is using the agent name as the key instead of the agent ID,
-    #         and the `team_id` field is removed from the state. This is to allow the state to be
-    #         portable across different teams and runtimes. States saved with the old format
-    #         may not be compatible with the new format in the future.
-
-    #     .. caution::
-
-    #         When calling :func:`~autogen_agentchat.teams.BaseGroupChat.save_state` on a team
-    #         while it is running, the state may not be consistent and may result in an unexpected state.
-    #         It is recommended to call this method when the team is not running or after it is stopped.
-
-    #     """
-    #     if not self._initialized:
-    #         await self._init(self._runtime)
-
-    #     # Store state of each agent by their name.
-    #     # NOTE: we don't use the agent ID as the key here because we need to be able to decouple
-    #     # the state of the agents from their identities in the agent runtime.
-    #     agent_states: Dict[str, Mapping[str, Any]] = {}
-    #     # Save the state of all participants.
-    #     for name, agent_type in zip(
-    #         self._participant_names, self._participant_topic_types, strict=True
-    #     ):
-    #         agent_id = AgentId(type=agent_type, key=self._team_id)
-    #         # NOTE: We are using the runtime's save state method rather than the agent instance's
-    #         # save_state method because we want to support saving state of remote agents.
-    #         agent_states[name] = await self._runtime.agent_save_state(agent_id)
-    #     # Save the state of the group chat manager.
-    #     agent_id = AgentId(type=self._group_chat_manager_topic_type, key=self._team_id)
-    #     agent_states[
-    #         self._group_chat_manager_name
-    #     ] = await self._runtime.agent_save_state(agent_id)
-    #     return TeamState(agent_states=agent_states).model_dump()
+        return await self.inner_team.save_state()
 
     # async def load_state(self, state: Mapping[str, Any]) -> None:
     #     """Load an external state and overwrite the current state of the group chat team.
