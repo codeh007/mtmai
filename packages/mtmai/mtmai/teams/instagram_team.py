@@ -116,13 +116,15 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         participants.append(planning_agent)
 
         # Create a lazy assistant agent that always hands off to the user.
-        lazy_agent = AssistantAgent(
-            "lazy_assistant",
+        writer = AssistantAgent(
+            "WriterAgent",
+            description="专业的博客文章写手",
             model_client=model_client,
             handoffs=[Handoff(target="user", message="Transfer to user.")],
-            system_message="If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
+            system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
+            "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
         )
-        participants.append(lazy_agent)
+        participants.append(writer)
         # instagram_assistant = MtAssistantAgent(
         #     name="UserProxyAssistant",
         #     description="用户确认助理,当任务计划编排完成后, 用户需要确认后, 你再执行任务",
@@ -156,7 +158,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
                 return planning_agent.name
 
             if len(messages) > 2:
-                return lazy_agent.name
+                return writer.name
 
             return None
 
@@ -185,8 +187,6 @@ to perform the next task.
 Make sure the planner agent has assigned tasks before other agents start working.
 Only select one agent.
 
-当任务计划编排完成后, 应该由 UserProxyAssistant 请求用户的确认.
-
 """
 
         super().__init__(
@@ -197,7 +197,7 @@ Only select one agent.
             max_turns=10,
             runtime=runtime,
             selector_prompt=selector_prompt,
-            selector_func=selector_func,
+            # selector_func=selector_func,
         )
 
     # async def _init(self, runtime: AgentRuntime):

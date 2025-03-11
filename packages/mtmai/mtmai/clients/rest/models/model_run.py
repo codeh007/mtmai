@@ -28,9 +28,9 @@ class ModelRun(BaseModel):
     ModelRun
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    title: Optional[StrictStr] = None
-    status: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "status"]
+    request: Optional[Dict[str, StrictStr]] = None
+    response: Optional[Dict[str, StrictStr]] = None
+    __properties: ClassVar[List[str]] = ["metadata", "request", "response"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,8 +87,8 @@ class ModelRun(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "status": obj.get("status")
+            "request": obj.get("request"),
+            "response": obj.get("response")
         })
         return _obj
 

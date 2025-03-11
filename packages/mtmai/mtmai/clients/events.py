@@ -9,12 +9,13 @@ from connecpy.context import ClientContext
 from google.protobuf import message as pb_message
 from google.protobuf import timestamp_pb2
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
 from mtmai.mtlibs.typing import get_type_name
 from mtmai.mtmpb import agent_worker_pb2, events_connecpy
-from mtmai.mtmpb.events_pb2 import (  # ChatSessionStartEvent,
+from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
     Event,
     PushEventRequest,
@@ -22,8 +23,6 @@ from mtmai.mtmpb.events_pb2 import (  # ChatSessionStartEvent,
     PutStreamEventRequest,
 )
 from pydantic import BaseModel
-
-from .rest.models.mt_task_result import MtTaskResult
 
 
 def proto_timestamp_now():
@@ -185,28 +184,14 @@ class EventClient:
         obj_dict = {}
         if isinstance(event, BaseModel):
             obj_dict = event.model_dump()
-        # elif isinstance(event, AssistantMessage):
-        #     json_bytes = event.model_dump_json()
-        # elif isinstance(event, pb_message.Message):
-        #     result_type = self._serialization_registry.type_name(event)
-        #     type_name = get_type_name(event)
-        #     json2 = MessageToDict(event)
-        #     json2["@type"] = (
-        #         result_type  # json2["@type"].removeprefix("type.googleapis.com/")
-        #     )
-        #     json_bytes = json.dumps(json2)
         elif isinstance(event, TaskResult):
             # json_bytes = json.dumps(jsonable_encoder(event))
             # obj_dict = event.model_dump()
             mt_result = MtTaskResult(
-                messages=event.messages,
-                stop_reason=event.stop_reason,
+                messages=event.messages or [],
+                stop_reason=event.stop_reason or "",
             )
             obj_dict = mt_result.model_dump()
-            # obj_dict = mt_result.model_dump()
-            # obj_dict["type"] = result_type
-        # else:
-        # obj_dict["type"] = result_type
         json_bytes = json.dumps(obj_dict)
 
         await self.stream(json_bytes, step_run_id=step_run_id)

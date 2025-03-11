@@ -26,9 +26,9 @@ class ModelRunProperties(BaseModel):
     """
     ModelRunProperties
     """ # noqa: E501
-    title: Optional[StrictStr] = None
-    status: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["title", "status"]
+    request: Optional[Dict[str, StrictStr]] = None
+    response: Optional[Dict[str, StrictStr]] = None
+    __properties: ClassVar[List[str]] = ["request", "response"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -81,8 +81,8 @@ class ModelRunProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "title": obj.get("title"),
-            "status": obj.get("status")
+            "request": obj.get("request"),
+            "response": obj.get("response")
         })
         return _obj
 

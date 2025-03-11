@@ -5,7 +5,7 @@ from mtmai.agents._agents import (
     coder_agent_topic_type,
     team_runner_topic_type,
 )
-from mtmai.agents._types import (  # PlatformAccountTask,
+from mtmai.agents._types import (
     AgentResponse,
     BrowserOpenTask,
     BrowserTask,
@@ -14,8 +14,6 @@ from mtmai.agents._types import (  # PlatformAccountTask,
     TerminationMessage,
 )
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
-
-# from mtmai.context.context_client import TenantClient
 
 
 class UserAgent(RoutedAgent):

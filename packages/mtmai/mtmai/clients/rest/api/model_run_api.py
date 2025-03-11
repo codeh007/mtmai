@@ -18,8 +18,8 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_list import ModelList
+from mtmai.clients.rest.models.model_run import ModelRun
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -56,7 +56,7 @@ class ModelRunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
+    ) -> ModelRun:
         """model_run_get
 
 
@@ -96,7 +96,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -128,7 +128,7 @@ class ModelRunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
+    ) -> ApiResponse[ModelRun]:
         """model_run_get
 
 
@@ -168,7 +168,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -240,7 +240,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -325,7 +325,7 @@ class ModelRunApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model: Annotated[Model, Field(description="The model properties to update")],
+        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -338,7 +338,7 @@ class ModelRunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
+    ) -> ModelRun:
         """model_run_upsert
 
         Update an model
@@ -347,8 +347,8 @@ class ModelRunApi:
         :type tenant: str
         :param model_run: The model run id (required)
         :type model_run: str
-        :param model: The model properties to update (required)
-        :type model: Model
+        :param model_run2: The model properties to update (required)
+        :type model_run2: ModelRun
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -374,7 +374,7 @@ class ModelRunApi:
         _param = self._model_run_upsert_serialize(
             tenant=tenant,
             model_run=model_run,
-            model=model,
+            model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -382,7 +382,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -402,7 +402,7 @@ class ModelRunApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model: Annotated[Model, Field(description="The model properties to update")],
+        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -415,7 +415,7 @@ class ModelRunApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
+    ) -> ApiResponse[ModelRun]:
         """model_run_upsert
 
         Update an model
@@ -424,8 +424,8 @@ class ModelRunApi:
         :type tenant: str
         :param model_run: The model run id (required)
         :type model_run: str
-        :param model: The model properties to update (required)
-        :type model: Model
+        :param model_run2: The model properties to update (required)
+        :type model_run2: ModelRun
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -451,7 +451,7 @@ class ModelRunApi:
         _param = self._model_run_upsert_serialize(
             tenant=tenant,
             model_run=model_run,
-            model=model,
+            model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -459,7 +459,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -479,7 +479,7 @@ class ModelRunApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model: Annotated[Model, Field(description="The model properties to update")],
+        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -501,8 +501,8 @@ class ModelRunApi:
         :type tenant: str
         :param model_run: The model run id (required)
         :type model_run: str
-        :param model: The model properties to update (required)
-        :type model: Model
+        :param model_run2: The model properties to update (required)
+        :type model_run2: ModelRun
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -528,7 +528,7 @@ class ModelRunApi:
         _param = self._model_run_upsert_serialize(
             tenant=tenant,
             model_run=model_run,
-            model=model,
+            model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -536,7 +536,7 @@ class ModelRunApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
+            '200': "ModelRun",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -551,7 +551,7 @@ class ModelRunApi:
         self,
         tenant,
         model_run,
-        model,
+        model_run2,
         _request_auth,
         _content_type,
         _headers,
@@ -581,8 +581,8 @@ class ModelRunApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if model is not None:
-            _body_params = model
+        if model_run2 is not None:
+            _body_params = model_run2
 
 
         # set the HTTP header `Accept`

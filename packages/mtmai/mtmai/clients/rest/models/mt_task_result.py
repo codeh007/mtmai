@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +26,7 @@ class MtTaskResult(BaseModel):
     """
     MtTaskResult
     """ # noqa: E501
-    messages: List[AgentMessageConfig]
+    messages: List[Dict[str, Any]]
     stop_reason: StrictStr
     __properties: ClassVar[List[str]] = ["messages", "stop_reason"]
 
@@ -70,13 +69,6 @@ class MtTaskResult(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in messages (list)
-        _items = []
-        if self.messages:
-            for _item_messages in self.messages:
-                if _item_messages:
-                    _items.append(_item_messages.to_dict())
-            _dict['messages'] = _items
         return _dict
 
     @classmethod
@@ -89,7 +81,7 @@ class MtTaskResult(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "messages": [AgentMessageConfig.from_dict(_item) for _item in obj["messages"]] if obj.get("messages") is not None else None,
+            "messages": obj.get("messages"),
             "stop_reason": obj.get("stop_reason")
         })
         return _obj
