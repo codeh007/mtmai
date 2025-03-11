@@ -10,14 +10,13 @@ from autogen_core import (
 )
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.team_builder import default_team_name, resource_team_map
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
-
-from ..clients.rest.models.mt_task_result import MtTaskResult
-from .intervention_handlers import NeedsUserInputHandler
 
 
 class MockPersistence:
@@ -314,7 +313,7 @@ class TeamRunnerAgent(RoutedAgent):
             raise ValueError("tenant_id is required")
         if not component_id_or_name:
             component_id_or_name = default_team_name
-        model_client = await tenant_client.ag.default_model_client(tid)
+        model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
         resource_data = await tenant_client.ag.resource_api.resource_get(
             tenant=tid,

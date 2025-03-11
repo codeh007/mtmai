@@ -1,7 +1,7 @@
 from autogen_agentchat.base import Team
 from autogen_agentchat.teams import BaseGroupChat
 from connecpy.context import ClientContext
-from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
+from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder import resource_team_map
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
@@ -132,7 +132,7 @@ class AgClient:
             raise ValueError("tenant_id is required")
         if not resource_id:
             raise ValueError("resource_id is required")
-        model_client = await self.default_model_client(tid)
+        model_client = await self.get_tenant_model_client(tid)
 
         resource_data = await self.resource_api.resource_get(
             tenant=tid,
@@ -232,10 +232,10 @@ class AgClient:
     #         chat_message_upsert=message.model_dump(),
     #     )
 
-    async def default_model_client(self, tid: str):
-        if hasattr(self, "_default_model_client"):
-            return self._default_model_client
-        defaultModel = await self.model_api.model_get(tenant=tid, model="default")
+    async def get_tenant_model_client(self, tid: str, model_name: str = "default"):
+        # if hasattr(self, "_default_model_client"):
+        #     return self._default_model_client
+        defaultModel = await self.model_api.model_get(tenant=tid, model=model_name)
         model_dict = defaultModel.config.model_dump()
         model_dict.pop("n", None)
         return MtmOpenAIChatCompletionClient(

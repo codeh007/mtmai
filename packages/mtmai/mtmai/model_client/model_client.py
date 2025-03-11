@@ -20,13 +20,14 @@ from json_repair import repair_json
 from langchain_openai import ChatOpenAI
 from loguru import logger
 from mtmai.core.config import settings
+from mtmai.model_client._openai_client import MtOpenAIChatCompletionClient
 from openai import OpenAI
 
 # 常见错误代码:
 # 402: Payment Required
 
 
-class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
+class MtmOpenAIChatCompletionClient(MtOpenAIChatCompletionClient):
     component_type = "model"
     component_config_schema = OpenAIClientConfigurationConfigModel
     component_provider_override = (
@@ -49,9 +50,6 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         # kwargs["max_tokens"] = 4096
         super().__init__(**kwargs)
         self.config = kwargs
-
-    # def _to_config(self) -> OpenAIClientConfigurationConfigModel:
-    #     return super()._to_config()
 
     def convert_to_lc_model(self) -> ChatOpenAI:
         from langchain_nvidia_ai_endpoints import ChatNVIDIA
@@ -95,33 +93,33 @@ class MtmOpenAIChatCompletionClient(OpenAIChatCompletionClient):
         cancellation_token: Optional[CancellationToken] = None,
     ) -> CreateResult:
         logger.info("MtmOpenAIChatCompletionClient create")
-        custom_model_client = OpenAIChatCompletionClient(
+        custom_model_client = MtOpenAIChatCompletionClient(
             model=self.config.get("model", "deepseek-ai/deepseek-r1"),
             base_url=self.config.get("base_url", "https://integrate.api.nvidia.com/v1"),
             api_key=self.config.get("api_key", settings.OPENAI_API_KEY),
             max_tokens=self.config.get("max_tokens", 64 * 1024),
             temperature=self.config.get("temperature", 0.6),
             top_p=self.config.get("top_p", 0.7),
-            # model_info=self.config.get(
-            #     "model_info",
-            #     {
-            #         "vision": False,
-            #         "function_calling": True,
-            #         "json_output": True,
-            #         "family": ModelFamily.R1,
-            #     },
-            # ),
-            model_info={
-                "vision": False,
-                "function_calling": True,
-                "json_output": False,
-                "family": ModelFamily.R1,
-            },
-            max_retries=self.config.get("max_retries", 10),
+            max_retries=self.config.get("max_retries", 3),
+            model_info=self.config.get(
+                "model_info",
+                {
+                    "vision": False,
+                    "function_calling": False,
+                    "json_output": False,
+                    "family": ModelFamily.R1,
+                },
+            ),
         )
 
         response: CreateResult = None
         max_retries = self.config.get("max_retries", 10)
+        # extra_create_args["http_client"] = httpx.Client(transport=LoggingTransport())
+        # extra_create_args["http_async_client"] = httpx.AsyncClient(
+        #     transport=LoggingTransport()
+        # )
+        # http_client=httpx.Client(transport=LoggingTransport()),
+        # http_async_client=httpx.AsyncClient(transport=LoggingTransport()),
         for i in range(max_retries):
             try:
                 response = await custom_model_client.create(

@@ -18,9 +18,9 @@ from autogen_core import (
 )
 from autogen_ext.tools.mcp import SseServerParams, StdioMcpToolAdapter, mcp_server_tools
 from loguru import logger
+from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.termination import MyFunctionCallTermination
 from pydantic import BaseModel
 
@@ -121,8 +121,9 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         # )
 
     async def _init(self, runtime: AgentRuntime):
-        #     self.session_id = get_chat_session_id_ctx()
+        from mtmai.context.context_client import TenantClient
 
+        #     self.session_id = get_chat_session_id_ctx()
         #     self.user_agent_type = await SlowUserProxyAgent.register(
         #         self._runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
         #     )
@@ -131,7 +132,6 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         #             topic_type=user_topic_type, agent_type=self.user_agent_type.type
         #         )
         #     )
-
         #     self.initial_schedule_assistant_message = AssistantTextMessage(
         #         content="Hi! How can I help you? I can help schedule meetings",
         #         source="User",
@@ -152,32 +152,34 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         #             agent_type=self.scheduling_assistant_agent_type.type,
         #         )
         #     )
-
         #     for message_type in agent_message_types:
         #         self._runtime.add_message_serializer(
         #             try_get_known_serializers_for_type(message_type)
         #         )
         #     self._initialized = True
         #     self._runtime.start()
-
+        tenant_client = TenantClient()
+        self._chat_model_client = await tenant_client.ag.get_tenant_model_client(
+            tid=tenant_client.tenant_id, model_name="chat"
+        )
         server_params = SseServerParams(
-            url="http://localhost:8989/sse",
+            url="http://localhost:8383/mcp/sse",
             headers={"Authorization": "Bearer token"},
         )
         tools = await mcp_server_tools(server_params)
 
         print_tools(tools)
-        agent_mcp_example = AssistantAgent(
-            name="fetcher",
-            model_client=self._model_client,
-            tools=tools,
-            reflect_on_tool_use=True,
-        )  # type: ignore
+        # agent_mcp_example = AssistantAgent(
+        #     name="fetcher",
+        #     model_client=self._model_client,
+        #     tools=tools,
+        #     reflect_on_tool_use=True,
+        # )  # type: ignore
 
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
-            model_client=self._model_client,
+            model_client=self._chat_model_client,
             # tools=[wait_user_approval],
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="""
@@ -196,14 +198,12 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
-        # participants.append(test_assisant)
-        # participants.append(planning_agent)
 
         # Create a lazy assistant agent that always hands off to the user.
         writer = AssistantAgent(
             "WriterAgent",
             description="专业的博客文章写手",
-            model_client=self._model_client,
+            model_client=self._chat_model_client,
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
             "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
@@ -211,7 +211,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
         fetch_agent = AssistantAgent(
             name="content_fetcher",
-            model_client=self._model_client,
+            model_client=self._chat_model_client,
             tools=tools,  # The MCP fetch tool will be included here
             system_message="你是一个网页内容获取助手。使用 fetchWebContent 工具获取网页内容。。当找不到合适工具时,回复: I need xxx tool, TERMINATE",
         )

@@ -255,7 +255,7 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
-        model_client = await tenant_client.ag.default_model_client(tid)
+        model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
         # Register the triage agent.
         triage_agent_type = await AIAgent.register(
