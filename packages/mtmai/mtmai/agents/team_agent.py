@@ -253,6 +253,13 @@ class TeamRunnerAgent(RoutedAgent):
         # )
         # _runtime.start()
         # return team
+
+        ######################################################################################
+        # 提示:
+        # 1:团队的结束不等于 runtime 的结束
+        # 2: runtime 可以复用
+        # 3: 可以使用 外置的 持久 agent 参与到临时组建的团队
+        ######################################################################################
         async for event in team.run_stream(
             task=message.content,
             cancellation_token=ctx.cancellation_token,
@@ -295,6 +302,8 @@ class TeamRunnerAgent(RoutedAgent):
 
         # state_to_persist = await self._runtime.save_state()
         # logger.info(f"state_to_persist: {state_to_persist}")
+        await runtime.stop_when_idle()
+        logger.info("团队运行完全结束")
 
     async def build_team(
         self, runtime: AgentRuntime, component_id_or_name: str | None = None
@@ -321,21 +330,4 @@ class TeamRunnerAgent(RoutedAgent):
             )
         # team = await team_builder.create_team(model_client=model_client)
         team = team_cls(model_client=model_client, runtime=runtime)
-
-        # 方式2
-        # needs_user_input_handler = NeedsUserInputHandler()
-        # _runtime = SingleThreadedAgentRuntime(
-        #     intervention_handlers=[
-        #         needs_user_input_handler,
-        #         # termination_handler,
-        #     ]
-        # )
-        # team = InstagramTeam(
-        #     participants=[],
-        #     model_client=model_client,
-        #     # termination_condition=None,
-        #     # max_turns=None,
-        #     runtime=_runtime,
-        # )
-
         return team

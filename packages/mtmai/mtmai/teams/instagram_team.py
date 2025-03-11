@@ -174,6 +174,8 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             | handoff_termination
             | text_termination
         )
+        if termination_condition:
+            termination = termination | termination_condition
         selector_prompt = """Select an agent to perform task.
 
 {roles}
@@ -194,7 +196,7 @@ Only select one agent.
             termination_condition=termination,
             model_client=model_client,
             allow_repeated_speaker=True,
-            max_turns=10,
+            max_turns=max_turns or 25,
             runtime=runtime,
             selector_prompt=selector_prompt,
             # selector_func=selector_func,
