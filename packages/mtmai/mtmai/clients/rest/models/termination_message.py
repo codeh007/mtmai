@@ -27,7 +27,8 @@ class TerminationMessage(BaseModel):
     TerminationMessage
     """ # noqa: E501
     reason: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["reason"]
+    content: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["reason", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +81,8 @@ class TerminationMessage(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "reason": obj.get("reason")
+            "reason": obj.get("reason"),
+            "content": obj.get("content")
         })
         return _obj
 

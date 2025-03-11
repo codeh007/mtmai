@@ -12,12 +12,17 @@ from mtmai.agents._types import GetSlowUserMessage
 
 class NeedsUserInputHandler(DefaultInterventionHandler):
     def __init__(self):
+        from mtmai.context.context_client import TenantClient
+
         self.question_for_user: GetSlowUserMessage | None = None
+        self.tenant_client = TenantClient()
 
     async def on_publish(self, message: Any, *, message_context: MessageContext) -> Any:
         if isinstance(message, GetSlowUserMessage):
             logger.info(f"NeedsUserInputHandler: {message.content}")
             self.question_for_user = message
+
+        # await self.tenant_client.emit(message)
         return message
 
     async def on_send(
@@ -25,6 +30,7 @@ class NeedsUserInputHandler(DefaultInterventionHandler):
     ) -> Any | type[DropMessage]:
         """Called when a message is submitted to the AgentRuntime using :meth:`autogen_core.base.AgentRuntime.send_message`."""
         logger.info(f"NeedsUserInputHandler.on_send: {message}")
+        # await self.tenant_client.emit(message)
         return message
 
     async def on_response(
@@ -32,6 +38,7 @@ class NeedsUserInputHandler(DefaultInterventionHandler):
     ) -> Any | type[DropMessage]:
         """Called when a response is received by the AgentRuntime from an Agent's message handler returning a value."""
         logger.info(f"NeedsUserInputHandler.on_response: {message}")
+        # await self.tenant_client.emit(message)
         return message
 
     @property

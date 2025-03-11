@@ -34,6 +34,7 @@ class MyFunctionCallTermination(
         self._terminated = False
         self._function_name = function_name
 
+
     @property
     def terminated(self) -> bool:
         return self._terminated

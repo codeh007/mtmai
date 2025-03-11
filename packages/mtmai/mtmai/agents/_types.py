@@ -13,26 +13,6 @@ from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 from pydantic import BaseModel
 
-# Define WriterAgent configuration model
-# class ChatAgentConfig(BaseModel):
-#     topic_type: str
-#     description: str
-#     system_message: str
-
-
-# Define UI Agent configuration model
-# class UIAgentConfig(BaseModel):
-#     topic_type: str
-#     artificial_stream_delay_seconds: Dict[str, float]
-
-#     @property
-#     def min_delay(self) -> float:
-#         return self.artificial_stream_delay_seconds.get("min", 0.0)
-
-#     @property
-#     def max_delay(self) -> float:
-#         return self.artificial_stream_delay_seconds.get("max", 0.0)
-
 
 class UserTask(BaseModel):
     context: List[LLMMessage]

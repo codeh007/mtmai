@@ -1,6 +1,6 @@
 from autogen_agentchat.base import Team
+from autogen_agentchat.teams import BaseGroupChat
 from connecpy.context import ClientContext
-from loguru import logger
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.team_builder import resource_team_map
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
@@ -102,10 +102,10 @@ class AgClient:
             return None
 
     async def save_team_state(
-        self, team: Team, team_id: str, tenant_id: str, chat_id: str
+        self, team: BaseGroupChat, tenant_id: str, chat_id: str
     ) -> None:
         """保存团队状态"""
-        logger.info("保存团队状态", component_id=team_id)
+        # logger.info("保存团队状态", component_id=team.dump_component().)
         # 确保停止团队的内部 agents
         if team and hasattr(team, "_participants"):
             for agent in team._participants:
@@ -115,7 +115,7 @@ class AgClient:
         await self.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
-                componentId=team_id,
+                # componentId=team.,
                 chatId=chat_id,
                 state=state,
             ),

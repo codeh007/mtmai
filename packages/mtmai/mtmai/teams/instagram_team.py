@@ -1,12 +1,15 @@
-from typing import Any, Dict, List, Mapping, Sequence
+from typing import List, Sequence
 
-from autogen_agentchat.base import TerminationCondition
-from autogen_agentchat.conditions import MaxMessageTermination
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.base import Handoff, TerminationCondition
+from autogen_agentchat.conditions import (
+    HandoffTermination,
+    MaxMessageTermination,
+    TextMentionTermination,
+)
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.state import TeamState
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core import (
-    AgentId,
     AgentRuntime,
     Component,
     ComponentModel,
@@ -17,13 +20,33 @@ from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents.termination import MyFunctionCallTermination
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 
 def wait_user_approval(prompt: str) -> str:
     """暂停对话,等用户通过UI批准后,继续对话"""
     logger.info(f"(wait_user_approval): {prompt}")
     return f"等待用户确认: {prompt}"
+
+
+# class _HandOffAgent(BaseChatAgent):
+#     def __init__(self, name: str, description: str, next_agent: str) -> None:
+#         super().__init__(name, description)
+#         self._next_agent = next_agent
+
+#     @property
+#     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
+#         return (HandoffMessage,)
+
+#     async def on_messages(self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken) -> Response:
+#         return Response(
+#             chat_message=HandoffMessage(
+#                 content=f"Transferred to {self._next_agent}.", target=self._next_agent, source=self.name
+#             )
+#         )
+
+#     async def on_reset(self, cancellation_token: CancellationToken) -> None:
+#         pass
 
 
 class InstagramTeamConfig(BaseModel):
@@ -49,12 +72,11 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
     ) -> None:
         self._runtime = runtime
 
+        self.needs_user_input_handler = NeedsUserInputHandler()
         if self._runtime is None:
-            needs_user_input_handler = NeedsUserInputHandler()
             self._runtime = SingleThreadedAgentRuntime(
                 intervention_handlers=[
-                    needs_user_input_handler,
-                    # termination_handler,
+                    self.needs_user_input_handler,
                 ]
             )
         self._initialized = False
@@ -62,17 +84,18 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
         self._model_client = model_client
 
-        test_assisant = MtAssistantAgent(
-            name="test_assisant",
-            description="test_assisant",
-            model_client=model_client,
-        )
+        # test_assisant = MtAssistantAgent(
+        #     name="test_assisant",
+        #     description="test_assisant",
+        #     model_client=model_client,
+        # )
 
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
             model_client=model_client,
             # tools=[wait_user_approval],
+            handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="""
             You are a planning agent.
             Your job is to break down complex tasks into smaller, manageable subtasks.
@@ -84,30 +107,56 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
             When assigning tasks, use this format:
             1. <agent> : <task>
+
+            非常重要, 任务编排计划必须交由用户进行最终确认, 用户确认后, 你再执行任务
             After all tasks are complete, summarize the findings and end with "TERMINATE".
             """,
         )
-        participants.append(test_assisant)
+        # participants.append(test_assisant)
         participants.append(planning_agent)
 
-        instagram_assistant = MtAssistantAgent(
-            name="UserProxyAssistant",
-            description="用户确认助理,当任务计划编排完成后, 用户需要确认后, 你再执行任务",
+        # Create a lazy assistant agent that always hands off to the user.
+        lazy_agent = AssistantAgent(
+            "lazy_assistant",
             model_client=model_client,
-            tools=[wait_user_approval],
-            system_message="""
-            你是一个instagram助手, 当用户需要你执行任务时, 你应该主动调用"wait_user_approval"工具, 等待用户通过UI批准后, 继续执行任务
-            """,
+            handoffs=[Handoff(target="user", message="Transfer to user.")],
+            system_message="If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
         )
-        participants.append(instagram_assistant)
+        participants.append(lazy_agent)
+        # instagram_assistant = MtAssistantAgent(
+        #     name="UserProxyAssistant",
+        #     description="用户确认助理,当任务计划编排完成后, 用户需要确认后, 你再执行任务",
+        #     model_client=model_client,
+        #     tools=[wait_user_approval],
+        #     system_message="""
+        #     你是一个instagram助手, 当用户需要你执行任务时, 你应该主动调用"wait_user_approval"工具, 等待用户通过UI批准后, 继续执行任务
+        #     """,
+        # )
+        # participants.append(instagram_assistant)
+
+        # user_agent = UserAgent(
+        #     description="用户代理",
+        #     agent_topic_type="User",
+        # )
+        # participants.append(user_agent)
+
+        def input_func(prompt: str) -> str:
+            return "user_input"
+
+        # user_proxy_agent = UserProxyAgent(
+        #     name="UserProxyAgent",
+        #     description="用户代理",
+        #     input_func=input_func,
+        # )
+        # participants.append(user_proxy_agent)
 
         # 可选
         def selector_func(messages: Sequence[AgentEvent | ChatMessage]) -> str | None:
             if messages[-1].source != planning_agent.name:
                 return planning_agent.name
 
-            if len(messages) > 4:
-                return instagram_assistant.name
+            if len(messages) > 2:
+                return lazy_agent.name
 
             return None
 
@@ -115,7 +164,14 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         my_function_call_termination = MyFunctionCallTermination(
             function_name="TERMINATE"
         )
-        termination = max_messages_termination & my_function_call_termination
+        handoff_termination = HandoffTermination(target="user")
+        text_termination = TextMentionTermination("TERMINATE")
+        termination = (
+            max_messages_termination
+            | my_function_call_termination
+            | handoff_termination
+            | text_termination
+        )
         selector_prompt = """Select an agent to perform task.
 
 {roles}
@@ -236,144 +292,144 @@ Only select one agent.
 
     #     # state_persister.save_content(state_to_persist)
 
-    async def reset(self) -> None:
-        # if not self._initialized:
-        #     await self._init(self._runtime)
+    # async def reset(self) -> None:
+    #     # if not self._initialized:
+    #     #     await self._init(self._runtime)
 
-        # if self._is_running:
-        #     raise RuntimeError("The group chat is currently running. It must be stopped before it can be reset.")
-        # self._is_running = True
+    #     # if self._is_running:
+    #     #     raise RuntimeError("The group chat is currently running. It must be stopped before it can be reset.")
+    #     # self._is_running = True
 
-        # if self._embedded_runtime:
-        #     # Start the runtime.
-        #     assert isinstance(self._runtime, SingleThreadedAgentRuntime)
-        #     self._runtime.start()
+    #     # if self._embedded_runtime:
+    #     #     # Start the runtime.
+    #     #     assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+    #     #     self._runtime.start()
 
-        # try:
-        #     # Send a reset messages to all participants.
-        #     for participant_topic_type in self._participant_topic_types:
-        #         await self._runtime.send_message(
-        #             GroupChatReset(),
-        #             recipient=AgentId(type=participant_topic_type, key=self._team_id),
-        #         )
-        #     # Send a reset message to the group chat manager.
-        #     await self._runtime.send_message(
-        #         GroupChatReset(),
-        #         recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
-        #     )
-        # finally:
-        #     if self._embedded_runtime:
-        #         # Stop the runtime.
-        #         assert isinstance(self._runtime, SingleThreadedAgentRuntime)
-        #         await self._runtime.stop_when_idle()
+    #     # try:
+    #     #     # Send a reset messages to all participants.
+    #     #     for participant_topic_type in self._participant_topic_types:
+    #     #         await self._runtime.send_message(
+    #     #             GroupChatReset(),
+    #     #             recipient=AgentId(type=participant_topic_type, key=self._team_id),
+    #     #         )
+    #     #     # Send a reset message to the group chat manager.
+    #     #     await self._runtime.send_message(
+    #     #         GroupChatReset(),
+    #     #         recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
+    #     #     )
+    #     # finally:
+    #     #     if self._embedded_runtime:
+    #     #         # Stop the runtime.
+    #     #         assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+    #     #         await self._runtime.stop_when_idle()
 
-        #     # Reset the output message queue.
-        #     while not self._output_message_queue.empty():
-        #         self._output_message_queue.get_nowait()
+    #     #     # Reset the output message queue.
+    #     #     while not self._output_message_queue.empty():
+    #     #         self._output_message_queue.get_nowait()
 
-        #     # Indicate that the team is no longer running.
-        self._is_running = False
+    #     #     # Indicate that the team is no longer running.
+    #     self._is_running = False
 
-    async def save_state(self) -> Mapping[str, Any]:
-        """Save the state of the group chat team.
+    # async def save_state(self) -> Mapping[str, Any]:
+    #     """Save the state of the group chat team.
 
-        The state is saved by calling the :meth:`~autogen_core.AgentRuntime.agent_save_state` method
-        on each participant and the group chat manager with their internal agent ID.
-        The state is returned as a nested dictionary: a dictionary with key `agent_states`,
-        which is a dictionary the agent names as keys and the state as values.
+    #     The state is saved by calling the :meth:`~autogen_core.AgentRuntime.agent_save_state` method
+    #     on each participant and the group chat manager with their internal agent ID.
+    #     The state is returned as a nested dictionary: a dictionary with key `agent_states`,
+    #     which is a dictionary the agent names as keys and the state as values.
 
-        .. code-block:: text
+    #     .. code-block:: text
 
-            {
-                "agent_states": {
-                    "agent1": ...,
-                    "agent2": ...,
-                    "RoundRobinGroupChatManager": ...
-                }
-            }
+    #         {
+    #             "agent_states": {
+    #                 "agent1": ...,
+    #                 "agent2": ...,
+    #                 "RoundRobinGroupChatManager": ...
+    #             }
+    #         }
 
-        .. note::
+    #     .. note::
 
-            Starting v0.4.9, the state is using the agent name as the key instead of the agent ID,
-            and the `team_id` field is removed from the state. This is to allow the state to be
-            portable across different teams and runtimes. States saved with the old format
-            may not be compatible with the new format in the future.
+    #         Starting v0.4.9, the state is using the agent name as the key instead of the agent ID,
+    #         and the `team_id` field is removed from the state. This is to allow the state to be
+    #         portable across different teams and runtimes. States saved with the old format
+    #         may not be compatible with the new format in the future.
 
-        .. caution::
+    #     .. caution::
 
-            When calling :func:`~autogen_agentchat.teams.BaseGroupChat.save_state` on a team
-            while it is running, the state may not be consistent and may result in an unexpected state.
-            It is recommended to call this method when the team is not running or after it is stopped.
+    #         When calling :func:`~autogen_agentchat.teams.BaseGroupChat.save_state` on a team
+    #         while it is running, the state may not be consistent and may result in an unexpected state.
+    #         It is recommended to call this method when the team is not running or after it is stopped.
 
-        """
-        if not self._initialized:
-            await self._init(self._runtime)
+    #     """
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
 
-        # Store state of each agent by their name.
-        # NOTE: we don't use the agent ID as the key here because we need to be able to decouple
-        # the state of the agents from their identities in the agent runtime.
-        agent_states: Dict[str, Mapping[str, Any]] = {}
-        # Save the state of all participants.
-        for name, agent_type in zip(
-            self._participant_names, self._participant_topic_types, strict=True
-        ):
-            agent_id = AgentId(type=agent_type, key=self._team_id)
-            # NOTE: We are using the runtime's save state method rather than the agent instance's
-            # save_state method because we want to support saving state of remote agents.
-            agent_states[name] = await self._runtime.agent_save_state(agent_id)
-        # Save the state of the group chat manager.
-        agent_id = AgentId(type=self._group_chat_manager_topic_type, key=self._team_id)
-        agent_states[
-            self._group_chat_manager_name
-        ] = await self._runtime.agent_save_state(agent_id)
-        return TeamState(agent_states=agent_states).model_dump()
+    #     # Store state of each agent by their name.
+    #     # NOTE: we don't use the agent ID as the key here because we need to be able to decouple
+    #     # the state of the agents from their identities in the agent runtime.
+    #     agent_states: Dict[str, Mapping[str, Any]] = {}
+    #     # Save the state of all participants.
+    #     for name, agent_type in zip(
+    #         self._participant_names, self._participant_topic_types, strict=True
+    #     ):
+    #         agent_id = AgentId(type=agent_type, key=self._team_id)
+    #         # NOTE: We are using the runtime's save state method rather than the agent instance's
+    #         # save_state method because we want to support saving state of remote agents.
+    #         agent_states[name] = await self._runtime.agent_save_state(agent_id)
+    #     # Save the state of the group chat manager.
+    #     agent_id = AgentId(type=self._group_chat_manager_topic_type, key=self._team_id)
+    #     agent_states[
+    #         self._group_chat_manager_name
+    #     ] = await self._runtime.agent_save_state(agent_id)
+    #     return TeamState(agent_states=agent_states).model_dump()
 
-    async def load_state(self, state: Mapping[str, Any]) -> None:
-        """Load an external state and overwrite the current state of the group chat team.
+    # async def load_state(self, state: Mapping[str, Any]) -> None:
+    #     """Load an external state and overwrite the current state of the group chat team.
 
-        The state is loaded by calling the :meth:`~autogen_core.AgentRuntime.agent_load_state` method
-        on each participant and the group chat manager with their internal agent ID.
-        See :meth:`~autogen_agentchat.teams.BaseGroupChat.save_state` for the expected format of the state.
-        """
-        if not self._initialized:
-            await self._init(self._runtime)
+    #     The state is loaded by calling the :meth:`~autogen_core.AgentRuntime.agent_load_state` method
+    #     on each participant and the group chat manager with their internal agent ID.
+    #     See :meth:`~autogen_agentchat.teams.BaseGroupChat.save_state` for the expected format of the state.
+    #     """
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
 
-        if self._is_running:
-            raise RuntimeError("The team cannot be loaded while it is running.")
-        self._is_running = True
+    #     if self._is_running:
+    #         raise RuntimeError("The team cannot be loaded while it is running.")
+    #     self._is_running = True
 
-        try:
-            team_state = TeamState.model_validate(state)
-            # Load the state of all participants.
-            for name, agent_type in zip(
-                self._participant_names, self._participant_topic_types, strict=True
-            ):
-                agent_id = AgentId(type=agent_type, key=self._team_id)
-                if name not in team_state.agent_states:
-                    raise ValueError(
-                        f"Agent state for {name} not found in the saved state."
-                    )
-                await self._runtime.agent_load_state(
-                    agent_id, team_state.agent_states[name]
-                )
-            # Load the state of the group chat manager.
-            agent_id = AgentId(
-                type=self._group_chat_manager_topic_type, key=self._team_id
-            )
-            if self._group_chat_manager_name not in team_state.agent_states:
-                raise ValueError(
-                    f"Agent state for {self._group_chat_manager_name} not found in the saved state."
-                )
-            await self._runtime.agent_load_state(
-                agent_id, team_state.agent_states[self._group_chat_manager_name]
-            )
+    #     try:
+    #         team_state = TeamState.model_validate(state)
+    #         # Load the state of all participants.
+    #         for name, agent_type in zip(
+    #             self._participant_names, self._participant_topic_types, strict=True
+    #         ):
+    #             agent_id = AgentId(type=agent_type, key=self._team_id)
+    #             if name not in team_state.agent_states:
+    #                 raise ValueError(
+    #                     f"Agent state for {name} not found in the saved state."
+    #                 )
+    #             await self._runtime.agent_load_state(
+    #                 agent_id, team_state.agent_states[name]
+    #             )
+    #         # Load the state of the group chat manager.
+    #         agent_id = AgentId(
+    #             type=self._group_chat_manager_topic_type, key=self._team_id
+    #         )
+    #         if self._group_chat_manager_name not in team_state.agent_states:
+    #             raise ValueError(
+    #                 f"Agent state for {self._group_chat_manager_name} not found in the saved state."
+    #             )
+    #         await self._runtime.agent_load_state(
+    #             agent_id, team_state.agent_states[self._group_chat_manager_name]
+    #         )
 
-        except ValidationError as e:
-            raise ValueError(
-                "Invalid state format. The expected state format has changed since v0.4.9. "
-                "Please read the release note on GitHub."
-            ) from e
+    #     except ValidationError as e:
+    #         raise ValueError(
+    #             "Invalid state format. The expected state format has changed since v0.4.9. "
+    #             "Please read the release note on GitHub."
+    #         ) from e
 
-        finally:
-            # Indicate that the team is no longer running.
-            self._is_running = False
+    #     finally:
+    #         # Indicate that the team is no longer running.
+    #         self._is_running = False

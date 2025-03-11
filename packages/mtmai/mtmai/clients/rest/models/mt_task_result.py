@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,7 +28,7 @@ class MtTaskResult(BaseModel):
     MtTaskResult
     """ # noqa: E501
     messages: List[AgentMessageConfig]
-    stop_reason: Optional[StrictStr] = None
+    stop_reason: StrictStr
     __properties: ClassVar[List[str]] = ["messages", "stop_reason"]
 
     model_config = ConfigDict(

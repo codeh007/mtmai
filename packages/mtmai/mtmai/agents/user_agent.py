@@ -1,27 +1,21 @@
 from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
-from autogen_core.models import UserMessage
 from loguru import logger
 from mtmai.agents._agents import (
     browser_topic_type,
     coder_agent_topic_type,
-    platform_account_topic_type,
     team_runner_topic_type,
 )
 from mtmai.agents._types import (  # PlatformAccountTask,
     AgentResponse,
     BrowserOpenTask,
     BrowserTask,
-    CodeReviewResult,
-    CodeReviewTask,
     CodeWritingTask,
     TeamRunnerTask,
     TerminationMessage,
-    UserTask,
 )
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
-from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
-from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
-from mtmai.context.context_client import TenantClient
+
+# from mtmai.context.context_client import TenantClient
 
 
 class UserAgent(RoutedAgent):
@@ -39,8 +33,8 @@ class UserAgent(RoutedAgent):
 
         # session_id = ctx.topic_id.source
         session_id = self.id.key
-        tenant_client = TenantClient()
-        tid = tenant_client.tenant_id
+        # tenant_client = TenantClient()
+        # tid = tenant_client.tenant_id
         logger.info(
             f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.content}"
         )
@@ -85,49 +79,49 @@ class UserAgent(RoutedAgent):
 
             resource_id = message.resource_id
 
-            try:
-                resource = await tenant_client.ag.resource_api.resource_get(
-                    tenant=tid,
-                    resource=resource_id,
-                )
-                logger.info(f"resource: {resource}")
-            except Exception as e:
-                logger.exception(f"get resource error: {e}")
-                return None
+            # try:
+            #     resource = await tenant_client.ag.resource_api.resource_get(
+            #         tenant=tid,
+            #         resource=resource_id,
+            #     )
+            #     logger.info(f"resource: {resource}")
+            # except Exception as e:
+            #     logger.exception(f"get resource error: {e}")
+            #     return None
 
-            if resource is None:
-                return None
+            # if resource is None:
+            #     return None
 
-            if resource.type == "platform_account":
-                await self.publish_message(
-                    PlatformAccountTask(id=resource_id, task=user_input),
-                    topic_id=TopicId(platform_account_topic_type, source=session_id),
-                )
-            else:
-                # 加载对话历史
-                message_history = await tenant_client.ag.chat_api.chat_messages_list(
-                    tenant=tid,
-                    chat=session_id,
-                )
+            # if resource.type == "platform_account":
+            #     await self.publish_message(
+            #         PlatformAccountTask(id=resource_id, task=user_input),
+            #         topic_id=TopicId(platform_account_topic_type, source=session_id),
+            #     )
+            # else:
+            #     # 加载对话历史
+            #     message_history = await tenant_client.ag.chat_api.chat_messages_list(
+            #         tenant=tid,
+            #         chat=session_id,
+            #     )
 
-                await self.publish_message(
-                    UserTask(context=[UserMessage(content=user_input, source="User")]),
-                    topic_id=TopicId(self._agent_topic_type, source=session_id),
-                )
+            #     await self.publish_message(
+            #         UserTask(context=[UserMessage(content=user_input, source="User")]),
+            #         topic_id=TopicId(self._agent_topic_type, source=session_id),
+            #     )
 
-                await tenant_client.ag.chat_api.chat_message_upsert(
-                    tenant=tid,
-                    chat_message_upsert=ChatMessageUpsert(
-                        tenant_id=tid,
-                        content=user_input,
-                        # component_id=self.id.key,
-                        thread_id=self.id.key,
-                        role="user",
-                        source=session_id,
-                        # topic=self._agent_topic_type,
-                        topic=ctx.topic_id.type,
-                    ),
-                )
+            #     await tenant_client.ag.chat_api.chat_message_upsert(
+            #         tenant=tid,
+            #         chat_message_upsert=ChatMessageUpsert(
+            #             tenant_id=tid,
+            #             content=user_input,
+            #             # component_id=self.id.key,
+            #             thread_id=self.id.key,
+            #             role="user",
+            #             source=session_id,
+            #             # topic=self._agent_topic_type,
+            #             topic=ctx.topic_id.type,
+            #         ),
+            #     )
 
     # When a conversation ends
     @message_handler
@@ -145,23 +139,24 @@ class UserAgent(RoutedAgent):
     async def handle_task_result(
         self, message: AgentResponse, ctx: MessageContext
     ) -> None:
-        tenant_client = TenantClient()
-        tid = tenant_client.tenant_id
-        llm_message = message.context[-1]
-        await tenant_client.emit(llm_message)
-        await tenant_client.ag.chat_api.chat_message_upsert(
-            tenant=tid,
-            chat_message_upsert=ChatMessageUpsert(
-                tenant_id=tid,
-                content=llm_message.content,
-                # component_id=self.id.key,
-                thread_id=self.id.key,
-                role="assistant",
-                # source="assistant",
-                source=ctx.topic_id.source,
-                topic=ctx.topic_id.type,
-            ),
-        )
+        # tenant_client = TenantClient()
+        # tid = tenant_client.tenant_id
+        # llm_message = message.context[-1]
+        # await tenant_client.emit(llm_message)
+        # await tenant_client.ag.chat_api.chat_message_upsert(
+        #     tenant=tid,
+        #     chat_message_upsert=ChatMessageUpsert(
+        #         tenant_id=tid,
+        #         content=llm_message.content,
+        #         # component_id=self.id.key,
+        #         thread_id=self.id.key,
+        #         role="assistant",
+        #         # source="assistant",
+        #         source=ctx.topic_id.source,
+        #         topic=ctx.topic_id.type,
+        #     ),
+        # )
+        pass
 
         # await tenant_client.emit(message)
         # user_input = await self.get_user_input(
@@ -187,17 +182,17 @@ class UserAgent(RoutedAgent):
     #     # return await loop.run_in_executor(None, input, prompt)
     #     return user_input
 
-    @message_handler
-    async def handle_code_review_task(
-        self, message: CodeReviewTask, ctx: MessageContext
-    ) -> None:
-        logger.info(f"handle_user_message: {message}")
-        tenant_client = TenantClient()
-        await tenant_client.emit(message)
+    # @message_handler
+    # async def handle_code_review_task(
+    #     self, message: CodeReviewTask, ctx: MessageContext
+    # ) -> None:
+    #     logger.info(f"handle_user_message: {message}")
+    #     tenant_client = TenantClient()
+    #     await tenant_client.emit(message)
 
-    async def handle_code_review_result(
-        self, message: CodeReviewResult, ctx: MessageContext
-    ) -> None:
-        logger.info(f"handle_code_review_result: {message}")
-        tenant_client = TenantClient()
-        await tenant_client.emit(message)
+    # async def handle_code_review_result(
+    #     self, message: CodeReviewResult, ctx: MessageContext
+    # ) -> None:
+    #     logger.info(f"handle_code_review_result: {message}")
+    #     tenant_client = TenantClient()
+    #     await tenant_client.emit(message)

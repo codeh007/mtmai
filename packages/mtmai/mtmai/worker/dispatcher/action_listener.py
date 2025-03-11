@@ -160,15 +160,7 @@ class ActionListener:
                 break
 
             try:
-                logger.info("sending heartbeat")
-                # await self.aio_client.Heartbeat(
-                #     HeartbeatRequest(
-                #         workerId=self.worker_id,
-                #         heartbeatAt=proto_timestamp_now(),
-                #     ),
-                #     timeout=5,
-                #     metadata=get_metadata(self.token),
-                # )
+                # logger.info("sending heartbeat")
                 await self.dispatcher_connecpy.Heartbeat(
                     ctx=self.client_context,
                     request=HeartbeatRequest(

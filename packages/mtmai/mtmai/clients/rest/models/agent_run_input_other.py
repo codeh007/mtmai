@@ -28,6 +28,7 @@ from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from mtmai.clients.rest.models.instagram_task import InstagramTask
+from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.my_message import MyMessage
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
@@ -37,7 +38,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage"]
+AGENTRUNINPUTOTHER_ANY_OF_SCHEMAS = ["BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MtTaskResult", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage"]
 
 class AgentRunInputOther(BaseModel):
     """
@@ -72,11 +73,13 @@ class AgentRunInputOther(BaseModel):
     anyof_schema_13_validator: Optional[BrowserTask] = None
     # data type: BrowserOpenTask
     anyof_schema_14_validator: Optional[BrowserOpenTask] = None
+    # data type: MtTaskResult
+    anyof_schema_15_validator: Optional[MtTaskResult] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]] = None
+        actual_instance: Optional[Union[BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MtTaskResult, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage" }
+    any_of_schemas: Set[str] = { "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "CodeWritingResult", "CodeWritingTask", "InstagramTask", "MtTaskResult", "MyMessage", "PlatformAccountData", "PlatformAccountTask", "TeamRunnerTask", "TerminationMessage" }
 
     model_config = {
         "validate_assignment": True,
@@ -181,9 +184,15 @@ class AgentRunInputOther(BaseModel):
         else:
             return v
 
+        # validate data type: MtTaskResult
+        if not isinstance(v, MtTaskResult):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MtTaskResult`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MtTaskResult, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -280,10 +289,16 @@ class AgentRunInputOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_15_validator: Optional[MtTaskResult] = None
+        try:
+            instance.actual_instance = MtTaskResult.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputOther with anyOf schemas: BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MtTaskResult, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -297,7 +312,7 @@ class AgentRunInputOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, CodeWritingResult, CodeWritingTask, InstagramTask, MtTaskResult, MyMessage, PlatformAccountData, PlatformAccountTask, TeamRunnerTask, TerminationMessage]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
