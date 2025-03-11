@@ -1,4 +1,6 @@
 from typing import Any
+
+from autogen_ext.tools.mcp import SseServerParams
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.context.ctx import (
@@ -63,3 +65,10 @@ class TenantClient:
 
     async def emit(self, event: Any):
         await self.event.emit(event)
+
+    async def get_mcp_endpoint(self):
+        server_params = SseServerParams(
+            url="http://localhost:8383/mcp/sse",
+            headers={"Authorization": "Bearer token"},
+        )
+        return server_params

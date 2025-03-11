@@ -16,15 +16,13 @@ from autogen_core import (
     ComponentModel,
     SingleThreadedAgentRuntime,
 )
-from autogen_ext.tools.mcp import SseServerParams, StdioMcpToolAdapter, mcp_server_tools
+from autogen_ext.tools.mcp import StdioMcpToolAdapter, mcp_server_tools
 from loguru import logger
 from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.termination import MyFunctionCallTermination
 from pydantic import BaseModel
-
-# from autogen_ext.ui import RichConsole
 from rich.console import Console as RichConsole
 
 
@@ -103,12 +101,6 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         self.max_turns = max_turns
         self._model_client = model_client
 
-        # test_assisant = MtAssistantAgent(
-        #     name="test_assisant",
-        #     description="test_assisant",
-        #     model_client=model_client,
-        # )
-
         # super().__init__(
         #     participants=[planning_agent, writer],
         #     termination_condition=termination,
@@ -162,20 +154,9 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         self._chat_model_client = await tenant_client.ag.get_tenant_model_client(
             tid=tenant_client.tenant_id, model_name="chat"
         )
-        server_params = SseServerParams(
-            url="http://localhost:8383/mcp/sse",
-            headers={"Authorization": "Bearer token"},
-        )
-        tools = await mcp_server_tools(server_params)
+        tools = await mcp_server_tools(await tenant_client.get_mcp_endpoint())
 
         print_tools(tools)
-        # agent_mcp_example = AssistantAgent(
-        #     name="fetcher",
-        #     model_client=self._model_client,
-        #     tools=tools,
-        #     reflect_on_tool_use=True,
-        # )  # type: ignore
-
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",

@@ -130,10 +130,6 @@ class TeamRunnerAgent(RoutedAgent):
         logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
-        # team = await tenant_client.ag.get_team_by_resource(
-        #     # cancellation_token=cancellation_token,
-        #     resource_id=message.resource_id,
-        # )
         session_id = self.id.key
 
         agState = await tenant_client.ag.load_team_state(
@@ -141,8 +137,6 @@ class TeamRunnerAgent(RoutedAgent):
             chat_id=session_id,
         )
         logger.info(f"agState: {agState}")
-
-        # termination_handler = TerminationHandler()
         needs_user_input_handler = NeedsUserInputHandler()
         runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler]
