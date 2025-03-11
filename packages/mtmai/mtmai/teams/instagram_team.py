@@ -1,7 +1,7 @@
-from typing import List, Sequence
+from typing import AsyncGenerator, List, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.base import Handoff, TerminationCondition
+from autogen_agentchat.base import Handoff, TaskResult, TerminationCondition
 from autogen_agentchat.conditions import (
     HandoffTermination,
     MaxMessageTermination,
@@ -11,10 +11,12 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core import (
     AgentRuntime,
+    CancellationToken,
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
 )
+from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
 from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -81,6 +83,8 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             )
         self._initialized = False
         self._is_running = False
+        self.termination_condition = termination_condition
+        self.max_turns = max_turns
 
         self._model_client = model_client
 
@@ -90,10 +94,64 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         #     model_client=model_client,
         # )
 
+        # super().__init__(
+        #     participants=[planning_agent, writer],
+        #     termination_condition=termination,
+        #     model_client=model_client,
+        #     allow_repeated_speaker=True,
+        #     max_turns=max_turns or 25,
+        #     runtime=runtime,
+        #     selector_prompt=selector_prompt,
+        #     # selector_func=selector_func,
+        # )
+
+    async def _init(self, runtime: AgentRuntime):
+        #     self.session_id = get_chat_session_id_ctx()
+
+        #     self.user_agent_type = await SlowUserProxyAgent.register(
+        #         self._runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
+        #     )
+        #     await self._runtime.add_subscription(
+        #         TypeSubscription(
+        #             topic_type=user_topic_type, agent_type=self.user_agent_type.type
+        #         )
+        #     )
+
+        #     self.initial_schedule_assistant_message = AssistantTextMessage(
+        #         content="Hi! How can I help you? I can help schedule meetings",
+        #         source="User",
+        #     )
+        #     self.scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
+        #         runtime=self._runtime,
+        #         type=scheduling_assistant_topic_type,
+        #         factory=lambda: SchedulingAssistantAgent(
+        #             "SchedulingAssistant",
+        #             description="AI that helps you schedule meetings",
+        #             model_client=self._model_client,
+        #             initial_message=self.initial_schedule_assistant_message,
+        #         ),
+        #     )
+        #     await self._runtime.add_subscription(
+        #         subscription=TypeSubscription(
+        #             topic_type=scheduling_assistant_topic_type,
+        #             agent_type=self.scheduling_assistant_agent_type.type,
+        #         )
+        #     )
+
+        #     for message_type in agent_message_types:
+        #         self._runtime.add_message_serializer(
+        #             try_get_known_serializers_for_type(message_type)
+        #         )
+        #     self._initialized = True
+        #     self._runtime.start()
+
+        fetch_mcp_server = StdioServerParams(command="uvx", args=["mcp-server-fetch"])
+        tools = await mcp_server_tools(fetch_mcp_server)
+
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
-            model_client=model_client,
+            model_client=self.model_client,
             # tools=[wait_user_approval],
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="""
@@ -119,7 +177,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         writer = AssistantAgent(
             "WriterAgent",
             description="专业的博客文章写手",
-            model_client=model_client,
+            model_client=self.model_client,
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
             "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
@@ -174,8 +232,8 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             | handoff_termination
             | text_termination
         )
-        if termination_condition:
-            termination = termination | termination_condition
+        if self.termination_condition:
+            termination = termination | self.termination_condition
         selector_prompt = """Select an agent to perform task.
 
 {roles}
@@ -190,107 +248,68 @@ Make sure the planner agent has assigned tasks before other agents start working
 Only select one agent.
 
 """
-
-        super().__init__(
+        self.inner_team = SelectorGroupChat(
             participants=[planning_agent, writer],
             termination_condition=termination,
-            model_client=model_client,
+            model_client=self.model_client,
             allow_repeated_speaker=True,
-            max_turns=max_turns or 25,
-            runtime=runtime,
-            selector_prompt=selector_prompt,
-            # selector_func=selector_func,
+            max_turns=self.max_turns or 25,
+            runtime=self._runtime,
         )
+        self._initialized = True
+        self._runtime.start()
 
-    # async def _init(self, runtime: AgentRuntime):
-    #     self.session_id = get_chat_session_id_ctx()
-
-    #     self.user_agent_type = await SlowUserProxyAgent.register(
-    #         self._runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
-    #     )
-    #     await self._runtime.add_subscription(
-    #         TypeSubscription(
-    #             topic_type=user_topic_type, agent_type=self.user_agent_type.type
-    #         )
-    #     )
-
-    #     self.initial_schedule_assistant_message = AssistantTextMessage(
-    #         content="Hi! How can I help you? I can help schedule meetings",
-    #         source="User",
-    #     )
-    #     self.scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
-    #         runtime=self._runtime,
-    #         type=scheduling_assistant_topic_type,
-    #         factory=lambda: SchedulingAssistantAgent(
-    #             "SchedulingAssistant",
-    #             description="AI that helps you schedule meetings",
-    #             model_client=self._model_client,
-    #             initial_message=self.initial_schedule_assistant_message,
-    #         ),
-    #     )
-    #     await self._runtime.add_subscription(
-    #         subscription=TypeSubscription(
-    #             topic_type=scheduling_assistant_topic_type,
-    #             agent_type=self.scheduling_assistant_agent_type.type,
-    #         )
-    #     )
-
-    #     for message_type in agent_message_types:
-    #         self._runtime.add_message_serializer(
-    #             try_get_known_serializers_for_type(message_type)
-    #         )
-    #     self._initialized = True
-    #     self._runtime.start()
-
-    # async def run_stream(
-    #     self,
-    #     *,
-    #     task: str | ChatMessage | Sequence[ChatMessage] | None = None,
-    #     cancellation_token: CancellationToken | None = None,
-    # ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
-    #     if not self._initialized:
-    #         await self._init(self._runtime)
-
-    #     # Create the messages list if the task is a string or a chat message.
-    #     messages: List[ChatMessage] | None = None
-    #     if task is None:
-    #         pass
-    #     elif isinstance(task, str):
-    #         messages = [TextMessage(content=task, source="user")]
-    #     elif isinstance(task, BaseChatMessage):
-    #         messages = [task]
-    #     else:
-    #         if not task:
-    #             raise ValueError("Task list cannot be empty.")
-    #         messages = []
-    #         for msg in task:
-    #             if not isinstance(msg, BaseChatMessage):
-    #                 raise ValueError(
-    #                     "All messages in task list must be valid ChatMessage types"
-    #                 )
-    #             messages.append(msg)
-    #     if self._is_running:
-    #         raise ValueError(
-    #             "The team is already running, it cannot run again until it is stopped."
-    #         )
-    #     self._is_running = True
-    #     initial_schedule_assistant_message = AssistantTextMessage(
-    #         content="Hi! How can I help you? I can help schedule meetings",
-    #         source="User",
-    #     )
-    #     runtime_initiation_message: UserTextMessage | AssistantTextMessage
-    #     latest_user_input = None
-    #     if latest_user_input is not None:
-    #         runtime_initiation_message = UserTextMessage(
-    #             content=latest_user_input, source="User"
-    #         )
-    #     else:
-    #         runtime_initiation_message = initial_schedule_assistant_message
-    #     # state = state_persister.load_content()
-    #     await self._runtime.publish_message(
-    #         message=runtime_initiation_message,
-    #         topic_id=TopicId(type=self.user_agent_type.type, source=self.session_id),
-    #     )
+    async def run_stream(
+        self,
+        *,
+        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+        cancellation_token: CancellationToken | None = None,
+    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+        if not self._initialized:
+            await self._init(self._runtime)
+        return self.inner_team.run_stream(
+            task=task, cancellation_token=cancellation_token
+        )
+        # # Create the messages list if the task is a string or a chat message.
+        # messages: List[ChatMessage] | None = None
+        # if task is None:
+        #     pass
+        # elif isinstance(task, str):
+        #     messages = [TextMessage(content=task, source="user")]
+        # elif isinstance(task, BaseChatMessage):
+        #     messages = [task]
+        # else:
+        #     if not task:
+        #         raise ValueError("Task list cannot be empty.")
+        #     messages = []
+        #     for msg in task:
+        #         if not isinstance(msg, BaseChatMessage):
+        #             raise ValueError(
+        #                 "All messages in task list must be valid ChatMessage types"
+        #             )
+        #         messages.append(msg)
+        # if self._is_running:
+        #     raise ValueError(
+        #         "The team is already running, it cannot run again until it is stopped."
+        #     )
+        # self._is_running = True
+        # initial_schedule_assistant_message = AssistantTextMessage(
+        #     content="Hi! How can I help you? I can help schedule meetings",
+        #     source="User",
+        # )
+        # runtime_initiation_message: UserTextMessage | AssistantTextMessage
+        # latest_user_input = None
+        # if latest_user_input is not None:
+        #     runtime_initiation_message = UserTextMessage(
+        #         content=latest_user_input, source="User"
+        #     )
+        # else:
+        #     runtime_initiation_message = initial_schedule_assistant_message
+        # # state = state_persister.load_content()
+        # await self._runtime.publish_message(
+        #     message=runtime_initiation_message,
+        #     topic_id=TopicId(type=self.user_agent_type.type, source=self.session_id),
+        # )
 
     #     # state_persister.save_content(state_to_persist)
 

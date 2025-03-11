@@ -2078,6 +2078,18 @@ wheels = [
 ]
 
 [[package]]
+name = "json-schema-to-pydantic"
+version = "0.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/13/87/af1870beea329744a759349b972b309f8c95ae21e986e387e19733b85cc9/json_schema_to_pydantic-0.2.2.tar.gz", hash = "sha256:685db8d93aa29ccd257b2803fcd9a956c527e5fb108a523cbfe8cac1239b3785", size = 34158 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/25/8d/3c738e4b4b041269c4a506544b90e9ba924bbd800c8d496ed3e5a6da0265/json_schema_to_pydantic-0.2.2-py3-none-any.whl", hash = "sha256:01b82d234f2b482a273e117e29d063b6b86021a250035873d6eec4b85b70e64d", size = 11396 },
+]
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 source = { registry = "https://pypi.org/simple" }
@@ -2923,6 +2935,7 @@ dependencies = [
     { name = "grpcio-tools" },
     { name = "huggingface-hub" },
     { name = "json-repair" },
+    { name = "json-schema-to-pydantic" },
     { name = "langchain" },
     { name = "langchain-anthropic" },
     { name = "langchain-community" },
@@ -3030,6 +3043,7 @@ requires-dist = [
     { name = "grpcio-tools", specifier = ">=1.70.0" },
     { name = "huggingface-hub", specifier = ">=0.27.1" },
     { name = "json-repair", specifier = ">=0.35.0" },
+    { name = "json-schema-to-pydantic", specifier = ">=0.2.2" },
     { name = "langchain", specifier = ">=0.3.18" },
     { name = "langchain-anthropic", specifier = "==0.3.3" },
     { name = "langchain-community", specifier = ">=0.3.19" },
