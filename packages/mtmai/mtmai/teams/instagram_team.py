@@ -16,7 +16,7 @@ from autogen_core import (
     ComponentModel,
     SingleThreadedAgentRuntime,
 )
-from autogen_ext.tools.mcp import SseServerParams, StdioServerParams, mcp_server_tools
+from autogen_ext.tools.mcp import SseServerParams, mcp_server_tools
 from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -29,26 +29,6 @@ def wait_user_approval(prompt: str) -> str:
     """暂停对话,等用户通过UI批准后,继续对话"""
     logger.info(f"(wait_user_approval): {prompt}")
     return f"等待用户确认: {prompt}"
-
-
-# class _HandOffAgent(BaseChatAgent):
-#     def __init__(self, name: str, description: str, next_agent: str) -> None:
-#         super().__init__(name, description)
-#         self._next_agent = next_agent
-
-#     @property
-#     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-#         return (HandoffMessage,)
-
-#     async def on_messages(self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken) -> Response:
-#         return Response(
-#             chat_message=HandoffMessage(
-#                 content=f"Transferred to {self._next_agent}.", target=self._next_agent, source=self.name
-#             )
-#         )
-
-#     async def on_reset(self, cancellation_token: CancellationToken) -> None:
-#         pass
 
 
 class InstagramTeamConfig(BaseModel):
@@ -73,7 +53,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         runtime: AgentRuntime | None = None,
     ) -> None:
         self._runtime = runtime
-
+        self._is_embedded_runtime = False
         self.needs_user_input_handler = NeedsUserInputHandler()
         if self._runtime is None:
             self._runtime = SingleThreadedAgentRuntime(
@@ -81,6 +61,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
                     self.needs_user_input_handler,
                 ]
             )
+            self._is_embedded_runtime = True
         self._initialized = False
         self._is_running = False
         self.termination_condition = termination_condition
@@ -144,17 +125,15 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         #     self._initialized = True
         #     self._runtime.start()
 
-        fetch_mcp_server = StdioServerParams(command="uvx", args=["mcp-server-fetch"])
-        tools = await mcp_server_tools(fetch_mcp_server)
-
         server_params = SseServerParams(
-            url="http://localhost:8989", headers={"Authorization": "Bearer token"}
+            url="http://localhost:8989/mcp/sse",
+            headers={"Authorization": "Bearer token"},
         )
         tools = await mcp_server_tools(server_params)
 
         agent_mcp_example = AssistantAgent(
             name="fetcher",
-            model_client=self.model_client,
+            model_client=self._model_client,
             tools=tools,
             reflect_on_tool_use=True,
         )  # type: ignore
@@ -162,7 +141,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
-            model_client=self.model_client,
+            model_client=self._model_client,
             # tools=[wait_user_approval],
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="""
@@ -188,7 +167,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         writer = AssistantAgent(
             "WriterAgent",
             description="专业的博客文章写手",
-            model_client=self.model_client,
+            model_client=self._model_client,
             handoffs=[Handoff(target="user", message="Transfer to user.")],
             system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
             "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
@@ -196,9 +175,22 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
         fetch_agent = AssistantAgent(
             name="content_fetcher",
-            model_client=self.model_client,
+            model_client=self._model_client,
             tools=tools,  # The MCP fetch tool will be included here
-            system_message="你是一个网页内容获取助手。使用fetch工具获取网页内容。",
+            system_message="你是一个网页内容获取助手。使用 fetchWebContent 工具获取网页内容。。当找不到合适工具时,回复: I need xxx tool, TERMINATE",
+        )
+        rewriter_agent = AssistantAgent(
+            name="content_rewriter",
+            model_client=self._model_client,
+            system_message="""你是一个内容改写专家。将提供给你的网页内容改写为科技资讯风格的文章。
+        科技资讯风格特点：
+        1. 标题简洁醒目
+        2. 开头直接点明主题
+        3. 内容客观准确但生动有趣
+        4. 使用专业术语但解释清晰
+        5. 段落简短，重点突出
+
+        当你完成改写后，回复TERMINATE。""",
         )
 
         # participants.append(writer)
@@ -276,15 +268,14 @@ Only select one agent.
         #     runtime=self._runtime,
         # )
         self.inner_team = RoundRobinGroupChat(
-            participants=[fetch_agent],
+            participants=[fetch_agent, rewriter_agent],
             termination_condition=termination,
-            model_client=self.model_client,
-            allow_repeated_speaker=True,
             max_turns=self.max_turns or 25,
             runtime=self._runtime,
         )
         self._initialized = True
-        self._runtime.start()
+        if self._is_embedded_runtime:
+            self._runtime.start()
 
     async def run_stream(
         self,

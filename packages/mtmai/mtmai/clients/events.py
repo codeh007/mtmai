@@ -6,6 +6,7 @@ from autogen_agentchat.base import TaskResult
 from autogen_core import try_get_known_serializers_for_type
 from autogen_core._serialization import SerializationRegistry
 from connecpy.context import ClientContext
+from fastapi.encoders import jsonable_encoder
 from google.protobuf import message as pb_message
 from google.protobuf import timestamp_pb2
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
@@ -187,8 +188,9 @@ class EventClient:
         elif isinstance(event, TaskResult):
             # json_bytes = json.dumps(jsonable_encoder(event))
             # obj_dict = event.model_dump()
+            messages = jsonable_encoder(event.messages)
             mt_result = MtTaskResult(
-                messages=event.messages or [],
+                messages=messages,
                 stop_reason=event.stop_reason or "",
             )
             obj_dict = mt_result.model_dump()
