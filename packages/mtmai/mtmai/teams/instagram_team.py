@@ -8,7 +8,7 @@ from autogen_agentchat.conditions import (
     TextMentionTermination,
 )
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
@@ -16,7 +16,7 @@ from autogen_core import (
     ComponentModel,
     SingleThreadedAgentRuntime,
 )
-from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
+from autogen_ext.tools.mcp import SseServerParams, StdioServerParams, mcp_server_tools
 from loguru import logger
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -85,7 +85,6 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         self._is_running = False
         self.termination_condition = termination_condition
         self.max_turns = max_turns
-
         self._model_client = model_client
 
         # test_assisant = MtAssistantAgent(
@@ -148,6 +147,18 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         fetch_mcp_server = StdioServerParams(command="uvx", args=["mcp-server-fetch"])
         tools = await mcp_server_tools(fetch_mcp_server)
 
+        server_params = SseServerParams(
+            url="http://localhost:8989", headers={"Authorization": "Bearer token"}
+        )
+        tools = await mcp_server_tools(server_params)
+
+        agent_mcp_example = AssistantAgent(
+            name="fetcher",
+            model_client=self.model_client,
+            tools=tools,
+            reflect_on_tool_use=True,
+        )  # type: ignore
+
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
@@ -182,6 +193,14 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
             "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
         )
+
+        fetch_agent = AssistantAgent(
+            name="content_fetcher",
+            model_client=self.model_client,
+            tools=tools,  # The MCP fetch tool will be included here
+            system_message="你是一个网页内容获取助手。使用fetch工具获取网页内容。",
+        )
+
         # participants.append(writer)
         # instagram_assistant = MtAssistantAgent(
         #     name="UserProxyAssistant",
@@ -248,8 +267,16 @@ Make sure the planner agent has assigned tasks before other agents start working
 Only select one agent.
 
 """
-        self.inner_team = SelectorGroupChat(
-            participants=[planning_agent, writer],
+        # self.inner_team = SelectorGroupChat(
+        #     participants=[planning_agent, writer],
+        #     termination_condition=termination,
+        #     model_client=self.model_client,
+        #     allow_repeated_speaker=True,
+        #     max_turns=self.max_turns or 25,
+        #     runtime=self._runtime,
+        # )
+        self.inner_team = RoundRobinGroupChat(
+            participants=[fetch_agent],
             termination_condition=termination,
             model_client=self.model_client,
             allow_repeated_speaker=True,
@@ -267,9 +294,11 @@ Only select one agent.
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
             await self._init(self._runtime)
-        return self.inner_team.run_stream(
+        # Use async for to yield events from inner_team's run_stream
+        async for event in self.inner_team.run_stream(
             task=task, cancellation_token=cancellation_token
-        )
+        ):
+            yield event
         # # Create the messages list if the task is a string or a chat message.
         # messages: List[ChatMessage] | None = None
         # if task is None:
