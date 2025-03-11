@@ -113,7 +113,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             """,
         )
         # participants.append(test_assisant)
-        participants.append(planning_agent)
+        # participants.append(planning_agent)
 
         # Create a lazy assistant agent that always hands off to the user.
         writer = AssistantAgent(
@@ -124,7 +124,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
             system_message="你是专业的博客文章写手,擅长编写符合SEO规则的文章,熟悉不同社交媒体的规则"
             "If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.",
         )
-        participants.append(writer)
+        # participants.append(writer)
         # instagram_assistant = MtAssistantAgent(
         #     name="UserProxyAssistant",
         #     description="用户确认助理,当任务计划编排完成后, 用户需要确认后, 你再执行任务",
@@ -190,7 +190,7 @@ Only select one agent.
 """
 
         super().__init__(
-            participants=participants,
+            participants=[planning_agent, writer],
             termination_condition=termination,
             model_client=model_client,
             allow_repeated_speaker=True,

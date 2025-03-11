@@ -1,7 +1,13 @@
 from typing import Any, Mapping
 
 from autogen_agentchat.base import TaskResult, Team
-from autogen_core import MessageContext, RoutedAgent, message_handler
+from autogen_core import (
+    AgentRuntime,
+    MessageContext,
+    RoutedAgent,
+    SingleThreadedAgentRuntime,
+    message_handler,
+)
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents.team_builder import default_team_name, resource_team_map
@@ -11,6 +17,7 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
 from ..clients.rest.models.mt_task_result import MtTaskResult
+from .intervention_handlers import NeedsUserInputHandler
 
 
 class MockPersistence:
@@ -137,10 +144,10 @@ class TeamRunnerAgent(RoutedAgent):
         logger.info(f"agState: {agState}")
 
         # termination_handler = TerminationHandler()
-        # needs_user_input_handler = NeedsUserInputHandler()
-        # runtime = SingleThreadedAgentRuntime(
-        #     intervention_handlers=[needs_user_input_handler, termination_handler]
-        # )
+        needs_user_input_handler = NeedsUserInputHandler()
+        runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[needs_user_input_handler]
+        )
         # user_agent_type = await SlowUserProxyAgent.register(
         #     runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
         # )
@@ -187,7 +194,7 @@ class TeamRunnerAgent(RoutedAgent):
         #     topic_id=TopicId(type=user_agent_type.type, source=session_id),
         # )
 
-        # runtime.start()
+        runtime.start()
         # await runtime.stop_when(
         #     lambda: termination_handler.is_terminated
         #     or needs_user_input_handler.needs_user_input
@@ -212,7 +219,9 @@ class TeamRunnerAgent(RoutedAgent):
 
         # return user_input_needed
 
-        team = await self.build_team(component_id_or_name=message.resource_id)
+        team = await self.build_team(
+            runtime=runtime, component_id_or_name=message.resource_id
+        )
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
@@ -287,7 +296,9 @@ class TeamRunnerAgent(RoutedAgent):
         # state_to_persist = await self._runtime.save_state()
         # logger.info(f"state_to_persist: {state_to_persist}")
 
-    async def build_team(self, component_id_or_name: str | None = None):
+    async def build_team(
+        self, runtime: AgentRuntime, component_id_or_name: str | None = None
+    ):
         tenant_client = TenantClient()
         tid = get_tenant_id()
         if not tid:
@@ -309,7 +320,7 @@ class TeamRunnerAgent(RoutedAgent):
                 f"cant create team for unsupported resource type: {resource_data.type}"
             )
         # team = await team_builder.create_team(model_client=model_client)
-        team = team_cls(model_client=model_client)
+        team = team_cls(model_client=model_client, runtime=runtime)
 
         # 方式2
         # needs_user_input_handler = NeedsUserInputHandler()
