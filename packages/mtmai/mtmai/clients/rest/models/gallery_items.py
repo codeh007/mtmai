@@ -19,8 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.gallery_components import GalleryComponents
+from mtmai.clients.rest.models.team_config import TeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,7 @@ class GalleryItems(BaseModel):
     """
     GalleryItems
     """ # noqa: E501
-    teams: List[ComponentModel]
+    teams: List[TeamConfig]
     components: GalleryComponents
     __properties: ClassVar[List[str]] = ["teams", "components"]
 
@@ -93,7 +93,7 @@ class GalleryItems(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "teams": [ComponentModel.from_dict(_item) for _item in obj["teams"]] if obj.get("teams") is not None else None,
+            "teams": [TeamConfig.from_dict(_item) for _item in obj["teams"]] if obj.get("teams") is not None else None,
             "components": GalleryComponents.from_dict(obj["components"]) if obj.get("components") is not None else None
         })
         return _obj

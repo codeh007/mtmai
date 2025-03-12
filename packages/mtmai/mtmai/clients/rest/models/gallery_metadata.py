@@ -31,7 +31,7 @@ class GalleryMetadata(BaseModel):
     updated_at: StrictStr
     version: StrictStr
     description: Optional[StrictStr] = None
-    tags: Optional[List[Any]] = None
+    tags: Optional[List[StrictStr]] = None
     license: Optional[StrictStr] = None
     homepage: Optional[StrictStr] = None
     category: Optional[StrictStr] = None
