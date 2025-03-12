@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
@@ -32,10 +32,11 @@ class MtComponent(BaseModel):
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
     version: Optional[StrictInt] = 1
-    component: Dict[str, Any]
+    component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
+    config: Dict[str, Any]
     component2: Optional[MtComponentPropertiesComponent2] = None
     metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "component", "component2", "metadata"]
+    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "componentVersion", "config", "component2", "metadata"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -98,7 +99,8 @@ class MtComponent(BaseModel):
             "label": obj.get("label"),
             "description": obj.get("description"),
             "version": obj.get("version") if obj.get("version") is not None else 1,
-            "component": obj.get("component"),
+            "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
+            "config": obj.get("config"),
             "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None,
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
         })
