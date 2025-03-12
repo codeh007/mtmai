@@ -1,5 +1,3 @@
-from typing import Any, Mapping
-
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import (
     AgentRuntime,
@@ -12,25 +10,26 @@ from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.team_builder import default_team_name, resource_team_map
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
-from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
+
+# from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
+# class MockPersistence:
+#     def __init__(self):
+#         self._content: Mapping[str, Any] = {}
 
-class MockPersistence:
-    def __init__(self):
-        self._content: Mapping[str, Any] = {}
+#     def load_content(self) -> Mapping[str, Any]:
+#         return self._content
 
-    def load_content(self) -> Mapping[str, Any]:
-        return self._content
-
-    def save_content(self, content: Mapping[str, Any]) -> None:
-        self._content = content
+#     def save_content(self, content: Mapping[str, Any]) -> None:
+#         self._content = content
 
 
-state_persister = MockPersistence()
+# state_persister = MockPersistence()
 
 
 class TeamRunnerAgent(RoutedAgent):
@@ -124,9 +123,7 @@ class TeamRunnerAgent(RoutedAgent):
     #     # return
 
     @message_handler
-    async def run_team(self, message: TeamRunnerTask, ctx: MessageContext) -> None:
-        # global state_persister
-
+    async def run_team(self, message: AgentRunInput, ctx: MessageContext) -> None:
         logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
@@ -213,7 +210,7 @@ class TeamRunnerAgent(RoutedAgent):
         # return user_input_needed
 
         team = await self.build_team(
-            runtime=runtime, component_id_or_name=message.resource_id
+            runtime=runtime, component_id_or_name=message.component_id
         )
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)

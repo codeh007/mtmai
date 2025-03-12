@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from mtmai.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
@@ -28,10 +28,10 @@ class InstagramTeamConfig(BaseModel):
     InstagramTeamConfig
     """ # noqa: E501
     max_turns: Optional[StrictInt] = None
-    max_messages: Optional[StrictInt] = None
     max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
     termination_condition: Optional[TerminationConfig] = None
-    __properties: ClassVar[List[str]] = ["max_turns", "max_messages", "max_tokens", "termination_condition"]
+    task: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["max_turns", "max_tokens", "termination_condition", "task"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,9 +88,9 @@ class InstagramTeamConfig(BaseModel):
 
         _obj = cls.model_validate({
             "max_turns": obj.get("max_turns"),
-            "max_messages": obj.get("max_messages"),
             "max_tokens": obj.get("max_tokens"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
+            "task": obj.get("task")
         })
         return _obj
 

@@ -52,7 +52,6 @@ from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
-from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.teams.base_team import MtBaseTeam
@@ -539,43 +538,6 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
 
         pass
 
-    # async def show_state(self) -> None:
-    #     pass
-
-    # async def run_team(
-    #     self, message: AgentRunInput, cancellation_token: CancellationToken
-    # ) -> None:
-    #     user_input = message.content
-    #     if not self._initialized:
-    #         await self._init(self._runtime)
-
-    #     self._runtime.send
-    #     if user_input == "/stop":
-    #         set_step_canceled_ctx(True)
-    #         pass
-    #     else:
-    #         set_step_canceled_ctx(False)
-    #         tenant_client = TenantClient()
-    #         # team = await tenant_client.ag.get_team_by_resource(
-    #         #     # cancellation_token=cancellation_token,
-    #         #     resource_id=message.resource_id,
-    #         # )
-    #         team = await self.build_team(
-    #             runtime=self._runtime, component_id_or_name=message.resource_id
-    #         )
-    #         await tenant_client.emit(ChatSessionStartEvent(threadId=message.session_id))
-    #         self.teams.append(team)
-    #         async for event in team.run_stream(
-    #             task=message.content,
-    #             cancellation_token=cancellation_token,
-    #         ):
-    #             # if cancellation_token and cancellation_token.is_cancelled():
-    #             #     break
-    #             if isinstance(event, TaskResult):
-    #                 result = event
-    #                 return result
-    #             await tenant_client.emit(event)
-
     # async def build_team(
     #     self, runtime: AgentRuntime, component_id_or_name: str | None = None
     # ):
@@ -611,11 +573,12 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         result = await self._runtime.send_message(
-            message=TeamRunnerTask(
-                content=message.content,
-                team=component_id_or_name,
-                resource_id=message.resource_id,
-            ),
+            # message=TeamRunnerTask(
+            #     content=message.content,
+            #     team=component_id_or_name,
+            #     resource_id=message.resource_id,
+            # ),
+            message=message,
             recipient=AgentId(type=team_runner_topic_type, key=session_id),
             cancellation_token=cancellation_token,
         )

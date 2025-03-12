@@ -250,7 +250,6 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.team_result import TeamResult
-from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant
 from mtmai.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup

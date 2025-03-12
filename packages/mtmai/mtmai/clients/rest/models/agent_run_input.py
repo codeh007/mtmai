@@ -27,7 +27,6 @@ class AgentRunInput(BaseModel):
     """
     AgentRunInput
     """ # noqa: E501
-    team_name: Optional[StrictStr] = Field(default=None, alias="teamName")
     session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
     content: StrictStr
     tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
@@ -38,7 +37,7 @@ class AgentRunInput(BaseModel):
     source: Optional[StrictStr] = None
     topic: Optional[StrictStr] = None
     other: Optional[AgentRunInputOther] = None
-    __properties: ClassVar[List[str]] = ["teamName", "sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "source", "topic", "other"]
+    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "source", "topic", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,7 +93,6 @@ class AgentRunInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "teamName": obj.get("teamName"),
             "sessionId": obj.get("sessionId"),
             "content": obj.get("content"),
             "tenantId": obj.get("tenantId"),
