@@ -34,10 +34,10 @@ class AgentRunInput(BaseModel):
     step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
     resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
     component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
-    source: Optional[StrictStr] = None
     topic: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
     other: Optional[AgentRunInputOther] = None
-    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "source", "topic", "other"]
+    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,8 +100,8 @@ class AgentRunInput(BaseModel):
             "stepRunId": obj.get("stepRunId"),
             "resourceId": obj.get("resourceId"),
             "componentId": obj.get("componentId"),
-            "source": obj.get("source"),
             "topic": obj.get("topic"),
+            "source": obj.get("source"),
             "other": AgentRunInputOther.from_dict(obj["other"]) if obj.get("other") is not None else None
         })
         return _obj

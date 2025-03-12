@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
+from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,8 +31,9 @@ class InstagramTeamConfig(BaseModel):
     max_turns: Optional[StrictInt] = None
     max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
     termination_condition: Optional[TerminationConfig] = None
-    task: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["max_turns", "max_tokens", "termination_condition", "task"]
+    task: StrictStr
+    participants: List[ComponentModel]
+    __properties: ClassVar[List[str]] = ["max_turns", "max_tokens", "termination_condition", "task", "participants"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,6 +77,13 @@ class InstagramTeamConfig(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of termination_condition
         if self.termination_condition:
             _dict['termination_condition'] = self.termination_condition.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        _items = []
+        if self.participants:
+            for _item_participants in self.participants:
+                if _item_participants:
+                    _items.append(_item_participants.to_dict())
+            _dict['participants'] = _items
         return _dict
 
     @classmethod
@@ -90,7 +99,8 @@ class InstagramTeamConfig(BaseModel):
             "max_turns": obj.get("max_turns"),
             "max_tokens": obj.get("max_tokens"),
             "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "task": obj.get("task")
+            "task": obj.get("task"),
+            "participants": [ComponentModel.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
         })
         return _obj
 

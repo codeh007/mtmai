@@ -30,6 +30,7 @@ from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_node_create_request import AgentNodeCreateRequest
 from mtmai.clients.rest.models.agent_node_update_request import AgentNodeUpdateRequest
@@ -249,6 +250,7 @@ from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.team_component import TeamComponent
+from mtmai.clients.rest.models.team_config import TeamConfig
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant
@@ -280,7 +282,6 @@ from mtmai.clients.rest.models.tool_component import ToolComponent
 from mtmai.clients.rest.models.tool_config import ToolConfig
 from mtmai.clients.rest.models.tool_types import ToolTypes
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
-from mtmai.clients.rest.models.ui_agent_config import UiAgentConfig
 from mtmai.clients.rest.models.ui_agent_state import UiAgentState
 from mtmai.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmai.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
