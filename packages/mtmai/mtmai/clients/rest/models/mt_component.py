@@ -34,9 +34,10 @@ class MtComponent(BaseModel):
     version: Optional[StrictInt] = 1
     component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
     config: Dict[str, Any]
+    gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
     component2: Optional[MtComponentPropertiesComponent2] = None
     metadata: Optional[APIResourceMeta] = None
-    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "componentVersion", "config", "component2", "metadata"]
+    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "componentVersion", "config", "galleryId", "component2", "metadata"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -101,6 +102,7 @@ class MtComponent(BaseModel):
             "version": obj.get("version") if obj.get("version") is not None else 1,
             "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
             "config": obj.get("config"),
+            "galleryId": obj.get("galleryId"),
             "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None,
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None
         })
