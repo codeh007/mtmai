@@ -17,11 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.gallery_items import GalleryItems
-from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,10 +30,12 @@ class Gallery(BaseModel):
     metadata: APIResourceMeta
     name: StrictStr
     url: StrictStr
-    user_id: StrictStr = Field(alias="userId")
-    meta: GalleryMetadata
-    items: GalleryItems
-    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "userId", "meta", "items"]
+    author: StrictStr
+    homepage: StrictStr
+    description: StrictStr
+    tags: List[StrictStr]
+    license: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "author", "homepage", "description", "tags", "license"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -79,12 +79,6 @@ class Gallery(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of meta
-        if self.meta:
-            _dict['meta'] = self.meta.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of items
-        if self.items:
-            _dict['items'] = self.items.to_dict()
         return _dict
 
     @classmethod
@@ -100,9 +94,11 @@ class Gallery(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
             "url": obj.get("url"),
-            "userId": obj.get("userId"),
-            "meta": GalleryMetadata.from_dict(obj["meta"]) if obj.get("meta") is not None else None,
-            "items": GalleryItems.from_dict(obj["items"]) if obj.get("items") is not None else None
+            "author": obj.get("author"),
+            "homepage": obj.get("homepage"),
+            "description": obj.get("description"),
+            "tags": obj.get("tags"),
+            "license": obj.get("license")
         })
         return _obj
 
