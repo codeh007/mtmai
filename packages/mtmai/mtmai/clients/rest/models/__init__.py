@@ -127,7 +127,7 @@ from mtmai.clients.rest.models.gallery import Gallery
 from mtmai.clients.rest.models.gallery_components import GalleryComponents
 from mtmai.clients.rest.models.gallery_items import GalleryItems
 from mtmai.clients.rest.models.gallery_list import GalleryList
-from mtmai.clients.rest.models.gallery_meta import GalleryMeta
+from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from mtmai.clients.rest.models.gallery_update import GalleryUpdate
 from mtmai.clients.rest.models.gen_article_input import GenArticleInput
 from mtmai.clients.rest.models.gen_topic_result import GenTopicResult
