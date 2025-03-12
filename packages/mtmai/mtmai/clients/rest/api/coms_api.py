@@ -331,6 +331,7 @@ class ComsApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
+        gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -352,6 +353,8 @@ class ComsApi:
         :type tenant: str
         :param label: The team label
         :type label: str
+        :param gallery: The gallery name
+        :type gallery: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -377,6 +380,7 @@ class ComsApi:
         _param = self._coms_list_serialize(
             tenant=tenant,
             label=label,
+            gallery=gallery,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -405,6 +409,7 @@ class ComsApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
+        gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -426,6 +431,8 @@ class ComsApi:
         :type tenant: str
         :param label: The team label
         :type label: str
+        :param gallery: The gallery name
+        :type gallery: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -451,6 +458,7 @@ class ComsApi:
         _param = self._coms_list_serialize(
             tenant=tenant,
             label=label,
+            gallery=gallery,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -479,6 +487,7 @@ class ComsApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
+        gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -500,6 +509,8 @@ class ComsApi:
         :type tenant: str
         :param label: The team label
         :type label: str
+        :param gallery: The gallery name
+        :type gallery: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -525,6 +536,7 @@ class ComsApi:
         _param = self._coms_list_serialize(
             tenant=tenant,
             label=label,
+            gallery=gallery,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -548,6 +560,7 @@ class ComsApi:
         self,
         tenant,
         label,
+        gallery,
         _request_auth,
         _content_type,
         _headers,
@@ -575,6 +588,10 @@ class ComsApi:
         if label is not None:
             
             _query_params.append(('label', label))
+            
+        if gallery is not None:
+            
+            _query_params.append(('gallery', gallery))
             
         # process the header parameters
         # process the form parameters
