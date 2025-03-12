@@ -12,23 +12,8 @@ from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
-
-# from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
-
-# class MockPersistence:
-#     def __init__(self):
-#         self._content: Mapping[str, Any] = {}
-
-#     def load_content(self) -> Mapping[str, Any]:
-#         return self._content
-
-#     def save_content(self, content: Mapping[str, Any]) -> None:
-#         self._content = content
-
-
-# state_persister = MockPersistence()
 
 
 class TeamRunnerAgent(RoutedAgent):
