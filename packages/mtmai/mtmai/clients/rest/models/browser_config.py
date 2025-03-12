@@ -17,23 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MtComponentProperties(BaseModel):
+class BrowserConfig(BaseModel):
     """
-    MtComponentProperties
+    浏览器配置(未完成)
     """ # noqa: E501
-    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
-    version: Optional[StrictInt] = 1
-    label: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    component: Dict[str, Any]
-    component2: Optional[MtComponentPropertiesComponent2] = None
-    __properties: ClassVar[List[str]] = ["componentType", "version", "label", "description", "component", "component2"]
+    persistent: Optional[StrictBool] = None
+    __properties: ClassVar[List[str]] = ["persistent"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +47,7 @@ class MtComponentProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a JSON string"""
+        """Create an instance of BrowserConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,14 +68,11 @@ class MtComponentProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of component2
-        if self.component2:
-            _dict['component2'] = self.component2.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a dict"""
+        """Create an instance of BrowserConfig from a dict"""
         if obj is None:
             return None
 
@@ -89,12 +80,7 @@ class MtComponentProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "componentType": obj.get("componentType"),
-            "version": obj.get("version") if obj.get("version") is not None else 1,
-            "label": obj.get("label"),
-            "description": obj.get("description"),
-            "component": obj.get("component"),
-            "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
+            "persistent": obj.get("persistent")
         })
         return _obj
 

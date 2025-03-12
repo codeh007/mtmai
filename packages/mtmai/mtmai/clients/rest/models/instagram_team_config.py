@@ -17,23 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt
+from typing import Any, ClassVar, Dict, List, Optional, Union
+from mtmai.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MtComponentProperties(BaseModel):
+class InstagramTeamConfig(BaseModel):
     """
-    MtComponentProperties
+    InstagramTeamConfig
     """ # noqa: E501
-    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
-    version: Optional[StrictInt] = 1
-    label: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    component: Dict[str, Any]
-    component2: Optional[MtComponentPropertiesComponent2] = None
-    __properties: ClassVar[List[str]] = ["componentType", "version", "label", "description", "component", "component2"]
+    max_turns: Optional[StrictInt] = None
+    max_messages: Optional[StrictInt] = None
+    max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
+    termination_condition: Optional[TerminationConfig] = None
+    __properties: ClassVar[List[str]] = ["max_turns", "max_messages", "max_tokens", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +51,7 @@ class MtComponentProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a JSON string"""
+        """Create an instance of InstagramTeamConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,14 +72,14 @@ class MtComponentProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of component2
-        if self.component2:
-            _dict['component2'] = self.component2.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a dict"""
+        """Create an instance of InstagramTeamConfig from a dict"""
         if obj is None:
             return None
 
@@ -89,12 +87,10 @@ class MtComponentProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "componentType": obj.get("componentType"),
-            "version": obj.get("version") if obj.get("version") is not None else 1,
-            "label": obj.get("label"),
-            "description": obj.get("description"),
-            "component": obj.get("component"),
-            "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
+            "max_turns": obj.get("max_turns"),
+            "max_messages": obj.get("max_messages"),
+            "max_tokens": obj.get("max_tokens"),
+            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

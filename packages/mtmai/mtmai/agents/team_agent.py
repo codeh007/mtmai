@@ -125,7 +125,7 @@ class TeamRunnerAgent(RoutedAgent):
 
     @message_handler
     async def run_team(self, message: TeamRunnerTask, ctx: MessageContext) -> None:
-        global state_persister
+        # global state_persister
 
         logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)

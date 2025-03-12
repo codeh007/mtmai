@@ -56,6 +56,7 @@ from mtmai.clients.rest.models.blog_post_list import BlogPostList
 from mtmai.clients.rest.models.blog_post_state import BlogPostState
 from mtmai.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
 from mtmai.clients.rest.models.browser import Browser
+from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_list import BrowserList
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
@@ -135,6 +136,7 @@ from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.inner_message_config import InnerMessageConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
+from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -164,6 +166,7 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
+from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties

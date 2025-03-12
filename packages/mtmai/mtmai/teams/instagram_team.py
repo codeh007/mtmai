@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, List, Mapping, Sequence
+from typing import Any, AsyncGenerator, Mapping, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Handoff, TaskResult, TerminationCondition
@@ -13,63 +13,22 @@ from autogen_core import (
     AgentRuntime,
     CancellationToken,
     Component,
-    ComponentModel,
     SingleThreadedAgentRuntime,
 )
-from autogen_ext.tools.mcp import StdioMcpToolAdapter, mcp_server_tools
+from autogen_ext.tools.mcp import mcp_server_tools
 from loguru import logger
 from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.termination import MyFunctionCallTermination
-from pydantic import BaseModel
-from rich.console import Console as RichConsole
+from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.mtlibs.mcp import print_mcp_tools
 
 
 def wait_user_approval(prompt: str) -> str:
     """暂停对话,等用户通过UI批准后,继续对话"""
     logger.info(f"(wait_user_approval): {prompt}")
     return f"等待用户确认: {prompt}"
-
-
-def print_tools(tools: List[StdioMcpToolAdapter]) -> None:
-    """Print available MCP tools and their parameters in a formatted way."""
-    console = RichConsole()
-    console.print("\n[bold blue]📦 Loaded MCP Tools:[/bold blue]\n")
-
-    for tool in tools:
-        # Tool name and description
-        console.print(
-            f"[bold green]🔧 {tool.schema.get('name', 'Unnamed Tool')}[/bold green]"
-        )
-        if description := tool.schema.get("description"):
-            console.print(f"[italic]{description}[/italic]\n")
-
-        # Parameters section
-        if params := tool.schema.get("parameters"):
-            console.print("[yellow]Parameters:[/yellow]")
-            if properties := params.get("properties", {}):
-                required_params = params.get("required", [])
-                for prop_name, prop_details in properties.items():
-                    required_mark = (
-                        "[red]*[/red]" if prop_name in required_params else ""
-                    )
-                    param_type = prop_details.get("type", "any")
-                    console.print(
-                        f"  • [cyan]{prop_name}{required_mark}[/cyan]: {param_type}"
-                    )
-                    if param_desc := prop_details.get("description"):
-                        console.print(f"    [dim]{param_desc}[/dim]")
-
-        console.print("─" * 60 + "\n")
-
-
-class InstagramTeamConfig(BaseModel):
-    participants: List[ComponentModel]
-    termination_condition: ComponentModel | None = None
-    max_turns: int | None = None
-    some_value: str = "some_value"
-    result_id: str = None
 
 
 class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
@@ -79,7 +38,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
 
     def __init__(
         self,
-        participants: List[ComponentModel] = [],
+        # participants: List[ComponentModel] = [],
         model_client: MtmOpenAIChatCompletionClient | None = None,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
@@ -156,7 +115,7 @@ class InstagramTeam(SelectorGroupChat, Component[InstagramTeamConfig]):
         )
         tools = await mcp_server_tools(await tenant_client.get_mcp_endpoint())
 
-        print_tools(tools)
+        print_mcp_tools(tools)
         planning_agent = MtAssistantAgent(
             "PlanningAgent",
             description="An agent for planning tasks, this agent should be the first to engage when given a new task.",
