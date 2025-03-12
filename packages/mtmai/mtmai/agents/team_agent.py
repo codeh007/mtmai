@@ -9,7 +9,6 @@ from autogen_core import (
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.agents.team_builder import default_team_name, resource_team_map
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
@@ -209,9 +208,7 @@ class TeamRunnerAgent(RoutedAgent):
 
         # return user_input_needed
 
-        team = await self.build_team(
-            runtime=runtime, component_id_or_name=message.component_id
-        )
+        team = await self.build_team(runtime=runtime, component_id=message.component_id)
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
@@ -295,29 +292,27 @@ class TeamRunnerAgent(RoutedAgent):
         await runtime.stop_when_idle()
         logger.info("团队运行完全结束")
 
-    async def build_team(
-        self, runtime: AgentRuntime, component_id_or_name: str | None = None
-    ):
+    async def build_team(self, runtime: AgentRuntime, component_id: str | None = None):
         tenant_client = TenantClient()
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
-        if not component_id_or_name:
-            component_id_or_name = default_team_name
         model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
-        resource_data = await tenant_client.ag.resource_api.resource_get(
+        component_data = await tenant_client.ag.coms_api.coms_get(
             tenant=tid,
-            resource=component_id_or_name,
+            com=component_id,
         )
-        logger.info(f"component data: {resource_data}")
+        logger.info(f"component data: {component_data}")
+
+        team = Team.load_component(component_data.component)
 
         # 方式1
-        team_cls = resource_team_map.get(resource_data.type)
-        if not team_cls:
-            raise ValueError(
-                f"cant create team for unsupported resource type: {resource_data.type}"
-            )
-        # team = await team_builder.create_team(model_client=model_client)
-        team = team_cls(model_client=model_client, runtime=runtime)
+        # team_cls = resource_team_map.get(component_data.type)
+        # if not team_cls:
+        #     raise ValueError(
+        #         f"cant create team for unsupported resource type: {resource_data.type}"
+        #     )
+        # # team = await team_builder.create_team(model_client=model_client)
+        # team = team_cls(model_client=model_client, runtime=runtime)
         return team
