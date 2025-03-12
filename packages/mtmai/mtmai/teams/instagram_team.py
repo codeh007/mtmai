@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Mapping, Sequence
+from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Handoff, TaskResult, Team, TerminationCondition
@@ -20,6 +20,7 @@ from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.termination import MyFunctionCallTermination
+from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.mtlibs.mcp import print_mcp_tools
 from typing_extensions import Self
@@ -33,7 +34,7 @@ class InstagramTeam(Team, Component[InstagramTeamConfig]):
 
     def __init__(
         self,
-        # participants: List[ComponentModel] = [],
+        participants: List[ComponentModel] = [],
         model_client: MtmOpenAIChatCompletionClient | None = None,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,

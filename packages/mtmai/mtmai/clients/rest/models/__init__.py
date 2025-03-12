@@ -157,7 +157,6 @@ from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.model_config import ModelConfig
-from mtmai.clients.rest.models.model_context import ModelContext
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
@@ -278,7 +277,6 @@ from mtmai.clients.rest.models.text_mention_termination_component import TextMen
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
-from mtmai.clients.rest.models.tool_component import ToolComponent
 from mtmai.clients.rest.models.tool_config import ToolConfig
 from mtmai.clients.rest.models.tool_types import ToolTypes
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest

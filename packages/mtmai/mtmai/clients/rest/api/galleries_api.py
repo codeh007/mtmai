@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictStr
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.gallery import Gallery
 from mtmai.clients.rest.models.gallery_list import GalleryList
@@ -340,7 +340,7 @@ class GalleriesApi:
     async def gallery_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        gallery: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The gallery id")],
+        gallery: Annotated[StrictStr, Field(description="The gallery id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -354,7 +354,7 @@ class GalleriesApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> Gallery:
-        """获取租户下的画廊列表
+        """gallery_get
 
         获取画廊列表
 
@@ -411,7 +411,7 @@ class GalleriesApi:
     async def gallery_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        gallery: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The gallery id")],
+        gallery: Annotated[StrictStr, Field(description="The gallery id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -425,7 +425,7 @@ class GalleriesApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[Gallery]:
-        """获取租户下的画廊列表
+        """gallery_get
 
         获取画廊列表
 
@@ -482,7 +482,7 @@ class GalleriesApi:
     async def gallery_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        gallery: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The gallery id")],
+        gallery: Annotated[StrictStr, Field(description="The gallery id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -496,7 +496,7 @@ class GalleriesApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """获取租户下的画廊列表
+        """gallery_get
 
         获取画廊列表
 
