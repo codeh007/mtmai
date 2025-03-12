@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
 from typing import Optional, Set
@@ -27,13 +27,13 @@ class MtComponentProperties(BaseModel):
     """
     MtComponentProperties
     """ # noqa: E501
-    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
-    version: Optional[StrictInt] = 1
+    type: StrictStr
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
+    version: Optional[StrictInt] = 1
     component: Dict[str, Any]
     component2: Optional[MtComponentPropertiesComponent2] = None
-    __properties: ClassVar[List[str]] = ["componentType", "version", "label", "description", "component", "component2"]
+    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "component", "component2"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,10 +89,10 @@ class MtComponentProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "componentType": obj.get("componentType"),
-            "version": obj.get("version") if obj.get("version") is not None else 1,
+            "type": obj.get("type") if obj.get("type") is not None else 'Assisant',
             "label": obj.get("label"),
             "description": obj.get("description"),
+            "version": obj.get("version") if obj.get("version") is not None else 1,
             "component": obj.get("component"),
             "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
         })
