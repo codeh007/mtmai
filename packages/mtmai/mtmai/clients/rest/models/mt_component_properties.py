@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
 from typing import Optional, Set
@@ -28,6 +28,7 @@ class MtComponentProperties(BaseModel):
     MtComponentProperties
     """ # noqa: E501
     type: StrictStr
+    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
     version: Optional[StrictInt] = 1
@@ -35,7 +36,17 @@ class MtComponentProperties(BaseModel):
     config: Dict[str, Any]
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
     component2: Optional[MtComponentPropertiesComponent2] = None
-    __properties: ClassVar[List[str]] = ["type", "label", "description", "version", "componentVersion", "config", "galleryId", "component2"]
+    __properties: ClassVar[List[str]] = ["type", "componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component2"]
+
+    @field_validator('component_type')
+    def component_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['team', 'agent', 'model', 'tool', 'termination']):
+            raise ValueError("must be one of enum values ('team', 'agent', 'model', 'tool', 'termination')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -92,6 +103,7 @@ class MtComponentProperties(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type") if obj.get("type") is not None else 'Assisant',
+            "componentType": obj.get("componentType"),
             "label": obj.get("label"),
             "description": obj.get("description"),
             "version": obj.get("version") if obj.get("version") is not None else 1,

@@ -17,10 +17,11 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.model_config import ModelConfig
+from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.model_component import ModelComponent
+from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,27 +29,10 @@ class SelectorGroupChatConfig(BaseModel):
     """
     SelectorGroupChatConfig
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
-    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
-    team_type: Optional[StrictStr] = None
-    selector_prompt: Optional[StrictStr] = None
-    model_client: Optional[ModelConfig] = None
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "team_type", "selector_prompt", "model_client"]
-
-    @field_validator('team_type')
-    def team_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['SelectorGroupChat']):
-            raise ValueError("must be one of enum values ('SelectorGroupChat')")
-        return value
+    participants: Optional[List[AgentComponent]] = None
+    termination_condition: Optional[TerminationComponent] = None
+    model_client: Optional[ModelComponent] = None
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "model_client"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,6 +73,16 @@ class SelectorGroupChatConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        _items = []
+        if self.participants:
+            for _item_participants in self.participants:
+                if _item_participants:
+                    _items.append(_item_participants.to_dict())
+            _dict['participants'] = _items
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
@@ -104,16 +98,9 @@ class SelectorGroupChatConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config"),
-            "team_type": obj.get("team_type"),
-            "selector_prompt": obj.get("selector_prompt"),
-            "model_client": ModelConfig.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
+            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
+            "model_client": ModelComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
         })
         return _obj
 

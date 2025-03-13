@@ -30,6 +30,7 @@ from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_node_create_request import AgentNodeCreateRequest
@@ -132,6 +133,8 @@ from mtmai.clients.rest.models.gallery_update import GalleryUpdate
 from mtmai.clients.rest.models.gen_article_input import GenArticleInput
 from mtmai.clients.rest.models.gen_topic_result import GenTopicResult
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
+from mtmai.clients.rest.models.handoff_component import HandoffComponent
+from mtmai.clients.rest.models.handoff_config import HandoffConfig
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.image_content import ImageContent
@@ -277,6 +280,7 @@ from mtmai.clients.rest.models.text_mention_termination_component import TextMen
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
+from mtmai.clients.rest.models.tool_component import ToolComponent
 from mtmai.clients.rest.models.tool_config import ToolConfig
 from mtmai.clients.rest.models.tool_types import ToolTypes
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
