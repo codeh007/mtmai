@@ -11,10 +11,9 @@ from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
+from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
-
-from ..clients.rest.models.team_component import TeamComponent
 
 
 class TeamRunnerAgent(RoutedAgent):
@@ -22,90 +21,6 @@ class TeamRunnerAgent(RoutedAgent):
         super().__init__(description)
         self._model_client = model_client
         self.teams: list[Team] = []
-
-    # @message_handler
-    # async def handle_run_team(
-    #     self, message: TeamRunnerTask, ctx: MessageContext
-    # ) -> None:
-    #     logger.info("(TeamRunnerTask)")
-    #     task = message.task
-    #     assistant = MtAssistantAgent(
-    #         "Assistant",
-    #         model_client=self._model_client,
-    #     )
-
-    #     surfer = MultimodalWebSurfer(
-    #         "WebSurfer",
-    #         model_client=self._model_client,
-    #     )
-
-    #     team = MagenticOneGroupChat(
-    #         [assistant, surfer], model_client=self._model_client
-    #     )
-    #     await Console(
-    #         team.run_stream(task="Provide a different proof for Fermat's Last Theorem")
-    #     )
-
-    #     # task = message.task
-    #     # team_id = message.team_id
-    #     # chat_id = message.chat_id
-
-    #     # logger.info(f"{'-'*80}\nUser login, session ID: {self.id.key}.", flush=True)
-    #     # # Get the user's initial input after login.
-    #     # user_input = input("User: ")
-    #     # logger.info(f"{'-'*80}\n{self.id.type}:\n{user_input}")
-    #     # await self.publish_message(
-    #     #     UserTask(context=[UserMessage(content=user_input, source="User")]),
-    #     #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
-    #     # )
-
-    #     # tenant_client = TenantClient()
-    #     # tid = tenant_client.tenant_id
-    #     # if task.startswith("/tenant/seed"):
-    #     #     logger.info("通知 TanantAgent 初始化(或重置)租户信息")
-    #     #     result = await self._runtime.send_message(
-    #     #         MsgResetTenant(tenant_id=tid),
-    #     #         self.tenant_agent_id,
-    #     #     )
-    #     #     return
-
-    #     # team_id = get_team_id_ctx() or generate_uuid()
-    #     # chat_id = get_chat_session_id_ctx() or generate_uuid()
-    #     # team = await tenant_client.ag.get_team()
-    #     # ag_state = await tenant_client.ag.load_team_state(
-    #     #     tenant_id=tenant_client.tenant_id,
-    #     #     chat_id=chat_id,
-    #     # )
-    #     # if ag_state:
-    #     #     await team.load_state(ag_state.state)
-
-    #     # logger.info(f"运行: task: {task}, chat_id:{chat_id}")
-
-    #     # await tenant_client.emit(
-    #     #     ChatSessionStartEvent(
-    #     #         threadId=chat_id,
-    #     #     )
-    #     # )
-
-    #     # try:
-    #     #     async for event in team.run_stream(
-    #     #         task=task,
-    #     #         cancellation_token=ctx.cancellation_token,
-    #     #     ):
-    #     #         if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
-    #     #             break
-    #     #         # yield event
-    #     #         await tenant_client.event.emit(event)
-
-    #     # finally:
-    #     #     await tenant_client.ag.save_team_state(
-    #     #         team=team,
-    #     #         team_id=team_id,
-    #     #         tenant_id=tenant_client.tenant_id,
-    #     #         chat_id=chat_id,
-    #     #     )
-
-    #     # return
 
     @message_handler
     async def run_team(self, message: AgentRunInput, ctx: MessageContext) -> None:
@@ -198,35 +113,6 @@ class TeamRunnerAgent(RoutedAgent):
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
-        # stream = team.run_stream(
-        #     task=message.content,
-        #     cancellation_token=ctx.cancellation_token,
-        # )
-        # if inspect.isawaitable(stream):
-        #     stream = await stream
-        # stream = asyncio.ensure_future(
-        #     team.run_stream(
-        #         task=message.content,
-        #         cancellation_token=ctx.cancellation_token,
-        #     )
-        # )
-        # needs_user_input_handler = NeedsUserInputHandler()
-        # _runtime = SingleThreadedAgentRuntime(
-        #     intervention_handlers=[
-        #         needs_user_input_handler,
-        #         # termination_handler,
-        #     ]
-        # )
-        # team = InstagramTeam(
-        #     participants=[],
-        #     model_client=self._model_client,
-        #     # termination_condition=None,
-        #     # max_turns=None,
-        #     # runtime=_runtime,
-        # )
-        # _runtime.start()
-        # return team
-
         ######################################################################################
         # 提示:
         # 1:团队的结束不等于 runtime 的结束
@@ -296,7 +182,17 @@ class TeamRunnerAgent(RoutedAgent):
         team_component = TeamComponent.model_validate(
             component_data.component.actual_instance
         )
-        team_component.config.actual_instance
+        team_component.config = team_component.config.actual_instance
 
+        # if isinstance(team_component.config.actual_instance, InstagramTeamConfig):
+        #     team_component.config = team_component.config.actual_instance
+        # elif isinstance(team_component.config.actual_instance, SelectorGroupChatConfig):
+        #     team_component.config =
+        # elif isinstance(
+        #     team_component.config.actual_instance, RoundRobinGroupChatConfig
+        # ):
+        #     team_component.config = RoundRobinGroupChatConfig.model_validate(
+        #         team_component.config.actual_instance
+        #     )
         team = Team.load_component(team_component)
         return team
