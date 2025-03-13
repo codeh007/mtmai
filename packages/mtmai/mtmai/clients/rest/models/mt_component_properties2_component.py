@@ -20,15 +20,13 @@ import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
 from mtmai.clients.rest.models.agent_component import AgentComponent
-from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
-from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-MTCOMPONENTPROPERTIES2COMPONENT_ANY_OF_SCHEMAS = ["AgentComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TerminationComponent"]
+MTCOMPONENTPROPERTIES2COMPONENT_ANY_OF_SCHEMAS = ["AgentComponent", "TeamComponent", "TerminationComponent"]
 
 class MtComponentProperties2Component(BaseModel):
     """
@@ -37,19 +35,15 @@ class MtComponentProperties2Component(BaseModel):
 
     # data type: TeamComponent
     anyof_schema_1_validator: Optional[TeamComponent] = None
-    # data type: RoundRobinGroupChatConfig
-    anyof_schema_2_validator: Optional[RoundRobinGroupChatConfig] = None
-    # data type: SelectorGroupChatConfig
-    anyof_schema_3_validator: Optional[SelectorGroupChatConfig] = None
     # data type: TerminationComponent
-    anyof_schema_4_validator: Optional[TerminationComponent] = None
+    anyof_schema_2_validator: Optional[TerminationComponent] = None
     # data type: AgentComponent
-    anyof_schema_5_validator: Optional[AgentComponent] = None
+    anyof_schema_3_validator: Optional[AgentComponent] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent]] = None
+        actual_instance: Optional[Union[AgentComponent, TeamComponent, TerminationComponent]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TerminationComponent" }
+    any_of_schemas: Set[str] = { "AgentComponent", "TeamComponent", "TerminationComponent" }
 
     model_config = {
         "validate_assignment": True,
@@ -76,18 +70,6 @@ class MtComponentProperties2Component(BaseModel):
         else:
             return v
 
-        # validate data type: RoundRobinGroupChatConfig
-        if not isinstance(v, RoundRobinGroupChatConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatConfig`")
-        else:
-            return v
-
-        # validate data type: SelectorGroupChatConfig
-        if not isinstance(v, SelectorGroupChatConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatConfig`")
-        else:
-            return v
-
         # validate data type: TerminationComponent
         if not isinstance(v, TerminationComponent):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TerminationComponent`")
@@ -102,7 +84,7 @@ class MtComponentProperties2Component(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in MtComponentProperties2Component with anyOf schemas: AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in MtComponentProperties2Component with anyOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -121,25 +103,13 @@ class MtComponentProperties2Component(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_2_validator: Optional[RoundRobinGroupChatConfig] = None
-        try:
-            instance.actual_instance = RoundRobinGroupChatConfig.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_3_validator: Optional[SelectorGroupChatConfig] = None
-        try:
-            instance.actual_instance = SelectorGroupChatConfig.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_4_validator: Optional[TerminationComponent] = None
+        # anyof_schema_2_validator: Optional[TerminationComponent] = None
         try:
             instance.actual_instance = TerminationComponent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_5_validator: Optional[AgentComponent] = None
+        # anyof_schema_3_validator: Optional[AgentComponent] = None
         try:
             instance.actual_instance = AgentComponent.from_json(json_str)
             return instance
@@ -148,7 +118,7 @@ class MtComponentProperties2Component(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with anyOf schemas: AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with anyOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -162,7 +132,7 @@ class MtComponentProperties2Component(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, TeamComponent, TerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
