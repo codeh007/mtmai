@@ -13,42 +13,40 @@
 
 
 from __future__ import annotations
-from inspect import getfullargspec
 import json
 import pprint
-import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Optional
+from typing import Any, List, Optional
 from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
-from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
+from pydantic import StrictStr, Field
+from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
-from pydantic import Field
 
-MTCOMPONENTPROPERTIES2COMPONENT_ANY_OF_SCHEMAS = ["AgentComponent", "TeamComponent", "TerminationComponent"]
+MTCOMPONENTPROPERTIES2COMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "ModelComponent", "TeamComponent", "TerminationComponent"]
 
 class MtComponentProperties2Component(BaseModel):
     """
     MtComponentProperties2Component
     """
-
     # data type: TeamComponent
-    anyof_schema_1_validator: Optional[TeamComponent] = None
+    oneof_schema_1_validator: Optional[TeamComponent] = None
     # data type: TerminationComponent
-    anyof_schema_2_validator: Optional[TerminationComponent] = None
+    oneof_schema_2_validator: Optional[TerminationComponent] = None
     # data type: AgentComponent
-    anyof_schema_3_validator: Optional[AgentComponent] = None
-    if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentComponent, TeamComponent, TerminationComponent]] = None
-    else:
-        actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentComponent", "TeamComponent", "TerminationComponent" }
+    oneof_schema_3_validator: Optional[AgentComponent] = None
+    # data type: ModelComponent
+    oneof_schema_4_validator: Optional[ModelComponent] = None
+    actual_instance: Optional[Union[AgentComponent, ModelComponent, TeamComponent, TerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "ModelComponent", "TeamComponent", "TerminationComponent" }
 
-    model_config = {
-        "validate_assignment": True,
-        "protected_namespaces": (),
-    }
+    model_config = ConfigDict(
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
+
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -61,35 +59,41 @@ class MtComponentProperties2Component(BaseModel):
             super().__init__(**kwargs)
 
     @field_validator('actual_instance')
-    def actual_instance_must_validate_anyof(cls, v):
+    def actual_instance_must_validate_oneof(cls, v):
         instance = MtComponentProperties2Component.model_construct()
         error_messages = []
+        match = 0
         # validate data type: TeamComponent
         if not isinstance(v, TeamComponent):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TeamComponent`")
         else:
-            return v
-
+            match += 1
         # validate data type: TerminationComponent
         if not isinstance(v, TerminationComponent):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TerminationComponent`")
         else:
-            return v
-
+            match += 1
         # validate data type: AgentComponent
         if not isinstance(v, AgentComponent):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
         else:
-            return v
-
-        if error_messages:
+            match += 1
+        # validate data type: ModelComponent
+        if not isinstance(v, ModelComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelComponent`")
+        else:
+            match += 1
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
             # no match
-            raise ValueError("No match found when setting the actual_instance in MtComponentProperties2Component with anyOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
     @classmethod
-    def from_dict(cls, obj: Dict[str, Any]) -> Self:
+    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
         return cls.from_json(json.dumps(obj))
 
     @classmethod
@@ -97,28 +101,39 @@ class MtComponentProperties2Component(BaseModel):
         """Returns the object represented by the json string"""
         instance = cls.model_construct()
         error_messages = []
-        # anyof_schema_1_validator: Optional[TeamComponent] = None
+        match = 0
+
+        # deserialize data into TeamComponent
         try:
             instance.actual_instance = TeamComponent.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_2_validator: Optional[TerminationComponent] = None
+            error_messages.append(str(e))
+        # deserialize data into TerminationComponent
         try:
             instance.actual_instance = TerminationComponent.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_3_validator: Optional[AgentComponent] = None
+            error_messages.append(str(e))
+        # deserialize data into AgentComponent
         try:
             instance.actual_instance = AgentComponent.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
+            error_messages.append(str(e))
+        # deserialize data into ModelComponent
+        try:
+            instance.actual_instance = ModelComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
-        if error_messages:
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with anyOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -132,7 +147,7 @@ class MtComponentProperties2Component(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, TeamComponent, TerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, ModelComponent, TeamComponent, TerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
@@ -140,6 +155,7 @@ class MtComponentProperties2Component(BaseModel):
         if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
             return self.actual_instance.to_dict()
         else:
+            # primitive type
             return self.actual_instance
 
     def to_str(self) -> str:
