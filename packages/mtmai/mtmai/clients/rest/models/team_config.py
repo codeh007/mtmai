@@ -13,45 +13,40 @@
 
 
 from __future__ import annotations
-from inspect import getfullargspec
 import json
 import pprint
-import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Optional
+from typing import Any, List, Optional
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
-from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
+from pydantic import StrictStr, Field
+from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
-from pydantic import Field
 
-TEAMCONFIG_ANY_OF_SCHEMAS = ["BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig"]
+TEAMCONFIG_ONE_OF_SCHEMAS = ["BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig"]
 
 class TeamConfig(BaseModel):
     """
     TeamConfig
     """
-
     # data type: RoundRobinGroupChatConfig
-    anyof_schema_1_validator: Optional[RoundRobinGroupChatConfig] = None
+    oneof_schema_1_validator: Optional[RoundRobinGroupChatConfig] = None
     # data type: SelectorGroupChatConfig
-    anyof_schema_2_validator: Optional[SelectorGroupChatConfig] = None
+    oneof_schema_2_validator: Optional[SelectorGroupChatConfig] = None
     # data type: InstagramTeamConfig
-    anyof_schema_3_validator: Optional[InstagramTeamConfig] = None
+    oneof_schema_3_validator: Optional[InstagramTeamConfig] = None
     # data type: BrowserConfig
-    anyof_schema_4_validator: Optional[BrowserConfig] = None
-    if TYPE_CHECKING:
-        actual_instance: Optional[Union[BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig]] = None
-    else:
-        actual_instance: Any = None
-    any_of_schemas: Set[str] = { "BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig" }
+    oneof_schema_4_validator: Optional[BrowserConfig] = None
+    actual_instance: Optional[Union[BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig]] = None
+    one_of_schemas: Set[str] = { "BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig" }
 
-    model_config = {
-        "validate_assignment": True,
-        "protected_namespaces": (),
-    }
+    model_config = ConfigDict(
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
+
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -64,41 +59,41 @@ class TeamConfig(BaseModel):
             super().__init__(**kwargs)
 
     @field_validator('actual_instance')
-    def actual_instance_must_validate_anyof(cls, v):
+    def actual_instance_must_validate_oneof(cls, v):
         instance = TeamConfig.model_construct()
         error_messages = []
+        match = 0
         # validate data type: RoundRobinGroupChatConfig
         if not isinstance(v, RoundRobinGroupChatConfig):
             error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatConfig`")
         else:
-            return v
-
+            match += 1
         # validate data type: SelectorGroupChatConfig
         if not isinstance(v, SelectorGroupChatConfig):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatConfig`")
         else:
-            return v
-
+            match += 1
         # validate data type: InstagramTeamConfig
         if not isinstance(v, InstagramTeamConfig):
             error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramTeamConfig`")
         else:
-            return v
-
+            match += 1
         # validate data type: BrowserConfig
         if not isinstance(v, BrowserConfig):
             error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserConfig`")
         else:
-            return v
-
-        if error_messages:
+            match += 1
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when setting `actual_instance` in TeamConfig with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        elif match == 0:
             # no match
-            raise ValueError("No match found when setting the actual_instance in TeamConfig with anyOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in TeamConfig with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
     @classmethod
-    def from_dict(cls, obj: Dict[str, Any]) -> Self:
+    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
         return cls.from_json(json.dumps(obj))
 
     @classmethod
@@ -106,34 +101,39 @@ class TeamConfig(BaseModel):
         """Returns the object represented by the json string"""
         instance = cls.model_construct()
         error_messages = []
-        # anyof_schema_1_validator: Optional[RoundRobinGroupChatConfig] = None
+        match = 0
+
+        # deserialize data into RoundRobinGroupChatConfig
         try:
             instance.actual_instance = RoundRobinGroupChatConfig.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_2_validator: Optional[SelectorGroupChatConfig] = None
+            error_messages.append(str(e))
+        # deserialize data into SelectorGroupChatConfig
         try:
             instance.actual_instance = SelectorGroupChatConfig.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_3_validator: Optional[InstagramTeamConfig] = None
+            error_messages.append(str(e))
+        # deserialize data into InstagramTeamConfig
         try:
             instance.actual_instance = InstagramTeamConfig.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_4_validator: Optional[BrowserConfig] = None
+            error_messages.append(str(e))
+        # deserialize data into BrowserConfig
         try:
             instance.actual_instance = BrowserConfig.from_json(json_str)
-            return instance
+            match += 1
         except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
+            error_messages.append(str(e))
 
-        if error_messages:
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when deserializing the JSON string into TeamConfig with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+        elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into TeamConfig with anyOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into TeamConfig with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -155,6 +155,7 @@ class TeamConfig(BaseModel):
         if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
             return self.actual_instance.to_dict()
         else:
+            # primitive type
             return self.actual_instance
 
     def to_str(self) -> str:
