@@ -19,8 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
-from mtmai.clients.rest.models.component_model import ComponentModel
-from mtmai.clients.rest.models.termination_config import TerminationConfig
+from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,9 +30,9 @@ class InstagramTeamConfig(BaseModel):
     """ # noqa: E501
     max_turns: Optional[StrictInt] = None
     max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
-    termination_condition: Optional[TerminationConfig] = None
+    termination_condition: Optional[TerminationComponent] = None
     task: StrictStr
-    participants: List[ComponentModel]
+    participants: List[AgentComponent]
     __properties: ClassVar[List[str]] = ["max_turns", "max_tokens", "termination_condition", "task", "participants"]
 
     model_config = ConfigDict(
@@ -98,9 +98,9 @@ class InstagramTeamConfig(BaseModel):
         _obj = cls.model_validate({
             "max_turns": obj.get("max_turns"),
             "max_tokens": obj.get("max_tokens"),
-            "termination_condition": TerminationConfig.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
+            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
             "task": obj.get("task"),
-            "participants": [ComponentModel.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
+            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
         })
         return _obj
 

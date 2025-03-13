@@ -139,7 +139,6 @@ from mtmai.clients.rest.models.handoff_config import HandoffConfig
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.image_content import ImageContent
-from mtmai.clients.rest.models.inner_message_config import InnerMessageConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.job import Job
@@ -256,6 +255,7 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.team_config import TeamConfig
+from mtmai.clients.rest.models.team_config_config import TeamConfigConfig
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant

@@ -20,7 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.team_config import TeamConfig
+from mtmai.clients.rest.models.team_config_config import TeamConfigConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +34,7 @@ class TeamComponent(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: TeamConfig
+    config: TeamConfigConfig
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class TeamComponent(BaseModel):
             "component_version": obj.get("component_version"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": TeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": TeamConfigConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 
