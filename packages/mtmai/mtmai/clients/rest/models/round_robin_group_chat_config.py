@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
@@ -28,9 +28,17 @@ class RoundRobinGroupChatConfig(BaseModel):
     """
     RoundRobinGroupChatConfig
     """ # noqa: E501
-    participants: Optional[List[AgentComponent]] = None
-    termination_condition: Optional[TerminationComponent] = None
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
+    provider: StrictStr
+    participants: List[AgentComponent]
+    termination_condition: TerminationComponent
+    __properties: ClassVar[List[str]] = ["provider", "participants", "termination_condition"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['autogen_core.team.RoundRobinGroupChat']):
+            raise ValueError("must be one of enum values ('autogen_core.team.RoundRobinGroupChat')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,6 +101,7 @@ class RoundRobinGroupChatConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "provider": obj.get("provider"),
             "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })

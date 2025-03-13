@@ -10,11 +10,7 @@ from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
-from pydantic import BaseModel
-
-
-class InstagramAgentConfig(BaseModel):
-    pass
+from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):

@@ -163,11 +163,10 @@ from mtmai.clients.rest.models.model_run import ModelRun
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
+from mtmai.clients.rest.models.mt_component_all_of_component import MtComponentAllOfComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_list_component2 import MtComponentListComponent2
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
-from mtmai.clients.rest.models.mt_component_properties2 import MtComponentProperties2
-from mtmai.clients.rest.models.mt_component_properties2_component import MtComponentProperties2Component
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
@@ -247,7 +246,6 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.team_config import TeamConfig
-from mtmai.clients.rest.models.team_config_config import TeamConfigConfig
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant

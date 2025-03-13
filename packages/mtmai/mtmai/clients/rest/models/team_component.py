@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.team_config_config import TeamConfigConfig
+from mtmai.clients.rest.models.team_config import TeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,9 +32,9 @@ class TeamComponent(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Optional[TeamConfigConfig] = None
     component_type: StrictStr = Field(alias="componentType")
-    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "config", "componentType"]
+    config: TeamConfig
+    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "componentType", "config"]
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):
@@ -102,8 +102,8 @@ class TeamComponent(BaseModel):
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": TeamConfigConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
-            "componentType": obj.get("componentType")
+            "componentType": obj.get("componentType"),
+            "config": TeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

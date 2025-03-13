@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_properties2_component import MtComponentProperties2Component
+from mtmai.clients.rest.models.mt_component_all_of_component import MtComponentAllOfComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,7 +31,7 @@ class MtComponent(BaseModel):
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
     component_type: Optional[ComponentTypes] = Field(default=None, alias="componentType")
-    component: Optional[MtComponentProperties2Component] = None
+    component: Optional[MtComponentAllOfComponent] = None
     __properties: ClassVar[List[str]] = ["metadata", "componentType", "component"]
 
     model_config = ConfigDict(
@@ -93,7 +93,7 @@ class MtComponent(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "componentType": obj.get("componentType"),
-            "component": MtComponentProperties2Component.from_dict(obj["component"]) if obj.get("component") is not None else None
+            "component": MtComponentAllOfComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 

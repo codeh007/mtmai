@@ -14,6 +14,8 @@ from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
+from ..clients.rest.models.team_component import TeamComponent
+
 
 class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
@@ -291,5 +293,10 @@ class TeamRunnerAgent(RoutedAgent):
             raise ValueError(
                 f"component type must be team, but got {component_data.component_type}"
             )
-        team = Team.load_component(component_data.component.actual_instance)
+        team_component = TeamComponent.model_validate(
+            component_data.component.actual_instance
+        )
+        team_component.config.actual_instance
+
+        team = Team.load_component(team_component)
         return team
