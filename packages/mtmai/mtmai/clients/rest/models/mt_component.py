@@ -13,167 +13,88 @@
 
 
 from __future__ import annotations
-from inspect import getfullargspec
-import json
 import pprint
 import re  # noqa: F401
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Optional
-from mtmai.clients.rest.models.agent_component import AgentComponent
-from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
-from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
-from mtmai.clients.rest.models.team_component import TeamComponent
-from mtmai.clients.rest.models.termination_component import TerminationComponent
-from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
-from typing_extensions import Literal, Self
-from pydantic import Field
+import json
 
-MTCOMPONENT_ANY_OF_SCHEMAS = ["AgentComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TerminationComponent"]
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.component_types import ComponentTypes
+from mtmai.clients.rest.models.mt_component_properties2_component import MtComponentProperties2Component
+from typing import Optional, Set
+from typing_extensions import Self
 
 class MtComponent(BaseModel):
     """
     MtComponent
-    """
+    """ # noqa: E501
+    metadata: Optional[APIResourceMeta] = None
+    component_type: Optional[ComponentTypes] = Field(default=None, alias="componentType")
+    component: Optional[MtComponentProperties2Component] = None
+    __properties: ClassVar[List[str]] = ["metadata", "componentType", "component"]
 
-    # data type: TeamComponent
-    anyof_schema_1_validator: Optional[TeamComponent] = None
-    # data type: RoundRobinGroupChatConfig
-    anyof_schema_2_validator: Optional[RoundRobinGroupChatConfig] = None
-    # data type: SelectorGroupChatConfig
-    anyof_schema_3_validator: Optional[SelectorGroupChatConfig] = None
-    # data type: TerminationComponent
-    anyof_schema_4_validator: Optional[TerminationComponent] = None
-    # data type: AgentComponent
-    anyof_schema_5_validator: Optional[AgentComponent] = None
-    if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent]] = None
-    else:
-        actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TerminationComponent" }
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
-    model_config = {
-        "validate_assignment": True,
-        "protected_namespaces": (),
-    }
-
-    def __init__(self, *args, **kwargs) -> None:
-        if args:
-            if len(args) > 1:
-                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
-            if kwargs:
-                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
-            super().__init__(actual_instance=args[0])
-        else:
-            super().__init__(**kwargs)
-
-    @field_validator('actual_instance')
-    def actual_instance_must_validate_anyof(cls, v):
-        instance = MtComponent.model_construct()
-        error_messages = []
-        # validate data type: TeamComponent
-        if not isinstance(v, TeamComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `TeamComponent`")
-        else:
-            return v
-
-        # validate data type: RoundRobinGroupChatConfig
-        if not isinstance(v, RoundRobinGroupChatConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatConfig`")
-        else:
-            return v
-
-        # validate data type: SelectorGroupChatConfig
-        if not isinstance(v, SelectorGroupChatConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatConfig`")
-        else:
-            return v
-
-        # validate data type: TerminationComponent
-        if not isinstance(v, TerminationComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `TerminationComponent`")
-        else:
-            return v
-
-        # validate data type: AgentComponent
-        if not isinstance(v, AgentComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
-        else:
-            return v
-
-        if error_messages:
-            # no match
-            raise ValueError("No match found when setting the actual_instance in MtComponent with anyOf schemas: AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
-        else:
-            return v
-
-    @classmethod
-    def from_dict(cls, obj: Dict[str, Any]) -> Self:
-        return cls.from_json(json.dumps(obj))
-
-    @classmethod
-    def from_json(cls, json_str: str) -> Self:
-        """Returns the object represented by the json string"""
-        instance = cls.model_construct()
-        error_messages = []
-        # anyof_schema_1_validator: Optional[TeamComponent] = None
-        try:
-            instance.actual_instance = TeamComponent.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_2_validator: Optional[RoundRobinGroupChatConfig] = None
-        try:
-            instance.actual_instance = RoundRobinGroupChatConfig.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_3_validator: Optional[SelectorGroupChatConfig] = None
-        try:
-            instance.actual_instance = SelectorGroupChatConfig.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_4_validator: Optional[TerminationComponent] = None
-        try:
-            instance.actual_instance = TerminationComponent.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_5_validator: Optional[AgentComponent] = None
-        try:
-            instance.actual_instance = AgentComponent.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-
-        if error_messages:
-            # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponent with anyOf schemas: AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
-        else:
-            return instance
-
-    def to_json(self) -> str:
-        """Returns the JSON representation of the actual instance"""
-        if self.actual_instance is None:
-            return "null"
-
-        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
-            return self.actual_instance.to_json()
-        else:
-            return json.dumps(self.actual_instance)
-
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TerminationComponent]]:
-        """Returns the dict representation of the actual instance"""
-        if self.actual_instance is None:
-            return None
-
-        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
-            return self.actual_instance.to_dict()
-        else:
-            return self.actual_instance
 
     def to_str(self) -> str:
-        """Returns the string representation of the actual instance"""
-        return pprint.pformat(self.model_dump())
+        """Returns the string representation of the model using alias"""
+        return pprint.pformat(self.model_dump(by_alias=True))
+
+    def to_json(self) -> str:
+        """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
+        return json.dumps(self.to_dict())
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Optional[Self]:
+        """Create an instance of MtComponent from a JSON string"""
+        return cls.from_dict(json.loads(json_str))
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([
+        ])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
+        # override the default output from pydantic by calling `to_dict()` of metadata
+        if self.metadata:
+            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of component
+        if self.component:
+            _dict['component'] = self.component.to_dict()
+        return _dict
+
+    @classmethod
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+        """Create an instance of MtComponent from a dict"""
+        if obj is None:
+            return None
+
+        if not isinstance(obj, dict):
+            return cls.model_validate(obj)
+
+        _obj = cls.model_validate({
+            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "componentType": obj.get("componentType"),
+            "component": MtComponentProperties2Component.from_dict(obj["component"]) if obj.get("component") is not None else None
+        })
+        return _obj
 
 

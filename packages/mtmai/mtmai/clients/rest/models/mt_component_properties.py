@@ -17,9 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_component_properties_component2 import MtComponentPropertiesComponent2
+from mtmai.clients.rest.models.component_types import ComponentTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,26 +27,14 @@ class MtComponentProperties(BaseModel):
     """
     MtComponentProperties
     """ # noqa: E501
-    type: StrictStr
-    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
+    component_type: ComponentTypes = Field(alias="componentType")
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
     version: Optional[StrictInt] = 1
     component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
-    config: Dict[str, Any]
+    config: Optional[Dict[str, Any]] = None
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    component2: Optional[MtComponentPropertiesComponent2] = None
-    __properties: ClassVar[List[str]] = ["type", "componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component2"]
-
-    @field_validator('component_type')
-    def component_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['team', 'agent', 'model', 'tool', 'termination']):
-            raise ValueError("must be one of enum values ('team', 'agent', 'model', 'tool', 'termination')")
-        return value
+    __properties: ClassVar[List[str]] = ["componentType", "label", "description", "version", "componentVersion", "config", "galleryId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,9 +75,6 @@ class MtComponentProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of component2
-        if self.component2:
-            _dict['component2'] = self.component2.to_dict()
         return _dict
 
     @classmethod
@@ -102,15 +87,13 @@ class MtComponentProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "type": obj.get("type") if obj.get("type") is not None else 'Assisant',
             "componentType": obj.get("componentType"),
             "label": obj.get("label"),
             "description": obj.get("description"),
             "version": obj.get("version") if obj.get("version") is not None else 1,
             "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
             "config": obj.get("config"),
-            "galleryId": obj.get("galleryId"),
-            "component2": MtComponentPropertiesComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
+            "galleryId": obj.get("galleryId")
         })
         return _obj
 

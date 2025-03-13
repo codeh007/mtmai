@@ -17,22 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_list_component2 import MtComponentListComponent2
-from mtmai.clients.rest.models.pagination_response import PaginationResponse
+from mtmai.clients.rest.models.component_types import ComponentTypes
+from mtmai.clients.rest.models.mt_component_properties2_component import MtComponentProperties2Component
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MtComponentList(BaseModel):
+class MtComponentProperties2(BaseModel):
     """
-    MtComponentList
+    MtComponentProperties2
     """ # noqa: E501
-    pagination: Optional[PaginationResponse] = None
-    rows: Optional[List[MtComponent]] = None
-    component2: Optional[MtComponentListComponent2] = None
-    __properties: ClassVar[List[str]] = ["pagination", "rows", "component2"]
+    component_type: Optional[ComponentTypes] = Field(default=None, alias="componentType")
+    component: Optional[MtComponentProperties2Component] = None
+    __properties: ClassVar[List[str]] = ["componentType", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +50,7 @@ class MtComponentList(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MtComponentList from a JSON string"""
+        """Create an instance of MtComponentProperties2 from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,24 +71,14 @@ class MtComponentList(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of pagination
-        if self.pagination:
-            _dict['pagination'] = self.pagination.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in rows (list)
-        _items = []
-        if self.rows:
-            for _item_rows in self.rows:
-                if _item_rows:
-                    _items.append(_item_rows.to_dict())
-            _dict['rows'] = _items
-        # override the default output from pydantic by calling `to_dict()` of component2
-        if self.component2:
-            _dict['component2'] = self.component2.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of component
+        if self.component:
+            _dict['component'] = self.component.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MtComponentList from a dict"""
+        """Create an instance of MtComponentProperties2 from a dict"""
         if obj is None:
             return None
 
@@ -98,9 +86,8 @@ class MtComponentList(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
-            "rows": [MtComponent.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None,
-            "component2": MtComponentListComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
+            "componentType": obj.get("componentType"),
+            "component": MtComponentProperties2Component.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 
