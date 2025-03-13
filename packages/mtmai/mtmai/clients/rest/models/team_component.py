@@ -33,7 +33,7 @@ class TeamComponent(BaseModel):
     version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
-    label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
     config: Optional[TeamConfigConfig] = None
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
