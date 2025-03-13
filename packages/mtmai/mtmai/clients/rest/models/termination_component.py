@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.termination_config import TerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,13 +28,20 @@ class TerminationComponent(BaseModel):
     TerminationComponent
     """ # noqa: E501
     provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.")
     version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
+    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
+    description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    component_type: StrictStr = Field(alias="componentType")
     config: TerminationConfig
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "componentType", "config"]
+
+    @field_validator('component_type')
+    def component_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['termination']):
+            raise ValueError("must be one of enum values ('termination')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -92,11 +98,11 @@ class TerminationComponent(BaseModel):
 
         _obj = cls.model_validate({
             "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
             "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
+            "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
+            "componentType": obj.get("componentType"),
             "config": TerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

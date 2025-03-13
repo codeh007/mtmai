@@ -1,6 +1,5 @@
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import (
-    AgentRuntime,
     MessageContext,
     RoutedAgent,
     SingleThreadedAgentRuntime,
@@ -193,7 +192,7 @@ class TeamRunnerAgent(RoutedAgent):
 
         # return user_input_needed
 
-        team = await self.build_team(runtime=runtime, component_id=message.component_id)
+        team = await self.build_team(component_id=message.component_id)
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
@@ -277,27 +276,20 @@ class TeamRunnerAgent(RoutedAgent):
         await runtime.stop_when_idle()
         logger.info("团队运行完全结束")
 
-    async def build_team(self, runtime: AgentRuntime, component_id: str | None = None):
+    async def build_team(self, component_id: str | None = None):
         tenant_client = TenantClient()
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
-        # model_client = await tenant_client.ag.get_tenant_model_client(tid)
-
         component_data = await tenant_client.ag.coms_api.coms_get(
             tenant=tid,
             com=component_id,
         )
         logger.info(f"component data: {component_data}")
 
-        team = Team.load_component(component_data.component)
-
-        # 方式1
-        # team_cls = resource_team_map.get(component_data.type)
-        # if not team_cls:
-        #     raise ValueError(
-        #         f"cant create team for unsupported resource type: {resource_data.type}"
-        #     )
-        # # team = await team_builder.create_team(model_client=model_client)
-        # team = team_cls(model_client=model_client, runtime=runtime)
+        if not component_data.component_type == "team":
+            raise ValueError(
+                f"component type must be team, but got {component_data.component_type}"
+            )
+        team = Team.load_component(component_data.component.actual_instance)
         return team

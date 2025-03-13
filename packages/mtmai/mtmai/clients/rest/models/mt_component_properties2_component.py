@@ -18,14 +18,13 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.agent_component import AgentComponent
-from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTCOMPONENTPROPERTIES2COMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "ModelComponent", "TeamComponent", "TerminationComponent"]
+MTCOMPONENTPROPERTIES2COMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "TeamComponent", "TerminationComponent"]
 
 class MtComponentProperties2Component(BaseModel):
     """
@@ -37,10 +36,8 @@ class MtComponentProperties2Component(BaseModel):
     oneof_schema_2_validator: Optional[TerminationComponent] = None
     # data type: AgentComponent
     oneof_schema_3_validator: Optional[AgentComponent] = None
-    # data type: ModelComponent
-    oneof_schema_4_validator: Optional[ModelComponent] = None
-    actual_instance: Optional[Union[AgentComponent, ModelComponent, TeamComponent, TerminationComponent]] = None
-    one_of_schemas: Set[str] = { "AgentComponent", "ModelComponent", "TeamComponent", "TerminationComponent" }
+    actual_instance: Optional[Union[AgentComponent, TeamComponent, TerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "TeamComponent", "TerminationComponent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -78,17 +75,12 @@ class MtComponentProperties2Component(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
         else:
             match += 1
-        # validate data type: ModelComponent
-        if not isinstance(v, ModelComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelComponent`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtComponentProperties2Component with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -121,19 +113,13 @@ class MtComponentProperties2Component(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into ModelComponent
-        try:
-            instance.actual_instance = ModelComponent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, ModelComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties2Component with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -147,7 +133,7 @@ class MtComponentProperties2Component(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, ModelComponent, TeamComponent, TerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, TeamComponent, TerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
