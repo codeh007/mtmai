@@ -1,8 +1,6 @@
 from autogen_agentchat.base import Team
 from autogen_agentchat.teams import BaseGroupChat
 from connecpy.context import ClientContext
-from model_client.model_client import MtmOpenAIChatCompletionClient
-from mtmai.agents.team_builder import resource_team_map
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -13,7 +11,7 @@ from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.context.ctx import get_tenant_id
+from mtmai.model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
@@ -121,31 +119,31 @@ class AgClient:
             ),
         )
 
-    async def get_team_by_resource(
-        self,
-        resource_id: str | None = None,
-        tid: str = None,
-    ):
-        if not tid:
-            tid = get_tenant_id()
-        if not tid:
-            raise ValueError("tenant_id is required")
-        if not resource_id:
-            raise ValueError("resource_id is required")
-        model_client = await self.get_tenant_model_client(tid)
+    # async def get_team_by_resource(
+    #     self,
+    #     resource_id: str | None = None,
+    #     tid: str = None,
+    # ):
+    #     if not tid:
+    #         tid = get_tenant_id()
+    #     if not tid:
+    #         raise ValueError("tenant_id is required")
+    #     if not resource_id:
+    #         raise ValueError("resource_id is required")
+    #     # model_client = await self.get_tenant_model_client(tid)
 
-        resource_data = await self.resource_api.resource_get(
-            tenant=tid,
-            resource=resource_id,
-        )
-        team_builder = resource_team_map.get(resource_data.type)
-        if not team_builder:
-            raise ValueError(
-                f"cant create team for unsupported resource type: {resource_data.type}"
-            )
-        team = await team_builder.create_team(model_client=model_client)
+    #     resource_data = await self.resource_api.resource_get(
+    #         tenant=tid,
+    #         resource=resource_id,
+    #     )
+    #     team_builder = resource_team_map.get(resource_data.type)
+    #     if not team_builder:
+    #         raise ValueError(
+    #             f"cant create team for unsupported resource type: {resource_data.type}"
+    #         )
+    #     team = await team_builder.create_team(model_client=model_client)
 
-        return team
+    #     return team
 
     # async def create_team(
     #     self,

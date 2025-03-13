@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.memory_config import MemoryConfig
+from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.tool_component import ToolComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -34,7 +35,7 @@ class AgentConfig(BaseModel):
     memory: Optional[MemoryConfig] = None
     model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
-    model_client: Dict[str, Any]
+    model_client: ModelComponent
     tools: List[ToolComponent]
     handoffs: List[StrictStr]
     reflect_on_tool_use: StrictBool

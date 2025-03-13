@@ -34,7 +34,7 @@ class TextMentionTerminationComponent(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: TextMentionTerminationConfig
+    config: Optional[TextMentionTerminationConfig] = None
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     model_config = ConfigDict(

@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -32,6 +32,13 @@ class ArtifactCodeV3(BaseModel):
     language: StrictStr
     code: StrictStr
     __properties: ClassVar[List[str]] = ["index", "type", "title", "language", "code"]
+
+    @field_validator('language')
+    def language_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['typescript', 'javascript', 'cpp', 'java', 'php', 'python', 'html', 'sql', 'json', 'rust', 'xml', 'clojure', 'csharp', 'other']):
+            raise ValueError("must be one of enum values ('typescript', 'javascript', 'cpp', 'java', 'php', 'python', 'html', 'sql', 'json', 'rust', 'xml', 'clojure', 'csharp', 'other')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

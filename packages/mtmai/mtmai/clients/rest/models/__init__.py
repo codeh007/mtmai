@@ -144,7 +144,7 @@ from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
-from mtmai.clients.rest.models.language_options import LanguageOptions
+from mtmai.clients.rest.models.language import Language
 from mtmai.clients.rest.models.list_api_tokens_response import ListAPITokensResponse
 from mtmai.clients.rest.models.list_pull_requests_response import ListPullRequestsResponse
 from mtmai.clients.rest.models.list_sns_integrations import ListSNSIntegrations
@@ -195,7 +195,6 @@ from mtmai.clients.rest.models.platform_list import PlatformList
 from mtmai.clients.rest.models.platform_update import PlatformUpdate
 from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
-from mtmai.clients.rest.models.programming_language_options import ProgrammingLanguageOptions
 from mtmai.clients.rest.models.prompt import Prompt
 from mtmai.clients.rest.models.prompt_list import PromptList
 from mtmai.clients.rest.models.proxy import Proxy

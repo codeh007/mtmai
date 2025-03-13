@@ -21,16 +21,13 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from autogen_core.models import SystemMessage
 from autogen_core.tools import FunctionTool
 from loguru import logger
 from mtmai.agents._agents import (
     browser_topic_type,
-    coder_agent_topic_type,
     human_agent_topic_type,
     issues_and_repairs_agent_topic_type,
     platform_account_topic_type,
-    reviewer_agent_topic_type,
     router_topic_type,
     sales_agent_topic_type,
     team_runner_topic_type,
@@ -43,12 +40,9 @@ from mtmai.agents._types import (
     IntentClassifierBase,
     agent_message_types,
 )
-from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.browser_agent import BrowserAgent
-from mtmai.agents.coder_agent import CoderAgent
 from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
-from mtmai.agents.reviewer_agent import ReviewerAgent
 from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -257,99 +251,99 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
         # Register the triage agent.
-        triage_agent_type = await AIAgent.register(
-            runtime=self._runtime,
-            type=triage_agent_topic_type,  # Using the topic type as the agent type.
-            factory=lambda: AIAgent(
-                description="A triage agent.",
-                system_message=SystemMessage(
-                    content="You are a customer service bot for ACME Inc. "
-                    "Introduce yourself. Always be very brief. "
-                    "Gather information to direct the customer to the right department. "
-                    "But make your questions subtle and natural."
-                ),
-                model_client=model_client,
-                tools=[],
-                delegate_tools=[
-                    transfer_to_issues_and_repairs_tool,
-                    transfer_to_sales_agent_tool,
-                    escalate_to_human_tool,
-                ],
-                agent_topic_type=triage_agent_topic_type,
-                user_topic_type=user_topic_type,
-            ),
-        )
+        # triage_agent_type = await AIAgent.register(
+        #     runtime=self._runtime,
+        #     type=triage_agent_topic_type,  # Using the topic type as the agent type.
+        #     factory=lambda: AIAgent(
+        #         description="A triage agent.",
+        #         system_message=SystemMessage(
+        #             content="You are a customer service bot for ACME Inc. "
+        #             "Introduce yourself. Always be very brief. "
+        #             "Gather information to direct the customer to the right department. "
+        #             "But make your questions subtle and natural."
+        #         ),
+        #         model_client=model_client,
+        #         tools=[],
+        #         delegate_tools=[
+        #             transfer_to_issues_and_repairs_tool,
+        #             transfer_to_sales_agent_tool,
+        #             escalate_to_human_tool,
+        #         ],
+        #         agent_topic_type=triage_agent_topic_type,
+        #         user_topic_type=user_topic_type,
+        #     ),
+        # )
         # Add subscriptions for the triage agent: it will receive messages published to its own topic only.
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=triage_agent_topic_type, agent_type=triage_agent_type.type
-            )
-        )
+        # await self._runtime.add_subscription(
+        #     subscription=TypeSubscription(
+        #         topic_type=triage_agent_topic_type, agent_type=triage_agent_type.type
+        #     )
+        # )
 
         # Register the sales agent.
-        sales_agent_type = await AIAgent.register(
-            self._runtime,
-            type=sales_agent_topic_type,  # Using the topic type as the agent type.
-            factory=lambda: AIAgent(
-                description="A sales agent.",
-                system_message=SystemMessage(
-                    content="You are a sales agent for ACME Inc."
-                    "Always answer in a sentence or less."
-                    "Follow the following routine with the user:"
-                    "1. Ask them about any problems in their life related to catching roadrunners.\n"
-                    "2. Casually mention one of ACME's crazy made-up products can help.\n"
-                    " - Don't mention price.\n"
-                    "3. Once the user is bought in, drop a ridiculous price.\n"
-                    "4. Only after everything, and if the user says yes, "
-                    "tell them a crazy caveat and execute their order.\n"
-                    ""
-                ),
-                model_client=model_client,
-                tools=[execute_order_tool],
-                delegate_tools=[transfer_back_to_triage_tool],
-                agent_topic_type=sales_agent_topic_type,
-                user_topic_type=user_topic_type,
-            ),
-        )
+        # sales_agent_type = await AIAgent.register(
+        #     self._runtime,
+        #     type=sales_agent_topic_type,  # Using the topic type as the agent type.
+        #     factory=lambda: AIAgent(
+        #         description="A sales agent.",
+        #         system_message=SystemMessage(
+        #             content="You are a sales agent for ACME Inc."
+        #             "Always answer in a sentence or less."
+        #             "Follow the following routine with the user:"
+        #             "1. Ask them about any problems in their life related to catching roadrunners.\n"
+        #             "2. Casually mention one of ACME's crazy made-up products can help.\n"
+        #             " - Don't mention price.\n"
+        #             "3. Once the user is bought in, drop a ridiculous price.\n"
+        #             "4. Only after everything, and if the user says yes, "
+        #             "tell them a crazy caveat and execute their order.\n"
+        #             ""
+        #         ),
+        #         model_client=model_client,
+        #         tools=[execute_order_tool],
+        #         delegate_tools=[transfer_back_to_triage_tool],
+        #         agent_topic_type=sales_agent_topic_type,
+        #         user_topic_type=user_topic_type,
+        #     ),
+        # )
         # Add subscriptions for the sales agent: it will receive messages published to its own topic only.
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=sales_agent_topic_type, agent_type=sales_agent_type.type
-            )
-        )
+        # await self._runtime.add_subscription(
+        #     TypeSubscription(
+        #         topic_type=sales_agent_topic_type, agent_type=sales_agent_type.type
+        #     )
+        # )
 
         # Register the issues and repairs agent.
-        issues_and_repairs_agent_type = await AIAgent.register(
-            self._runtime,
-            type=issues_and_repairs_agent_topic_type,  # Using the topic type as the agent type.
-            factory=lambda: AIAgent(
-                description="An issues and repairs agent.",
-                system_message=SystemMessage(
-                    content="You are a customer support agent for ACME Inc."
-                    "Always answer in a sentence or less."
-                    "Follow the following routine with the user:"
-                    "1. First, ask probing questions and understand the user's problem deeper.\n"
-                    " - unless the user has already provided a reason.\n"
-                    "2. Propose a fix (make one up).\n"
-                    "3. ONLY if not satisfied, offer a refund.\n"
-                    "4. If accepted, search for the ID and then execute refund."
-                ),
-                model_client=model_client,
-                tools=[
-                    execute_refund_tool,
-                    look_up_item_tool,
-                ],
-                delegate_tools=[transfer_back_to_triage_tool],
-                agent_topic_type=issues_and_repairs_agent_topic_type,
-                user_topic_type=user_topic_type,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=issues_and_repairs_agent_topic_type,
-                agent_type=issues_and_repairs_agent_type.type,
-            )
-        )
+        # issues_and_repairs_agent_type = await AIAgent.register(
+        #     self._runtime,
+        #     type=issues_and_repairs_agent_topic_type,  # Using the topic type as the agent type.
+        #     factory=lambda: AIAgent(
+        #         description="An issues and repairs agent.",
+        #         system_message=SystemMessage(
+        #             content="You are a customer support agent for ACME Inc."
+        #             "Always answer in a sentence or less."
+        #             "Follow the following routine with the user:"
+        #             "1. First, ask probing questions and understand the user's problem deeper.\n"
+        #             " - unless the user has already provided a reason.\n"
+        #             "2. Propose a fix (make one up).\n"
+        #             "3. ONLY if not satisfied, offer a refund.\n"
+        #             "4. If accepted, search for the ID and then execute refund."
+        #         ),
+        #         model_client=model_client,
+        #         tools=[
+        #             execute_refund_tool,
+        #             look_up_item_tool,
+        #         ],
+        #         delegate_tools=[transfer_back_to_triage_tool],
+        #         agent_topic_type=issues_and_repairs_agent_topic_type,
+        #         user_topic_type=user_topic_type,
+        #     ),
+        # )
+        # await self._runtime.add_subscription(
+        #     subscription=TypeSubscription(
+        #         topic_type=issues_and_repairs_agent_topic_type,
+        #         agent_type=issues_and_repairs_agent_type.type,
+        #     )
+        # )
 
         human_agent_type = await HumanAgent.register(
             runtime=self._runtime,
@@ -379,29 +373,29 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             )
         )
 
-        reviewer_agent_type = await ReviewerAgent.register(
-            runtime=self._runtime,
-            type=reviewer_agent_topic_type,
-            factory=lambda: ReviewerAgent(model_client=model_client),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=reviewer_agent_topic_type,
-                agent_type=reviewer_agent_type.type,
-            )
-        )
+        # reviewer_agent_type = await ReviewerAgent.register(
+        #     runtime=self._runtime,
+        #     type=reviewer_agent_topic_type,
+        #     factory=lambda: ReviewerAgent(model_client=model_client),
+        # )
+        # await self._runtime.add_subscription(
+        #     subscription=TypeSubscription(
+        #         topic_type=reviewer_agent_topic_type,
+        #         agent_type=reviewer_agent_type.type,
+        #     )
+        # )
 
-        coder_agent_type = await CoderAgent.register(
-            runtime=self._runtime,
-            type=coder_agent_topic_type,
-            factory=lambda: CoderAgent(model_client=model_client),
-        )
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=coder_agent_topic_type,
-                agent_type=coder_agent_type.type,
-            )
-        )
+        # coder_agent_type = await CoderAgent.register(
+        #     runtime=self._runtime,
+        #     type=coder_agent_topic_type,
+        #     factory=lambda: CoderAgent(model_client=model_client),
+        # )
+        # await self._runtime.add_subscription(
+        #     TypeSubscription(
+        #         topic_type=coder_agent_topic_type,
+        #         agent_type=coder_agent_type.type,
+        #     )
+        # )
 
         team_runner_agent_type = await TeamRunnerAgent.register(
             runtime=self._runtime,

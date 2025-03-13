@@ -32,8 +32,7 @@ class ComponentModel(BaseModel):
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.")
     description: Optional[StrictStr] = Field(default=None, description="Description of the component.")
     label: Optional[StrictStr] = Field(default=None, description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Dict[str, Any] = Field(description="The schema validated config field is passed to a given class's implmentation of :py:meth:`autogen_core.ComponentConfigImpl._from_config` to create a new instance of the component class.")
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,8 +90,7 @@ class ComponentModel(BaseModel):
             "version": obj.get("version"),
             "component_version": obj.get("component_version"),
             "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config")
+            "label": obj.get("label")
         })
         return _obj
 

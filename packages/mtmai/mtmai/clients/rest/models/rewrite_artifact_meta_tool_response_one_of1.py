@@ -38,6 +38,13 @@ class RewriteArtifactMetaToolResponseOneOf1(BaseModel):
             raise ValueError("must be one of enum values ('code')")
         return value
 
+    @field_validator('language')
+    def language_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['typescript', 'javascript', 'cpp', 'java', 'php', 'python', 'html', 'sql', 'json', 'rust', 'xml', 'clojure', 'csharp', 'other']):
+            raise ValueError("must be one of enum values ('typescript', 'javascript', 'cpp', 'java', 'php', 'python', 'html', 'sql', 'json', 'rust', 'xml', 'clojure', 'csharp', 'other')")
+        return value
+
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
