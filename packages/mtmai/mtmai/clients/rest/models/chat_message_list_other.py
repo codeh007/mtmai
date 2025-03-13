@@ -17,8 +17,11 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
+from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.model_component import ModelComponent
+from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmai.clients.rest.models.team_component import TeamComponent
@@ -28,11 +31,11 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTCOMPONENTPROPERTIESCOMPONENT2_ONE_OF_SCHEMAS = ["BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TeamConfig", "TerminationComponent"]
+CHATMESSAGELISTOTHER_ONE_OF_SCHEMAS = ["AgentComponent", "BrowserConfig", "InstagramTeamConfig", "ModelComponent", "MtComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TeamConfig", "TerminationComponent"]
 
-class MtComponentPropertiesComponent2(BaseModel):
+class ChatMessageListOther(BaseModel):
     """
-    MtComponentPropertiesComponent2
+    ChatMessageListOther
     """
     # data type: InstagramTeamConfig
     oneof_schema_1_validator: Optional[InstagramTeamConfig] = None
@@ -48,8 +51,14 @@ class MtComponentPropertiesComponent2(BaseModel):
     oneof_schema_6_validator: Optional[TerminationComponent] = None
     # data type: TeamComponent
     oneof_schema_7_validator: Optional[TeamComponent] = None
-    actual_instance: Optional[Union[BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent]] = None
-    one_of_schemas: Set[str] = { "BrowserConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TeamConfig", "TerminationComponent" }
+    # data type: AgentComponent
+    oneof_schema_8_validator: Optional[AgentComponent] = None
+    # data type: ModelComponent
+    oneof_schema_9_validator: Optional[ModelComponent] = None
+    # data type: MtComponent
+    oneof_schema_10_validator: Optional[MtComponent] = None
+    actual_instance: Optional[Union[AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "BrowserConfig", "InstagramTeamConfig", "ModelComponent", "MtComponent", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "TeamComponent", "TeamConfig", "TerminationComponent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -69,7 +78,7 @@ class MtComponentPropertiesComponent2(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = MtComponentPropertiesComponent2.model_construct()
+        instance = ChatMessageListOther.model_construct()
         error_messages = []
         match = 0
         # validate data type: InstagramTeamConfig
@@ -107,12 +116,27 @@ class MtComponentPropertiesComponent2(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TeamComponent`")
         else:
             match += 1
+        # validate data type: AgentComponent
+        if not isinstance(v, AgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
+        else:
+            match += 1
+        # validate data type: ModelComponent
+        if not isinstance(v, ModelComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelComponent`")
+        else:
+            match += 1
+        # validate data type: MtComponent
+        if not isinstance(v, MtComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MtComponent`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentPropertiesComponent2 with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in ChatMessageListOther with oneOf schemas: AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtComponentPropertiesComponent2 with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in ChatMessageListOther with oneOf schemas: AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -169,13 +193,31 @@ class MtComponentPropertiesComponent2(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into AgentComponent
+        try:
+            instance.actual_instance = AgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into ModelComponent
+        try:
+            instance.actual_instance = ModelComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into MtComponent
+        try:
+            instance.actual_instance = MtComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentPropertiesComponent2 with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into ChatMessageListOther with oneOf schemas: AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentPropertiesComponent2 with oneOf schemas: BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into ChatMessageListOther with oneOf schemas: AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -189,7 +231,7 @@ class MtComponentPropertiesComponent2(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], BrowserConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, BrowserConfig, InstagramTeamConfig, ModelComponent, MtComponent, RoundRobinGroupChatConfig, SelectorGroupChatConfig, TeamComponent, TeamConfig, TerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
@@ -35,7 +35,8 @@ class Gallery(BaseModel):
     description: StrictStr
     tags: List[StrictStr]
     license: StrictStr
-    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "author", "homepage", "description", "tags", "license"]
+    last_synced: Optional[StrictStr] = Field(default=None, alias="lastSynced")
+    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "author", "homepage", "description", "tags", "license", "lastSynced"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -98,7 +99,8 @@ class Gallery(BaseModel):
             "homepage": obj.get("homepage"),
             "description": obj.get("description"),
             "tags": obj.get("tags"),
-            "license": obj.get("license")
+            "license": obj.get("license"),
+            "lastSynced": obj.get("lastSynced")
         })
         return _obj
 
