@@ -18,6 +18,9 @@ class InstagramAgentConfig(BaseModel):
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
+    component_config_schema = InstagramAgentConfig
+    component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
+
     def __init__(
         self,
         name: str,

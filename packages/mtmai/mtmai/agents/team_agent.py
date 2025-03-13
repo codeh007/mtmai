@@ -282,7 +282,7 @@ class TeamRunnerAgent(RoutedAgent):
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
-        model_client = await tenant_client.ag.get_tenant_model_client(tid)
+        # model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
         component_data = await tenant_client.ag.coms_api.coms_get(
             tenant=tid,
