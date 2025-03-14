@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,14 +27,21 @@ class TextMentionTerminationComponent(BaseModel):
     """
     TextMentionTerminationComponent
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    provider: StrictStr
     component_type: StrictStr = Field(alias="componentType")
     version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: Optional[TextMentionTerminationConfig] = None
+    config: TextMentionTerminationConfig
     __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['autogen_agentchat.conditions.TextMentionTermination']):
+            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.TextMentionTermination')")
+        return value
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):

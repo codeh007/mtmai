@@ -20,7 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.agent_component import AgentComponent
-from mtmai.clients.rest.models.termination_component import TerminationComponent
+from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +29,7 @@ class RoundRobinGroupChatConfig(BaseModel):
     RoundRobinGroupChatConfig
     """ # noqa: E501
     participants: List[AgentComponent]
-    termination_condition: TerminationComponent
+    termination_condition: TextMentionTerminationComponent
     __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
 
     model_config = ConfigDict(
@@ -94,7 +94,7 @@ class RoundRobinGroupChatConfig(BaseModel):
 
         _obj = cls.model_validate({
             "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "termination_condition": TextMentionTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 
