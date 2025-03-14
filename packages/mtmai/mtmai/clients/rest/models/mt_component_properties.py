@@ -29,11 +29,11 @@ class MtComponentProperties(BaseModel):
     MtComponentProperties
     """ # noqa: E501
     component_type: ComponentTypes = Field(alias="componentType")
-    label: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    version: Optional[StrictInt] = 1
-    component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
-    config: Optional[Dict[str, Any]] = None
+    label: StrictStr
+    description: StrictStr
+    version: StrictInt
+    component_version: StrictInt = Field(alias="componentVersion")
+    config: Dict[str, Any]
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
     component: MtComponentPropertiesComponent
     __properties: ClassVar[List[str]] = ["componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component"]

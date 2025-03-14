@@ -15,6 +15,8 @@ from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
+from ..clients.rest.models.component_types import ComponentTypes
+
 
 class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
@@ -154,14 +156,19 @@ class TeamRunnerAgent(RoutedAgent):
         )
         logger.info(f"component data: {component_data}")
 
-        # if not component_data.component_type == "team":
-        #     raise ValueError(
-        #         f"component type must be team, but got {component_data.component_type}"
-        #     )
-        team_component = TeamComponent.model_validate(
-            component_data.component.actual_instance
-        )
-        component_dict = team_component.model_dump()
-        component_dict["config"] = team_component.config.actual_instance.model_dump()
-        team = Team.load_component(component_dict)
-        return team
+        if component_data.component_type == ComponentTypes.TEAM:
+            # if not component_data.component_type == "team":
+            #     raise ValueError(
+            #         f"component type must be team, but got {component_data.component_type}"
+            #     )
+            team_component = TeamComponent.model_validate(
+                component_data.component.actual_instance
+            )
+            component_dict = team_component.model_dump()
+            component_dict["config"] = (
+                team_component.config.actual_instance.model_dump()
+            )
+            team = Team.load_component(component_dict)
+            return team
+        else:
+            raise ValueError(f"不支持组件类型: {component_data.component_type}")
