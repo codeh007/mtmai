@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.component_types import ComponentTypes
+from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +35,8 @@ class MtComponentProperties(BaseModel):
     component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
     config: Optional[Dict[str, Any]] = None
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    __properties: ClassVar[List[str]] = ["componentType", "label", "description", "version", "componentVersion", "config", "galleryId"]
+    component: MtComponentPropertiesComponent
+    __properties: ClassVar[List[str]] = ["componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,6 +77,9 @@ class MtComponentProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of component
+        if self.component:
+            _dict['component'] = self.component.to_dict()
         return _dict
 
     @classmethod
@@ -93,7 +98,8 @@ class MtComponentProperties(BaseModel):
             "version": obj.get("version") if obj.get("version") is not None else 1,
             "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
             "config": obj.get("config"),
-            "galleryId": obj.get("galleryId")
+            "galleryId": obj.get("galleryId"),
+            "component": MtComponentPropertiesComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 

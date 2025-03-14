@@ -18,9 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.instagram_team_config_participants_inner import InstagramTeamConfigParticipantsInner
-from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -31,8 +30,7 @@ class InstagramTeamConfig(BaseModel):
     """ # noqa: E501
     participants: List[InstagramTeamConfigParticipantsInner]
     termination_condition: TerminationComponent
-    model_client: Optional[ModelComponent] = None
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "model_client"]
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,9 +81,6 @@ class InstagramTeamConfig(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of termination_condition
         if self.termination_condition:
             _dict['termination_condition'] = self.termination_condition.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of model_client
-        if self.model_client:
-            _dict['model_client'] = self.model_client.to_dict()
         return _dict
 
     @classmethod
@@ -99,8 +94,7 @@ class InstagramTeamConfig(BaseModel):
 
         _obj = cls.model_validate({
             "participants": [InstagramTeamConfigParticipantsInner.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "model_client": ModelComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
+            "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

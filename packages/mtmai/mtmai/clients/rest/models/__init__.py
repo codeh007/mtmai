@@ -165,9 +165,9 @@ from mtmai.clients.rest.models.model_run import ModelRun
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_all_of_component import MtComponentAllOfComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
+from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties

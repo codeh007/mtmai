@@ -154,10 +154,10 @@ class TeamRunnerAgent(RoutedAgent):
         )
         logger.info(f"component data: {component_data}")
 
-        if not component_data.component_type == "team":
-            raise ValueError(
-                f"component type must be team, but got {component_data.component_type}"
-            )
+        # if not component_data.component_type == "team":
+        #     raise ValueError(
+        #         f"component type must be team, but got {component_data.component_type}"
+        #     )
         team_component = TeamComponent.model_validate(
             component_data.component.actual_instance
         )

@@ -17,11 +17,11 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_all_of_component import MtComponentAllOfComponent
+from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,9 +30,15 @@ class MtComponent(BaseModel):
     MtComponent
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    component_type: Optional[ComponentTypes] = Field(default=None, alias="componentType")
-    component: Optional[MtComponentAllOfComponent] = None
-    __properties: ClassVar[List[str]] = ["metadata", "componentType", "component"]
+    component_type: ComponentTypes = Field(alias="componentType")
+    label: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
+    version: Optional[StrictInt] = 1
+    component_version: Optional[StrictInt] = Field(default=1, alias="componentVersion")
+    config: Optional[Dict[str, Any]] = None
+    gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
+    component: MtComponentPropertiesComponent
+    __properties: ClassVar[List[str]] = ["metadata", "componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,7 +99,13 @@ class MtComponent(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "componentType": obj.get("componentType"),
-            "component": MtComponentAllOfComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
+            "label": obj.get("label"),
+            "description": obj.get("description"),
+            "version": obj.get("version") if obj.get("version") is not None else 1,
+            "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
+            "config": obj.get("config"),
+            "galleryId": obj.get("galleryId"),
+            "component": MtComponentPropertiesComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
         })
         return _obj
 
