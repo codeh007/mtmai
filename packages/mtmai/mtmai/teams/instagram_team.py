@@ -497,7 +497,9 @@ Only select one agent.
                 participant = participant.actual_instance
             participants.append(ChatAgent.load_component(participant))
         termination_condition = (
-            TerminationCondition.load_component(config.termination_condition)
+            TerminationCondition.load_component(
+                config.termination_condition.model_dump()
+            )
             if config.termination_condition
             else None
         )

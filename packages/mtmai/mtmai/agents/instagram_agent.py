@@ -100,7 +100,9 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         else:
             return cls(
                 name=config.name,
-                model_client=ChatCompletionClient.load_component(config.model_client),
+                model_client=ChatCompletionClient.load_component(
+                    config.model_client.model_dump()
+                ),
                 tools=[BaseTool.load_component(tool) for tool in config.tools]
                 if config.tools
                 else None,
