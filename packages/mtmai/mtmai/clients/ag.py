@@ -11,7 +11,7 @@ from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.model_client.model_client import MtmOpenAIChatCompletionClient
+from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
@@ -236,7 +236,7 @@ class AgClient:
         defaultModel = await self.model_api.model_get(tenant=tid, model=model_name)
         model_dict = defaultModel.config.model_dump()
         model_dict.pop("n", None)
-        return MtmOpenAIChatCompletionClient(
+        return MtOpenAIChatCompletionClient(
             **model_dict,
         )
 

@@ -17,8 +17,11 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.memory_config import MemoryConfig
+from mtmai.clients.rest.models.model_component import ModelComponent
+from mtmai.clients.rest.models.tool_component import ToolComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,9 +29,26 @@ class InstagramAgentConfig(BaseModel):
     """
     InstagramAgentConfig
     """ # noqa: E501
-    max_turns: Optional[StrictInt] = None
-    max_tokens: Optional[StrictInt] = None
-    __properties: ClassVar[List[str]] = ["max_turns", "max_tokens"]
+    name: StrictStr
+    description: StrictStr
+    model_context: Optional[Dict[str, Any]] = None
+    memory: Optional[MemoryConfig] = None
+    model_client_stream: StrictBool
+    system_message: Optional[StrictStr] = None
+    model_client: ModelComponent
+    tools: List[ToolComponent]
+    handoffs: List[StrictStr]
+    reflect_on_tool_use: StrictBool
+    tool_call_summary_format: StrictStr
+    config_type: StrictStr = Field(alias="configType")
+    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "configType"]
+
+    @field_validator('config_type')
+    def config_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['InstagramAgentConfig']):
+            raise ValueError("must be one of enum values ('InstagramAgentConfig')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,6 +89,19 @@ class InstagramAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of memory
+        if self.memory:
+            _dict['memory'] = self.memory.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of model_client
+        if self.model_client:
+            _dict['model_client'] = self.model_client.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
+        _items = []
+        if self.tools:
+            for _item_tools in self.tools:
+                if _item_tools:
+                    _items.append(_item_tools.to_dict())
+            _dict['tools'] = _items
         return _dict
 
     @classmethod
@@ -81,8 +114,18 @@ class InstagramAgentConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "max_turns": obj.get("max_turns"),
-            "max_tokens": obj.get("max_tokens")
+            "name": obj.get("name"),
+            "description": obj.get("description"),
+            "model_context": obj.get("model_context"),
+            "memory": MemoryConfig.from_dict(obj["memory"]) if obj.get("memory") is not None else None,
+            "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
+            "system_message": obj.get("system_message"),
+            "model_client": ModelComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "tools": [ToolComponent.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
+            "handoffs": obj.get("handoffs"),
+            "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
+            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}',
+            "configType": obj.get("configType")
         })
         return _obj
 

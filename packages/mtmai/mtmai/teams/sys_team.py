@@ -125,27 +125,6 @@ class SysTeamConfig(BaseModel):
     ...
 
 
-# Closure
-# async def collect_output_messages(
-#     _runtime: ClosureContext,
-#     message: UserLogin,
-#     ctx: MessageContext,
-# ) -> None:
-#     """Collect output messages from the group chat."""
-#     # if isinstance(message, GroupChatStart):
-#     #     if message.messages is not None:
-#     #         for msg in message.messages:
-#     #             event_logger.info(msg)
-#     #             await self._output_message_queue.put(msg)
-#     # elif isinstance(message, GroupChatMessage):
-#     #     event_logger.info(message.message)
-#     #     await self._output_message_queue.put(message.message)
-#     # elif isinstance(message, GroupChatTermination):
-#     #     event_logger.info(message.message)
-#     #     self._stop_reason = message.message.content
-#     logger.info(f"收到消息: message: {message}")
-
-
 class MockIntentClassifier(IntentClassifierBase):
     def __init__(self):
         self.intents = {

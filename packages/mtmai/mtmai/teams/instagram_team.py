@@ -15,21 +15,17 @@ from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
-from autogen_core import (
-    AgentRuntime,
-    CancellationToken,
-    Component,
-    SingleThreadedAgentRuntime,
-)
+from autogen_core import AgentRuntime, CancellationToken, Component
 from autogen_ext.tools.mcp import mcp_server_tools
-from model_client.model_client import MtmOpenAIChatCompletionClient
 from mtmai.agents._agents import MtAssistantAgent
-from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.termination import MyFunctionCallTermination
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.mtlibs.mcp import print_mcp_tools
 from typing_extensions import Self
+
+from ..agents.instagram_agent import InstagramAgent
+from ..clients.rest.models.agent_config import AgentConfig
 
 
 class RoundRobinGroupChatManager(BaseGroupChatManager):
@@ -100,33 +96,41 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     component_type = "mtmai.teams.instagram_team.InstagramTeam"
     component_provider_override = "mtmai.teams.instagram_team.InstagramTeam"
 
-    component_label = "InstagramTeam"
-    component_description = "InstagramTeam"
+    # component_label = "InstagramTeam"
+    # component_description = "InstagramTeam"
     component_config_schema = InstagramTeamConfig
 
     def __init__(
         self,
         participants: List[ComponentModel] = [],
-        model_client: MtmOpenAIChatCompletionClient | None = None,
+        # model_client: MtOpenAIChatCompletionClient | None = None,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
     ) -> None:
-        self._runtime = runtime
-        self._is_embedded_runtime = False
-        self.needs_user_input_handler = NeedsUserInputHandler()
-        if self._runtime is None:
-            self._runtime = SingleThreadedAgentRuntime(
-                intervention_handlers=[
-                    self.needs_user_input_handler,
-                ]
-            )
-            self._is_embedded_runtime = True
-        self._initialized = False
-        self._is_running = False
-        self.termination_condition = termination_condition
-        self.max_turns = max_turns
-        self._model_client = model_client
+        # self._runtime = runtime
+        # self._is_embedded_runtime = False
+        # self.needs_user_input_handler = NeedsUserInputHandler()
+        # if self._runtime is None:
+        #     self._runtime = SingleThreadedAgentRuntime(
+        #         intervention_handlers=[
+        #             self.needs_user_input_handler,
+        #         ]
+        #     )
+        #     self._is_embedded_runtime = True
+        # self._initialized = False
+        # self._is_running = False
+        # self.termination_condition = termination_condition
+        # self.max_turns = max_turns
+        # self._model_client = model_client
+        super().__init__(
+            participants=participants,
+            group_chat_manager_name="RoundRobinGroupChatManager",
+            group_chat_manager_class=RoundRobinGroupChatManager,
+            termination_condition=termination_condition,
+            max_turns=max_turns,
+            runtime=runtime,
+        )
 
     def _create_group_chat_manager_factory(
         self,
@@ -474,32 +478,37 @@ Only select one agent.
         #     self._is_running = False
 
     def _to_config(self) -> InstagramTeamConfig:
-        # participants = [
-        #     participant.dump_component() for participant in self._participants
-        # ]
-        # termination_condition = (
-        #     self._termination_condition.dump_component()
-        #     if self._termination_condition
-        #     else None
-        # )
+        participants = [
+            participant.dump_component() for participant in self._participants
+        ]
+        termination_condition = (
+            self._termination_condition.dump_component()
+            if self._termination_condition
+            else None
+        )
         return InstagramTeamConfig(
-            # participants=participants,
-            # termination_condition=termination_condition,
+            participants=participants,
+            termination_condition=termination_condition,
             max_turns=self._max_turns,
         )
 
     @classmethod
     def _from_config(cls, config: InstagramTeamConfig) -> Self:
-        # participants = [
-        #     ChatAgent.load_component(participant) for participant in config.participants
-        # ]
-        # termination_condition = (
-        #     TerminationCondition.load_component(config.termination_condition)
-        #     if config.termination_condition
-        #     else None
-        # )
+        participants = [
+            # ChatAgent.load_component(participant) for participant in config.participants
+        ]
+        for participant in config.participants:
+            if isinstance(participant.config, AgentConfig):
+                participants.append(InstagramAgent._from_config(participant))
+            else:
+                participants.append(InstagramAgent._from_config(participant))
+        termination_condition = (
+            TerminationCondition.load_component(config.termination_condition)
+            if config.termination_condition
+            else None
+        )
         return cls(
-            # participants,
-            # termination_condition=termination_condition,
+            participants=participants,
+            termination_condition=termination_condition,
             max_turns=config.max_turns,
         )

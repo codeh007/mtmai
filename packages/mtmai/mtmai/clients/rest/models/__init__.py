@@ -134,6 +134,7 @@ from mtmai.clients.rest.models.handoff_config import HandoffConfig
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.image_content import ImageContent
+from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig

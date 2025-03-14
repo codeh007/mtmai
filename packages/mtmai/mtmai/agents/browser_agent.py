@@ -2,7 +2,7 @@ import logging
 
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
-from model_client.model_client import MtmOpenAIChatCompletionClient
+from model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.agents._types import BrowserOpenTask, BrowserTask
 
 logger2 = logging.getLogger("browser_use")
@@ -11,7 +11,7 @@ logger2.setLevel(logging.DEBUG)
 
 class BrowserAgent(RoutedAgent):
     def __init__(
-        self, description: str, model_client: MtmOpenAIChatCompletionClient
+        self, description: str, model_client: MtOpenAIChatCompletionClient
     ) -> None:
         super().__init__(description)
         self.model_client = model_client

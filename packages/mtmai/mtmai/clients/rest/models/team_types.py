@@ -26,7 +26,6 @@ class TeamTypes(str, Enum):
     """
     allowed enum values
     """
-    ASSISANT = 'Assisant'
     ROUNDROBINGROUPCHAT = 'RoundRobinGroupChat'
     SELECTORGROUPCHAT = 'SelectorGroupChat'
     MAGENTICONEGROUPCHAT = 'MagenticOneGroupChat'

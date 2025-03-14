@@ -18,13 +18,14 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTCOMPONENTALLOFCOMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "TeamComponent", "TerminationComponent"]
+MTCOMPONENTALLOFCOMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "InstagramAgentComponent", "TeamComponent", "TerminationComponent"]
 
 class MtComponentAllOfComponent(BaseModel):
     """
@@ -36,8 +37,10 @@ class MtComponentAllOfComponent(BaseModel):
     oneof_schema_2_validator: Optional[TerminationComponent] = None
     # data type: AgentComponent
     oneof_schema_3_validator: Optional[AgentComponent] = None
-    actual_instance: Optional[Union[AgentComponent, TeamComponent, TerminationComponent]] = None
-    one_of_schemas: Set[str] = { "AgentComponent", "TeamComponent", "TerminationComponent" }
+    # data type: InstagramAgentComponent
+    oneof_schema_4_validator: Optional[InstagramAgentComponent] = None
+    actual_instance: Optional[Union[AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "InstagramAgentComponent", "TeamComponent", "TerminationComponent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -75,12 +78,17 @@ class MtComponentAllOfComponent(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
         else:
             match += 1
+        # validate data type: InstagramAgentComponent
+        if not isinstance(v, InstagramAgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramAgentComponent`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentAllOfComponent with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentAllOfComponent with oneOf schemas: AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtComponentAllOfComponent with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtComponentAllOfComponent with oneOf schemas: AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -113,13 +121,19 @@ class MtComponentAllOfComponent(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into InstagramAgentComponent
+        try:
+            instance.actual_instance = InstagramAgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentAllOfComponent with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentAllOfComponent with oneOf schemas: AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentAllOfComponent with oneOf schemas: AgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentAllOfComponent with oneOf schemas: AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -133,7 +147,7 @@ class MtComponentAllOfComponent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, TeamComponent, TerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, InstagramAgentComponent, TeamComponent, TerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
