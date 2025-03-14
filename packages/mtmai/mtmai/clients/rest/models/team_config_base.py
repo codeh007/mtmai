@@ -19,16 +19,16 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
+from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class InstagramTeamConfig(BaseModel):
+class TeamConfigBase(BaseModel):
     """
-    InstagramTeamConfig
+    TeamConfigBase
     """ # noqa: E501
-    participants: List[InstagramAgentComponent]
+    participants: List[AgentComponent]
     max_turns: StrictInt
     termination_condition: TextMentionTerminationComponent
     __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition"]
@@ -51,7 +51,7 @@ class InstagramTeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a JSON string"""
+        """Create an instance of TeamConfigBase from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -86,7 +86,7 @@ class InstagramTeamConfig(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a dict"""
+        """Create an instance of TeamConfigBase from a dict"""
         if obj is None:
             return None
 
@@ -94,7 +94,7 @@ class InstagramTeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "participants": [InstagramAgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "max_turns": obj.get("max_turns"),
             "termination_condition": TextMentionTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })

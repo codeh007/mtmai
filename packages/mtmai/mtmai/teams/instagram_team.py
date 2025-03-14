@@ -17,12 +17,13 @@ from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import AgentRuntime, CancellationToken, Component
 from autogen_ext.tools.mcp import mcp_server_tools
+from typing_extensions import Self
+
 from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.termination import MyFunctionCallTermination
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.mtlibs.mcp import print_mcp_tools
-from typing_extensions import Self
 
 
 class RoundRobinGroupChatManager(BaseGroupChatManager):
@@ -236,19 +237,19 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             tools=tools,  # The MCP fetch tool will be included here
             system_message="你是一个网页内容获取助手。使用 fetchWebContent 工具获取网页内容。。当找不到合适工具时,回复: I need xxx tool, TERMINATE",
         )
-        rewriter_agent = AssistantAgent(
-            name="content_rewriter",
-            model_client=self._model_client,
-            system_message="""你是一个内容改写专家。将提供给你的网页内容改写为科技资讯风格的文章。
-        科技资讯风格特点：
-        1. 标题简洁醒目
-        2. 开头直接点明主题
-        3. 内容客观准确但生动有趣
-        4. 使用专业术语但解释清晰
-        5. 段落简短，重点突出
+        # rewriter_agent = AssistantAgent(
+        #     name="content_rewriter",
+        #     model_client=self._model_client,
+        #     system_message="""你是一个内容改写专家。将提供给你的网页内容改写为科技资讯风格的文章。
+        # 科技资讯风格特点：
+        # 1. 标题简洁醒目
+        # 2. 开头直接点明主题
+        # 3. 内容客观准确但生动有趣
+        # 4. 使用专业术语但解释清晰
+        # 5. 段落简短，重点突出
 
-        当你完成改写后，回复TERMINATE。""",
-        )
+        # 当你完成改写后，回复TERMINATE。""",
+        # )
 
         # participants.append(writer)
         # instagram_assistant = MtAssistantAgent(
@@ -317,7 +318,7 @@ Only select one agent.
 
 """
         self.inner_team = RoundRobinGroupChat(
-            participants=[fetch_agent, rewriter_agent],
+            participants=[fetch_agent],
             termination_condition=termination,
             max_turns=self.max_turns or 25,
             runtime=self._runtime,

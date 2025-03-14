@@ -243,6 +243,7 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
+from mtmai.clients.rest.models.team_config_base import TeamConfigBase
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant
