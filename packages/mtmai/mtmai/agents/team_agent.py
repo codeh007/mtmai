@@ -140,27 +140,6 @@ class TeamRunnerAgent(RoutedAgent):
             chat_id=session_id,
         )
 
-        # async for event in aiter(await stream):
-        #     if ctx.cancellation_token and ctx.cancellation_token.is_cancelled():
-        #         break
-        #     if isinstance(event, TaskResult):
-        #         return event
-        #     await tenant_client.emit(event)
-
-        # await self._runtime.stop_when(
-        #     # lambda: self.termination_handler.is_terminated
-        #     # or self.needs_user_input_handler.needs_user_input
-        #     lambda: self.needs_user_input_handler.needs_user_input
-        # )
-
-        # user_input_needed = None
-        # if self.needs_user_input_handler.user_input_content is not None:
-        #     user_input_needed = self.needs_user_input_handler.user_input_content
-        # elif self.termination_handler.is_terminated:
-        #     logger.info("Terminated - ", self.termination_handler.termination_msg)
-
-        # state_to_persist = await self._runtime.save_state()
-        # logger.info(f"state_to_persist: {state_to_persist}")
         await runtime.stop_when_idle()
         logger.info("团队运行完全结束")
 
