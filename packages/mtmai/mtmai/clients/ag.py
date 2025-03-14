@@ -1,6 +1,7 @@
 from autogen_agentchat.base import Team
 from autogen_agentchat.teams import BaseGroupChat
 from connecpy.context import ClientContext
+
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -11,7 +12,6 @@ from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
@@ -230,15 +230,15 @@ class AgClient:
     #         chat_message_upsert=message.model_dump(),
     #     )
 
-    async def get_tenant_model_client(self, tid: str, model_name: str = "default"):
-        # if hasattr(self, "_default_model_client"):
-        #     return self._default_model_client
-        defaultModel = await self.model_api.model_get(tenant=tid, model=model_name)
-        model_dict = defaultModel.config.model_dump()
-        model_dict.pop("n", None)
-        return MtOpenAIChatCompletionClient(
-            **model_dict,
-        )
+    # async def get_tenant_model_client(self, tid: str, model_name: str = "default"):
+    #     # if hasattr(self, "_default_model_client"):
+    #     #     return self._default_model_client
+    #     defaultModel = await self.model_api.model_get(tenant=tid, model=model_name)
+    #     model_dict = defaultModel.config.model_dump()
+    #     model_dict.pop("n", None)
+    #     return MtOpenAIChatCompletionClient(
+    #         **model_dict,
+    #     )
 
     async def upsert_team(
         self, tenant_id: str, team: Team, component_id: str | None = None

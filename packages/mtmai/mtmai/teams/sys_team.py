@@ -23,6 +23,8 @@ from autogen_core import (
 )
 from autogen_core.tools import FunctionTool
 from loguru import logger
+from pydantic import BaseModel
+
 from mtmai.agents._agents import (
     browser_topic_type,
     human_agent_topic_type,
@@ -49,7 +51,6 @@ from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.teams.base_team import MtBaseTeam
-from pydantic import BaseModel
 
 
 def execute_order(product: str, price: int) -> str:
@@ -227,7 +228,7 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
     async def _init(self, runtime: AgentRuntime | None = None) -> None:
         tenant_client = TenantClient()
         tid = tenant_client.tenant_id
-        model_client = await tenant_client.ag.get_tenant_model_client(tid)
+        # model_client = await tenant_client.ag.get_tenant_model_client(tid)
 
         # Register the triage agent.
         # triage_agent_type = await AIAgent.register(
@@ -380,7 +381,8 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             runtime=self._runtime,
             type=team_runner_topic_type,
             factory=lambda: TeamRunnerAgent(
-                description="Team runner agent.", model_client=model_client
+                description="Team runner agent.",
+                # model_client=model_client
             ),
         )
         await self._runtime.add_subscription(
@@ -394,7 +396,8 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
             runtime=self._runtime,
             type=browser_topic_type,
             factory=lambda: BrowserAgent(
-                description="browser agent.", model_client=model_client
+                description="browser agent.",
+                # model_client=model_client
             ),
         )
         await self._runtime.add_subscription(

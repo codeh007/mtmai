@@ -5,22 +5,21 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
     message_handler,
 )
-from autogen_core.models import ChatCompletionClient
 from loguru import logger
+
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
-from ..clients.rest.models.component_types import ComponentTypes
-
 
 class TeamRunnerAgent(RoutedAgent):
-    def __init__(self, description: str, model_client: ChatCompletionClient) -> None:
+    def __init__(self, description: str) -> None:
         super().__init__(description)
-        self._model_client = model_client
+        # self._model_client = model_client
         self.teams: list[Team] = []
 
     @message_handler
