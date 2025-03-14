@@ -182,17 +182,7 @@ class TeamRunnerAgent(RoutedAgent):
         team_component = TeamComponent.model_validate(
             component_data.component.actual_instance
         )
-        team_component.config = team_component.config.actual_instance
-
-        # if isinstance(team_component.config.actual_instance, InstagramTeamConfig):
-        #     team_component.config = team_component.config.actual_instance
-        # elif isinstance(team_component.config.actual_instance, SelectorGroupChatConfig):
-        #     team_component.config =
-        # elif isinstance(
-        #     team_component.config.actual_instance, RoundRobinGroupChatConfig
-        # ):
-        #     team_component.config = RoundRobinGroupChatConfig.model_validate(
-        #         team_component.config.actual_instance
-        #     )
-        team = Team.load_component(team_component)
+        component_dict = team_component.model_dump()
+        component_dict["config"] = team_component.config.actual_instance.model_dump()
+        team = Team.load_component(component_dict)
         return team

@@ -32,7 +32,7 @@ class InstagramTeamConfig(BaseModel):
     max_turns: Optional[StrictInt] = None
     max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
     termination_condition: Optional[TerminationComponent] = None
-    task: StrictStr
+    task: Optional[StrictStr] = None
     participants: List[AgentComponent]
     __properties: ClassVar[List[str]] = ["configType", "max_turns", "max_tokens", "termination_condition", "task", "participants"]
 
