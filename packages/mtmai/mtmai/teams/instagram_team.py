@@ -21,7 +21,6 @@ from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.termination import MyFunctionCallTermination
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
-from mtmai.clients.rest.models.team_config import TeamConfig
 from mtmai.mtlibs.mcp import print_mcp_tools
 from typing_extensions import Self
 
@@ -487,14 +486,14 @@ Only select one agent.
         )
 
     @classmethod
-    def _from_config(cls, config: TeamConfig) -> Self:
+    def _from_config(cls, config) -> Self:
         participants = []
         if hasattr(config, "actual_instance"):
             config = config.actual_instance
         if hasattr(config.participants, "actual_instance"):
             config.participants = config.participants.actual_instance
         for participant in config.participants:
-            if hasattr(participant, "actual_instance"):
+            if hasattr(participant, "actual_instance") and participant.actual_instance:
                 participant = participant.actual_instance
             participants.append(ChatAgent.load_component(participant))
         termination_condition = (
