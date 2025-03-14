@@ -26,6 +26,7 @@ from typing_extensions import Self
 
 from ..agents.instagram_agent import InstagramAgent
 from ..clients.rest.models.agent_config import AgentConfig
+from ..clients.rest.models.team_config import TeamConfig
 
 
 class RoundRobinGroupChatManager(BaseGroupChatManager):
@@ -493,7 +494,7 @@ Only select one agent.
         )
 
     @classmethod
-    def _from_config(cls, config: InstagramTeamConfig) -> Self:
+    def _from_config(cls, config: TeamConfig) -> Self:
         participants = [
             # ChatAgent.load_component(participant) for participant in config.participants
         ]

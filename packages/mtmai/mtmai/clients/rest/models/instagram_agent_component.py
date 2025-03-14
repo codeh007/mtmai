@@ -27,14 +27,21 @@ class InstagramAgentComponent(BaseModel):
     """
     InstagramAgentComponent
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    provider: StrictStr
     version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: InstagramAgentConfig
     component_type: StrictStr = Field(alias="componentType")
-    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "config", "componentType"]
+    config: InstagramAgentConfig
+    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "componentType", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['mtmai.agents.instagram_agent.InstagramAgent']):
+            raise ValueError("must be one of enum values ('mtmai.agents.instagram_agent.InstagramAgent')")
+        return value
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):
@@ -102,8 +109,8 @@ class InstagramAgentComponent(BaseModel):
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": InstagramAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
-            "componentType": obj.get("componentType")
+            "componentType": obj.get("componentType"),
+            "config": InstagramAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

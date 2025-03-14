@@ -29,6 +29,7 @@ class TeamTypes(str, Enum):
     ROUNDROBINGROUPCHAT = 'RoundRobinGroupChat'
     SELECTORGROUPCHAT = 'SelectorGroupChat'
     MAGENTICONEGROUPCHAT = 'MagenticOneGroupChat'
+    INSTAGRAMTEAM = 'InstagramTeam'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -137,7 +137,7 @@ from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentCo
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
-from mtmai.clients.rest.models.instagram_team_config_all_of_participants import InstagramTeamConfigAllOfParticipants
+from mtmai.clients.rest.models.instagram_team_config_participants_inner import InstagramTeamConfigParticipantsInner
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -156,6 +156,7 @@ from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.model_config import ModelConfig
+from mtmai.clients.rest.models.model_context import ModelContext
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList

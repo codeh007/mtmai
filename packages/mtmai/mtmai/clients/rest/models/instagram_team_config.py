@@ -17,9 +17,10 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional, Union
-from mtmai.clients.rest.models.instagram_team_config_all_of_participants import InstagramTeamConfigAllOfParticipants
+from pydantic import BaseModel, ConfigDict
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.instagram_team_config_participants_inner import InstagramTeamConfigParticipantsInner
+from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,20 +29,10 @@ class InstagramTeamConfig(BaseModel):
     """
     InstagramTeamConfig
     """ # noqa: E501
-    config_type: StrictStr = Field(alias="configType")
-    max_turns: Optional[StrictInt] = None
-    max_tokens: Optional[Union[StrictFloat, StrictInt]] = None
-    termination_condition: Optional[TerminationComponent] = None
-    task: Optional[StrictStr] = None
-    participants: Optional[List[InstagramTeamConfigAllOfParticipants]] = None
-    __properties: ClassVar[List[str]] = ["configType", "max_turns", "max_tokens", "termination_condition", "task", "participants"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['InstagramTeamConfig']):
-            raise ValueError("must be one of enum values ('InstagramTeamConfig')")
-        return value
+    participants: List[InstagramTeamConfigParticipantsInner]
+    termination_condition: TerminationComponent
+    model_client: Optional[ModelComponent] = None
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "model_client"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,9 +73,6 @@ class InstagramTeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
         _items = []
         if self.participants:
@@ -92,6 +80,12 @@ class InstagramTeamConfig(BaseModel):
                 if _item_participants:
                     _items.append(_item_participants.to_dict())
             _dict['participants'] = _items
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of model_client
+        if self.model_client:
+            _dict['model_client'] = self.model_client.to_dict()
         return _dict
 
     @classmethod
@@ -104,12 +98,9 @@ class InstagramTeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "configType": obj.get("configType"),
-            "max_turns": obj.get("max_turns"),
-            "max_tokens": obj.get("max_tokens"),
+            "participants": [InstagramTeamConfigParticipantsInner.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "task": obj.get("task"),
-            "participants": [InstagramTeamConfigAllOfParticipants.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
+            "model_client": ModelComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None
         })
         return _obj
 
