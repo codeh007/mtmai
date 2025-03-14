@@ -11,7 +11,6 @@ from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
-from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 
@@ -157,18 +156,7 @@ class TeamRunnerAgent(RoutedAgent):
         logger.info(f"component data: {component_data}")
 
         if component_data.component_type == ComponentTypes.TEAM:
-            # if not component_data.component_type == "team":
-            #     raise ValueError(
-            #         f"component type must be team, but got {component_data.component_type}"
-            #     )
-            team_component = TeamComponent.model_validate(
-                component_data.component.actual_instance
-            )
-            component_dict = team_component.model_dump()
-            component_dict["config"] = (
-                team_component.config.actual_instance.model_dump()
-            )
-            team = Team.load_component(component_dict)
+            team = Team.load_component(component_data)
             return team
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")

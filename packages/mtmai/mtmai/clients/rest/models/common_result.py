@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,8 @@ class CommonResult(BaseModel):
     """ # noqa: E501
     success: StrictBool = Field(alias="Success")
     message: StrictStr = Field(alias="Message")
-    __properties: ClassVar[List[str]] = ["Success", "Message"]
+    other: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["Success", "Message", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,6 +70,11 @@ class CommonResult(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if other (nullable) is None
+        # and model_fields_set contains the field
+        if self.other is None and "other" in self.model_fields_set:
+            _dict['other'] = None
+
         return _dict
 
     @classmethod
@@ -82,7 +88,8 @@ class CommonResult(BaseModel):
 
         _obj = cls.model_validate({
             "Success": obj.get("Success"),
-            "Message": obj.get("Message")
+            "Message": obj.get("Message"),
+            "other": obj.get("other")
         })
         return _obj
 

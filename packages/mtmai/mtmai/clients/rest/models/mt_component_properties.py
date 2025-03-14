@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_properties_config import MtComponentPropertiesConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,13 +28,14 @@ class MtComponentProperties(BaseModel):
     MtComponentProperties
     """ # noqa: E501
     component_type: ComponentTypes = Field(alias="componentType")
+    provider: StrictStr
     label: StrictStr
     description: StrictStr
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    config: MtComponentPropertiesConfig
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    __properties: ClassVar[List[str]] = ["componentType", "label", "description", "version", "componentVersion", "config", "galleryId"]
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["componentType", "provider", "label", "description", "version", "componentVersion", "galleryId", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -76,9 +76,6 @@ class MtComponentProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -92,12 +89,13 @@ class MtComponentProperties(BaseModel):
 
         _obj = cls.model_validate({
             "componentType": obj.get("componentType"),
+            "provider": obj.get("provider"),
             "label": obj.get("label"),
             "description": obj.get("description"),
             "version": obj.get("version") if obj.get("version") is not None else 1,
             "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
-            "config": MtComponentPropertiesConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
-            "galleryId": obj.get("galleryId")
+            "galleryId": obj.get("galleryId"),
+            "config": obj.get("config")
         })
         return _obj
 
