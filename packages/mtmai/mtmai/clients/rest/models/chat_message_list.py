@@ -21,7 +21,6 @@ from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message import ChatMessage
-from mtmai.clients.rest.models.chat_message_list_other import ChatMessageListOther
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
@@ -33,8 +32,7 @@ class ChatMessageList(BaseModel):
     metadata: Optional[APIResourceMeta] = None
     rows: Optional[List[ChatMessage]] = None
     pagination: Optional[PaginationResponse] = None
-    other: Optional[ChatMessageListOther] = None
-    __properties: ClassVar[List[str]] = ["metadata", "rows", "pagination", "other"]
+    __properties: ClassVar[List[str]] = ["metadata", "rows", "pagination"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,9 +86,6 @@ class ChatMessageList(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of pagination
         if self.pagination:
             _dict['pagination'] = self.pagination.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of other
-        if self.other:
-            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
@@ -105,8 +100,7 @@ class ChatMessageList(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "rows": [ChatMessage.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None,
-            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
-            "other": ChatMessageListOther.from_dict(obj["other"]) if obj.get("other") is not None else None
+            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None
         })
         return _obj
 

@@ -67,7 +67,6 @@ from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmai.clients.rest.models.chat_message_list import ChatMessageList
-from mtmai.clients.rest.models.chat_message_list_other import ChatMessageListOther
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList
@@ -138,6 +137,7 @@ from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentCo
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.instagram_team_config_all_of_participants import InstagramTeamConfigAllOfParticipants
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -165,7 +165,6 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_all_of_component import MtComponentAllOfComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
-from mtmai.clients.rest.models.mt_component_list_component2 import MtComponentListComponent2
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList

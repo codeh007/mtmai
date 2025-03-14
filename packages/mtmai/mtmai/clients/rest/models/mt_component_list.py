@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_list_component2 import MtComponentListComponent2
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
@@ -31,8 +30,7 @@ class MtComponentList(BaseModel):
     """ # noqa: E501
     pagination: Optional[PaginationResponse] = None
     rows: Optional[List[MtComponent]] = None
-    component2: Optional[MtComponentListComponent2] = None
-    __properties: ClassVar[List[str]] = ["pagination", "rows", "component2"]
+    __properties: ClassVar[List[str]] = ["pagination", "rows"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,9 +81,6 @@ class MtComponentList(BaseModel):
                 if _item_rows:
                     _items.append(_item_rows.to_dict())
             _dict['rows'] = _items
-        # override the default output from pydantic by calling `to_dict()` of component2
-        if self.component2:
-            _dict['component2'] = self.component2.to_dict()
         return _dict
 
     @classmethod
@@ -99,8 +94,7 @@ class MtComponentList(BaseModel):
 
         _obj = cls.model_validate({
             "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
-            "rows": [MtComponent.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None,
-            "component2": MtComponentListComponent2.from_dict(obj["component2"]) if obj.get("component2") is not None else None
+            "rows": [MtComponent.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
         })
         return _obj
 
