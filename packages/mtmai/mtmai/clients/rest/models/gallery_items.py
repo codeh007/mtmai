@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.gallery_components import GalleryComponents
-from mtmai.clients.rest.models.team_config import TeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +27,7 @@ class GalleryItems(BaseModel):
     """
     GalleryItems
     """ # noqa: E501
-    teams: List[TeamConfig]
+    teams: List[Dict[str, Any]]
     components: GalleryComponents
     __properties: ClassVar[List[str]] = ["teams", "components"]
 
@@ -71,13 +70,6 @@ class GalleryItems(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in teams (list)
-        _items = []
-        if self.teams:
-            for _item_teams in self.teams:
-                if _item_teams:
-                    _items.append(_item_teams.to_dict())
-            _dict['teams'] = _items
         # override the default output from pydantic by calling `to_dict()` of components
         if self.components:
             _dict['components'] = self.components.to_dict()
@@ -93,7 +85,7 @@ class GalleryItems(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "teams": [TeamConfig.from_dict(_item) for _item in obj["teams"]] if obj.get("teams") is not None else None,
+            "teams": obj.get("teams"),
             "components": GalleryComponents.from_dict(obj["components"]) if obj.get("components") is not None else None
         })
         return _obj

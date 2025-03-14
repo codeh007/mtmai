@@ -28,20 +28,17 @@ class TextMentionTerminationComponent(BaseModel):
     TextMentionTerminationComponent
     """ # noqa: E501
     provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
+    component_type: StrictStr = Field(alias="componentType")
+    version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
     config: Optional[TextMentionTerminationConfig] = None
-    component_type: Optional[StrictStr] = Field(default=None, alias="componentType")
-    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "config", "componentType"]
+    __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label", "config"]
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['termination']):
             raise ValueError("must be one of enum values ('termination')")
         return value
@@ -101,12 +98,12 @@ class TextMentionTerminationComponent(BaseModel):
 
         _obj = cls.model_validate({
             "provider": obj.get("provider"),
+            "componentType": obj.get("componentType"),
             "version": obj.get("version"),
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": TextMentionTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
-            "componentType": obj.get("componentType")
+            "config": TextMentionTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

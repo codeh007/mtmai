@@ -18,7 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,12 +29,13 @@ class MaxMessageTerminationConfigComponent(BaseModel):
     MaxMessageTerminationConfigComponent
     """ # noqa: E501
     provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.", alias="componentType")
+    version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
     config: MaxMessageTerminationConfig
-    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "config"]
+    __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -90,6 +92,7 @@ class MaxMessageTerminationConfigComponent(BaseModel):
 
         _obj = cls.model_validate({
             "provider": obj.get("provider"),
+            "componentType": obj.get("componentType"),
             "version": obj.get("version"),
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),

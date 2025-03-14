@@ -19,28 +19,29 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.agent_config import AgentConfig
+from mtmai.clients.rest.models.component_types import ComponentTypes
+from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentComponent(BaseModel):
+class RoundRobinGroupChatComponent(BaseModel):
     """
-    AgentComponent
+    RoundRobinGroupChatComponent
     """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    component_type: StrictStr = Field(alias="componentType")
+    provider: StrictStr
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.", alias="componentType")
     version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: AgentConfig
+    config: RoundRobinGroupChatConfig
     __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label", "config"]
 
-    @field_validator('component_type')
-    def component_type_validate_enum(cls, value):
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['agent']):
-            raise ValueError("must be one of enum values ('agent')")
+        if value not in set(['autogen_agentchat.teams.RoundRobinGroupChat']):
+            raise ValueError("must be one of enum values ('autogen_agentchat.teams.RoundRobinGroupChat')")
         return value
 
     model_config = ConfigDict(
@@ -61,7 +62,7 @@ class AgentComponent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentComponent from a JSON string"""
+        """Create an instance of RoundRobinGroupChatComponent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -89,7 +90,7 @@ class AgentComponent(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentComponent from a dict"""
+        """Create an instance of RoundRobinGroupChatComponent from a dict"""
         if obj is None:
             return None
 
@@ -103,7 +104,7 @@ class AgentComponent(BaseModel):
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": AgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": RoundRobinGroupChatConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

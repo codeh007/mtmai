@@ -136,6 +136,7 @@ from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
+from mtmai.clients.rest.models.instagram_team_component import InstagramTeamComponent
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.instagram_team_config_participants_inner import InstagramTeamConfigParticipantsInner
 from mtmai.clients.rest.models.job import Job
@@ -212,6 +213,7 @@ from mtmai.clients.rest.models.replay_workflow_runs_response import ReplayWorkfl
 from mtmai.clients.rest.models.request_usage import RequestUsage
 from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
 from mtmai.clients.rest.models.response_format import ResponseFormat
+from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.run_new_task_response import RunNewTaskResponse
 from mtmai.clients.rest.models.run_status import RunStatus
@@ -222,6 +224,7 @@ from mtmai.clients.rest.models.scheduled_workflows_list import ScheduledWorkflow
 from mtmai.clients.rest.models.scheduled_workflows_order_by_field import ScheduledWorkflowsOrderByField
 from mtmai.clients.rest.models.schema_form import SchemaForm
 from mtmai.clients.rest.models.section import Section
+from mtmai.clients.rest.models.selector_group_chat_component import SelectorGroupChatComponent
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmai.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmai.clients.rest.models.siderbar_config import SiderbarConfig
@@ -242,8 +245,6 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
-from mtmai.clients.rest.models.team_component import TeamComponent
-from mtmai.clients.rest.models.team_config import TeamConfig
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant

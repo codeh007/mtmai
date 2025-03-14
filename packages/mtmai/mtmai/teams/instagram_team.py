@@ -2,7 +2,7 @@ import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.base import Handoff, TaskResult, TerminationCondition
+from autogen_agentchat.base import ChatAgent, Handoff, TaskResult, TerminationCondition
 from autogen_agentchat.conditions import (
     HandoffTermination,
     MaxMessageTermination,
@@ -21,12 +21,9 @@ from mtmai.agents._agents import MtAssistantAgent
 from mtmai.agents.termination import MyFunctionCallTermination
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.team_config import TeamConfig
 from mtmai.mtlibs.mcp import print_mcp_tools
 from typing_extensions import Self
-
-from ..agents.instagram_agent import InstagramAgent
-from ..clients.rest.models.agent_config import AgentConfig
-from ..clients.rest.models.team_config import TeamConfig
 
 
 class RoundRobinGroupChatManager(BaseGroupChatManager):
@@ -96,15 +93,11 @@ class RoundRobinGroupChatManager(BaseGroupChatManager):
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     component_type = "mtmai.teams.instagram_team.InstagramTeam"
     component_provider_override = "mtmai.teams.instagram_team.InstagramTeam"
-
-    # component_label = "InstagramTeam"
-    # component_description = "InstagramTeam"
     component_config_schema = InstagramTeamConfig
 
     def __init__(
         self,
         participants: List[ComponentModel] = [],
-        # model_client: MtOpenAIChatCompletionClient | None = None,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
@@ -495,14 +488,15 @@ Only select one agent.
 
     @classmethod
     def _from_config(cls, config: TeamConfig) -> Self:
-        participants = [
-            # ChatAgent.load_component(participant) for participant in config.participants
-        ]
+        participants = []
+        if hasattr(config, "actual_instance"):
+            config = config.actual_instance
+        if hasattr(config.participants, "actual_instance"):
+            config.participants = config.participants.actual_instance
         for participant in config.participants:
-            if isinstance(participant.config, AgentConfig):
-                participants.append(InstagramAgent._from_config(participant))
-            else:
-                participants.append(InstagramAgent._from_config(participant))
+            if hasattr(participant, "actual_instance"):
+                participant = participant.actual_instance
+            participants.append(ChatAgent.load_component(participant))
         termination_condition = (
             TerminationCondition.load_component(config.termination_condition)
             if config.termination_condition
