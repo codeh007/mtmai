@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
+from mtmai.clients.rest.models.mt_component_properties_config import MtComponentPropertiesConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -35,10 +35,9 @@ class MtComponent(BaseModel):
     description: StrictStr
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    config: Dict[str, Any]
+    config: MtComponentPropertiesConfig
     gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    component: MtComponentPropertiesComponent
-    __properties: ClassVar[List[str]] = ["metadata", "componentType", "label", "description", "version", "componentVersion", "config", "galleryId", "component"]
+    __properties: ClassVar[List[str]] = ["metadata", "componentType", "label", "description", "version", "componentVersion", "config", "galleryId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,9 +81,9 @@ class MtComponent(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of component
-        if self.component:
-            _dict['component'] = self.component.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -103,9 +102,8 @@ class MtComponent(BaseModel):
             "description": obj.get("description"),
             "version": obj.get("version") if obj.get("version") is not None else 1,
             "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
-            "config": obj.get("config"),
-            "galleryId": obj.get("galleryId"),
-            "component": MtComponentPropertiesComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
+            "config": MtComponentPropertiesConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "galleryId": obj.get("galleryId")
         })
         return _obj
 
