@@ -19,12 +19,11 @@ from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
 class TeamRunnerAgent(RoutedAgent):
     def __init__(self, description: str) -> None:
         super().__init__(description)
-        # self._model_client = model_client
         self.teams: list[Team] = []
 
     @message_handler
     async def run_team(self, message: AgentRunInput, ctx: MessageContext) -> None:
-        logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
+        # logger.info(f"(TeamRunnerTask), resource_id: {message.resource_id}")
         set_step_canceled_ctx(False)
         tenant_client = TenantClient()
         session_id = self.id.key
@@ -38,76 +37,8 @@ class TeamRunnerAgent(RoutedAgent):
         runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler]
         )
-        # user_agent_type = await SlowUserProxyAgent.register(
-        #     runtime, "User", lambda: SlowUserProxyAgent("User", "I am a user")
-        # )
-        # await runtime.add_subscription(
-        #     TypeSubscription(
-        #         topic_type=user_topic_type, agent_type=user_agent_type.type
-        #     )
-        # )
-        # initial_schedule_assistant_message = AssistantTextMessage(
-        #     content="Hi! How can I help you? I can help schedule meetings",
-        #     source="User",
-        # )
-        # scheduling_assistant_agent_type = await SchedulingAssistantAgent.register(
-        #     runtime,
-        #     scheduling_assistant_topic_type,
-        #     lambda: SchedulingAssistantAgent(
-        #         "SchedulingAssistant",
-        #         description="AI that helps you schedule meetings",
-        #         model_client=self._model_client,
-        #         initial_message=initial_schedule_assistant_message,
-        #     ),
-        # )
-        # await runtime.add_subscription(
-        #     subscription=TypeSubscription(
-        #         topic_type=scheduling_assistant_topic_type,
-        #         agent_type=scheduling_assistant_agent_type.type,
-        #     )
-        # )
-        # runtime_initiation_message: UserTextMessage | AssistantTextMessage
-        # latest_user_input = None
-        # if latest_user_input is not None:
-        #     runtime_initiation_message = UserTextMessage(
-        #         content=latest_user_input, source="User"
-        #     )
-        # else:
-        #     runtime_initiation_message = initial_schedule_assistant_message
-        # state = state_persister.load_content()
-
-        # if state:
-        #     await runtime.load_state(state)
-        # await runtime.publish_message(
-        #     message=runtime_initiation_message,
-        #     # topic_id=TopicId(type=scheduling_assistant_topic_type, source=session_id),
-        #     topic_id=TopicId(type=user_agent_type.type, source=session_id),
-        # )
 
         runtime.start()
-        # await runtime.stop_when(
-        #     lambda: termination_handler.is_terminated
-        #     or needs_user_input_handler.needs_user_input
-        # )
-
-        # user_input_needed = None
-        # if needs_user_input_handler.user_input_content is not None:
-        #     user_input_needed = needs_user_input_handler.user_input_content
-        # elif termination_handler.is_terminated:
-        #     logger.info("Terminated - ", termination_handler.termination_msg)
-
-        # state_to_persist = await runtime.save_state()
-        # state_persister.save_content(state_to_persist)
-
-        # team_id = generate_uuid()
-        # await tenant_client.ag.save_team_state(
-        #         team=team,
-        #         team_id=team_id,
-        #         tenant_id=tenant_client.tenant_id,
-        #         chat_id=session_id,
-        #     )
-
-        # return user_input_needed
 
         team = await self.build_team(component_id=message.component_id)
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
