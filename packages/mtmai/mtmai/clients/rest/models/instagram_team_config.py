@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.instagram_team_config_participants_inner import InstagramTeamConfigParticipantsInner
+from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from mtmai.clients.rest.models.termination_component import TerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,7 +28,7 @@ class InstagramTeamConfig(BaseModel):
     """
     InstagramTeamConfig
     """ # noqa: E501
-    participants: List[InstagramTeamConfigParticipantsInner]
+    participants: List[InstagramAgentComponent]
     termination_condition: TerminationComponent
     __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
 
@@ -93,7 +93,7 @@ class InstagramTeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "participants": [InstagramTeamConfigParticipantsInner.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "participants": [InstagramAgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": TerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj

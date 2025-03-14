@@ -1132,9 +1132,7 @@ class MtOpenAIChatCompletionClient(
 ):
     component_type = "model"
     component_config_schema = OpenAIClientConfigurationConfigModel
-    component_provider_override = (
-        "mtmai.agents.model_client.MtOpenAIChatCompletionClient"
-    )
+    component_provider_override = "mtmai.model_client.MtOpenAIChatCompletionClient"
 
     def __init__(self, **kwargs: Unpack[OpenAIClientConfiguration]):
         if "model" not in kwargs:
