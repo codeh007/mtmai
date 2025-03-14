@@ -31,6 +31,7 @@ from autogen_core import (
     Image,
 )
 from autogen_core.logging import LLMCallEvent
+from autogen_core.models import ModelCapabilities  # type: ignore
 from autogen_core.models import (
     AssistantMessage,
     ChatCompletionClient,
@@ -38,7 +39,6 @@ from autogen_core.models import (
     CreateResult,
     FunctionExecutionResultMessage,
     LLMMessage,
-    ModelCapabilities,  # type: ignore
     ModelFamily,
     ModelInfo,
     RequestUsage,
@@ -80,6 +80,8 @@ from openai.types.shared_params import FunctionDefinition, FunctionParameters
 from pydantic import BaseModel
 from typing_extensions import Self, Unpack
 
+from mtmai.clients.rest.models.model_config import ModelConfig
+
 # ###########################################################################################
 # 主要改动:
 # 1: 修正 llama3 模型工具调用的兼容性, 函数: def convert_tools
@@ -101,12 +103,12 @@ disallowed_create_args = set(["stream", "messages", "function_call", "functions"
 required_create_args: Set[str] = set(["model"])
 
 
-def _azure_openai_client_from_config(config: Mapping[str, Any]) -> AsyncAzureOpenAI:
-    # Take a copy
-    copied_config = dict(config).copy()
-    # Shave down the config to just the AzureOpenAIChatCompletionClient kwargs
-    azure_config = {k: v for k, v in copied_config.items() if k in aopenai_init_kwargs}
-    return AsyncAzureOpenAI(**azure_config)
+# def _azure_openai_client_from_config(config: Mapping[str, Any]) -> AsyncAzureOpenAI:
+#     # Take a copy
+#     copied_config = dict(config).copy()
+#     # Shave down the config to just the AzureOpenAIChatCompletionClient kwargs
+#     azure_config = {k: v for k, v in copied_config.items() if k in aopenai_init_kwargs}
+#     return AsyncAzureOpenAI(**azure_config)
 
 
 def _openai_client_from_config(config: Mapping[str, Any]) -> AsyncOpenAI:
@@ -1131,7 +1133,7 @@ class MtOpenAIChatCompletionClient(
     MTBaseOpenAIChatCompletionClient, Component[OpenAIClientConfigurationConfigModel]
 ):
     component_type = "model"
-    component_config_schema = OpenAIClientConfigurationConfigModel
+    component_config_schema = ModelConfig
     component_provider_override = "mtmai.model_client.MtOpenAIChatCompletionClient"
 
     def __init__(self, **kwargs: Unpack[OpenAIClientConfiguration]):
