@@ -31,9 +31,11 @@ class AgStateUpsert(BaseModel):
     component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
     chat_id: StrictStr = Field(description="聊天id", alias="chatId")
     state: Dict[str, Any]
+    topic: Optional[StrictStr] = Field(default=None, description="主题")
+    source: Optional[StrictStr] = Field(default=None, description="来源")
     state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
     tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "state", "stateId", "tenantId"]
+    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "state", "topic", "source", "stateId", "tenantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,6 +93,8 @@ class AgStateUpsert(BaseModel):
             "componentId": obj.get("componentId"),
             "chatId": obj.get("chatId"),
             "state": obj.get("state"),
+            "topic": obj.get("topic"),
+            "source": obj.get("source"),
             "stateId": obj.get("stateId"),
             "tenantId": obj.get("tenantId")
         })

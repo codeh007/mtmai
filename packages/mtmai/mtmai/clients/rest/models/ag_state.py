@@ -33,7 +33,9 @@ class AgState(BaseModel):
     component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
     chat_id: Optional[StrictStr] = Field(default=None, description="聊天id", alias="chatId")
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "chatId", "state"]
+    topic: Optional[StrictStr] = Field(default=None, description="主题")
+    source: Optional[StrictStr] = Field(default=None, description="来源")
+    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "chatId", "state", "topic", "source"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,7 +96,9 @@ class AgState(BaseModel):
             "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
             "componentId": obj.get("componentId"),
             "chatId": obj.get("chatId"),
-            "state": obj.get("state")
+            "state": obj.get("state"),
+            "topic": obj.get("topic"),
+            "source": obj.get("source")
         })
         return _obj
 

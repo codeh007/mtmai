@@ -348,6 +348,8 @@ class AgStateApi:
     async def ag_state_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -367,6 +369,10 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param topic: The topic
+        :type topic: str
+        :param source: The source
+        :type source: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -391,6 +397,8 @@ class AgStateApi:
 
         _param = self._ag_state_list_serialize(
             tenant=tenant,
+            topic=topic,
+            source=source,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -415,6 +423,8 @@ class AgStateApi:
     async def ag_state_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -434,6 +444,10 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param topic: The topic
+        :type topic: str
+        :param source: The source
+        :type source: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -458,6 +472,8 @@ class AgStateApi:
 
         _param = self._ag_state_list_serialize(
             tenant=tenant,
+            topic=topic,
+            source=source,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -482,6 +498,8 @@ class AgStateApi:
     async def ag_state_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
+        source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -501,6 +519,10 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param topic: The topic
+        :type topic: str
+        :param source: The source
+        :type source: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -525,6 +547,8 @@ class AgStateApi:
 
         _param = self._ag_state_list_serialize(
             tenant=tenant,
+            topic=topic,
+            source=source,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -544,6 +568,8 @@ class AgStateApi:
     def _ag_state_list_serialize(
         self,
         tenant,
+        topic,
+        source,
         _request_auth,
         _content_type,
         _headers,
@@ -568,6 +594,14 @@ class AgStateApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if topic is not None:
+            
+            _query_params.append(('topic', topic))
+            
+        if source is not None:
+            
+            _query_params.append(('source', source))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
