@@ -146,6 +146,7 @@ dev = [
     # other
     # "prefect>=3.1.13",
     # "opentelemetry-instrumentation-openai>=0.33.9",
+    # "markitdown",
 
 ]
 
@@ -158,6 +159,7 @@ other-language-models = [
     "langchain-huggingface>=0.0.3",
     # "langchain-nvidia-ai-endpoints>=0.1.6",
     "langchain_together>=0.2.0",
+
 ]
 
 # Group 2: More Semantic Options
