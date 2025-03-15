@@ -7,11 +7,19 @@ from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatManager,
 )
-from autogen_core import AgentRuntime, CancellationToken, Component
-from typing_extensions import Self
-
+from autogen_core import (
+    AgentRuntime,
+    CancellationToken,
+    Component,
+    SingleThreadedAgentRuntime,
+)
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from typing_extensions import Self
+
+from ..agents.intervention_handlers import NeedsUserInputHandler
+from ..context.context_client import TenantClient
+from ..context.ctx import get_chat_session_id_ctx
 
 # class RoundRobinGroupChatManager(BaseGroupChatManager):
 #     """A group chat manager that selects the next speaker in a round-robin fashion."""
@@ -140,8 +148,15 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
         return _factory
 
-    #     async def _init(self, runtime: AgentRuntime):
-    #         from mtmai.context.context_client import TenantClient
+    async def _init(self, runtime: AgentRuntime):
+        tenant_client = TenantClient()
+        session_id = get_chat_session_id_ctx()
+        agState = await tenant_client.ag.load_team_state(
+            tenant_id=tenant_client.tenant_id,
+            chat_id=session_id,
+        )
+        await super()._init(runtime)
+        # from mtmai.context.context_client import TenantClient
 
     #         #     self.session_id = get_chat_session_id_ctx()
     #         #     self.user_agent_type = await SlowUserProxyAgent.register(
@@ -496,8 +511,14 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             if config.termination_condition
             else None
         )
+
+        needs_user_input_handler = NeedsUserInputHandler()
+        runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[needs_user_input_handler]
+        )
         return cls(
             participants=participants,
             termination_condition=termination_condition,
             max_turns=config.max_turns,
+            runtime=runtime,
         )

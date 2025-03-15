@@ -111,38 +111,11 @@ class AgClient:
         await self.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
-                # componentId=team.,
                 componentId=componentId,
                 chatId=chat_id,
                 state=state,
             ),
         )
-
-    # async def get_team_by_resource(
-    #     self,
-    #     resource_id: str | None = None,
-    #     tid: str = None,
-    # ):
-    #     if not tid:
-    #         tid = get_tenant_id()
-    #     if not tid:
-    #         raise ValueError("tenant_id is required")
-    #     if not resource_id:
-    #         raise ValueError("resource_id is required")
-    #     # model_client = await self.get_tenant_model_client(tid)
-
-    #     resource_data = await self.resource_api.resource_get(
-    #         tenant=tid,
-    #         resource=resource_id,
-    #     )
-    #     team_builder = resource_team_map.get(resource_data.type)
-    #     if not team_builder:
-    #         raise ValueError(
-    #             f"cant create team for unsupported resource type: {resource_data.type}"
-    #         )
-    #     team = await team_builder.create_team(model_client=model_client)
-
-    #     return team
 
     # async def create_team(
     #     self,
@@ -222,12 +195,6 @@ class AgClient:
     #     #     )
     #     #     results.append(new_team)
     #     # return results
-
-    # async def handle_message_create(self, message: ChatMessageUpsert) -> None:
-    #     await self.chat_api.chat_message_upsert(
-    #         tenant=message.tenant_id,
-    #         chat_message_upsert=message.model_dump(),
-    #     )
 
     # async def get_tenant_model_client(self, tid: str, model_name: str = "default"):
     #     # if hasattr(self, "_default_model_client"):

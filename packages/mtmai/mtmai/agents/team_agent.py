@@ -1,5 +1,6 @@
 from autogen_agentchat.base import TaskResult, Team
 from autogen_core import (
+    AgentRuntime,
     MessageContext,
     RoutedAgent,
     SingleThreadedAgentRuntime,
@@ -13,6 +14,7 @@ from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id, set_step_canceled_ctx
+from mtmai.teams.instagram_team import InstagramTeam
 
 
 class TeamRunnerAgent(RoutedAgent):
@@ -39,7 +41,7 @@ class TeamRunnerAgent(RoutedAgent):
 
         runtime.start()
 
-        team = await self.build_team(component_id=message.component_id)
+        team = await self.build_team(runtime=runtime, component_id=message.component_id)
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
@@ -73,7 +75,7 @@ class TeamRunnerAgent(RoutedAgent):
         await runtime.stop_when_idle()
         logger.info("团队运行完全结束")
 
-    async def build_team(self, component_id: str | None = None):
+    async def build_team(self, runtime: AgentRuntime, component_id: str | None = None):
         tenant_client = TenantClient()
         tid = get_tenant_id()
         if not tid:
@@ -85,7 +87,11 @@ class TeamRunnerAgent(RoutedAgent):
         logger.info(f"component data: {component_data}")
 
         if component_data.component_type == ComponentTypes.TEAM:
-            team = Team.load_component(component_data)
-            return team
+            # team = Team.load_component(component_data)
+            team = InstagramTeam.load_component(component_data)
+            if isinstance(team, InstagramTeam):
+                return team
+            else:
+                raise ValueError(f"不支持组件类型: {component_data.component_type}")
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
