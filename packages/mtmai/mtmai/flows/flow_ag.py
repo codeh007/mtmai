@@ -39,8 +39,6 @@ class FlowAg:
             cancellation_token=cancellation_token,
         ):
             if isinstance(event, TaskResult):
-                # result = event
-                # 结束了
                 return jsonable_encoder(event)
                 # mt_result = MtTaskResult(
                 #     messages=result.messages,
@@ -48,6 +46,6 @@ class FlowAg:
                 # )
                 # tenant_client.emit(mt_result)
                 # break
-            await tenant_client.emit(event)
+            # await tenant_client.emit(event)
 
-        logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
+        # logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
