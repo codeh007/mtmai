@@ -12,7 +12,6 @@ from autogen_agentchat.teams._group_chat._selector_group_chat import (
     SelectorGroupChatManager,
 )
 from autogen_core import (
-    AgentId,
     AgentRuntime,
     CancellationToken,
     Component,
@@ -23,8 +22,6 @@ from autogen_core import (
 )
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from pydantic import BaseModel
-
 from mtmai.agents._agents import (
     browser_topic_type,
     human_agent_topic_type,
@@ -32,7 +29,6 @@ from mtmai.agents._agents import (
     platform_account_topic_type,
     router_topic_type,
     sales_agent_topic_type,
-    team_runner_topic_type,
     triage_agent_topic_type,
     user_topic_type,
 )
@@ -45,12 +41,14 @@ from mtmai.agents._types import (
 from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
-from mtmai.agents.team_agent import TeamRunnerAgent
+
+# from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.teams.base_team import MtBaseTeam
+from pydantic import BaseModel
 
 
 def execute_order(product: str, price: int) -> str:
@@ -377,20 +375,20 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
         #     )
         # )
 
-        team_runner_agent_type = await TeamRunnerAgent.register(
-            runtime=self._runtime,
-            type=team_runner_topic_type,
-            factory=lambda: TeamRunnerAgent(
-                description="Team runner agent.",
-                # model_client=model_client
-            ),
-        )
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=team_runner_topic_type,
-                agent_type=team_runner_agent_type.type,
-            )
-        )
+        # team_runner_agent_type = await TeamRunnerAgent.register(
+        #     runtime=self._runtime,
+        #     type=team_runner_topic_type,
+        #     factory=lambda: TeamRunnerAgent(
+        #         description="Team runner agent.",
+        #         # model_client=model_client
+        #     ),
+        # )
+        # await self._runtime.add_subscription(
+        #     TypeSubscription(
+        #         topic_type=team_runner_topic_type,
+        #         agent_type=team_runner_agent_type.type,
+        #     )
+        # )
 
         browser_agent_type = await BrowserAgent.register(
             runtime=self._runtime,
@@ -540,22 +538,17 @@ class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
 
     #     return team
 
-    async def run_team(
-        self, message: AgentRunInput, cancellation_token: CancellationToken
-    ):
-        if not self._initialized:
-            await self._init(self._runtime)
-        component_id_or_name = message.resource_id
-        session_id = get_chat_session_id_ctx()
+    # async def run_team(
+    #     self, message: AgentRunInput, cancellation_token: CancellationToken
+    # ):
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
+    #     component_id_or_name = message.resource_id
+    #     session_id = get_chat_session_id_ctx()
 
-        result = await self._runtime.send_message(
-            # message=TeamRunnerTask(
-            #     content=message.content,
-            #     team=component_id_or_name,
-            #     resource_id=message.resource_id,
-            # ),
-            message=message,
-            recipient=AgentId(type=team_runner_topic_type, key=session_id),
-            cancellation_token=cancellation_token,
-        )
-        return result
+    #     result = await self._runtime.send_message(
+    #         message=message,
+    #         recipient=AgentId(type=team_runner_topic_type, key=session_id),
+    #         cancellation_token=cancellation_token,
+    #     )
+    #     return result

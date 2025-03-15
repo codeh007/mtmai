@@ -18,6 +18,7 @@ from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from typing_extensions import Self
 
 from ..agents.intervention_handlers import NeedsUserInputHandler
+from ..clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from ..context.context_client import TenantClient
 from ..context.ctx import get_chat_session_id_ctx
 
@@ -112,6 +113,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         # self.termination_condition = termination_condition
         # self.max_turns = max_turns
         # self._model_client = model_client
+        self.tenant_client = TenantClient()
+
         super().__init__(
             participants=participants,
             group_chat_manager_name="RoundRobinGroupChatManager",
@@ -149,15 +152,15 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         return _factory
 
     async def _init(self, runtime: AgentRuntime):
-        tenant_client = TenantClient()
-        session_id = get_chat_session_id_ctx()
-        agState = await tenant_client.ag.load_team_state(
-            tenant_id=tenant_client.tenant_id,
-            chat_id=session_id,
+        self.session_id = get_chat_session_id_ctx()
+        agState = await self.tenant_client.ag.load_team_state(
+            tenant_id=self.tenant_client.tenant_id,
+            chat_id=self.session_id,
         )
         if agState:
             await runtime.load_state(agState)
         runtime.start()
+        await self.tenant_client.emit(ChatSessionStartEvent(threadId=self.session_id))
         await super()._init(runtime)
         # from mtmai.context.context_client import TenantClient
 
@@ -345,6 +348,13 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         ):
             yield event
 
+        await self.tenant_client.ag.save_team_state(
+            team=self,
+            componentId=self._team_id,
+            tenant_id=self.tenant_client.tenant_id,
+            chat_id=self.session_id,
+        )
+
     #     # Use async for to yield events from inner_team's run_stream
     #     # async for event in self.inner_team.run_stream(
     #     #     task=task, cancellation_token=cancellation_token
@@ -435,7 +445,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         if not self._initialized:
             await self._init(self._runtime)
 
-        return await self.inner_team.save_state()
+        # return await self.inner_team.save_state()
+        return {}
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         if not self._initialized:
