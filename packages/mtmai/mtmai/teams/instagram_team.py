@@ -155,6 +155,9 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             tenant_id=tenant_client.tenant_id,
             chat_id=session_id,
         )
+        if agState:
+            await runtime.load_state(agState)
+        runtime.start()
         await super()._init(runtime)
         # from mtmai.context.context_client import TenantClient
 
@@ -496,10 +499,10 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     @classmethod
     def _from_config(cls, config) -> Self:
         participants = []
-        if hasattr(config, "actual_instance"):
-            config = config.actual_instance
-        if hasattr(config.participants, "actual_instance"):
-            config.participants = config.participants.actual_instance
+        # if hasattr(config, "actual_instance"):
+        #     config = config.actual_instance
+        # if hasattr(config.participants, "actual_instance"):
+        #     config.participants = config.participants.actual_instance
         for participant in config.participants:
             if hasattr(participant, "actual_instance") and participant.actual_instance:
                 participant = participant.actual_instance

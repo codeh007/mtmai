@@ -1,13 +1,6 @@
 from autogen_agentchat.base import TaskResult, Team
-from autogen_core import (
-    AgentRuntime,
-    MessageContext,
-    RoutedAgent,
-    SingleThreadedAgentRuntime,
-    message_handler,
-)
+from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
-from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.component_types import ComponentTypes
@@ -29,19 +22,19 @@ class TeamRunnerAgent(RoutedAgent):
         tenant_client = TenantClient()
         session_id = self.id.key
 
-        agState = await tenant_client.ag.load_team_state(
-            tenant_id=tenant_client.tenant_id,
-            chat_id=session_id,
-        )
-        logger.info(f"agState: {agState}")
-        needs_user_input_handler = NeedsUserInputHandler()
-        runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler]
-        )
+        # agState = await tenant_client.ag.load_team_state(
+        #     tenant_id=tenant_client.tenant_id,
+        #     chat_id=session_id,
+        # )
+        # logger.info(f"agState: {agState}")
+        # needs_user_input_handler = NeedsUserInputHandler()
+        # runtime = SingleThreadedAgentRuntime(
+        #     intervention_handlers=[needs_user_input_handler]
+        # )
 
-        runtime.start()
+        # runtime.start()
 
-        team = await self.build_team(runtime=runtime, component_id=message.component_id)
+        team = await self.build_team(component_id=message.component_id)
         await tenant_client.emit(ChatSessionStartEvent(threadId=session_id))
         self.teams.append(team)
 
@@ -72,10 +65,10 @@ class TeamRunnerAgent(RoutedAgent):
             chat_id=session_id,
         )
 
-        await runtime.stop_when_idle()
+        # await runtime.stop_when_idle()
         logger.info("团队运行完全结束")
 
-    async def build_team(self, runtime: AgentRuntime, component_id: str | None = None):
+    async def build_team(self, component_id: str | None = None):
         tenant_client = TenantClient()
         tid = get_tenant_id()
         if not tid:
