@@ -6,7 +6,6 @@ from autogen_core import (
     message_handler,
 )
 from loguru import logger
-
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
@@ -66,7 +65,7 @@ class TeamRunnerAgent(RoutedAgent):
 
         await tenant_client.ag.save_team_state(
             team=team,
-            # team_id=team_id,
+            component_id=message.component_id,
             tenant_id=tenant_client.tenant_id,
             chat_id=session_id,
         )

@@ -1,7 +1,5 @@
 from autogen_agentchat.base import Team
-from autogen_agentchat.teams import BaseGroupChat
 from connecpy.context import ClientContext
-
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -100,7 +98,7 @@ class AgClient:
             return None
 
     async def save_team_state(
-        self, team: BaseGroupChat, tenant_id: str, chat_id: str
+        self, componentId: str, team: Team, tenant_id: str, chat_id: str
     ) -> None:
         """保存团队状态"""
         # logger.info("保存团队状态", component_id=team.dump_component().)
@@ -114,6 +112,7 @@ class AgClient:
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
                 # componentId=team.,
+                componentId=componentId,
                 chatId=chat_id,
                 state=state,
             ),
