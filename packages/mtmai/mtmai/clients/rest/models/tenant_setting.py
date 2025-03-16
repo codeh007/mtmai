@@ -22,20 +22,12 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgStateUpsert(BaseModel):
+class TenantSetting(BaseModel):
     """
-    AgStateUpsert
+    TenantSetting
     """ # noqa: E501
-    version: Optional[StrictStr] = '1.0.0'
-    type: Optional[StrictStr] = 'TeamState'
-    component_id: StrictStr = Field(description="组件id", alias="componentId")
-    chat_id: StrictStr = Field(description="聊天id", alias="chatId")
-    state: Dict[str, Any]
-    topic: Optional[StrictStr] = Field(default=None, description="主题")
-    source: Optional[StrictStr] = Field(default=None, description="来源")
-    state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
-    tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "state", "topic", "source", "stateId", "tenantId"]
+    id: Optional[StrictStr] = Field(default=None, description="The id of the tenant setting")
+    __properties: ClassVar[List[str]] = ["id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +47,7 @@ class AgStateUpsert(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgStateUpsert from a JSON string"""
+        """Create an instance of TenantSetting from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,7 +72,7 @@ class AgStateUpsert(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgStateUpsert from a dict"""
+        """Create an instance of TenantSetting from a dict"""
         if obj is None:
             return None
 
@@ -88,15 +80,7 @@ class AgStateUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
-            "componentId": obj.get("componentId"),
-            "chatId": obj.get("chatId"),
-            "state": obj.get("state"),
-            "topic": obj.get("topic"),
-            "source": obj.get("source"),
-            "stateId": obj.get("stateId"),
-            "tenantId": obj.get("tenantId")
+            "id": obj.get("id")
         })
         return _obj
 
