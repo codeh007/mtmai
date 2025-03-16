@@ -13,5 +13,5 @@ class FlowTenantSettings:
     async def step_tenant_settings_entry(self, hatctx: Context):
         input = AgentRunInput.model_validate(hatctx.input)
         return {
-            "tenant_settings": "reset",
+            "ok": "ok",
         }
