@@ -1,9 +1,11 @@
 from autogen_agentchat.base import TaskResult
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.component_types import ComponentTypes
+from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_tenant_id
@@ -12,8 +14,8 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name="ag",
-    on_events=["ag:run"],
+    name=FlowNames.AG,
+    on_events=[f"{FlowNames.AG}"],
 )
 class FlowAg:
     @mtmapp.step(timeout="60m")

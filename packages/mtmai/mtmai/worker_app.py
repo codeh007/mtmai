@@ -12,8 +12,9 @@ serializer_types = [ChatSessionStartEvent, AskToGreet, Greeting, Feedback]
 
 def get_workflows_types():
     from mtmai.flows.flow_ag import FlowAg
+    from mtmai.flows.flow_tenant_settings import FlowTenantSettings
 
-    return [FlowAg]
+    return [FlowAg, FlowTenantSettings]
 
 
 async def run_worker():
