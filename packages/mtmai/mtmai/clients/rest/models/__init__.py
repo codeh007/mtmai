@@ -238,6 +238,8 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
+from mtmai.clients.rest.models.system_component import SystemComponent
+from mtmai.clients.rest.models.system_config import SystemConfig
 from mtmai.clients.rest.models.team_config_base import TeamConfigBase
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_types import TeamTypes
@@ -245,6 +247,8 @@ from mtmai.clients.rest.models.tenant import Tenant
 from mtmai.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmai.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
 from mtmai.clients.rest.models.tenant_alerting_settings import TenantAlertingSettings
+from mtmai.clients.rest.models.tenant_component import TenantComponent
+from mtmai.clients.rest.models.tenant_component_config import TenantComponentConfig
 from mtmai.clients.rest.models.tenant_invite import TenantInvite
 from mtmai.clients.rest.models.tenant_invite_list import TenantInviteList
 from mtmai.clients.rest.models.tenant_list import TenantList
