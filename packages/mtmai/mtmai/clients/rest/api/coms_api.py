@@ -332,6 +332,9 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
+        description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -355,6 +358,12 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param type: The component type
+        :type type: str
+        :param provider: The component provider
+        :type provider: str
+        :param description: The component description
+        :type description: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -381,6 +390,9 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            type=type,
+            provider=provider,
+            description=description,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -410,6 +422,9 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
+        description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -433,6 +448,12 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param type: The component type
+        :type type: str
+        :param provider: The component provider
+        :type provider: str
+        :param description: The component description
+        :type description: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -459,6 +480,9 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            type=type,
+            provider=provider,
+            description=description,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -488,6 +512,9 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
+        description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -511,6 +538,12 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param type: The component type
+        :type type: str
+        :param provider: The component provider
+        :type provider: str
+        :param description: The component description
+        :type description: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -537,6 +570,9 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            type=type,
+            provider=provider,
+            description=description,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -561,6 +597,9 @@ class ComsApi:
         tenant,
         label,
         gallery,
+        type,
+        provider,
+        description,
         _request_auth,
         _content_type,
         _headers,
@@ -592,6 +631,18 @@ class ComsApi:
         if gallery is not None:
             
             _query_params.append(('gallery', gallery))
+            
+        if type is not None:
+            
+            _query_params.append(('type', type))
+            
+        if provider is not None:
+            
+            _query_params.append(('provider', provider))
+            
+        if description is not None:
+            
+            _query_params.append(('description', description))
             
         # process the header parameters
         # process the form parameters
