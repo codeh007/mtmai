@@ -17,21 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
-from mtmai.clients.rest.models.or_termination_component import OrTerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class InstagramTeamConfig(BaseModel):
+class OrTerminationConfig(BaseModel):
     """
-    InstagramTeamConfig
+    OrTerminationConfig
     """ # noqa: E501
-    participants: List[InstagramAgentComponent]
-    max_turns: StrictInt
-    termination_condition: OrTerminationComponent
-    __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition"]
+    conditions: List[Dict[str, Any]]
+    __properties: ClassVar[List[str]] = ["conditions"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +47,7 @@ class InstagramTeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a JSON string"""
+        """Create an instance of OrTerminationConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,21 +68,11 @@ class InstagramTeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a dict"""
+        """Create an instance of OrTerminationConfig from a dict"""
         if obj is None:
             return None
 
@@ -94,9 +80,7 @@ class InstagramTeamConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "participants": [InstagramAgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "max_turns": obj.get("max_turns"),
-            "termination_condition": OrTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "conditions": obj.get("conditions")
         })
         return _obj
 

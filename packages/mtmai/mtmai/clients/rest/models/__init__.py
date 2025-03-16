@@ -169,6 +169,8 @@ from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmai.clients.rest.models.operation_enum import OperationEnum
+from mtmai.clients.rest.models.or_termination_component import OrTerminationComponent
+from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.platform import Platform
