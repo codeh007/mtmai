@@ -1,5 +1,4 @@
 from autogen_agentchat.base import TaskResult
-from fastapi.encoders import jsonable_encoder
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -39,13 +38,16 @@ class FlowAg:
             team = InstagramTeam.load_component(component_data)
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
+
+        task_result = None
         async for event in team.run_stream(
             task=input.content,
             cancellation_token=cancellation_token,
         ):
             if isinstance(event, TaskResult):
                 logger.info(f"工作流完成: {event}")
-                return jsonable_encoder(event)
+                task_result = event
+                break
                 # mt_result = MtTaskResult(
                 #     messages=result.messages,
                 #     stop_reason=result.stop_reason,
@@ -58,10 +60,14 @@ class FlowAg:
                 if hasattr(agent, "close"):
                     await agent.close()
 
+        team_state = await team.save_state()
+
         await tenant_client.ag.save_team_state(
-            component_id=input.component_id,
+            componentId=input.component_id,
             team=team,
             tenant_id=tid,
-            chat_id=session_id(),
+            chat_id=session_id,
         )
-        logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
+
+        logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n{task_result}")
+        return task_result

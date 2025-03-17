@@ -3,7 +3,6 @@ from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.state import RoundRobinManagerState
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
@@ -386,56 +385,17 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        state = RoundRobinManagerState(
-            message_thread=list(self._message_thread),
-            current_turn=self._current_turn,
-            next_speaker_index=self._next_speaker_index,
-        )
-        return state.model_dump()
+        # state = RoundRobinManagerState(
+        #     message_thread=list(self._message_thread),
+        #     current_turn=self._current_turn,
+        #     next_speaker_index=self._next_speaker_index,
+        # )
+        # return state.model_dump()
+        state = await super().save_state()
+        return state
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        if not self._initialized:
-            await self._init(self._runtime)
-
-        if self._is_running:
-            raise RuntimeError("The team cannot be loaded while it is running.")
-        self._is_running = True
-
-        # try:
-        #     team_state = TeamState.model_validate(state)
-        #     # Load the state of all participants.
-        #     for name, agent_type in zip(
-        #         self._participant_names, self._participant_topic_types, strict=True
-        #     ):
-        #         agent_id = AgentId(type=agent_type, key=self._team_id)
-        #         if name not in team_state.agent_states:
-        #             raise ValueError(
-        #                 f"Agent state for {name} not found in the saved state."
-        #             )
-        #         await self._runtime.agent_load_state(
-        #             agent_id, team_state.agent_states[name]
-        #         )
-        #     # Load the state of the group chat manager.
-        #     agent_id = AgentId(
-        #         type=self._group_chat_manager_topic_type, key=self._team_id
-        #     )
-        #     if self._group_chat_manager_name not in team_state.agent_states:
-        #         raise ValueError(
-        #             f"Agent state for {self._group_chat_manager_name} not found in the saved state."
-        #         )
-        #     await self._runtime.agent_load_state(
-        #         agent_id, team_state.agent_states[self._group_chat_manager_name]
-        #     )
-
-        # except ValidationError as e:
-        #     raise ValueError(
-        #         "Invalid state format. The expected state format has changed since v0.4.9. "
-        #         "Please read the release note on GitHub."
-        #     ) from e
-
-        # finally:
-        #     # Indicate that the team is no longer running.
-        #     self._is_running = False
+        await super().load_state(state)
 
     def _to_config(self) -> InstagramTeamConfig:
         participants = [
