@@ -57,6 +57,8 @@ class NeedsUserInputHandler(DefaultInterventionHandler):
         return self.question_for_user.content
 
     async def emit_message_event(self, message: Any):
+        if not message:
+            return
         if isinstance(message, GroupChatStart):
             pass
         elif isinstance(message, GroupChatRequestPublish):

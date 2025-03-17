@@ -157,9 +157,10 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         )
         if agState:
             await runtime.load_state(agState)
-        runtime.start()
         # await self.tenant_client.emit(ChatSessionStartEvent(threadId=self.session_id))
         await super()._init(runtime)
+        runtime.start()
+
         # from mtmai.context.context_client import TenantClient
 
     #         #     self.session_id = get_chat_session_id_ctx()
@@ -344,7 +345,11 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         async for event in super().run_stream(
             task=task, cancellation_token=cancellation_token
         ):
-            yield event
+            if isinstance(event, TaskResult):
+                yield event
+            else:
+                await self.tenant_client.emit(event)
+                yield event
 
         await self.tenant_client.ag.save_team_state(
             team=self,
@@ -527,7 +532,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
         needs_user_input_handler = NeedsUserInputHandler(session_id)
         runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler]
+            intervention_handlers=[needs_user_input_handler],
+            ignore_unhandled_exceptions=False,
         )
         return cls(
             participants=participants,
