@@ -33,6 +33,8 @@ from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStateProper
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
+from mtmai.clients.rest.models.agent_event import AgentEvent
+from mtmai.clients.rest.models.agent_message import AgentMessage
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
@@ -46,6 +48,7 @@ from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentCo
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
+from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmai.clients.rest.models.base_state import BaseState
 from mtmai.clients.rest.models.blog import Blog
@@ -66,6 +69,7 @@ from mtmai.clients.rest.models.browser_update import BrowserUpdate
 from mtmai.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmai.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
 from mtmai.clients.rest.models.cancel_event_request import CancelEventRequest
+from mtmai.clients.rest.models.chat_agent_container_state import ChatAgentContainerState
 from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
@@ -151,6 +155,7 @@ from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
 from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmai.clients.rest.models.magentic_one_orchestrator_state import MagenticOneOrchestratorState
 from mtmai.clients.rest.models.max_message_termination_component import MaxMessageTerminationComponent
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmai.clients.rest.models.memory_config import MemoryConfig
@@ -214,6 +219,7 @@ from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
 from mtmai.clients.rest.models.response_format import ResponseFormat
 from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
+from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState
 from mtmai.clients.rest.models.run_new_task_response import RunNewTaskResponse
 from mtmai.clients.rest.models.run_status import RunStatus
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
@@ -225,6 +231,7 @@ from mtmai.clients.rest.models.schema_form import SchemaForm
 from mtmai.clients.rest.models.section import Section
 from mtmai.clients.rest.models.selector_group_chat_component import SelectorGroupChatComponent
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
+from mtmai.clients.rest.models.selector_manager_state import SelectorManagerState
 from mtmai.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmai.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmai.clients.rest.models.site import Site
@@ -232,6 +239,7 @@ from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
+from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
 from mtmai.clients.rest.models.step_run import StepRun
@@ -247,6 +255,7 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.stop_message_termination_component import StopMessageTerminationComponent
 from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
 from mtmai.clients.rest.models.subsection import Subsection
+from mtmai.clients.rest.models.swarm_manager_state import SwarmManagerState
 from mtmai.clients.rest.models.system_component import SystemComponent
 from mtmai.clients.rest.models.system_config import SystemConfig
 from mtmai.clients.rest.models.team_config_base import TeamConfigBase

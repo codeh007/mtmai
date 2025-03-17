@@ -28,6 +28,13 @@ class StateType(str, Enum):
     """
     ASSISTANTAGENTSTATE = 'AssistantAgentState'
     TEAMSTATE = 'TeamState'
+    ROUNDROBINMANAGERSTATE = 'RoundRobinManagerState'
+    SELECTORMANAGERSTATE = 'SelectorManagerState'
+    SWARMMANAGERSTATE = 'SwarmManagerState'
+    MAGENTICONEORCHESTRATORSTATE = 'MagenticOneOrchestratorState'
+    SOCIETYOFMINDAGENTSTATE = 'SocietyOfMindAgentState'
+    CHATAGENTCONTAINERSTATE = 'ChatAgentContainerState'
+    BASEGROUPCHATMANAGERSTATE = 'BaseGroupChatManagerState'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

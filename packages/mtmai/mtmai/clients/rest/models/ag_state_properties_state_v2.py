@@ -18,26 +18,44 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
-from mtmai.clients.rest.models.base_state import BaseState
+from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
+from mtmai.clients.rest.models.chat_agent_container_state import ChatAgentContainerState
+from mtmai.clients.rest.models.magentic_one_orchestrator_state import MagenticOneOrchestratorState
+from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState
+from mtmai.clients.rest.models.selector_manager_state import SelectorManagerState
+from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
+from mtmai.clients.rest.models.swarm_manager_state import SwarmManagerState
 from mtmai.clients.rest.models.team_state import TeamState
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGSTATEPROPERTIESSTATEV2_ONE_OF_SCHEMAS = ["AssistantAgentState", "BaseState", "TeamState"]
+AGSTATEPROPERTIESSTATEV2_ONE_OF_SCHEMAS = ["AssistantAgentState", "BaseGroupChatManagerState", "ChatAgentContainerState", "MagenticOneOrchestratorState", "RoundRobinManagerState", "SelectorManagerState", "SocietyOfMindAgentState", "SwarmManagerState", "TeamState"]
 
 class AgStatePropertiesStateV2(BaseModel):
     """
     AgStatePropertiesStateV2
     """
-    # data type: BaseState
-    oneof_schema_1_validator: Optional[BaseState] = None
     # data type: AssistantAgentState
-    oneof_schema_2_validator: Optional[AssistantAgentState] = None
+    oneof_schema_1_validator: Optional[AssistantAgentState] = None
     # data type: TeamState
-    oneof_schema_3_validator: Optional[TeamState] = None
-    actual_instance: Optional[Union[AssistantAgentState, BaseState, TeamState]] = None
-    one_of_schemas: Set[str] = { "AssistantAgentState", "BaseState", "TeamState" }
+    oneof_schema_2_validator: Optional[TeamState] = None
+    # data type: RoundRobinManagerState
+    oneof_schema_3_validator: Optional[RoundRobinManagerState] = None
+    # data type: SelectorManagerState
+    oneof_schema_4_validator: Optional[SelectorManagerState] = None
+    # data type: SwarmManagerState
+    oneof_schema_5_validator: Optional[SwarmManagerState] = None
+    # data type: MagenticOneOrchestratorState
+    oneof_schema_6_validator: Optional[MagenticOneOrchestratorState] = None
+    # data type: SocietyOfMindAgentState
+    oneof_schema_7_validator: Optional[SocietyOfMindAgentState] = None
+    # data type: ChatAgentContainerState
+    oneof_schema_8_validator: Optional[ChatAgentContainerState] = None
+    # data type: BaseGroupChatManagerState
+    oneof_schema_9_validator: Optional[BaseGroupChatManagerState] = None
+    actual_instance: Optional[Union[AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentState", "BaseGroupChatManagerState", "ChatAgentContainerState", "MagenticOneOrchestratorState", "RoundRobinManagerState", "SelectorManagerState", "SocietyOfMindAgentState", "SwarmManagerState", "TeamState" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -60,11 +78,6 @@ class AgStatePropertiesStateV2(BaseModel):
         instance = AgStatePropertiesStateV2.model_construct()
         error_messages = []
         match = 0
-        # validate data type: BaseState
-        if not isinstance(v, BaseState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `BaseState`")
-        else:
-            match += 1
         # validate data type: AssistantAgentState
         if not isinstance(v, AssistantAgentState):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentState`")
@@ -75,12 +88,47 @@ class AgStatePropertiesStateV2(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TeamState`")
         else:
             match += 1
+        # validate data type: RoundRobinManagerState
+        if not isinstance(v, RoundRobinManagerState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinManagerState`")
+        else:
+            match += 1
+        # validate data type: SelectorManagerState
+        if not isinstance(v, SelectorManagerState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorManagerState`")
+        else:
+            match += 1
+        # validate data type: SwarmManagerState
+        if not isinstance(v, SwarmManagerState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SwarmManagerState`")
+        else:
+            match += 1
+        # validate data type: MagenticOneOrchestratorState
+        if not isinstance(v, MagenticOneOrchestratorState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MagenticOneOrchestratorState`")
+        else:
+            match += 1
+        # validate data type: SocietyOfMindAgentState
+        if not isinstance(v, SocietyOfMindAgentState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SocietyOfMindAgentState`")
+        else:
+            match += 1
+        # validate data type: ChatAgentContainerState
+        if not isinstance(v, ChatAgentContainerState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ChatAgentContainerState`")
+        else:
+            match += 1
+        # validate data type: BaseGroupChatManagerState
+        if not isinstance(v, BaseGroupChatManagerState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `BaseGroupChatManagerState`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -95,12 +143,6 @@ class AgStatePropertiesStateV2(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into BaseState
-        try:
-            instance.actual_instance = BaseState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         # deserialize data into AssistantAgentState
         try:
             instance.actual_instance = AssistantAgentState.from_json(json_str)
@@ -113,13 +155,55 @@ class AgStatePropertiesStateV2(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into RoundRobinManagerState
+        try:
+            instance.actual_instance = RoundRobinManagerState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SelectorManagerState
+        try:
+            instance.actual_instance = SelectorManagerState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SwarmManagerState
+        try:
+            instance.actual_instance = SwarmManagerState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into MagenticOneOrchestratorState
+        try:
+            instance.actual_instance = MagenticOneOrchestratorState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SocietyOfMindAgentState
+        try:
+            instance.actual_instance = SocietyOfMindAgentState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into ChatAgentContainerState
+        try:
+            instance.actual_instance = ChatAgentContainerState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into BaseGroupChatManagerState
+        try:
+            instance.actual_instance = BaseGroupChatManagerState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -133,7 +217,7 @@ class AgStatePropertiesStateV2(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentState, BaseState, TeamState]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentState, BaseGroupChatManagerState, ChatAgentContainerState, MagenticOneOrchestratorState, RoundRobinManagerState, SelectorManagerState, SocietyOfMindAgentState, SwarmManagerState, TeamState]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
