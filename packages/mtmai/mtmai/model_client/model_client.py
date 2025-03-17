@@ -31,7 +31,6 @@ from autogen_core import (
     Image,
 )
 from autogen_core.logging import LLMCallEvent
-from autogen_core.models import ModelCapabilities  # type: ignore
 from autogen_core.models import (
     AssistantMessage,
     ChatCompletionClient,
@@ -39,6 +38,7 @@ from autogen_core.models import (
     CreateResult,
     FunctionExecutionResultMessage,
     LLMMessage,
+    ModelCapabilities,  # type: ignore
     ModelFamily,
     ModelInfo,
     RequestUsage,
@@ -444,6 +444,7 @@ class MTBaseOpenAIChatCompletionClient(ChatCompletionClient):
         extra_create_args: Mapping[str, Any] = {},
         cancellation_token: Optional[CancellationToken] = None,
     ) -> CreateResult:
+        logger.info(f"调用 LLM: {messages}")
         # Make sure all extra_create_args are valid
         extra_create_args_keys = set(extra_create_args.keys())
         if not create_kwargs.issuperset(extra_create_args_keys):

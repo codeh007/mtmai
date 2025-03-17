@@ -3,6 +3,7 @@ from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.state import RoundRobinManagerState
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
@@ -385,11 +386,12 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        if not self._initialized:
-            await self._init(self._runtime)
-
-        # return await self.inner_team.save_state()
-        return {}
+        state = RoundRobinManagerState(
+            message_thread=list(self._message_thread),
+            current_turn=self._current_turn,
+            next_speaker_index=self._next_speaker_index,
+        )
+        return state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         if not self._initialized:

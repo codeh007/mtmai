@@ -7,7 +7,7 @@ from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_tenant_id
+from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.teams.instagram_team import InstagramTeam
 from mtmai.worker_app import mtmapp
 
@@ -22,6 +22,7 @@ class FlowAg:
         input = AgentRunInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
+        session_id = get_chat_session_id_ctx()
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
@@ -52,5 +53,15 @@ class FlowAg:
                 # tenant_client.emit(mt_result)
                 # break
             # await tenant_client.emit(event)
+        if team and hasattr(team, "_participants"):
+            for agent in team._participants:
+                if hasattr(agent, "close"):
+                    await agent.close()
 
+        await tenant_client.ag.save_team_state(
+            component_id=input.component_id,
+            team=team,
+            tenant_id=tid,
+            chat_id=session_id(),
+        )
         logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
