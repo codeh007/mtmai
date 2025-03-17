@@ -19,11 +19,12 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.base_state import BaseState
+from mtmai.clients.rest.models.team_state import TeamState
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGSTATEPROPERTIESSTATEV2_ONE_OF_SCHEMAS = ["AssistantAgentState", "BaseState"]
+AGSTATEPROPERTIESSTATEV2_ONE_OF_SCHEMAS = ["AssistantAgentState", "BaseState", "TeamState"]
 
 class AgStatePropertiesStateV2(BaseModel):
     """
@@ -33,8 +34,10 @@ class AgStatePropertiesStateV2(BaseModel):
     oneof_schema_1_validator: Optional[BaseState] = None
     # data type: AssistantAgentState
     oneof_schema_2_validator: Optional[AssistantAgentState] = None
-    actual_instance: Optional[Union[AssistantAgentState, BaseState]] = None
-    one_of_schemas: Set[str] = { "AssistantAgentState", "BaseState" }
+    # data type: TeamState
+    oneof_schema_3_validator: Optional[TeamState] = None
+    actual_instance: Optional[Union[AssistantAgentState, BaseState, TeamState]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentState", "BaseState", "TeamState" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -67,12 +70,17 @@ class AgStatePropertiesStateV2(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentState`")
         else:
             match += 1
+        # validate data type: TeamState
+        if not isinstance(v, TeamState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TeamState`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -99,13 +107,19 @@ class AgStatePropertiesStateV2(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into TeamState
+        try:
+            instance.actual_instance = TeamState.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgStatePropertiesStateV2 with oneOf schemas: AssistantAgentState, BaseState, TeamState. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -119,7 +133,7 @@ class AgStatePropertiesStateV2(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentState, BaseState]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentState, BaseState, TeamState]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

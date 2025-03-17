@@ -26,8 +26,8 @@ class StateType(str, Enum):
     """
     allowed enum values
     """
-    BASESTATE = 'BaseState'
     ASSISTANTAGENTSTATE = 'AssistantAgentState'
+    TEAMSTATE = 'TeamState'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

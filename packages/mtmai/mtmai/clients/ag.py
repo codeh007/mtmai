@@ -13,6 +13,8 @@ from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
+from .rest.models.state_type import StateType
+
 
 class AgClient:
     def __init__(
@@ -100,8 +102,6 @@ class AgClient:
     async def save_team_state(
         self, componentId: str, team: Team, tenant_id: str, chat_id: str
     ) -> None:
-        """保存团队状态"""
-        # logger.info("保存团队状态", component_id=team.dump_component().)
         # 确保停止团队的内部 agents
         if team and hasattr(team, "_participants"):
             for agent in team._participants:
@@ -114,6 +114,7 @@ class AgClient:
                 componentId=componentId,
                 chatId=chat_id,
                 state=state,
+                type=StateType.TEAMSTATE,
             ),
         )
 
