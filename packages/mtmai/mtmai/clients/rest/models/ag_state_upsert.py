@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStatePropertiesStateV2
+from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
 from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
@@ -32,13 +32,12 @@ class AgStateUpsert(BaseModel):
     type: StateType
     component_id: StrictStr = Field(description="组件id", alias="componentId")
     chat_id: StrictStr = Field(description="聊天id", alias="chatId")
-    topic: Optional[StrictStr] = Field(default=None, description="主题")
-    source: Optional[StrictStr] = Field(default=None, description="来源")
-    state: Dict[str, Any]
-    state_v2: Optional[AgStatePropertiesStateV2] = Field(default=None, alias="stateV2")
+    topic: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
+    state: AgStatePropertiesState
     state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
     tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateV2", "stateId", "tenantId"]
+    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateId", "tenantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -79,9 +78,9 @@ class AgStateUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of state_v2
-        if self.state_v2:
-            _dict['stateV2'] = self.state_v2.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of state
+        if self.state:
+            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
@@ -100,8 +99,7 @@ class AgStateUpsert(BaseModel):
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),
             "source": obj.get("source"),
-            "state": obj.get("state"),
-            "stateV2": AgStatePropertiesStateV2.from_dict(obj["stateV2"]) if obj.get("stateV2") is not None else None,
+            "state": AgStatePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None,
             "stateId": obj.get("stateId"),
             "tenantId": obj.get("tenantId")
         })

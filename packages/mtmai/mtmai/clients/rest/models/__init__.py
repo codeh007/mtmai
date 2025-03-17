@@ -29,7 +29,7 @@ from mtmai.clients.rest.models.ag_event_list import AgEventList
 from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
-from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStatePropertiesStateV2
+from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
