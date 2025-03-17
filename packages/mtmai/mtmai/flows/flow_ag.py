@@ -60,13 +60,11 @@ class FlowAg:
                 if hasattr(agent, "close"):
                     await agent.close()
 
-        team_state = await team.save_state()
-
         await tenant_client.ag.save_team_state(
             componentId=input.component_id,
-            team=team,
             tenant_id=tid,
             chat_id=session_id,
+            state=await team.save_state(),
         )
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n{task_result}")

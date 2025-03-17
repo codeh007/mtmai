@@ -8,6 +8,7 @@ from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
+from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.state_type import StateType
@@ -99,20 +100,14 @@ class AgClient:
             return None
 
     async def save_team_state(
-        self, componentId: str, team: Team, tenant_id: str, chat_id: str
+        self, componentId: str, tenant_id: str, chat_id: str, state: dict
     ) -> None:
-        # 确保停止团队的内部 agents
-        if team and hasattr(team, "_participants"):
-            for agent in team._participants:
-                if hasattr(agent, "close"):
-                    await agent.close()
-        state = await team.save_state()
         await self.ag_state_api.ag_state_upsert(
             tenant=tenant_id,
             ag_state_upsert=AgStateUpsert(
                 componentId=componentId,
                 chatId=chat_id,
-                state=state,
+                state=AgStatePropertiesState().from_dict(state),
                 type=StateType.TEAMSTATE,
             ),
         )
