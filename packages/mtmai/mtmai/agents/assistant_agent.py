@@ -16,7 +16,7 @@ from typing_extensions import Self
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
-    component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
+    component_provider_override = "mtmai.agents.assistant_agent.AssistantAgent"
 
     def __init__(
         self,

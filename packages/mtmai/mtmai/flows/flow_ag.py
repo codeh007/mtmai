@@ -35,8 +35,9 @@ class FlowAg:
             logger.exception(f"获取组件数据失败: {e}")
             raise e
 
+        component_dict = component_data.model_dump()
         if component_data.component_type == ComponentTypes.TEAM:
-            team = InstagramTeam.load_component(component_data)
+            team = InstagramTeam.load_component(component_dict)
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
         async for event in team.run_stream(

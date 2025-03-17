@@ -41,6 +41,8 @@ from mtmai.clients.rest.models.artifact_length_options import ArtifactLengthOpti
 from mtmai.clients.rest.models.artifact_list import ArtifactList
 from mtmai.clients.rest.models.artifact_tool_response import ArtifactToolResponse
 from mtmai.clients.rest.models.assigned_action import AssignedAction
+from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
+from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmai.clients.rest.models.blog import Blog
@@ -133,6 +135,7 @@ from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfi
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_component import InstagramTeamComponent
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.instagram_team_config_all_of_participants import InstagramTeamConfigAllOfParticipants
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -145,8 +148,8 @@ from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
 from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmai.clients.rest.models.max_message_termination_component import MaxMessageTerminationComponent
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
-from mtmai.clients.rest.models.max_message_termination_config_component import MaxMessageTerminationConfigComponent
 from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_component import ModelComponent
@@ -237,6 +240,8 @@ from mtmai.clients.rest.models.step_run_event_reason import StepRunEventReason
 from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeverity
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
+from mtmai.clients.rest.models.stop_message_termination_component import StopMessageTerminationComponent
+from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.system_component import SystemComponent
 from mtmai.clients.rest.models.system_config import SystemConfig

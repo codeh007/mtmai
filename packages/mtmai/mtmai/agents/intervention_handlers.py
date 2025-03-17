@@ -38,13 +38,13 @@ class NeedsUserInputHandler(DefaultInterventionHandler):
         await self.emit_message_event(message)
         return message
 
-    async def on_response(
-        self, message: Any, *, sender: AgentId, recipient: AgentId | None
-    ) -> Any | type[DropMessage]:
-        """Called when a response is received by the AgentRuntime from an Agent's message handler returning a value."""
-        logger.info(f"intervention(on_response): {message}")
-        await self.emit_message_event(message)
-        return message
+    # async def on_response(
+    #     self, message: Any, *, sender: AgentId, recipient: AgentId | None
+    # ) -> Any | type[DropMessage]:
+    #     """Called when a response is received by the AgentRuntime from an Agent's message handler returning a value."""
+    #     logger.info(f"intervention(on_response): {message}")
+    #     await self.emit_message_event(message)
+    #     return message
 
     @property
     def needs_user_input(self) -> bool:

@@ -519,8 +519,10 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         # if hasattr(config.participants, "actual_instance"):
         #     config.participants = config.participants.actual_instance
         for participant in config.participants:
-            if hasattr(participant, "actual_instance") and participant.actual_instance:
-                participant = participant.actual_instance
+            participant
+            # if hasattr(participant, "actual_instance") and participant.actual_instance:
+            #     participant = participant.actual_instance
+            participant_config = participant.model_dump()
             participants.append(ChatAgent.load_component(participant))
         termination_condition = (
             TerminationCondition.load_component(

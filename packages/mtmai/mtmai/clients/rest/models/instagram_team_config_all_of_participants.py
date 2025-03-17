@@ -17,24 +17,24 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
 from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-INSTAGRAMTEAMCONFIGALLOFPARTICIPANTS_ONE_OF_SCHEMAS = ["AgentComponent", "InstagramAgentComponent"]
+INSTAGRAMTEAMCONFIGALLOFPARTICIPANTS_ONE_OF_SCHEMAS = ["AssistantAgentComponent", "InstagramAgentComponent"]
 
 class InstagramTeamConfigAllOfParticipants(BaseModel):
     """
     InstagramTeamConfigAllOfParticipants
     """
-    # data type: AgentComponent
-    oneof_schema_1_validator: Optional[AgentComponent] = None
     # data type: InstagramAgentComponent
-    oneof_schema_2_validator: Optional[InstagramAgentComponent] = None
-    actual_instance: Optional[Union[AgentComponent, InstagramAgentComponent]] = None
-    one_of_schemas: Set[str] = { "AgentComponent", "InstagramAgentComponent" }
+    oneof_schema_1_validator: Optional[InstagramAgentComponent] = None
+    # data type: AssistantAgentComponent
+    oneof_schema_2_validator: Optional[AssistantAgentComponent] = None
+    actual_instance: Optional[Union[AssistantAgentComponent, InstagramAgentComponent]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentComponent", "InstagramAgentComponent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -57,22 +57,22 @@ class InstagramTeamConfigAllOfParticipants(BaseModel):
         instance = InstagramTeamConfigAllOfParticipants.model_construct()
         error_messages = []
         match = 0
-        # validate data type: AgentComponent
-        if not isinstance(v, AgentComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
-        else:
-            match += 1
         # validate data type: InstagramAgentComponent
         if not isinstance(v, InstagramAgentComponent):
             error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramAgentComponent`")
         else:
             match += 1
+        # validate data type: AssistantAgentComponent
+        if not isinstance(v, AssistantAgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentComponent`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in InstagramTeamConfigAllOfParticipants with oneOf schemas: AgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in InstagramTeamConfigAllOfParticipants with oneOf schemas: AssistantAgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in InstagramTeamConfigAllOfParticipants with oneOf schemas: AgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in InstagramTeamConfigAllOfParticipants with oneOf schemas: AssistantAgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -87,25 +87,25 @@ class InstagramTeamConfigAllOfParticipants(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into AgentComponent
-        try:
-            instance.actual_instance = AgentComponent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         # deserialize data into InstagramAgentComponent
         try:
             instance.actual_instance = InstagramAgentComponent.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into AssistantAgentComponent
+        try:
+            instance.actual_instance = AssistantAgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into InstagramTeamConfigAllOfParticipants with oneOf schemas: AgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into InstagramTeamConfigAllOfParticipants with oneOf schemas: AssistantAgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into InstagramTeamConfigAllOfParticipants with oneOf schemas: AgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into InstagramTeamConfigAllOfParticipants with oneOf schemas: AssistantAgentComponent, InstagramAgentComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -119,7 +119,7 @@ class InstagramTeamConfigAllOfParticipants(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, InstagramAgentComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentComponent, InstagramAgentComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
