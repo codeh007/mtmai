@@ -91,12 +91,12 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
-        agState = await self.tenant_client.ag.load_team_state(
-            tenant_id=self.tenant_client.tenant_id,
-            chat_id=self.session_id,
-        )
-        if agState:
-            await runtime.load_state(agState)
+        # agState = await self.tenant_client.ag.load_team_state(
+        #     tenant_id=self.tenant_client.tenant_id,
+        #     chat_id=self.session_id,
+        # )
+        # if agState:
+        #     await runtime.load_state(agState)
         # await self.tenant_client.emit(ChatSessionStartEvent(threadId=self.session_id))
         await super()._init(runtime)
         runtime.start()

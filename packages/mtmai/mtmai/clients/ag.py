@@ -88,13 +88,17 @@ class AgClient:
         self,
         chat_id: str,
         tenant_id: str,
-    ) -> Team:
+    ) -> dict:
         try:
             ag_state = await self.ag_state_api.ag_state_get(
                 tenant=tenant_id,
                 chat=chat_id,
             )
-            return ag_state
+            if ag_state.state:
+                if hasattr(ag_state.state, "actual_instance"):
+                    return ag_state.state.actual_instance.model_dump()
+            return ag_state.state.model_dump()
+            # return ag_state.
 
         except NotFoundException:
             return None

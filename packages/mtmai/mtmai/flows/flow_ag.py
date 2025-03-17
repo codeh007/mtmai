@@ -39,6 +39,15 @@ class FlowAg:
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
 
+        # load team state
+        agState = await tenant_client.ag.load_team_state(
+            tenant_id=tid,
+            chat_id=session_id,
+        )
+        if agState:
+            logger.info(f"load team state: {agState}")
+            await team.load_state(agState)
+
         task_result = None
         async for event in team.run_stream(
             task=input.content,
