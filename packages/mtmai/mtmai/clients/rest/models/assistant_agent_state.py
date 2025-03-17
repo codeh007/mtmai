@@ -17,28 +17,29 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStatePropertiesStateV2
-from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgStateUpsert(BaseModel):
+class AssistantAgentState(BaseModel):
     """
-    AgStateUpsert
+    AssistantAgentState
     """ # noqa: E501
-    version: Optional[StrictStr] = '1.0.0'
-    type: StateType
-    component_id: StrictStr = Field(description="组件id", alias="componentId")
-    chat_id: StrictStr = Field(description="聊天id", alias="chatId")
-    topic: Optional[StrictStr] = Field(default=None, description="主题")
-    source: Optional[StrictStr] = Field(default=None, description="来源")
-    state: Dict[str, Any]
-    state_v2: Optional[AgStatePropertiesStateV2] = Field(default=None, alias="stateV2")
-    state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
-    tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateV2", "stateId", "tenantId"]
+    type: Optional[StrictStr] = None
+    version: Optional[StrictStr] = None
+    llm_context: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["type", "version", "llm_context"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['AssistantAgentState']):
+            raise ValueError("must be one of enum values ('AssistantAgentState')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -58,7 +59,7 @@ class AgStateUpsert(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgStateUpsert from a JSON string"""
+        """Create an instance of AssistantAgentState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,14 +80,16 @@ class AgStateUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of state_v2
-        if self.state_v2:
-            _dict['stateV2'] = self.state_v2.to_dict()
+        # set to None if llm_context (nullable) is None
+        # and model_fields_set contains the field
+        if self.llm_context is None and "llm_context" in self.model_fields_set:
+            _dict['llm_context'] = None
+
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgStateUpsert from a dict"""
+        """Create an instance of AssistantAgentState from a dict"""
         if obj is None:
             return None
 
@@ -94,16 +97,9 @@ class AgStateUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type"),
-            "componentId": obj.get("componentId"),
-            "chatId": obj.get("chatId"),
-            "topic": obj.get("topic"),
-            "source": obj.get("source"),
-            "state": obj.get("state"),
-            "stateV2": AgStatePropertiesStateV2.from_dict(obj["stateV2"]) if obj.get("stateV2") is not None else None,
-            "stateId": obj.get("stateId"),
-            "tenantId": obj.get("tenantId")
+            "version": obj.get("version"),
+            "llm_context": obj.get("llm_context")
         })
         return _obj
 

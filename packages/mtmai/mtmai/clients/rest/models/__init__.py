@@ -29,6 +29,7 @@ from mtmai.clients.rest.models.ag_event_list import AgEventList
 from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
+from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStatePropertiesStateV2
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
@@ -43,8 +44,10 @@ from mtmai.clients.rest.models.artifact_tool_response import ArtifactToolRespons
 from mtmai.clients.rest.models.assigned_action import AssignedAction
 from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
+from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
+from mtmai.clients.rest.models.base_state import BaseState
 from mtmai.clients.rest.models.blog import Blog
 from mtmai.clients.rest.models.blog_config import BlogConfig
 from mtmai.clients.rest.models.blog_gen_config import BlogGenConfig
@@ -229,6 +232,7 @@ from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
+from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
 from mtmai.clients.rest.models.step_run import StepRun
 from mtmai.clients.rest.models.step_run_archive import StepRunArchive

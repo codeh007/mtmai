@@ -19,6 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.ag_state_properties_state_v2 import AgStatePropertiesStateV2
+from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,13 +29,14 @@ class AgStateProperties(BaseModel):
     AgStateProperties
     """ # noqa: E501
     version: Optional[StrictStr] = '1.0.0'
-    type: Optional[StrictStr] = 'TeamState'
+    type: StateType
     component_id: Optional[StrictStr] = Field(default=None, description="组件id", alias="componentId")
     chat_id: Optional[StrictStr] = Field(default=None, description="聊天id", alias="chatId")
-    state: Dict[str, Any]
     topic: Optional[StrictStr] = Field(default=None, description="主题")
     source: Optional[StrictStr] = Field(default=None, description="来源")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "state", "topic", "source"]
+    state: Dict[str, Any]
+    state_v2: Optional[AgStatePropertiesStateV2] = Field(default=None, alias="stateV2")
+    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateV2"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -74,6 +77,9 @@ class AgStateProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of state_v2
+        if self.state_v2:
+            _dict['stateV2'] = self.state_v2.to_dict()
         return _dict
 
     @classmethod
@@ -87,12 +93,13 @@ class AgStateProperties(BaseModel):
 
         _obj = cls.model_validate({
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type") if obj.get("type") is not None else 'TeamState',
+            "type": obj.get("type"),
             "componentId": obj.get("componentId"),
             "chatId": obj.get("chatId"),
-            "state": obj.get("state"),
             "topic": obj.get("topic"),
-            "source": obj.get("source")
+            "source": obj.get("source"),
+            "state": obj.get("state"),
+            "stateV2": AgStatePropertiesStateV2.from_dict(obj["stateV2"]) if obj.get("stateV2") is not None else None
         })
         return _obj
 
