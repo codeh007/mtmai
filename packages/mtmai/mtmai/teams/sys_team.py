@@ -4,6 +4,7 @@ from typing import Any, Callable, List, Mapping
 
 from autogen_agentchat.base import Team, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
@@ -41,13 +42,10 @@ from mtmai.agents._types import (
 from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
-
-# from mtmai.agents.team_agent import TeamRunnerAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
-from mtmai.teams.base_team import MtBaseTeam
 from pydantic import BaseModel
 
 
@@ -151,7 +149,7 @@ class MockAgentRegistry(AgentRegistryBase):
         return self.agents[intent]
 
 
-class SysTeam(MtBaseTeam, Component[SysTeamConfig]):
+class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
     component_type = "team"
 
     def __init__(
