@@ -1,7 +1,6 @@
 from autogen_agentchat.base import TaskResult
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
-
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.component_types import ComponentTypes
@@ -26,11 +25,15 @@ class FlowAg:
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
-        component_data = await tenant_client.ag.coms_api.coms_get(
-            tenant=tid,
-            com=input.component_id,
-        )
-        logger.info(f"component data: {component_data}")
+        try:
+            component_data = await tenant_client.ag.coms_api.coms_get(
+                tenant=tid,
+                com=input.component_id,
+            )
+            logger.info(f"component data: {component_data}")
+        except Exception as e:
+            logger.exception(f"获取组件数据失败: {e}")
+            raise e
 
         if component_data.component_type == ComponentTypes.TEAM:
             team = InstagramTeam.load_component(component_data)
