@@ -5,6 +5,7 @@ from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
+    RoundRobinGroupChatConfig,
     RoundRobinGroupChatManager,
 )
 from autogen_core import (
@@ -15,7 +16,6 @@ from autogen_core import (
 )
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.component_model import ComponentModel
-from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from typing_extensions import Self
@@ -82,6 +82,13 @@ from typing_extensions import Self
 #         )
 #         current_speaker = self._participant_names[current_speaker_index]
 #         return current_speaker
+
+
+class InstagramTeamConfig(RoundRobinGroupChatConfig):
+    # participants: List[ComponentModel] = []
+    # termination_condition: TerminationCondition | None = None
+    # max_turns: int | None = None
+    pass
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
@@ -511,18 +518,18 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         )
 
     @classmethod
-    def _from_config(cls, config) -> Self:
+    def _from_config(cls, config: InstagramTeamConfig) -> Self:
         session_id = get_chat_session_id_ctx()
         participants = []
         # if hasattr(config, "actual_instance"):
         #     config = config.actual_instance
         # if hasattr(config.participants, "actual_instance"):
         #     config.participants = config.participants.actual_instance
+        # config.participants[0].oneof_schema_1_validator.
         for participant in config.participants:
-            participant
             # if hasattr(participant, "actual_instance") and participant.actual_instance:
             #     participant = participant.actual_instance
-            participant_config = participant.model_dump()
+            # participant_config = participant.model_dump()
             participants.append(ChatAgent.load_component(participant))
         termination_condition = (
             TerminationCondition.load_component(
