@@ -34,8 +34,6 @@ class FlowAg:
         except Exception as e:
             logger.exception(f"获取组件数据失败: {e}")
             raise e
-
-        # component_dict = component_data.model_dump()
         if component_data.component_type == ComponentTypes.TEAM:
             team = InstagramTeam.load_component(component_data)
         else:
@@ -45,6 +43,7 @@ class FlowAg:
             cancellation_token=cancellation_token,
         ):
             if isinstance(event, TaskResult):
+                logger.info(f"工作流完成: {event}")
                 return jsonable_encoder(event)
                 # mt_result = MtTaskResult(
                 #     messages=result.messages,
@@ -54,4 +53,4 @@ class FlowAg:
                 # break
             # await tenant_client.emit(event)
 
-        # logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")
+        logger.info(f"(FlowResource)工作流结束,{hatctx.step_run_id}")

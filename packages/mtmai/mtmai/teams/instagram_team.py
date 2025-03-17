@@ -20,79 +20,12 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from typing_extensions import Self
 
-# class RoundRobinGroupChatManager(BaseGroupChatManager):
-#     """A group chat manager that selects the next speaker in a round-robin fashion."""
-
-#     def __init__(
-#         self,
-#         name: str,
-#         group_topic_type: str,
-#         output_topic_type: str,
-#         participant_topic_types: List[str],
-#         participant_names: List[str],
-#         participant_descriptions: List[str],
-#         output_message_queue: asyncio.Queue[
-#             AgentEvent | ChatMessage | GroupChatTermination
-#         ],
-#         termination_condition: TerminationCondition | None,
-#         max_turns: int | None = None,
-#     ) -> None:
-#         super().__init__(
-#             name,
-#             group_topic_type,
-#             output_topic_type,
-#             participant_topic_types,
-#             participant_names,
-#             participant_descriptions,
-#             output_message_queue,
-#             termination_condition,
-#             max_turns,
-#         )
-#         self._next_speaker_index = 0
-
-#     async def validate_group_state(self, messages: List[ChatMessage] | None) -> None:
-#         pass
-
-#     async def reset(self) -> None:
-#         self._current_turn = 0
-#         self._message_thread.clear()
-#         if self._termination_condition is not None:
-#             await self._termination_condition.reset()
-#         self._next_speaker_index = 0
-
-#     async def save_state(self) -> Mapping[str, Any]:
-#         state = RoundRobinManagerState(
-#             message_thread=list(self._message_thread),
-#             current_turn=self._current_turn,
-#             next_speaker_index=self._next_speaker_index,
-#         )
-#         return state.model_dump()
-
-#     async def load_state(self, state: Mapping[str, Any]) -> None:
-#         round_robin_state = RoundRobinManagerState.model_validate(state)
-#         self._message_thread = list(round_robin_state.message_thread)
-#         self._current_turn = round_robin_state.current_turn
-#         self._next_speaker_index = round_robin_state.next_speaker_index
-
-#     async def select_speaker(self, thread: List[AgentEvent | ChatMessage]) -> str:
-#         """Select a speaker from the participants in a round-robin fashion."""
-#         current_speaker_index = self._next_speaker_index
-#         self._next_speaker_index = (current_speaker_index + 1) % len(
-#             self._participant_names
-#         )
-#         current_speaker = self._participant_names[current_speaker_index]
-#         return current_speaker
-
 
 class InstagramTeamConfig(RoundRobinGroupChatConfig):
-    # participants: List[ComponentModel] = []
-    # termination_condition: TerminationCondition | None = None
-    # max_turns: int | None = None
     pass
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
-    # component_type = "mtmai.teams.instagram_team.InstagramTeam"
     component_provider_override = "mtmai.teams.instagram_team.InstagramTeam"
     component_config_schema = InstagramTeamConfig
 
