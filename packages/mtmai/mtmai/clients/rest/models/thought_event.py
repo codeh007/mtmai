@@ -17,29 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BaseGroupChatManagerState(BaseModel):
+class ThoughtEvent(BaseModel):
     """
-    BaseGroupChatManagerState
+    ThoughtEvent
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    version: Optional[StrictStr] = None
-    message_thread: Optional[List[Dict[str, Any]]] = None
-    current_turn: Optional[StrictInt] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "message_thread", "current_turn"]
+    type: StrictStr
+    source: StrictStr
+    content: Optional[StrictStr] = None
+    metadata: Optional[Dict[str, Any]] = None
+    models_usage: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["type", "source", "content", "metadata", "models_usage"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['BaseGroupChatManagerState']):
-            raise ValueError("must be one of enum values ('BaseGroupChatManagerState')")
+        if value not in set(['ThoughtEvent']):
+            raise ValueError("must be one of enum values ('ThoughtEvent')")
         return value
 
     model_config = ConfigDict(
@@ -60,7 +58,7 @@ class BaseGroupChatManagerState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BaseGroupChatManagerState from a JSON string"""
+        """Create an instance of ThoughtEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -85,7 +83,7 @@ class BaseGroupChatManagerState(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BaseGroupChatManagerState from a dict"""
+        """Create an instance of ThoughtEvent from a dict"""
         if obj is None:
             return None
 
@@ -94,9 +92,10 @@ class BaseGroupChatManagerState(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
-            "version": obj.get("version"),
-            "message_thread": obj.get("message_thread"),
-            "current_turn": obj.get("current_turn")
+            "source": obj.get("source"),
+            "content": obj.get("content"),
+            "metadata": obj.get("metadata"),
+            "models_usage": obj.get("models_usage")
         })
         return _obj
 

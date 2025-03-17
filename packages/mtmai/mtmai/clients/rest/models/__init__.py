@@ -34,7 +34,7 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.agent_event import AgentEvent
-from mtmai.clients.rest.models.agent_message import AgentMessage
+from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
@@ -53,7 +53,6 @@ from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmai.clients.rest.models.base_state import BaseState
 from mtmai.clients.rest.models.blog import Blog
 from mtmai.clients.rest.models.blog_config import BlogConfig
-from mtmai.clients.rest.models.blog_gen_config import BlogGenConfig
 from mtmai.clients.rest.models.blog_list import BlogList
 from mtmai.clients.rest.models.blog_post import BlogPost
 from mtmai.clients.rest.models.blog_post_list import BlogPostList
@@ -129,8 +128,6 @@ from mtmai.clients.rest.models.gallery_items import GalleryItems
 from mtmai.clients.rest.models.gallery_list import GalleryList
 from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from mtmai.clients.rest.models.gallery_update import GalleryUpdate
-from mtmai.clients.rest.models.gen_article_input import GenArticleInput
-from mtmai.clients.rest.models.gen_topic_result import GenTopicResult
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
 from mtmai.clients.rest.models.handoff_component import HandoffComponent
 from mtmai.clients.rest.models.handoff_config import HandoffConfig
@@ -285,6 +282,8 @@ from mtmai.clients.rest.models.termination_types import TerminationTypes
 from mtmai.clients.rest.models.text_highlight import TextHighlight
 from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
+from mtmai.clients.rest.models.text_message import TextMessage
+from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
 from mtmai.clients.rest.models.tool_component import ToolComponent
