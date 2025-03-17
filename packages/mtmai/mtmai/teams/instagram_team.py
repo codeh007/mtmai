@@ -14,7 +14,6 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
 )
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.context.context_client import TenantClient
@@ -159,7 +158,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         if agState:
             await runtime.load_state(agState)
         runtime.start()
-        await self.tenant_client.emit(ChatSessionStartEvent(threadId=self.session_id))
+        # await self.tenant_client.emit(ChatSessionStartEvent(threadId=self.session_id))
         await super()._init(runtime)
         # from mtmai.context.context_client import TenantClient
 
@@ -508,6 +507,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
     @classmethod
     def _from_config(cls, config) -> Self:
+        session_id = get_chat_session_id_ctx()
         participants = []
         # if hasattr(config, "actual_instance"):
         #     config = config.actual_instance
@@ -525,7 +525,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             else None
         )
 
-        needs_user_input_handler = NeedsUserInputHandler()
+        needs_user_input_handler = NeedsUserInputHandler(session_id)
         runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler]
         )
