@@ -1,7 +1,9 @@
 from autogen_agentchat.base import TaskResult
+from autogen_agentchat.messages import TextMessage
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.context.context import Context
@@ -53,17 +55,28 @@ class FlowAg:
             task=input.content,
             cancellation_token=cancellation_token,
         ):
+            if cancellation_token and cancellation_token.is_cancelled():
+                break
             if isinstance(event, TaskResult):
-                logger.info(f"工作流完成: {event}")
                 task_result = event
                 break
-                # mt_result = MtTaskResult(
-                #     messages=result.messages,
-                #     stop_reason=result.stop_reason,
-                # )
-                # tenant_client.emit(mt_result)
-                # break
             # await tenant_client.emit(event)
+            elif isinstance(event, TextMessage):
+                await tenant_client.ag.chat_api.chat_message_upsert(
+                    tenant=tid,
+                    chat_message_upsert=ChatMessageUpsert(
+                        tenant_id=tid,
+                        content=event.content,
+                        # component_id=self.id.key,
+                        thread_id=session_id,
+                        role=event.source,
+                        source=session_id,
+                        # topic=self._agent_topic_type,
+                        # topic=ctx.topic_id.type,
+                    ),
+                )
+            else:
+                logger.warning(f"(FlowAg.run_stream)不支持的消息类型: {type(event)}")
         if team and hasattr(team, "_participants"):
             for agent in team._participants:
                 if hasattr(agent, "close"):

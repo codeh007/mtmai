@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmai.clients.rest.models.model_usage import ModelUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,10 +33,13 @@ class ChatMessage(BaseModel):
     role: StrictStr
     content: StrictStr
     source: Optional[StrictStr] = None
-    topic: StrictStr
+    topic: Optional[StrictStr] = None
+    thought: Optional[StrictStr] = None
     resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
+    msg_meta: Optional[Dict[str, Any]] = None
     config: Optional[ChatMessageConfig] = None
-    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "resourceId", "config"]
+    model_usage: Optional[ModelUsage] = None
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "thought", "resourceId", "msg_meta", "config", "model_usage"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,6 +86,9 @@ class ChatMessage(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of config
         if self.config:
             _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of model_usage
+        if self.model_usage:
+            _dict['model_usage'] = self.model_usage.to_dict()
         return _dict
 
     @classmethod
@@ -99,8 +106,11 @@ class ChatMessage(BaseModel):
             "content": obj.get("content"),
             "source": obj.get("source"),
             "topic": obj.get("topic"),
+            "thought": obj.get("thought"),
             "resourceId": obj.get("resourceId"),
-            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "msg_meta": obj.get("msg_meta"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "model_usage": ModelUsage.from_dict(obj["model_usage"]) if obj.get("model_usage") is not None else None
         })
         return _obj
 
