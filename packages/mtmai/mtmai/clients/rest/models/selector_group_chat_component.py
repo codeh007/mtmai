@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from typing import Optional, Set
@@ -28,6 +28,7 @@ class SelectorGroupChatComponent(BaseModel):
     """
     SelectorGroupChatComponent
     """ # noqa: E501
+    id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
     provider: StrictStr
     component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.", alias="componentType")
     version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
@@ -35,7 +36,7 @@ class SelectorGroupChatComponent(BaseModel):
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
     config: SelectorGroupChatConfig
-    __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label", "config"]
+    __properties: ClassVar[List[str]] = ["id", "provider", "componentType", "version", "componentVersion", "description", "label", "config"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
@@ -98,6 +99,7 @@ class SelectorGroupChatComponent(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "id": obj.get("id"),
             "provider": obj.get("provider"),
             "componentType": obj.get("componentType"),
             "version": obj.get("version"),

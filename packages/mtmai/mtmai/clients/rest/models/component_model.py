@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,13 +26,14 @@ class ComponentModel(BaseModel):
     """
     ComponentModel
     """ # noqa: E501
+    id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
     provider: StrictStr = Field(description="Describes how the component can be instantiated.")
     component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.", alias="componentType")
     version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
     component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    __properties: ClassVar[List[str]] = ["provider", "componentType", "version", "componentVersion", "description", "label"]
+    __properties: ClassVar[List[str]] = ["id", "provider", "componentType", "version", "componentVersion", "description", "label"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,6 +86,7 @@ class ComponentModel(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "id": obj.get("id"),
             "provider": obj.get("provider"),
             "componentType": obj.get("componentType"),
             "version": obj.get("version"),
