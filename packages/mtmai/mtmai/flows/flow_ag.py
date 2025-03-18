@@ -1,5 +1,5 @@
 from autogen_agentchat.base import TaskResult
-from autogen_agentchat.messages import TextMessage
+from autogen_agentchat.messages import TextMessage, ThoughtEvent
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -67,10 +67,26 @@ class FlowAg:
                     chat_message_upsert=ChatMessageUpsert(
                         tenant_id=tid,
                         content=event.content,
-                        # component_id=self.id.key,
                         thread_id=session_id,
                         role=event.source,
                         source=session_id,
+                        message_type="text",
+                        threadId=session_id,
+                        # topic=self._agent_topic_type,
+                        # topic=ctx.topic_id.type,
+                    ),
+                )
+            elif isinstance(event, ThoughtEvent):
+                await tenant_client.ag.chat_api.chat_message_upsert(
+                    tenant=tid,
+                    chat_message_upsert=ChatMessageUpsert(
+                        tenant_id=tid,
+                        content=event.content,
+                        thread_id=session_id,
+                        role=event.source,
+                        source=session_id,
+                        threadId=session_id,
+                        message_type="thought",
                         # topic=self._agent_topic_type,
                         # topic=ctx.topic_id.type,
                     ),
