@@ -139,7 +139,6 @@ from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfi
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_component import InstagramTeamComponent
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
-from mtmai.clients.rest.models.instagram_team_config_all_of_participants import InstagramTeamConfigAllOfParticipants
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
@@ -183,6 +182,7 @@ from mtmai.clients.rest.models.or_termination_component import OrTerminationComp
 from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
+from mtmai.clients.rest.models.participants_property import ParticipantsProperty
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
@@ -238,8 +238,8 @@ from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
-from mtmai.clients.rest.models.smol_agent_component import SmolAgentComponent
-from mtmai.clients.rest.models.smol_agent_config import SmolAgentConfig
+from mtmai.clients.rest.models.smola_agent_component import SmolaAgentComponent
+from mtmai.clients.rest.models.smola_agent_config import SmolaAgentConfig
 from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
