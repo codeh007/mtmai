@@ -119,6 +119,7 @@ dependencies = [
     "langchain-nvidia-ai-endpoints>=0.3.9",
     "quantstats",
     "json-schema-to-pydantic>=0.2.2",
+    "smolagents>=1.11.0",
 ]
 
 
