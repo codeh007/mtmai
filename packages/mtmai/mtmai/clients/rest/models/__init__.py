@@ -170,6 +170,7 @@ from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
+from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
 from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
@@ -237,6 +238,8 @@ from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
+from mtmai.clients.rest.models.smol_agent_component import SmolAgentComponent
+from mtmai.clients.rest.models.smol_agent_config import SmolAgentConfig
 from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
