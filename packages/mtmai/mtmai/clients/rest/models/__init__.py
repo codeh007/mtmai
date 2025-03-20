@@ -167,6 +167,7 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
+from mtmai.clients.rest.models.mt_component_new import MtComponentNew
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
 from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
 from mtmai.clients.rest.models.mt_resource import MtResource
@@ -176,7 +177,6 @@ from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
 from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
-from mtmai.clients.rest.models.operation_enum import OperationEnum
 from mtmai.clients.rest.models.or_termination_component import OrTerminationComponent
 from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.outline import Outline
@@ -218,7 +218,6 @@ from mtmai.clients.rest.models.response_format import ResponseFormat
 from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState
-from mtmai.clients.rest.models.run_new_task_response import RunNewTaskResponse
 from mtmai.clients.rest.models.run_status import RunStatus
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
