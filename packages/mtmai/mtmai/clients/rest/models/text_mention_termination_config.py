@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,7 +27,15 @@ class TextMentionTerminationConfig(BaseModel):
     TextMentionTerminationConfig
     """ # noqa: E501
     text: StrictStr
-    __properties: ClassVar[List[str]] = ["text"]
+    config_type: StrictStr = Field(alias="configType")
+    __properties: ClassVar[List[str]] = ["text", "configType"]
+
+    @field_validator('config_type')
+    def config_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['text_mention_termination']):
+            raise ValueError("must be one of enum values ('text_mention_termination')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +88,8 @@ class TextMentionTerminationConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "text": obj.get("text")
+            "text": obj.get("text"),
+            "configType": obj.get("configType")
         })
         return _obj
 

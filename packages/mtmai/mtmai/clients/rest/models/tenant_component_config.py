@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,8 +26,16 @@ class TenantComponentConfig(BaseModel):
     """
     TenantComponentConfig
     """ # noqa: E501
+    config_type: StrictStr = Field(alias="configType")
     default_openai_api_key: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["default_openai_api_key"]
+    __properties: ClassVar[List[str]] = ["configType", "default_openai_api_key"]
+
+    @field_validator('config_type')
+    def config_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['tenant']):
+            raise ValueError("must be one of enum values ('tenant')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,6 +88,7 @@ class TenantComponentConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "configType": obj.get("configType"),
             "default_openai_api_key": obj.get("default_openai_api_key")
         })
         return _obj

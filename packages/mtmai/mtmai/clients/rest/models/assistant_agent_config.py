@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.model_component import ModelComponent
@@ -40,7 +40,15 @@ class AssistantAgentConfig(BaseModel):
     handoffs: List[StrictStr]
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
+    config_type: StrictStr = Field(alias="configType")
+    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "configType"]
+
+    @field_validator('config_type')
+    def config_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['assistant_agent']):
+            raise ValueError("must be one of enum values ('assistant_agent')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -116,7 +124,8 @@ class AssistantAgentConfig(BaseModel):
             "tools": [ToolComponent.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
-            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'
+            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}',
+            "configType": obj.get("configType")
         })
         return _obj
 

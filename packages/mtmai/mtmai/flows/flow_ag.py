@@ -37,6 +37,8 @@ class FlowAg:
             logger.exception(f"获取组件数据失败: {e}")
             raise e
         if component_data.component_type == ComponentTypes.TEAM:
+            if hasattr(component_data, "actual_instance"):
+                component_data = component_data.actual_instance
             team = InstagramTeam.load_component(component_data)
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
