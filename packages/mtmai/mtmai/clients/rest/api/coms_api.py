@@ -347,6 +347,7 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        gallery_id: Annotated[Optional[StrictStr], Field(description="The gallery id")] = None,
         type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
         provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
         description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
@@ -373,6 +374,8 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param gallery_id: The gallery id
+        :type gallery_id: str
         :param type: The component type
         :type type: str
         :param provider: The component provider
@@ -405,6 +408,7 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            gallery_id=gallery_id,
             type=type,
             provider=provider,
             description=description,
@@ -437,6 +441,7 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        gallery_id: Annotated[Optional[StrictStr], Field(description="The gallery id")] = None,
         type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
         provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
         description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
@@ -463,6 +468,8 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param gallery_id: The gallery id
+        :type gallery_id: str
         :param type: The component type
         :type type: str
         :param provider: The component provider
@@ -495,6 +502,7 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            gallery_id=gallery_id,
             type=type,
             provider=provider,
             description=description,
@@ -527,6 +535,7 @@ class ComsApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         label: Annotated[Optional[StrictStr], Field(description="The team label")] = None,
         gallery: Annotated[Optional[StrictStr], Field(description="The gallery name")] = None,
+        gallery_id: Annotated[Optional[StrictStr], Field(description="The gallery id")] = None,
         type: Annotated[Optional[StrictStr], Field(description="The component type")] = None,
         provider: Annotated[Optional[StrictStr], Field(description="The component provider")] = None,
         description: Annotated[Optional[StrictStr], Field(description="The component description")] = None,
@@ -553,6 +562,8 @@ class ComsApi:
         :type label: str
         :param gallery: The gallery name
         :type gallery: str
+        :param gallery_id: The gallery id
+        :type gallery_id: str
         :param type: The component type
         :type type: str
         :param provider: The component provider
@@ -585,6 +596,7 @@ class ComsApi:
             tenant=tenant,
             label=label,
             gallery=gallery,
+            gallery_id=gallery_id,
             type=type,
             provider=provider,
             description=description,
@@ -612,6 +624,7 @@ class ComsApi:
         tenant,
         label,
         gallery,
+        gallery_id,
         type,
         provider,
         description,
@@ -646,6 +659,10 @@ class ComsApi:
         if gallery is not None:
             
             _query_params.append(('gallery', gallery))
+            
+        if gallery_id is not None:
+            
+            _query_params.append(('galleryId', gallery_id))
             
         if type is not None:
             
