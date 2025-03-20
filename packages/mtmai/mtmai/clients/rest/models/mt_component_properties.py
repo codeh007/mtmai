@@ -13,96 +13,279 @@
 
 
 from __future__ import annotations
-import pprint
-import re  # noqa: F401
 import json
+import pprint
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
+from typing import Any, List, Optional
+from mtmai.clients.rest.models.agent_component import AgentComponent
+from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
+from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
+from mtmai.clients.rest.models.instagram_team_component import InstagramTeamComponent
+from mtmai.clients.rest.models.max_message_termination_component import MaxMessageTerminationComponent
+from mtmai.clients.rest.models.model_component import ModelComponent
+from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
+from mtmai.clients.rest.models.selector_group_chat_component import SelectorGroupChatComponent
+from mtmai.clients.rest.models.smola_agent_component import SmolaAgentComponent
+from mtmai.clients.rest.models.stop_message_termination_component import StopMessageTerminationComponent
+from mtmai.clients.rest.models.system_component import SystemComponent
+from mtmai.clients.rest.models.tenant_component import TenantComponent
+from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
+from pydantic import StrictStr, Field
+from typing import Union, List, Set, Optional, Dict
+from typing_extensions import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
-from typing import Optional, Set
-from typing_extensions import Self
+MTCOMPONENTPROPERTIES_ONE_OF_SCHEMAS = ["AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "ModelComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent"]
 
 class MtComponentProperties(BaseModel):
     """
     MtComponentProperties
-    """ # noqa: E501
-    component_type: ComponentTypes = Field(alias="componentType")
-    provider: StrictStr
-    label: StrictStr
-    description: StrictStr
-    version: StrictInt
-    component_version: StrictInt = Field(alias="componentVersion")
-    gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    config: Dict[str, Any]
-    component: Optional[MtComponentPropertiesComponent] = None
-    __properties: ClassVar[List[str]] = ["componentType", "provider", "label", "description", "version", "componentVersion", "galleryId", "config", "component"]
+    """
+    # data type: SystemComponent
+    oneof_schema_1_validator: Optional[SystemComponent] = None
+    # data type: TextMentionTerminationComponent
+    oneof_schema_2_validator: Optional[TextMentionTerminationComponent] = None
+    # data type: AgentComponent
+    oneof_schema_3_validator: Optional[AgentComponent] = None
+    # data type: InstagramAgentComponent
+    oneof_schema_4_validator: Optional[InstagramAgentComponent] = None
+    # data type: AssistantAgentComponent
+    oneof_schema_5_validator: Optional[AssistantAgentComponent] = None
+    # data type: RoundRobinGroupChatComponent
+    oneof_schema_6_validator: Optional[RoundRobinGroupChatComponent] = None
+    # data type: SelectorGroupChatComponent
+    oneof_schema_7_validator: Optional[SelectorGroupChatComponent] = None
+    # data type: InstagramTeamComponent
+    oneof_schema_8_validator: Optional[InstagramTeamComponent] = None
+    # data type: TenantComponent
+    oneof_schema_9_validator: Optional[TenantComponent] = None
+    # data type: MaxMessageTerminationComponent
+    oneof_schema_10_validator: Optional[MaxMessageTerminationComponent] = None
+    # data type: StopMessageTerminationComponent
+    oneof_schema_11_validator: Optional[StopMessageTerminationComponent] = None
+    # data type: SmolaAgentComponent
+    oneof_schema_12_validator: Optional[SmolaAgentComponent] = None
+    # data type: ModelComponent
+    oneof_schema_13_validator: Optional[ModelComponent] = None
+    actual_instance: Optional[Union[AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "ModelComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent" }
 
     model_config = ConfigDict(
-        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    def to_str(self) -> str:
-        """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+    def __init__(self, *args, **kwargs) -> None:
+        if args:
+            if len(args) > 1:
+                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
+            if kwargs:
+                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
+            super().__init__(actual_instance=args[0])
+        else:
+            super().__init__(**kwargs)
+
+    @field_validator('actual_instance')
+    def actual_instance_must_validate_oneof(cls, v):
+        instance = MtComponentProperties.model_construct()
+        error_messages = []
+        match = 0
+        # validate data type: SystemComponent
+        if not isinstance(v, SystemComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SystemComponent`")
+        else:
+            match += 1
+        # validate data type: TextMentionTerminationComponent
+        if not isinstance(v, TextMentionTerminationComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TextMentionTerminationComponent`")
+        else:
+            match += 1
+        # validate data type: AgentComponent
+        if not isinstance(v, AgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentComponent`")
+        else:
+            match += 1
+        # validate data type: InstagramAgentComponent
+        if not isinstance(v, InstagramAgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramAgentComponent`")
+        else:
+            match += 1
+        # validate data type: AssistantAgentComponent
+        if not isinstance(v, AssistantAgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentComponent`")
+        else:
+            match += 1
+        # validate data type: RoundRobinGroupChatComponent
+        if not isinstance(v, RoundRobinGroupChatComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatComponent`")
+        else:
+            match += 1
+        # validate data type: SelectorGroupChatComponent
+        if not isinstance(v, SelectorGroupChatComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatComponent`")
+        else:
+            match += 1
+        # validate data type: InstagramTeamComponent
+        if not isinstance(v, InstagramTeamComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramTeamComponent`")
+        else:
+            match += 1
+        # validate data type: TenantComponent
+        if not isinstance(v, TenantComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TenantComponent`")
+        else:
+            match += 1
+        # validate data type: MaxMessageTerminationComponent
+        if not isinstance(v, MaxMessageTerminationComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MaxMessageTerminationComponent`")
+        else:
+            match += 1
+        # validate data type: StopMessageTerminationComponent
+        if not isinstance(v, StopMessageTerminationComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `StopMessageTerminationComponent`")
+        else:
+            match += 1
+        # validate data type: SmolaAgentComponent
+        if not isinstance(v, SmolaAgentComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SmolaAgentComponent`")
+        else:
+            match += 1
+        # validate data type: ModelComponent
+        if not isinstance(v, ModelComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelComponent`")
+        else:
+            match += 1
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentProperties with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when setting `actual_instance` in MtComponentProperties with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+        else:
+            return v
+
+    @classmethod
+    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
+        return cls.from_json(json.dumps(obj))
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Self:
+        """Returns the object represented by the json string"""
+        instance = cls.model_construct()
+        error_messages = []
+        match = 0
+
+        # deserialize data into SystemComponent
+        try:
+            instance.actual_instance = SystemComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into TextMentionTerminationComponent
+        try:
+            instance.actual_instance = TextMentionTerminationComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into AgentComponent
+        try:
+            instance.actual_instance = AgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into InstagramAgentComponent
+        try:
+            instance.actual_instance = InstagramAgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into AssistantAgentComponent
+        try:
+            instance.actual_instance = AssistantAgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into RoundRobinGroupChatComponent
+        try:
+            instance.actual_instance = RoundRobinGroupChatComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SelectorGroupChatComponent
+        try:
+            instance.actual_instance = SelectorGroupChatComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into InstagramTeamComponent
+        try:
+            instance.actual_instance = InstagramTeamComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into TenantComponent
+        try:
+            instance.actual_instance = TenantComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into MaxMessageTerminationComponent
+        try:
+            instance.actual_instance = MaxMessageTerminationComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into StopMessageTerminationComponent
+        try:
+            instance.actual_instance = StopMessageTerminationComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into SmolaAgentComponent
+        try:
+            instance.actual_instance = SmolaAgentComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into ModelComponent
+        try:
+            instance.actual_instance = ModelComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentProperties with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when deserializing the JSON string into MtComponentProperties with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+        else:
+            return instance
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        """Returns the JSON representation of the actual instance"""
+        if self.actual_instance is None:
+            return "null"
 
-    @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a JSON string"""
-        return cls.from_dict(json.loads(json_str))
+        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
+            return self.actual_instance.to_json()
+        else:
+            return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([
-        ])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
-        # override the default output from pydantic by calling `to_dict()` of component
-        if self.component:
-            _dict['component'] = self.component.to_dict()
-        return _dict
-
-    @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MtComponentProperties from a dict"""
-        if obj is None:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]]:
+        """Returns the dict representation of the actual instance"""
+        if self.actual_instance is None:
             return None
 
-        if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
+            return self.actual_instance.to_dict()
+        else:
+            # primitive type
+            return self.actual_instance
 
-        _obj = cls.model_validate({
-            "componentType": obj.get("componentType"),
-            "provider": obj.get("provider"),
-            "label": obj.get("label"),
-            "description": obj.get("description"),
-            "version": obj.get("version") if obj.get("version") is not None else 1,
-            "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
-            "galleryId": obj.get("galleryId"),
-            "config": obj.get("config"),
-            "component": MtComponentPropertiesComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
-        })
-        return _obj
+    def to_str(self) -> str:
+        """Returns the string representation of the actual instance"""
+        return pprint.pformat(self.model_dump())
 
 

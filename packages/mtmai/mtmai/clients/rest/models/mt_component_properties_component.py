@@ -22,6 +22,7 @@ from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentCo
 from mtmai.clients.rest.models.instagram_agent_component import InstagramAgentComponent
 from mtmai.clients.rest.models.instagram_team_component import InstagramTeamComponent
 from mtmai.clients.rest.models.max_message_termination_component import MaxMessageTerminationComponent
+from mtmai.clients.rest.models.model_component import ModelComponent
 from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
 from mtmai.clients.rest.models.selector_group_chat_component import SelectorGroupChatComponent
 from mtmai.clients.rest.models.smola_agent_component import SmolaAgentComponent
@@ -33,7 +34,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTCOMPONENTPROPERTIESCOMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent"]
+MTCOMPONENTPROPERTIESCOMPONENT_ONE_OF_SCHEMAS = ["AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "ModelComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent"]
 
 class MtComponentPropertiesComponent(BaseModel):
     """
@@ -63,8 +64,10 @@ class MtComponentPropertiesComponent(BaseModel):
     oneof_schema_11_validator: Optional[StopMessageTerminationComponent] = None
     # data type: SmolaAgentComponent
     oneof_schema_12_validator: Optional[SmolaAgentComponent] = None
-    actual_instance: Optional[Union[AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]] = None
-    one_of_schemas: Set[str] = { "AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent" }
+    # data type: ModelComponent
+    oneof_schema_13_validator: Optional[ModelComponent] = None
+    actual_instance: Optional[Union[AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]] = None
+    one_of_schemas: Set[str] = { "AgentComponent", "AssistantAgentComponent", "InstagramAgentComponent", "InstagramTeamComponent", "MaxMessageTerminationComponent", "ModelComponent", "RoundRobinGroupChatComponent", "SelectorGroupChatComponent", "SmolaAgentComponent", "StopMessageTerminationComponent", "SystemComponent", "TenantComponent", "TextMentionTerminationComponent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -147,12 +150,17 @@ class MtComponentPropertiesComponent(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SmolaAgentComponent`")
         else:
             match += 1
+        # validate data type: ModelComponent
+        if not isinstance(v, ModelComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelComponent`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -239,13 +247,19 @@ class MtComponentPropertiesComponent(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into ModelComponent
+        try:
+            instance.actual_instance = ModelComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentPropertiesComponent with oneOf schemas: AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -259,7 +273,7 @@ class MtComponentPropertiesComponent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentComponent, AssistantAgentComponent, InstagramAgentComponent, InstagramTeamComponent, MaxMessageTerminationComponent, ModelComponent, RoundRobinGroupChatComponent, SelectorGroupChatComponent, SmolaAgentComponent, StopMessageTerminationComponent, SystemComponent, TenantComponent, TextMentionTerminationComponent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

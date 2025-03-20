@@ -20,8 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.mt_component_properties_component import MtComponentPropertiesComponent
+from mtmai.clients.rest.models.mt_component_all_of_config import MtComponentAllOfConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,16 +29,16 @@ class MtComponent(BaseModel):
     MtComponent
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    component_type: ComponentTypes = Field(alias="componentType")
+    id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
     provider: StrictStr
-    label: StrictStr
-    description: StrictStr
+    component_type: StrictStr = Field(alias="componentType")
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    gallery_id: Optional[StrictStr] = Field(default=None, alias="galleryId")
-    config: Dict[str, Any]
-    component: Optional[MtComponentPropertiesComponent] = None
-    __properties: ClassVar[List[str]] = ["metadata", "componentType", "provider", "label", "description", "version", "componentVersion", "galleryId", "config", "component"]
+    description: StrictStr
+    label: StrictStr
+    config: MtComponentAllOfConfig
+    gallery_id: StrictStr = Field(alias="galleryId")
+    __properties: ClassVar[List[str]] = ["metadata", "id", "provider", "componentType", "version", "componentVersion", "description", "label", "config", "galleryId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,9 +82,9 @@ class MtComponent(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of component
-        if self.component:
-            _dict['component'] = self.component.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -99,15 +98,15 @@ class MtComponent(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "componentType": obj.get("componentType"),
+            "id": obj.get("id"),
             "provider": obj.get("provider"),
-            "label": obj.get("label"),
+            "componentType": obj.get("componentType"),
+            "version": obj.get("version"),
+            "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
-            "version": obj.get("version") if obj.get("version") is not None else 1,
-            "componentVersion": obj.get("componentVersion") if obj.get("componentVersion") is not None else 1,
-            "galleryId": obj.get("galleryId"),
-            "config": obj.get("config"),
-            "component": MtComponentPropertiesComponent.from_dict(obj["component"]) if obj.get("component") is not None else None
+            "label": obj.get("label"),
+            "config": MtComponentAllOfConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "galleryId": obj.get("galleryId")
         })
         return _obj
 
