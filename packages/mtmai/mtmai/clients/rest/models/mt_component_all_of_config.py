@@ -20,14 +20,16 @@ from typing import Any, List, Optional
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.model_config import ModelConfig
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.selector_group_chat_config import SelectorGroupChatConfig
 from mtmai.clients.rest.models.system_config import SystemConfig
+from mtmai.clients.rest.models.tenant_component_config import TenantComponentConfig
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTCOMPONENTALLOFCONFIG_ONE_OF_SCHEMAS = ["AssistantAgentConfig", "InstagramAgentConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "SystemConfig"]
+MTCOMPONENTALLOFCONFIG_ONE_OF_SCHEMAS = ["AssistantAgentConfig", "InstagramAgentConfig", "InstagramTeamConfig", "ModelConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "SystemConfig", "TenantComponentConfig"]
 
 class MtComponentAllOfConfig(BaseModel):
     """
@@ -45,8 +47,12 @@ class MtComponentAllOfConfig(BaseModel):
     oneof_schema_5_validator: Optional[RoundRobinGroupChatConfig] = None
     # data type: SelectorGroupChatConfig
     oneof_schema_6_validator: Optional[SelectorGroupChatConfig] = None
-    actual_instance: Optional[Union[AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig]] = None
-    one_of_schemas: Set[str] = { "AssistantAgentConfig", "InstagramAgentConfig", "InstagramTeamConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "SystemConfig" }
+    # data type: ModelConfig
+    oneof_schema_7_validator: Optional[ModelConfig] = None
+    # data type: TenantComponentConfig
+    oneof_schema_8_validator: Optional[TenantComponentConfig] = None
+    actual_instance: Optional[Union[AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentConfig", "InstagramAgentConfig", "InstagramTeamConfig", "ModelConfig", "RoundRobinGroupChatConfig", "SelectorGroupChatConfig", "SystemConfig", "TenantComponentConfig" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -99,12 +105,22 @@ class MtComponentAllOfConfig(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SelectorGroupChatConfig`")
         else:
             match += 1
+        # validate data type: ModelConfig
+        if not isinstance(v, ModelConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelConfig`")
+        else:
+            match += 1
+        # validate data type: TenantComponentConfig
+        if not isinstance(v, TenantComponentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TenantComponentConfig`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -155,13 +171,25 @@ class MtComponentAllOfConfig(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into ModelConfig
+        try:
+            instance.actual_instance = ModelConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into TenantComponentConfig
+        try:
+            instance.actual_instance = TenantComponentConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtComponentAllOfConfig with oneOf schemas: AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +203,7 @@ class MtComponentAllOfConfig(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentConfig, InstagramAgentConfig, InstagramTeamConfig, ModelConfig, RoundRobinGroupChatConfig, SelectorGroupChatConfig, SystemConfig, TenantComponentConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
