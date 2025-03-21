@@ -1,6 +1,7 @@
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import TextMessage, ThoughtEvent
 from loguru import logger
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
@@ -37,17 +38,7 @@ class FlowAg:
             logger.exception(f"获取组件数据失败: {e}")
             raise e
         if component_data.component_type == ComponentTypes.TEAM:
-            # if hasattr(component_data.config, "actual_instance"):
-            #     # component_data.config.model_validate()(component_data.config.actual_instance)
-            #     setattr(
-            #         component_data.config,
-            #         "actual_instance",
-            #         component_data.config.actual_instance,
-            #     )
             comp_dict = component_data.model_dump()
-            # comp_dict["config"] = comp_dict["config"]["actual_instance"]
-            # team = InstagramTeam.load_component(comp_dict)
-            # comp_dict["config"] = aaa["actual_instance"].model_dump()
             team = InstagramTeam.load_component(comp_dict)
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
@@ -80,11 +71,9 @@ class FlowAg:
                         content=event.content,
                         thread_id=session_id,
                         role=event.source,
-                        source=session_id,
+                        source=event.source,
                         message_type="text",
                         threadId=session_id,
-                        # topic=self._agent_topic_type,
-                        # topic=ctx.topic_id.type,
                     ),
                 )
             elif isinstance(event, ThoughtEvent):
@@ -95,11 +84,9 @@ class FlowAg:
                         content=event.content,
                         thread_id=session_id,
                         role=event.source,
-                        source=session_id,
+                        source=event.source,
                         threadId=session_id,
                         message_type="thought",
-                        # topic=self._agent_topic_type,
-                        # topic=ctx.topic_id.type,
                     ),
                 )
             else:
