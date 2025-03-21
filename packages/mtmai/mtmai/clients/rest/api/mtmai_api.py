@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from mtmai.clients.rest.models.mtmai_worker_config200_response import MtmaiWorkerConfig200Response
+from mtmai.clients.rest.models.worker_config import WorkerConfig
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -51,7 +51,7 @@ class MtmaiApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtmaiWorkerConfig200Response:
+    ) -> WorkerConfig:
         """mtmai_worker_config
 
 
@@ -85,7 +85,7 @@ class MtmaiApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtmaiWorkerConfig200Response",
+            '200': "WorkerConfig",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -113,7 +113,7 @@ class MtmaiApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtmaiWorkerConfig200Response]:
+    ) -> ApiResponse[WorkerConfig]:
         """mtmai_worker_config
 
 
@@ -147,7 +147,7 @@ class MtmaiApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtmaiWorkerConfig200Response",
+            '200': "WorkerConfig",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -209,7 +209,7 @@ class MtmaiApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtmaiWorkerConfig200Response",
+            '200': "WorkerConfig",
         }
         response_data = await self.api_client.call_api(
             *_param,

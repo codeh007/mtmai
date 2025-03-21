@@ -24,10 +24,13 @@ from typing_extensions import Self
 
 class WorkerConfig(BaseModel):
     """
-    WorkerConfig
+    worker 启动时所需的关键配置
     """ # noqa: E501
     worker_token: Optional[StrictStr] = Field(default=None, alias="workerToken")
-    __properties: ClassVar[List[str]] = ["workerToken"]
+    token: StrictStr = Field(description="token")
+    grpc_host_port: StrictStr = Field(description="grpcHostPort", alias="grpcHostPort")
+    searxng: Optional[StrictStr] = Field(default=None, description="searxng url")
+    __properties: ClassVar[List[str]] = ["workerToken", "token", "grpcHostPort", "searxng"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +83,10 @@ class WorkerConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "workerToken": obj.get("workerToken")
+            "workerToken": obj.get("workerToken"),
+            "token": obj.get("token"),
+            "grpcHostPort": obj.get("grpcHostPort"),
+            "searxng": obj.get("searxng")
         })
         return _obj
 

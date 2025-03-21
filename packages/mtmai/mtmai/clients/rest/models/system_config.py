@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,16 +26,8 @@ class SystemConfig(BaseModel):
     """
     SystemConfig
     """ # noqa: E501
-    config_type: StrictStr = Field(alias="configType")
     default_openai_api_key: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["configType", "default_openai_api_key"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['system']):
-            raise ValueError("must be one of enum values ('system')")
-        return value
+    __properties: ClassVar[List[str]] = ["default_openai_api_key"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +80,6 @@ class SystemConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "configType": obj.get("configType"),
             "default_openai_api_key": obj.get("default_openai_api_key")
         })
         return _obj

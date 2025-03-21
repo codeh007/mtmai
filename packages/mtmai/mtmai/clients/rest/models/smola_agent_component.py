@@ -40,8 +40,8 @@ class SmolaAgentComponent(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['mtmai.agents.smol_agent.SmolAgent']):
-            raise ValueError("must be one of enum values ('mtmai.agents.smol_agent.SmolAgent')")
+        if value not in set(['mtmai.agents.smola_agent.SmolaAgent']):
+            raise ValueError("must be one of enum values ('mtmai.agents.smola_agent.SmolaAgent')")
         return value
 
     @field_validator('component_type')
