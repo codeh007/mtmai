@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,17 +26,9 @@ class MaxMessageTerminationConfig(BaseModel):
     """
     MaxMessageTerminationConfig
     """ # noqa: E501
-    config_type: StrictStr = Field(alias="configType")
     termination_type: StrictStr
     max_messages: StrictInt
-    __properties: ClassVar[List[str]] = ["configType", "termination_type", "max_messages"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['max_message_termination']):
-            raise ValueError("must be one of enum values ('max_message_termination')")
-        return value
+    __properties: ClassVar[List[str]] = ["termination_type", "max_messages"]
 
     @field_validator('termination_type')
     def termination_type_validate_enum(cls, value):
@@ -96,7 +88,6 @@ class MaxMessageTerminationConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "configType": obj.get("configType"),
             "termination_type": obj.get("termination_type"),
             "max_messages": obj.get("max_messages")
         })

@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,15 +27,7 @@ class StopMessageTerminationConfig(BaseModel):
     StopMessageTerminationConfig
     """ # noqa: E501
     text: StrictStr
-    config_type: StrictStr = Field(alias="configType")
-    __properties: ClassVar[List[str]] = ["text", "configType"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['stop_message_termination']):
-            raise ValueError("must be one of enum values ('stop_message_termination')")
-        return value
+    __properties: ClassVar[List[str]] = ["text"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,8 +80,7 @@ class StopMessageTerminationConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "text": obj.get("text"),
-            "configType": obj.get("configType")
+            "text": obj.get("text")
         })
         return _obj
 

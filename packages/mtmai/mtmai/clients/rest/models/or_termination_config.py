@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,16 +26,8 @@ class OrTerminationConfig(BaseModel):
     """
     OrTerminationConfig
     """ # noqa: E501
-    config_type: StrictStr = Field(alias="configType")
     conditions: List[Dict[str, Any]]
-    __properties: ClassVar[List[str]] = ["configType", "conditions"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['or_termination']):
-            raise ValueError("must be one of enum values ('or_termination')")
-        return value
+    __properties: ClassVar[List[str]] = ["conditions"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +80,6 @@ class OrTerminationConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "configType": obj.get("configType"),
             "conditions": obj.get("conditions")
         })
         return _obj

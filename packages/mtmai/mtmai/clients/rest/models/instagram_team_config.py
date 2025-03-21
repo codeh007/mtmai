@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.or_termination_component import OrTerminationComponent
 from mtmai.clients.rest.models.participants_property import ParticipantsProperty
@@ -31,15 +31,7 @@ class InstagramTeamConfig(BaseModel):
     participants: List[ParticipantsProperty]
     max_turns: StrictInt
     termination_condition: OrTerminationComponent
-    config_type: StrictStr = Field(alias="configType")
-    __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition", "configType"]
-
-    @field_validator('config_type')
-    def config_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['instagram_team']):
-            raise ValueError("must be one of enum values ('instagram_team')")
-        return value
+    __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -104,8 +96,7 @@ class InstagramTeamConfig(BaseModel):
         _obj = cls.model_validate({
             "participants": [ParticipantsProperty.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "max_turns": obj.get("max_turns"),
-            "termination_condition": OrTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "configType": obj.get("configType")
+            "termination_condition": OrTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 
