@@ -1,22 +1,25 @@
-from typing import Any, Awaitable, Callable, List, Sequence
+from typing import Any, AsyncGenerator, Awaitable, Callable, List, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
-from autogen_agentchat.messages import ChatMessage
+from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import CancellationToken, Component
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from loguru import logger
+from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.smola_agent_config import SmolaAgentConfig
 from typing_extensions import Self
 
 
 class SmolaAgent(AssistantAgent, Component[SmolaAgentConfig]):
     component_config_schema = SmolaAgentConfig
-    component_provider_override = "mtmai.agents.smola_agent.SmolaAgent"
+    component_provider_override = (
+        ProviderTypes.MTMAI_DOT_AGENTS_DOT_SMOLA_AGENT_DOT_SMOLA_AGENT
+    )
 
     def __init__(
         self,
@@ -52,9 +55,9 @@ class SmolaAgent(AssistantAgent, Component[SmolaAgentConfig]):
             memory=memory,
         )
 
-    async def on_messages(
+    async def on_messages_stream(
         self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
-    ) -> Response:
+    ) -> AsyncGenerator[AgentEvent | ChatMessage | Response, None]:
         from smolagents import CodeAgent, DuckDuckGoSearchTool, HfApiModel
 
         model = HfApiModel()
@@ -64,6 +67,7 @@ class SmolaAgent(AssistantAgent, Component[SmolaAgentConfig]):
             "How many seconds would it take for a leopard at full speed to run through Pont des Arts?"
         )
         logger.info(f"result: {result}")
+        yield result
 
     @classmethod
     def _from_config(cls, config: SmolaAgentConfig) -> Self:

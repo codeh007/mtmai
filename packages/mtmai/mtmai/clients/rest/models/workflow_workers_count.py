@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.workflow_workers_count_other import WorkflowWorkersCountOther
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +30,8 @@ class WorkflowWorkersCount(BaseModel):
     free_slot_count: Optional[StrictInt] = Field(default=None, alias="freeSlotCount")
     max_slot_count: Optional[StrictInt] = Field(default=None, alias="maxSlotCount")
     workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
-    __properties: ClassVar[List[str]] = ["freeSlotCount", "maxSlotCount", "workflowRunId"]
+    other: Optional[WorkflowWorkersCountOther] = None
+    __properties: ClassVar[List[str]] = ["freeSlotCount", "maxSlotCount", "workflowRunId", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,6 +72,9 @@ class WorkflowWorkersCount(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of other
+        if self.other:
+            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
@@ -84,7 +89,8 @@ class WorkflowWorkersCount(BaseModel):
         _obj = cls.model_validate({
             "freeSlotCount": obj.get("freeSlotCount"),
             "maxSlotCount": obj.get("maxSlotCount"),
-            "workflowRunId": obj.get("workflowRunId")
+            "workflowRunId": obj.get("workflowRunId"),
+            "other": WorkflowWorkersCountOther.from_dict(obj["other"]) if obj.get("other") is not None else None
         })
         return _obj
 

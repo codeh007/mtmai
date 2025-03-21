@@ -82,7 +82,6 @@ from mtmai.clients.rest.models.code_highlight import CodeHighlight
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.common_result import CommonResult
-from mtmai.clients.rest.models.common_result_other import CommonResultOther
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
@@ -193,6 +192,7 @@ from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
 from mtmai.clients.rest.models.prompt import Prompt
 from mtmai.clients.rest.models.prompt_list import PromptList
+from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.proxy import Proxy
 from mtmai.clients.rest.models.proxy_list import ProxyList
 from mtmai.clients.rest.models.proxy_update import ProxyUpdate
@@ -345,3 +345,4 @@ from mtmai.clients.rest.models.workflow_version import WorkflowVersion
 from mtmai.clients.rest.models.workflow_version_definition import WorkflowVersionDefinition
 from mtmai.clients.rest.models.workflow_version_meta import WorkflowVersionMeta
 from mtmai.clients.rest.models.workflow_workers_count import WorkflowWorkersCount
+from mtmai.clients.rest.models.workflow_workers_count_other import WorkflowWorkersCountOther
