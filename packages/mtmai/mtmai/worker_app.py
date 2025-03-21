@@ -1,4 +1,5 @@
 from autogen_core import try_get_known_serializers_for_type
+from loguru import logger
 
 from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greeting
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
@@ -19,6 +20,7 @@ def get_workflows_types():
 
 
 async def run_worker():
+    logger.info("booting worker")
     await mtmapp.boot()
     # await greeter_team.run("greeter_team", ag_runtime)
     # 确保 durable 函数注册发送在 mtmapp.worker()函数之前.

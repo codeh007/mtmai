@@ -53,6 +53,16 @@
 	"python.testing.pytestArgs": [
 		"."
 	],
+	"python.formatting.provider": "black",
+	"editor.formatOnSave": true,
+	"python.formatting.blackArgs": [
+		"--line-length",
+		"88"
+	],
+	// "python.linting.enabled": true,
+	// "python.linting.pylintEnabled": true,
+	// "python.linting.lintOnSave": true,
+	// "python.linting.mypyEnabled": true,
 	"explorer.fileNesting.enabled": true,
 	"explorer.fileNesting.patterns": {
 		"*.ts": "${capture}.ts, ${capture}.hooks.ts, ${capture}.hooks.tsx, ${capture}.contexts.ts, ${capture}.stories.tsx, ${capture}.story.tsx, ${capture}.spec.tsx, ${capture}.base.ts, ${capture}.base.tsx, ${capture}.types.ts, ${capture}.styles.ts, ${capture}.styles.tsx, ${capture}.utils.ts, ${capture}.utils.tsx, ${capture}.constants.ts, ${capture}.module.scss, ${capture}.module.css, ${capture}.md",
