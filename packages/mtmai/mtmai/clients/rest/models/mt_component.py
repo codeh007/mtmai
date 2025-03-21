@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.mt_component_all_of_config import MtComponentAllOfConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -36,7 +35,7 @@ class MtComponent(BaseModel):
     component_version: StrictInt = Field(alias="componentVersion")
     description: StrictStr
     label: StrictStr
-    config: MtComponentAllOfConfig
+    config: Dict[str, Any]
     gallery_id: StrictStr = Field(alias="galleryId")
     __properties: ClassVar[List[str]] = ["metadata", "id", "provider", "componentType", "version", "componentVersion", "description", "label", "config", "galleryId"]
 
@@ -82,9 +81,6 @@ class MtComponent(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -105,7 +101,7 @@ class MtComponent(BaseModel):
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": MtComponentAllOfConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "config": obj.get("config"),
             "galleryId": obj.get("galleryId")
         })
         return _obj
