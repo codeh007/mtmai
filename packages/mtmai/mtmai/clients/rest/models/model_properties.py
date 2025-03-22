@@ -28,14 +28,14 @@ class ModelProperties(BaseModel):
     """ # noqa: E501
     name: StrictStr
     provider: StrictStr
-    api_key: Optional[StrictStr] = Field(default=None, alias="apiKey")
-    api_base: Optional[StrictStr] = Field(default=None, alias="apiBase")
-    vendor: Optional[StrictStr] = None
+    api_key: StrictStr = Field(alias="apiKey")
+    api_base: StrictStr = Field(alias="apiBase")
+    vendor: StrictStr
     description: Optional[StrictStr] = None
     family: StrictStr
-    vision: Optional[StrictBool] = None
-    function_calling: Optional[StrictBool] = Field(default=None, alias="functionCalling")
-    json_output: Optional[StrictBool] = Field(default=None, alias="jsonOutput")
+    vision: StrictBool
+    function_calling: StrictBool = Field(alias="functionCalling")
+    json_output: StrictBool = Field(alias="jsonOutput")
     __properties: ClassVar[List[str]] = ["name", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput"]
 
     model_config = ConfigDict(
