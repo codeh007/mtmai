@@ -7,6 +7,7 @@ from autogen_core import ComponentModel
 from clients.rest.api.agent_api import AgentApi
 from clients.rest.api.team_api import TeamApi
 from connecpy.context import ClientContext
+
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -192,7 +193,7 @@ class AgClient:
                 participants=agent_components,
                 termination_condition=termination_component,
                 max_turns=team_data.max_turns or 25,
-            ),
+            ).model_dump(),
         )
         team = Team.load_component(team_component)
 
