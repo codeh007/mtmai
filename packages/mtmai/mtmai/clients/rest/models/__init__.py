@@ -164,6 +164,7 @@ from mtmai.clients.rest.models.model_context import ModelContext
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
+from mtmai.clients.rest.models.model_properties import ModelProperties
 from mtmai.clients.rest.models.model_run import ModelRun
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
@@ -301,13 +302,13 @@ from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkfl
 from mtmai.clients.rest.models.ui_agent_state import UiAgentState
 from mtmai.clients.rest.models.update_blog_request import UpdateBlogRequest
 from mtmai.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
-from mtmai.clients.rest.models.update_model import UpdateModel
 from mtmai.clients.rest.models.update_post_request import UpdatePostRequest
 from mtmai.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmai.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest
 from mtmai.clients.rest.models.update_tenant_invite_request import UpdateTenantInviteRequest
 from mtmai.clients.rest.models.update_tenant_request import UpdateTenantRequest
 from mtmai.clients.rest.models.update_worker_request import UpdateWorkerRequest
+from mtmai.clients.rest.models.upsert_model import UpsertModel
 from mtmai.clients.rest.models.user import User
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest

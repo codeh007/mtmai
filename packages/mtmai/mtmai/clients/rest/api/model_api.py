@@ -16,10 +16,11 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictStr
+from pydantic import Field
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_list import ModelList
+from mtmai.clients.rest.models.upsert_model import UpsertModel
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -40,279 +41,10 @@ class ModelApi:
 
 
     @validate_call
-    async def model_create(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Model:
-        """model_create
-
-        大语言模型配置
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._model_create_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    async def model_create_with_http_info(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[Model]:
-        """model_create
-
-        大语言模型配置
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._model_create_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    async def model_create_without_preload_content(
-        self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """model_create
-
-        大语言模型配置
-
-        :param tenant: The tenant id (required)
-        :type tenant: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._model_create_serialize(
-            tenant=tenant,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "Model",
-            '400': "APIErrors",
-            '403': "APIError",
-        }
-        response_data = await self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _model_create_serialize(
-        self,
-        tenant,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if tenant is not None:
-            _path_params['tenant'] = tenant
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-            'basicAuth', 
-            'cookieAuth', 
-            'bearerAuth'
-        ]
-
-        return self.api_client.param_serialize(
-            method='POST',
-            resource_path='/api/v1/tenants/{tenant}/models',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
     async def model_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[StrictStr, Field(description="The model id")],
+        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -384,7 +116,7 @@ class ModelApi:
     async def model_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[StrictStr, Field(description="The model id")],
+        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -456,7 +188,7 @@ class ModelApi:
     async def model_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[StrictStr, Field(description="The model id")],
+        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -859,11 +591,11 @@ class ModelApi:
 
 
     @validate_call
-    async def model_update(
+    async def model_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -877,16 +609,16 @@ class ModelApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> Model:
-        """model_update
+        """model_upsert
 
-        Update an model
+        upsert an model
 
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -909,10 +641,10 @@ class ModelApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._model_update_serialize(
+        _param = self._model_upsert_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -936,11 +668,11 @@ class ModelApi:
 
 
     @validate_call
-    async def model_update_with_http_info(
+    async def model_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -954,16 +686,16 @@ class ModelApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[Model]:
-        """model_update
+        """model_upsert
 
-        Update an model
+        upsert an model
 
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -986,10 +718,10 @@ class ModelApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._model_update_serialize(
+        _param = self._model_upsert_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1013,11 +745,11 @@ class ModelApi:
 
 
     @validate_call
-    async def model_update_without_preload_content(
+    async def model_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
-        model2: Annotated[Model, Field(description="The model properties to update")],
+        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1031,16 +763,16 @@ class ModelApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """model_update
+        """model_upsert
 
-        Update an model
+        upsert an model
 
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param model2: The model properties to update (required)
-        :type model2: Model
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1063,10 +795,10 @@ class ModelApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._model_update_serialize(
+        _param = self._model_upsert_serialize(
             tenant=tenant,
             model=model,
-            model2=model2,
+            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1085,11 +817,11 @@ class ModelApi:
         return response_data.response
 
 
-    def _model_update_serialize(
+    def _model_upsert_serialize(
         self,
         tenant,
         model,
-        model2,
+        upsert_model,
         _request_auth,
         _content_type,
         _headers,
@@ -1119,8 +851,8 @@ class ModelApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if model2 is not None:
-            _body_params = model2
+        if upsert_model is not None:
+            _body_params = upsert_model
 
 
         # set the HTTP header `Accept`
