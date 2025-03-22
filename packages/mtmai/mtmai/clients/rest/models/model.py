@@ -27,7 +27,7 @@ class Model(BaseModel):
     """
     Model
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     name: StrictStr
     provider: StrictStr
     api_key: StrictStr = Field(alias="apiKey")

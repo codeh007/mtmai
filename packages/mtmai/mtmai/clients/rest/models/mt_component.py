@@ -27,7 +27,7 @@ class MtComponent(BaseModel):
     """
     MtComponent
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
     provider: StrictStr
     component_type: StrictStr = Field(alias="componentType")

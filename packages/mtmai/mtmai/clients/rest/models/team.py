@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,7 +27,7 @@ class Team(BaseModel):
     """
     Team
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     id: StrictStr
     name: StrictStr
     description: StrictStr

@@ -27,7 +27,7 @@ class MtResourceUpsert(BaseModel):
     """
     MtResourceUpsert
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     title: StrictStr = Field(description="The resource title")
     description: Optional[StrictStr] = Field(default=None, description="The resource description")
     version: Optional[StrictStr] = Field(default=None, description="The resource version")

@@ -29,7 +29,7 @@ class AgState(BaseModel):
     """
     AgState
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     version: Optional[StrictStr] = '1.0.0'
     type: StateType
     component_id: Optional[StrictStr] = Field(default=None, alias="componentId")

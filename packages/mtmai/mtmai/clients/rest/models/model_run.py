@@ -27,7 +27,7 @@ class ModelRun(BaseModel):
     """
     ModelRun
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
+    metadata: APIResourceMeta
     request: Optional[Dict[str, StrictStr]] = None
     response: Optional[Dict[str, StrictStr]] = None
     __properties: ClassVar[List[str]] = ["metadata", "request", "response"]
