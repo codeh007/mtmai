@@ -263,6 +263,8 @@ from mtmai.clients.rest.models.team_config_base import TeamConfigBase
 from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
 from mtmai.clients.rest.models.team_result import TeamResult
+from mtmai.clients.rest.models.team_run import TeamRun
+from mtmai.clients.rest.models.team_run_result import TeamRunResult
 from mtmai.clients.rest.models.team_state import TeamState
 from mtmai.clients.rest.models.team_types import TeamTypes
 from mtmai.clients.rest.models.tenant import Tenant
