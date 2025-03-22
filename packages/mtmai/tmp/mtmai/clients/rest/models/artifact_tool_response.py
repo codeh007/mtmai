@@ -18,18 +18,19 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class ArtifactToolResponse(BaseModel):
     """
-    TeamProperties
+    ArtifactToolResponse
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    artifact: Optional[StrictStr] = None
+    title: Optional[StrictStr] = None
+    language: Optional[StrictStr] = None
+    type: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["artifact", "title", "language", "type"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of ArtifactToolResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +75,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of ArtifactToolResponse from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +83,10 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "artifact": obj.get("artifact"),
+            "title": obj.get("title"),
+            "language": obj.get("language"),
+            "type": obj.get("type")
         })
         return _obj
 

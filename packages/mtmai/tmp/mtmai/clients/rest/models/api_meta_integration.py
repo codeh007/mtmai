@@ -17,19 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class APIMetaIntegration(BaseModel):
     """
-    TeamProperties
+    APIMetaIntegration
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    name: StrictStr = Field(description="the name of the integration")
+    enabled: StrictBool = Field(description="whether this integration is enabled on the instance")
+    __properties: ClassVar[List[str]] = ["name", "enabled"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +48,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of APIMetaIntegration from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +73,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of APIMetaIntegration from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +81,8 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
             "name": obj.get("name"),
-            "description": obj.get("description")
+            "enabled": obj.get("enabled")
         })
         return _obj
 

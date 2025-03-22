@@ -20,21 +20,26 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmai.clients.rest.models.model_usage import ModelUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Team(BaseModel):
+class ChatMessage(BaseModel):
     """
-    Team
+    ChatMessage
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    metadata: APIResourceMeta
+    role: StrictStr
+    content: StrictStr
+    source: Optional[StrictStr] = None
+    topic: Optional[StrictStr] = None
+    thought: Optional[StrictStr] = None
+    resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
+    msg_meta: Optional[Dict[str, Any]] = None
+    config: Optional[ChatMessageConfig] = None
+    model_usage: Optional[ModelUsage] = None
+    __properties: ClassVar[List[str]] = ["metadata", "role", "content", "source", "topic", "thought", "resourceId", "msg_meta", "config", "model_usage"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +59,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Team from a JSON string"""
+        """Create an instance of ChatMessage from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,11 +83,17 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of model_usage
+        if self.model_usage:
+            _dict['model_usage'] = self.model_usage.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Team from a dict"""
+        """Create an instance of ChatMessage from a dict"""
         if obj is None:
             return None
 
@@ -91,12 +102,15 @@ class Team(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "description": obj.get("description"),
-            "version": obj.get("version"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "content": obj.get("content")
+            "role": obj.get("role"),
+            "content": obj.get("content"),
+            "source": obj.get("source"),
+            "topic": obj.get("topic"),
+            "thought": obj.get("thought"),
+            "resourceId": obj.get("resourceId"),
+            "msg_meta": obj.get("msg_meta"),
+            "config": ChatMessageConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "model_usage": ModelUsage.from_dict(obj["model_usage"]) if obj.get("model_usage") is not None else None
         })
         return _obj
 

@@ -17,19 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class DashSidebarItemLeaf(BaseModel):
     """
-    TeamProperties
+    DashSidebarItemLeaf
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    title: StrictStr = Field(description="名称")
+    url: StrictStr = Field(description="url 例如/login")
+    icon: Optional[StrictStr] = Field(default=None, description="图标")
+    admin_only: Optional[StrictBool] = Field(default=None, description="只允许超级管理员查看", alias="adminOnly")
+    __properties: ClassVar[List[str]] = ["title", "url", "icon", "adminOnly"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of DashSidebarItemLeaf from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +75,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of DashSidebarItemLeaf from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +83,10 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "title": obj.get("title"),
+            "url": obj.get("url"),
+            "icon": obj.get("icon"),
+            "adminOnly": obj.get("adminOnly")
         })
         return _obj
 

@@ -17,19 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictInt
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class EventWorkflowRunSummary(BaseModel):
     """
-    TeamProperties
+    EventWorkflowRunSummary
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    pending: Optional[StrictInt] = Field(default=None, description="The number of pending runs.")
+    running: Optional[StrictInt] = Field(default=None, description="The number of running runs.")
+    queued: Optional[StrictInt] = Field(default=None, description="The number of queued runs.")
+    succeeded: Optional[StrictInt] = Field(default=None, description="The number of succeeded runs.")
+    failed: Optional[StrictInt] = Field(default=None, description="The number of failed runs.")
+    __properties: ClassVar[List[str]] = ["pending", "running", "queued", "succeeded", "failed"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +51,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of EventWorkflowRunSummary from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +76,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of EventWorkflowRunSummary from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +84,11 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "pending": obj.get("pending"),
+            "running": obj.get("running"),
+            "queued": obj.get("queued"),
+            "succeeded": obj.get("succeeded"),
+            "failed": obj.get("failed")
         })
         return _obj
 

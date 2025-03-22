@@ -17,19 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class APIError(BaseModel):
     """
-    TeamProperties
+    APIError
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    code: Optional[StrictInt] = Field(default=None, description="a custom Hatchet error code")
+    var_field: Optional[StrictStr] = Field(default=None, description="the field that this error is associated with, if applicable", alias="field")
+    description: StrictStr = Field(description="a description for this error")
+    docs_link: Optional[StrictStr] = Field(default=None, description="a link to the documentation for this error, if it exists")
+    __properties: ClassVar[List[str]] = ["code", "field", "description", "docs_link"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of APIError from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +75,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of APIError from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +83,10 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "code": obj.get("code"),
+            "field": obj.get("field"),
+            "description": obj.get("description"),
+            "docs_link": obj.get("docs_link")
         })
         return _obj
 

@@ -17,19 +17,23 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class ComponentModel(BaseModel):
     """
-    TeamProperties
+    ComponentModel
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
+    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
+    component_type: StrictStr = Field(description="Logical type of the component. If missing, the component assumes the default type of the provider.", alias="componentType")
+    version: StrictInt = Field(description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
+    component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
+    description: StrictStr = Field(description="Description of the component.")
+    label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
+    __properties: ClassVar[List[str]] = ["id", "provider", "componentType", "version", "componentVersion", "description", "label"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +53,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of ComponentModel from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +78,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of ComponentModel from a dict"""
         if obj is None:
             return None
 
@@ -83,8 +87,12 @@ class TeamProperties(BaseModel):
 
         _obj = cls.model_validate({
             "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "provider": obj.get("provider"),
+            "componentType": obj.get("componentType"),
+            "version": obj.get("version"),
+            "componentVersion": obj.get("componentVersion"),
+            "description": obj.get("description"),
+            "label": obj.get("label")
         })
         return _obj
 

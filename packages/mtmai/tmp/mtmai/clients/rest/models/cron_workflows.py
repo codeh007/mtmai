@@ -17,24 +17,35 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Team(BaseModel):
+class CronWorkflows(BaseModel):
     """
-    Team
+    CronWorkflows
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    metadata: APIResourceMeta
+    tenant_id: StrictStr = Field(alias="tenantId")
+    workflow_version_id: StrictStr = Field(alias="workflowVersionId")
+    workflow_id: StrictStr = Field(alias="workflowId")
+    workflow_name: StrictStr = Field(alias="workflowName")
+    cron: StrictStr
+    name: Optional[StrictStr] = None
+    input: Optional[Dict[str, Any]] = None
+    additional_metadata: Optional[Dict[str, Any]] = Field(default=None, alias="additionalMetadata")
+    enabled: StrictBool
+    method: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "tenantId", "workflowVersionId", "workflowId", "workflowName", "cron", "name", "input", "additionalMetadata", "enabled", "method"]
+
+    @field_validator('method')
+    def method_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['DEFAULT', 'API']):
+            raise ValueError("must be one of enum values ('DEFAULT', 'API')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +65,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Team from a JSON string"""
+        """Create an instance of CronWorkflows from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -82,7 +93,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Team from a dict"""
+        """Create an instance of CronWorkflows from a dict"""
         if obj is None:
             return None
 
@@ -91,12 +102,16 @@ class Team(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "description": obj.get("description"),
-            "version": obj.get("version"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "content": obj.get("content")
+            "tenantId": obj.get("tenantId"),
+            "workflowVersionId": obj.get("workflowVersionId"),
+            "workflowId": obj.get("workflowId"),
+            "workflowName": obj.get("workflowName"),
+            "cron": obj.get("cron"),
+            "name": obj.get("name"),
+            "input": obj.get("input"),
+            "additionalMetadata": obj.get("additionalMetadata"),
+            "enabled": obj.get("enabled"),
+            "method": obj.get("method")
         })
         return _obj
 

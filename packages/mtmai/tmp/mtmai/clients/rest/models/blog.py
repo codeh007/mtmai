@@ -17,24 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.blog_config import BlogConfig
+from mtmai.clients.rest.models.tenant import Tenant
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Team(BaseModel):
+class Blog(BaseModel):
     """
-    Team
+    Blog
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    metadata: APIResourceMeta
+    title: StrictStr
+    description: Optional[StrictStr] = None
+    tenant: Optional[Tenant] = Field(default=None, description="The tenant associated with this tenant blog.")
+    config: Optional[BlogConfig] = None
+    status: Optional[StrictStr] = Field(default=None, description="The status of the blog.")
+    enabled: Optional[StrictBool] = Field(default=None, description="Whether the blog is enabled.")
+    slug: Optional[StrictStr] = Field(default=None, description="The slug of the blog.")
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "tenant", "config", "status", "enabled", "slug"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +57,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Team from a JSON string"""
+        """Create an instance of Blog from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,11 +81,17 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of tenant
+        if self.tenant:
+            _dict['tenant'] = self.tenant.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Team from a dict"""
+        """Create an instance of Blog from a dict"""
         if obj is None:
             return None
 
@@ -93,10 +102,11 @@ class Team(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "title": obj.get("title"),
             "description": obj.get("description"),
-            "version": obj.get("version"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "content": obj.get("content")
+            "tenant": Tenant.from_dict(obj["tenant"]) if obj.get("tenant") is not None else None,
+            "config": BlogConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "status": obj.get("status"),
+            "enabled": obj.get("enabled"),
+            "slug": obj.get("slug")
         })
         return _obj
 

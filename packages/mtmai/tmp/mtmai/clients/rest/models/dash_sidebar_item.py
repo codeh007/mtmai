@@ -17,19 +17,23 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class DashSidebarItem(BaseModel):
     """
-    TeamProperties
+    DashSidebarItem
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    title: StrictStr = Field(description="名称")
+    url: StrictStr = Field(description="url 例如/login")
+    icon: Optional[StrictStr] = Field(default=None, description="图标")
+    default_expanded: Optional[StrictBool] = Field(default=None, description="默认展开", alias="defaultExpanded")
+    admin_only: Optional[StrictBool] = Field(default=None, description="只允许超级管理员查看", alias="adminOnly")
+    children: Optional[List[DashSidebarItemLeaf]] = None
+    __properties: ClassVar[List[str]] = ["title", "url", "icon", "defaultExpanded", "adminOnly", "children"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +53,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of DashSidebarItem from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,11 +74,18 @@ class TeamProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in children (list)
+        _items = []
+        if self.children:
+            for _item_children in self.children:
+                if _item_children:
+                    _items.append(_item_children.to_dict())
+            _dict['children'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of DashSidebarItem from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +93,12 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "title": obj.get("title"),
+            "url": obj.get("url"),
+            "icon": obj.get("icon"),
+            "defaultExpanded": obj.get("defaultExpanded"),
+            "adminOnly": obj.get("adminOnly"),
+            "children": [DashSidebarItemLeaf.from_dict(_item) for _item in obj["children"]] if obj.get("children") is not None else None
         })
         return _obj
 

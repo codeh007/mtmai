@@ -41,5 +41,6 @@ from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api.settings_api import SettingsApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
+from mtmai.clients.rest.api.team_api import TeamApi
 from mtmai.clients.rest.api.ui_agent_api import UiAgentApi
 

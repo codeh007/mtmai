@@ -17,19 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class BlogPostState(BaseModel):
     """
-    TeamProperties
+    BlogPostState
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    title: Optional[StrictStr] = Field(default=None, description="post title")
+    topic: Optional[StrictStr] = Field(default=None, description="post topic")
+    outlines: Optional[List[BlogPostStateOutlinesInner]] = Field(default=None, description="post outlines")
+    __properties: ClassVar[List[str]] = ["title", "topic", "outlines"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of BlogPostState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,11 +71,18 @@ class TeamProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in outlines (list)
+        _items = []
+        if self.outlines:
+            for _item_outlines in self.outlines:
+                if _item_outlines:
+                    _items.append(_item_outlines.to_dict())
+            _dict['outlines'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of BlogPostState from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +90,9 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "title": obj.get("title"),
+            "topic": obj.get("topic"),
+            "outlines": [BlogPostStateOutlinesInner.from_dict(_item) for _item in obj["outlines"]] if obj.get("outlines") is not None else None
         })
         return _obj
 

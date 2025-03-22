@@ -20,21 +20,22 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
+from mtmai.clients.rest.models.tenant import Tenant
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Team(BaseModel):
+class Event(BaseModel):
     """
-    Team
+    Event
     """ # noqa: E501
-    metadata: Optional[APIResourceMeta] = None
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    metadata: APIResourceMeta
+    key: StrictStr = Field(description="The key for the event.")
+    tenant: Optional[Tenant] = Field(default=None, description="The tenant associated with this event.")
+    tenant_id: StrictStr = Field(description="The ID of the tenant associated with this event.", alias="tenantId")
+    workflow_run_summary: Optional[EventWorkflowRunSummary] = Field(default=None, description="The workflow run summary for this event.", alias="workflowRunSummary")
+    additional_metadata: Optional[Dict[str, Any]] = Field(default=None, description="Additional metadata for the event.", alias="additionalMetadata")
+    __properties: ClassVar[List[str]] = ["metadata", "key", "tenant", "tenantId", "workflowRunSummary", "additionalMetadata"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +55,7 @@ class Team(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Team from a JSON string"""
+        """Create an instance of Event from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,11 +79,17 @@ class Team(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of tenant
+        if self.tenant:
+            _dict['tenant'] = self.tenant.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of workflow_run_summary
+        if self.workflow_run_summary:
+            _dict['workflowRunSummary'] = self.workflow_run_summary.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Team from a dict"""
+        """Create an instance of Event from a dict"""
         if obj is None:
             return None
 
@@ -91,12 +98,11 @@ class Team(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "description": obj.get("description"),
-            "version": obj.get("version"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "content": obj.get("content")
+            "key": obj.get("key"),
+            "tenant": Tenant.from_dict(obj["tenant"]) if obj.get("tenant") is not None else None,
+            "tenantId": obj.get("tenantId"),
+            "workflowRunSummary": EventWorkflowRunSummary.from_dict(obj["workflowRunSummary"]) if obj.get("workflowRunSummary") is not None else None,
+            "additionalMetadata": obj.get("additionalMetadata")
         })
         return _obj
 

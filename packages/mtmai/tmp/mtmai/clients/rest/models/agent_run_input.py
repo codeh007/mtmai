@@ -17,19 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class AgentRunInput(BaseModel):
     """
-    TeamProperties
+    AgentRunInput
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
+    content: StrictStr
+    tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
+    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
+    step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
+    resource_id: Optional[StrictStr] = Field(default=None, alias="resourceId")
+    component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
+    topic: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
+    other: Optional[AgentRunInputOther] = None
+    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +57,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of AgentRunInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,11 +78,14 @@ class TeamProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of other
+        if self.other:
+            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of AgentRunInput from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +93,16 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "sessionId": obj.get("sessionId"),
+            "content": obj.get("content"),
+            "tenantId": obj.get("tenantId"),
+            "runId": obj.get("runId"),
+            "stepRunId": obj.get("stepRunId"),
+            "resourceId": obj.get("resourceId"),
+            "componentId": obj.get("componentId"),
+            "topic": obj.get("topic"),
+            "source": obj.get("source"),
+            "other": AgentRunInputOther.from_dict(obj["other"]) if obj.get("other") is not None else None
         })
         return _obj
 

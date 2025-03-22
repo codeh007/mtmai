@@ -22,14 +22,15 @@ from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class CodeReviewTask(BaseModel):
     """
-    TeamProperties
+    CodeReviewTask
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    session_id: StrictStr
+    code_writing_task: StrictStr
+    code_writing_scratchpad: StrictStr
+    code: StrictStr
+    __properties: ClassVar[List[str]] = ["session_id", "code_writing_task", "code_writing_scratchpad", "code"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +50,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of CodeReviewTask from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +75,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of CodeReviewTask from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +83,10 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "session_id": obj.get("session_id"),
+            "code_writing_task": obj.get("code_writing_task"),
+            "code_writing_scratchpad": obj.get("code_writing_scratchpad"),
+            "code": obj.get("code")
         })
         return _obj
 

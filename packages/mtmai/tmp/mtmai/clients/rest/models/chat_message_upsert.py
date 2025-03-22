@@ -17,19 +17,29 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class ChatMessageUpsert(BaseModel):
     """
-    TeamProperties
+    ChatMessageUpsert
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    tenant_id: StrictStr = Field(alias="tenantId")
+    content: StrictStr
+    component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
+    thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
+    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
+    role: Optional[StrictStr] = None
+    topic: Optional[StrictStr] = None
+    source: StrictStr
+    message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
+    agent_type: Optional[StrictStr] = Field(default=None, alias="agentType")
+    workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
+    step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
+    thought: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "topic", "source", "messageType", "agentType", "workflowRunId", "stepRunId", "thought"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +59,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of ChatMessageUpsert from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +84,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of ChatMessageUpsert from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +92,19 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "tenantId": obj.get("tenantId"),
+            "content": obj.get("content"),
+            "componentId": obj.get("componentId"),
+            "threadId": obj.get("threadId"),
+            "runId": obj.get("runId"),
+            "role": obj.get("role"),
+            "topic": obj.get("topic"),
+            "source": obj.get("source") if obj.get("source") is not None else 'user',
+            "messageType": obj.get("messageType"),
+            "agentType": obj.get("agentType"),
+            "workflowRunId": obj.get("workflowRunId"),
+            "stepRunId": obj.get("stepRunId"),
+            "thought": obj.get("thought")
         })
         return _obj
 

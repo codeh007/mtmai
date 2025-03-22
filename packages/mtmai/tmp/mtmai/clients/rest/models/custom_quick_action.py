@@ -17,19 +17,22 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class CustomQuickAction(BaseModel):
     """
-    TeamProperties
+    CustomQuickAction
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    id: StrictStr = Field(description="A UUID for the quick action. Used to identify the quick action.")
+    title: StrictStr = Field(description="The title of the quick action. Used in the UI to display the quick action.")
+    prompt: StrictStr = Field(description="The prompt to use when the quick action is invoked.")
+    include_reflections: StrictBool = Field(description="Whether or not to include the user's reflections in the prompt.", alias="includeReflections")
+    include_prefix: StrictBool = Field(description="Whether or not to include the default prefix in the prompt.", alias="includePrefix")
+    include_recent_history: StrictBool = Field(description="Whether or not to include the last 5 (or less) messages in the prompt.", alias="includeRecentHistory")
+    __properties: ClassVar[List[str]] = ["id", "title", "prompt", "includeReflections", "includePrefix", "includeRecentHistory"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +52,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of CustomQuickAction from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +77,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of CustomQuickAction from a dict"""
         if obj is None:
             return None
 
@@ -83,8 +86,11 @@ class TeamProperties(BaseModel):
 
         _obj = cls.model_validate({
             "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "title": obj.get("title"),
+            "prompt": obj.get("prompt"),
+            "includeReflections": obj.get("includeReflections"),
+            "includePrefix": obj.get("includePrefix"),
+            "includeRecentHistory": obj.get("includeRecentHistory")
         })
         return _obj
 

@@ -17,19 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
+from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamProperties(BaseModel):
+class AgStateUpsert(BaseModel):
     """
-    TeamProperties
+    AgStateUpsert
     """ # noqa: E501
-    id: StrictStr
-    name: StrictStr
-    description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    version: Optional[StrictStr] = '1.0.0'
+    type: StateType
+    component_id: StrictStr = Field(description="组件id", alias="componentId")
+    chat_id: StrictStr = Field(description="聊天id", alias="chatId")
+    topic: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
+    state: AgStatePropertiesState
+    state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
+    tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
+    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateId", "tenantId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +57,7 @@ class TeamProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamProperties from a JSON string"""
+        """Create an instance of AgStateUpsert from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,11 +78,14 @@ class TeamProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of state
+        if self.state:
+            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamProperties from a dict"""
+        """Create an instance of AgStateUpsert from a dict"""
         if obj is None:
             return None
 
@@ -82,9 +93,15 @@ class TeamProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "name": obj.get("name"),
-            "description": obj.get("description")
+            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
+            "type": obj.get("type"),
+            "componentId": obj.get("componentId"),
+            "chatId": obj.get("chatId"),
+            "topic": obj.get("topic"),
+            "source": obj.get("source"),
+            "state": AgStatePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None,
+            "stateId": obj.get("stateId"),
+            "tenantId": obj.get("tenantId")
         })
         return _obj
 
