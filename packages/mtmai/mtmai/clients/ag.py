@@ -192,7 +192,7 @@ class AgClient:
                 participants=agent_components,
                 termination_condition=termination_component,
                 max_turns=team_data.max_turns or 25,
-            ).model_dump(),
+            ),
         )
         team = Team.load_component(team_component)
 
