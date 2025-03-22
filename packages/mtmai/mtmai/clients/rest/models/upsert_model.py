@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,20 +26,17 @@ class UpsertModel(BaseModel):
     """
     UpsertModel
     """ # noqa: E501
-    name: Optional[StrictStr] = None
+    name: StrictStr
+    provider: StrictStr
+    api_key: Optional[StrictStr] = Field(default=None, alias="apiKey")
+    api_base: Optional[StrictStr] = Field(default=None, alias="apiBase")
+    vendor: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
-    family: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["name", "description", "family"]
-
-    @field_validator('family')
-    def family_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['r1', 'openai', 'unknown']):
-            raise ValueError("must be one of enum values ('r1', 'openai', 'unknown')")
-        return value
+    family: StrictStr
+    vision: Optional[StrictBool] = None
+    function_calling: Optional[StrictBool] = Field(default=None, alias="functionCalling")
+    json_output: Optional[StrictBool] = Field(default=None, alias="jsonOutput")
+    __properties: ClassVar[List[str]] = ["name", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,8 +90,15 @@ class UpsertModel(BaseModel):
 
         _obj = cls.model_validate({
             "name": obj.get("name"),
+            "provider": obj.get("provider"),
+            "apiKey": obj.get("apiKey"),
+            "apiBase": obj.get("apiBase"),
+            "vendor": obj.get("vendor"),
             "description": obj.get("description"),
-            "family": obj.get("family")
+            "family": obj.get("family"),
+            "vision": obj.get("vision"),
+            "functionCalling": obj.get("functionCalling"),
+            "jsonOutput": obj.get("jsonOutput")
         })
         return _obj
 

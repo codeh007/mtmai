@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictStr
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_list import ModelList
@@ -594,7 +594,7 @@ class ModelApi:
     async def model_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
+        model: Annotated[StrictStr, Field(description="The model id")],
         upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
@@ -671,7 +671,7 @@ class ModelApi:
     async def model_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
+        model: Annotated[StrictStr, Field(description="The model id")],
         upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
@@ -748,7 +748,7 @@ class ModelApi:
     async def model_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model id")],
+        model: Annotated[StrictStr, Field(description="The model id")],
         upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
