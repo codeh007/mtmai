@@ -28,7 +28,9 @@ class AgentProperties(BaseModel):
     """ # noqa: E501
     name: StrictStr
     description: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description"]
+    provider: StrictStr
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["name", "description", "provider", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,7 +84,9 @@ class AgentProperties(BaseModel):
 
         _obj = cls.model_validate({
             "name": obj.get("name"),
-            "description": obj.get("description")
+            "description": obj.get("description"),
+            "provider": obj.get("provider"),
+            "config": obj.get("config")
         })
         return _obj
 

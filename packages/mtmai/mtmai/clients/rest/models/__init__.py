@@ -36,6 +36,7 @@ from mtmai.clients.rest.models.agent_component import AgentComponent
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.agent_event import AgentEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
+from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_properties import AgentProperties
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -259,6 +260,7 @@ from mtmai.clients.rest.models.system_component import SystemComponent
 from mtmai.clients.rest.models.system_config import SystemConfig
 from mtmai.clients.rest.models.team import Team
 from mtmai.clients.rest.models.team_config_base import TeamConfigBase
+from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
 from mtmai.clients.rest.models.team_result import TeamResult
 from mtmai.clients.rest.models.team_state import TeamState

@@ -29,7 +29,9 @@ class TeamProperties(BaseModel):
     id: StrictStr
     name: StrictStr
     description: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "name", "description"]
+    provider: StrictStr
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["id", "name", "description", "provider", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +86,9 @@ class TeamProperties(BaseModel):
         _obj = cls.model_validate({
             "id": obj.get("id"),
             "name": obj.get("name"),
-            "description": obj.get("description")
+            "description": obj.get("description"),
+            "provider": obj.get("provider"),
+            "config": obj.get("config")
         })
         return _obj
 

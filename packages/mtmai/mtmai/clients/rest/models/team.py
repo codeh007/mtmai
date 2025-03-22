@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,13 +28,12 @@ class Team(BaseModel):
     Team
     """ # noqa: E501
     metadata: Optional[APIResourceMeta] = None
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
-    content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    id: StrictStr
+    name: StrictStr
+    description: StrictStr
+    provider: StrictStr
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "id", "name", "description", "provider", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,12 +90,11 @@ class Team(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
+            "id": obj.get("id"),
+            "name": obj.get("name"),
             "description": obj.get("description"),
-            "version": obj.get("version"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "content": obj.get("content")
+            "provider": obj.get("provider"),
+            "config": obj.get("config")
         })
         return _obj
 

@@ -30,7 +30,9 @@ class Agent(BaseModel):
     metadata: Optional[APIResourceMeta] = None
     name: StrictStr
     description: StrictStr
-    __properties: ClassVar[List[str]] = ["metadata", "name", "description"]
+    provider: StrictStr
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "description", "provider", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +90,9 @@ class Agent(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
-            "description": obj.get("description")
+            "description": obj.get("description"),
+            "provider": obj.get("provider"),
+            "config": obj.get("config")
         })
         return _obj
 

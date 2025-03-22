@@ -19,9 +19,8 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.team import Team
+from mtmai.clients.rest.models.team_list import TeamList
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -347,7 +346,7 @@ class TeamApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponentList:
+    ) -> TeamList:
         """team_list
 
         获取团队列表
@@ -403,7 +402,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "TeamList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -441,7 +440,7 @@ class TeamApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponentList]:
+    ) -> ApiResponse[TeamList]:
         """team_list
 
         获取团队列表
@@ -497,7 +496,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "TeamList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -591,7 +590,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "TeamList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -704,7 +703,7 @@ class TeamApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        team2: Annotated[Team, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -717,7 +716,7 @@ class TeamApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponent:
+    ) -> Team:
         """team_upsert
 
         Upsert an mtcomponent
@@ -726,8 +725,8 @@ class TeamApi:
         :type tenant: str
         :param team: The team id (required)
         :type team: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param team2: The model properties to update (required)
+        :type team2: Team
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -753,7 +752,7 @@ class TeamApi:
         _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
-            mt_component=mt_component,
+            team2=team2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -761,7 +760,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Team",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -781,7 +780,7 @@ class TeamApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        team2: Annotated[Team, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -794,7 +793,7 @@ class TeamApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponent]:
+    ) -> ApiResponse[Team]:
         """team_upsert
 
         Upsert an mtcomponent
@@ -803,8 +802,8 @@ class TeamApi:
         :type tenant: str
         :param team: The team id (required)
         :type team: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param team2: The model properties to update (required)
+        :type team2: Team
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -830,7 +829,7 @@ class TeamApi:
         _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
-            mt_component=mt_component,
+            team2=team2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -838,7 +837,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Team",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -858,7 +857,7 @@ class TeamApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         team: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        team2: Annotated[Team, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -880,8 +879,8 @@ class TeamApi:
         :type tenant: str
         :param team: The team id (required)
         :type team: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param team2: The model properties to update (required)
+        :type team2: Team
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -907,7 +906,7 @@ class TeamApi:
         _param = self._team_upsert_serialize(
             tenant=tenant,
             team=team,
-            mt_component=mt_component,
+            team2=team2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -915,7 +914,7 @@ class TeamApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Team",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -930,7 +929,7 @@ class TeamApi:
         self,
         tenant,
         team,
-        mt_component,
+        team2,
         _request_auth,
         _content_type,
         _headers,
@@ -960,8 +959,8 @@ class TeamApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if mt_component is not None:
-            _body_params = mt_component
+        if team2 is not None:
+            _body_params = team2
 
 
         # set the HTTP header `Accept`
