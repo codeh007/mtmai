@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,7 +30,8 @@ class AgentProperties(BaseModel):
     description: StrictStr
     provider: StrictStr
     config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["name", "description", "provider", "config"]
+    team_id: StrictStr = Field(alias="teamId")
+    __properties: ClassVar[List[str]] = ["name", "description", "provider", "config", "teamId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -86,7 +87,8 @@ class AgentProperties(BaseModel):
             "name": obj.get("name"),
             "description": obj.get("description"),
             "provider": obj.get("provider"),
-            "config": obj.get("config")
+            "config": obj.get("config"),
+            "teamId": obj.get("teamId")
         })
         return _obj
 

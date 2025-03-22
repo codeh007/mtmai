@@ -17,10 +17,10 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
+from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_list import AgentList
-from mtmai.clients.rest.models.mt_component import MtComponent
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -328,6 +328,7 @@ class AgentApi:
     async def agent_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        team: Annotated[Optional[StrictStr], Field(description="The team id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -346,6 +347,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param team: The team id
+        :type team: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -370,6 +373,7 @@ class AgentApi:
 
         _param = self._agent_list_serialize(
             tenant=tenant,
+            team=team,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -397,6 +401,7 @@ class AgentApi:
     async def agent_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        team: Annotated[Optional[StrictStr], Field(description="The team id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -415,6 +420,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param team: The team id
+        :type team: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -439,6 +446,7 @@ class AgentApi:
 
         _param = self._agent_list_serialize(
             tenant=tenant,
+            team=team,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -466,6 +474,7 @@ class AgentApi:
     async def agent_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        team: Annotated[Optional[StrictStr], Field(description="The team id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -484,6 +493,8 @@ class AgentApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param team: The team id
+        :type team: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -508,6 +519,7 @@ class AgentApi:
 
         _param = self._agent_list_serialize(
             tenant=tenant,
+            team=team,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -530,6 +542,7 @@ class AgentApi:
     def _agent_list_serialize(
         self,
         tenant,
+        team,
         _request_auth,
         _content_type,
         _headers,
@@ -554,6 +567,10 @@ class AgentApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if team is not None:
+            
+            _query_params.append(('team', team))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -598,7 +615,7 @@ class AgentApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         agent: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        agent2: Annotated[Agent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -611,7 +628,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponent:
+    ) -> Agent:
         """agent_upsert
 
         Upsert an agent
@@ -620,8 +637,8 @@ class AgentApi:
         :type tenant: str
         :param agent: The team id (required)
         :type agent: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param agent2: The model properties to update (required)
+        :type agent2: Agent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -647,7 +664,7 @@ class AgentApi:
         _param = self._agent_upsert_serialize(
             tenant=tenant,
             agent=agent,
-            mt_component=mt_component,
+            agent2=agent2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -655,7 +672,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Agent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -675,7 +692,7 @@ class AgentApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         agent: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        agent2: Annotated[Agent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -688,7 +705,7 @@ class AgentApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponent]:
+    ) -> ApiResponse[Agent]:
         """agent_upsert
 
         Upsert an agent
@@ -697,8 +714,8 @@ class AgentApi:
         :type tenant: str
         :param agent: The team id (required)
         :type agent: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param agent2: The model properties to update (required)
+        :type agent2: Agent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -724,7 +741,7 @@ class AgentApi:
         _param = self._agent_upsert_serialize(
             tenant=tenant,
             agent=agent,
-            mt_component=mt_component,
+            agent2=agent2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -732,7 +749,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Agent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -752,7 +769,7 @@ class AgentApi:
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         agent: Annotated[StrictStr, Field(description="The team id")],
-        mt_component: Annotated[MtComponent, Field(description="The model properties to update")],
+        agent2: Annotated[Agent, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -774,8 +791,8 @@ class AgentApi:
         :type tenant: str
         :param agent: The team id (required)
         :type agent: str
-        :param mt_component: The model properties to update (required)
-        :type mt_component: MtComponent
+        :param agent2: The model properties to update (required)
+        :type agent2: Agent
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -801,7 +818,7 @@ class AgentApi:
         _param = self._agent_upsert_serialize(
             tenant=tenant,
             agent=agent,
-            mt_component=mt_component,
+            agent2=agent2,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -809,7 +826,7 @@ class AgentApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Agent",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -824,7 +841,7 @@ class AgentApi:
         self,
         tenant,
         agent,
-        mt_component,
+        agent2,
         _request_auth,
         _content_type,
         _headers,
@@ -854,8 +871,8 @@ class AgentApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if mt_component is not None:
-            _body_params = mt_component
+        if agent2 is not None:
+            _body_params = agent2
 
 
         # set the HTTP header `Accept`
