@@ -12,9 +12,10 @@ mtmapp = Hatchet()
 def get_workflows_types():
     from mtmai.flows.flow_ag import FlowAg
     from mtmai.flows.flow_smolagent import FlowSmolagent
+    from mtmai.flows.flow_team import FlowTeam
     from mtmai.flows.flow_tenant_settings import FlowTenantSettings
 
-    return [FlowAg, FlowTenantSettings, FlowSmolagent]
+    return [FlowAg, FlowTenantSettings, FlowSmolagent, FlowTeam]
 
 
 async def run_worker():
