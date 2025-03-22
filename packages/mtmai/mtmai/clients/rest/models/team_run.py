@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,9 +26,8 @@ class TeamRun(BaseModel):
     """
     TeamRun
     """ # noqa: E501
-    team_id: Optional[StrictStr] = Field(default=None, alias="teamId")
     task: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["teamId", "task"]
+    __properties: ClassVar[List[str]] = ["task"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -81,7 +80,6 @@ class TeamRun(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "teamId": obj.get("teamId"),
             "task": obj.get("task")
         })
         return _obj

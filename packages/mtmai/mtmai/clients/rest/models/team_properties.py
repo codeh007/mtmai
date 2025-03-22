@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -31,7 +31,8 @@ class TeamProperties(BaseModel):
     description: StrictStr
     provider: StrictStr
     config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["id", "name", "description", "provider", "config"]
+    max_turns: StrictInt = Field(alias="maxTurns")
+    __properties: ClassVar[List[str]] = ["id", "name", "description", "provider", "config", "maxTurns"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,7 +89,8 @@ class TeamProperties(BaseModel):
             "name": obj.get("name"),
             "description": obj.get("description"),
             "provider": obj.get("provider"),
-            "config": obj.get("config")
+            "config": obj.get("config"),
+            "maxTurns": obj.get("maxTurns") if obj.get("maxTurns") is not None else 25
         })
         return _obj
 

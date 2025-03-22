@@ -166,10 +166,10 @@ class AgClient:
                 label=agent.name,
                 description=agent.description,
                 config=agent.config,
-                version="1.0.0",
-                component_version="1.0.0",
+                version=1,
+                component_version=1,
             )
-            for agent in agents_data
+            for agent in agents_data.rows
         ]
 
         team_data = await self.team_api.team_get(
@@ -179,18 +179,19 @@ class AgClient:
 
         max_messages_termination = MaxMessageTermination(max_messages=25)
         termination = max_messages_termination
+        termination_component = termination.dump_component()
 
         team_component = ComponentModel(
             provider=team_data.provider,
             component_type="team",
             label=team_data.name,
             description=team_data.description,
-            version="1.0.0",
-            component_version="1.0.0",
+            version=1,
+            component_version=1,
             config=RoundRobinGroupChatConfig(
                 participants=agent_components,
-                termination_condition=termination,
-                max_turns=25,
+                termination_condition=termination_component,
+                max_turns=team_data.max_turns or 25,
             ).model_dump(),
         )
         team = Team.load_component(team_component)

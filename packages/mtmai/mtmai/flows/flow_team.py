@@ -22,12 +22,14 @@ class FlowTeam:
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()
+        metadata = hatctx.additional_metadata()
+        team_id = metadata.get("teamId")
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
         team = await tenant_client.ag.get_team_v2(
-            tenant=tid,
-            team_id=input.component_id,
+            tenant_id=tid,
+            team_id=team_id,
         )
 
         # load team state
