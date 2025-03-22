@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +33,7 @@ class AssistantAgentComponent(BaseModel):
     component_version: StrictInt = Field(description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
     description: StrictStr = Field(description="Description of the component.")
     label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    config: AssistantAgentConfig
+    config: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["id", "provider", "componentType", "version", "componentVersion", "description", "label", "config"]
 
     @field_validator('provider')
@@ -90,9 +89,6 @@ class AssistantAgentComponent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
@@ -112,7 +108,7 @@ class AssistantAgentComponent(BaseModel):
             "componentVersion": obj.get("componentVersion"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": AssistantAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": obj.get("config")
         })
         return _obj
 
