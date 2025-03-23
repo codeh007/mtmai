@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,16 +28,15 @@ class MtComponent(BaseModel):
     MtComponent
     """ # noqa: E501
     metadata: APIResourceMeta
-    id: Optional[StrictStr] = Field(default=None, description="Unique identifier for the component.")
+    label: StrictStr
+    description: StrictStr
     provider: StrictStr
     component_type: StrictStr = Field(alias="componentType")
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    description: StrictStr
-    label: StrictStr
-    config: Dict[str, Any]
     gallery_id: StrictStr = Field(alias="galleryId")
-    __properties: ClassVar[List[str]] = ["metadata", "id", "provider", "componentType", "version", "componentVersion", "description", "label", "config", "galleryId"]
+    config: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "provider", "componentType", "version", "componentVersion", "galleryId", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,15 +93,14 @@ class MtComponent(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "id": obj.get("id"),
+            "label": obj.get("label"),
+            "description": obj.get("description"),
             "provider": obj.get("provider"),
             "componentType": obj.get("componentType"),
             "version": obj.get("version"),
             "componentVersion": obj.get("componentVersion"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": obj.get("config"),
-            "galleryId": obj.get("galleryId")
+            "galleryId": obj.get("galleryId"),
+            "config": obj.get("config")
         })
         return _obj
 

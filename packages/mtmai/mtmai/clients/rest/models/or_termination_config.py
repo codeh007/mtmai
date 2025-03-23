@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.mt_component import MtComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,7 +27,7 @@ class OrTerminationConfig(BaseModel):
     """
     OrTerminationConfig
     """ # noqa: E501
-    conditions: List[Dict[str, Any]]
+    conditions: List[MtComponent]
     __properties: ClassVar[List[str]] = ["conditions"]
 
     model_config = ConfigDict(
@@ -68,6 +69,13 @@ class OrTerminationConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in conditions (list)
+        _items = []
+        if self.conditions:
+            for _item_conditions in self.conditions:
+                if _item_conditions:
+                    _items.append(_item_conditions.to_dict())
+            _dict['conditions'] = _items
         return _dict
 
     @classmethod
@@ -80,7 +88,7 @@ class OrTerminationConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "conditions": obj.get("conditions")
+            "conditions": [MtComponent.from_dict(_item) for _item in obj["conditions"]] if obj.get("conditions") is not None else None
         })
         return _obj
 

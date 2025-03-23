@@ -17,10 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.agent_component import AgentComponent
-from mtmai.clients.rest.models.text_mention_termination_component import TextMentionTerminationComponent
+from mtmai.clients.rest.models.mt_component import MtComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,10 +27,9 @@ class RoundRobinGroupChatConfig(BaseModel):
     """
     RoundRobinGroupChatConfig
     """ # noqa: E501
-    participants: List[AgentComponent]
-    max_turns: StrictInt
-    termination_condition: TextMentionTerminationComponent
-    __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition"]
+    participants: List[MtComponent]
+    termination_condition: MtComponent
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,9 +92,8 @@ class RoundRobinGroupChatConfig(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "participants": [AgentComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "max_turns": obj.get("max_turns"),
-            "termination_condition": TextMentionTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "participants": [MtComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
+            "termination_condition": MtComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

@@ -17,10 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.or_termination_component import OrTerminationComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,9 +28,8 @@ class InstagramTeamConfig(BaseModel):
     InstagramTeamConfig
     """ # noqa: E501
     participants: List[MtComponent]
-    max_turns: StrictInt
-    termination_condition: OrTerminationComponent
-    __properties: ClassVar[List[str]] = ["participants", "max_turns", "termination_condition"]
+    termination_condition: MtComponent
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -95,8 +93,7 @@ class InstagramTeamConfig(BaseModel):
 
         _obj = cls.model_validate({
             "participants": [MtComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
-            "max_turns": obj.get("max_turns"),
-            "termination_condition": OrTerminationComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
+            "termination_condition": MtComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 

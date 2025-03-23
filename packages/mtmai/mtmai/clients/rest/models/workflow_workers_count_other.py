@@ -17,13 +17,20 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
+from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
+from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
+from mtmai.clients.rest.models.model_config import ModelConfig
+from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
+from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
+from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-WORKFLOWWORKERSCOUNTOTHER_ONE_OF_SCHEMAS = ["ProviderTypes", "RunFlowModelInput"]
+WORKFLOWWORKERSCOUNTOTHER_ONE_OF_SCHEMAS = ["AssistantAgentConfig", "InstagramTeamConfig", "MaxMessageTerminationConfig", "ModelConfig", "OrTerminationConfig", "ProviderTypes", "RunFlowModelInput", "StopMessageTerminationConfig", "TextMentionTerminationConfig"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -33,8 +40,22 @@ class WorkflowWorkersCountOther(BaseModel):
     oneof_schema_1_validator: Optional[ProviderTypes] = None
     # data type: RunFlowModelInput
     oneof_schema_2_validator: Optional[RunFlowModelInput] = None
-    actual_instance: Optional[Union[ProviderTypes, RunFlowModelInput]] = None
-    one_of_schemas: Set[str] = { "ProviderTypes", "RunFlowModelInput" }
+    # data type: AssistantAgentConfig
+    oneof_schema_3_validator: Optional[AssistantAgentConfig] = None
+    # data type: InstagramTeamConfig
+    oneof_schema_4_validator: Optional[InstagramTeamConfig] = None
+    # data type: ModelConfig
+    oneof_schema_5_validator: Optional[ModelConfig] = None
+    # data type: TextMentionTerminationConfig
+    oneof_schema_6_validator: Optional[TextMentionTerminationConfig] = None
+    # data type: MaxMessageTerminationConfig
+    oneof_schema_7_validator: Optional[MaxMessageTerminationConfig] = None
+    # data type: StopMessageTerminationConfig
+    oneof_schema_8_validator: Optional[StopMessageTerminationConfig] = None
+    # data type: OrTerminationConfig
+    oneof_schema_9_validator: Optional[OrTerminationConfig] = None
+    actual_instance: Optional[Union[AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig]] = None
+    one_of_schemas: Set[str] = { "AssistantAgentConfig", "InstagramTeamConfig", "MaxMessageTerminationConfig", "ModelConfig", "OrTerminationConfig", "ProviderTypes", "RunFlowModelInput", "StopMessageTerminationConfig", "TextMentionTerminationConfig" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -67,12 +88,47 @@ class WorkflowWorkersCountOther(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `RunFlowModelInput`")
         else:
             match += 1
+        # validate data type: AssistantAgentConfig
+        if not isinstance(v, AssistantAgentConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentConfig`")
+        else:
+            match += 1
+        # validate data type: InstagramTeamConfig
+        if not isinstance(v, InstagramTeamConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramTeamConfig`")
+        else:
+            match += 1
+        # validate data type: ModelConfig
+        if not isinstance(v, ModelConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelConfig`")
+        else:
+            match += 1
+        # validate data type: TextMentionTerminationConfig
+        if not isinstance(v, TextMentionTerminationConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TextMentionTerminationConfig`")
+        else:
+            match += 1
+        # validate data type: MaxMessageTerminationConfig
+        if not isinstance(v, MaxMessageTerminationConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MaxMessageTerminationConfig`")
+        else:
+            match += 1
+        # validate data type: StopMessageTerminationConfig
+        if not isinstance(v, StopMessageTerminationConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `StopMessageTerminationConfig`")
+        else:
+            match += 1
+        # validate data type: OrTerminationConfig
+        if not isinstance(v, OrTerminationConfig):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `OrTerminationConfig`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -99,13 +155,55 @@ class WorkflowWorkersCountOther(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into AssistantAgentConfig
+        try:
+            instance.actual_instance = AssistantAgentConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into InstagramTeamConfig
+        try:
+            instance.actual_instance = InstagramTeamConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into ModelConfig
+        try:
+            instance.actual_instance = ModelConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into TextMentionTerminationConfig
+        try:
+            instance.actual_instance = TextMentionTerminationConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into MaxMessageTerminationConfig
+        try:
+            instance.actual_instance = MaxMessageTerminationConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into StopMessageTerminationConfig
+        try:
+            instance.actual_instance = StopMessageTerminationConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into OrTerminationConfig
+        try:
+            instance.actual_instance = OrTerminationConfig.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -119,7 +217,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ProviderTypes, RunFlowModelInput]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentConfig, InstagramTeamConfig, MaxMessageTerminationConfig, ModelConfig, OrTerminationConfig, ProviderTypes, RunFlowModelInput, StopMessageTerminationConfig, TextMentionTerminationConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
