@@ -15,9 +15,7 @@ from autogen_ext.models.openai._openai_client import AzureOpenAIChatCompletionCl
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from pydantic import BaseModel, ConfigDict, SecretStr
 
-from . import tools as tools
-
-# from autogenstudio.datamodel import GalleryComponents, GalleryConfig, GalleryMetadata
+from mtmai import tools as tools
 
 
 class GalleryComponents(BaseModel):

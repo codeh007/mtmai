@@ -16,7 +16,7 @@ from mtmai.worker_app import mtmapp
 class FlowGallery:
     @mtmapp.step(timeout="5m")
     async def entry(self, hatctx: Context):
-        from gallery.builder import create_default_gallery_builder
+        from mtmai.gallery.builder import create_default_gallery_builder
 
         input = RunFlowModelInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
