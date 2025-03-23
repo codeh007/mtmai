@@ -10,11 +10,11 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name="model",
-    on_events=["model"],
+    name="com",
+    on_events=["com"],
 )
-class FlowModel:
-    @mtmapp.step(timeout="10m")
+class FlowCom:
+    @mtmapp.step(timeout="60m")
     async def entry(self, hatctx: Context):
         input = RunFlowModelInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
