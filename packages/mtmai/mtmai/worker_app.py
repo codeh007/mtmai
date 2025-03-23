@@ -1,21 +1,31 @@
 from loguru import logger
 
-# from mtmai.agents.greeter_team import AskToGreet, Feedback, GreeterTeam, Greeting
 from mtmai.core.config import settings
 from mtmai.hatchet import Hatchet
 
 mtmapp = Hatchet()
 
-# serializer_types = [ChatSessionStartEvent, AskToGreet, Greeting, Feedback]
-
 
 def get_workflows_types():
     from mtmai.flows.flow_ag import FlowAg
+    from mtmai.flows.flow_browser import FlowBrowser
+    from mtmai.flows.flow_manager import FlowManager
+    from mtmai.flows.flow_research import FlowResearch
     from mtmai.flows.flow_smolagent import FlowSmolagent
+    from mtmai.flows.flow_subdemo import FlowSubDemo
     from mtmai.flows.flow_team import FlowTeam
     from mtmai.flows.flow_tenant_settings import FlowTenantSettings
 
-    return [FlowAg, FlowTenantSettings, FlowSmolagent, FlowTeam]
+    return [
+        FlowAg,
+        FlowTenantSettings,
+        FlowSmolagent,
+        FlowTeam,
+        FlowSubDemo,
+        FlowManager,
+        FlowResearch,
+        FlowBrowser,
+    ]
 
 
 async def run_worker():
