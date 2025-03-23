@@ -26,16 +26,25 @@ class FlowGallery:
 
         gallery_builder = create_default_gallery_builder()
 
-        for team in gallery_builder.teams:
+        gallery_id = generate_uuid()
+        for component in (
+            gallery_builder.teams
+            + gallery_builder.agents
+            + gallery_builder.models
+            + gallery_builder.tools
+            + gallery_builder.terminations
+        ):
             component_id = generate_uuid()
+            component.component_version
             mt_component = MtComponent(
-                componentType=team.component_type,
-                # componentId=component_id,
-                componentVersion=1,
-                provider=team.provider,
-                label=team.name,
-                description=team.description,
-                config=team.config,
+                gallery_id=gallery_id,
+                componentType=component.component_type,
+                provider=component.provider,
+                label=component.label,
+                description=component.description,
+                version=component.version,
+                componentVersion=component.component_version,
+                config=component.config,
             )
             await tenant_client.ag.coms_api.coms_upsert(
                 tenant=tid,
