@@ -18,11 +18,12 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.provider_types import ProviderTypes
+from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-WORKFLOWWORKERSCOUNTOTHER_ONE_OF_SCHEMAS = ["ProviderTypes"]
+WORKFLOWWORKERSCOUNTOTHER_ONE_OF_SCHEMAS = ["ProviderTypes", "RunFlowModelInput"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -30,8 +31,10 @@ class WorkflowWorkersCountOther(BaseModel):
     """
     # data type: ProviderTypes
     oneof_schema_1_validator: Optional[ProviderTypes] = None
-    actual_instance: Optional[Union[ProviderTypes]] = None
-    one_of_schemas: Set[str] = { "ProviderTypes" }
+    # data type: RunFlowModelInput
+    oneof_schema_2_validator: Optional[RunFlowModelInput] = None
+    actual_instance: Optional[Union[ProviderTypes, RunFlowModelInput]] = None
+    one_of_schemas: Set[str] = { "ProviderTypes", "RunFlowModelInput" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -59,12 +62,17 @@ class WorkflowWorkersCountOther(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ProviderTypes`")
         else:
             match += 1
+        # validate data type: RunFlowModelInput
+        if not isinstance(v, RunFlowModelInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RunFlowModelInput`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -85,13 +93,19 @@ class WorkflowWorkersCountOther(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into RunFlowModelInput
+        try:
+            instance.actual_instance = RunFlowModelInput.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with oneOf schemas: ProviderTypes, RunFlowModelInput. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -105,7 +119,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ProviderTypes]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], ProviderTypes, RunFlowModelInput]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

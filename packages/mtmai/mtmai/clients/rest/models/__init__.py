@@ -221,6 +221,7 @@ from mtmai.clients.rest.models.response_format import ResponseFormat
 from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState
+from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
 from mtmai.clients.rest.models.run_status import RunStatus
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
