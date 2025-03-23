@@ -13,9 +13,8 @@ from autogen_ext.models.anthropic import AnthropicChatCompletionClient
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.models.openai._openai_client import AzureOpenAIChatCompletionClient
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from pydantic import BaseModel, ConfigDict, SecretStr
-
 from mtmai import tools as tools
+from pydantic import BaseModel, ConfigDict, SecretStr
 
 
 class GalleryComponents(BaseModel):
@@ -488,13 +487,13 @@ Read the above conversation. Then select the next role from {participants} to pl
         description="A team with 3 agents - a Research Assistant that performs web searches and analyzes information, a Verifier that ensures research quality and completeness, and a Summary Agent that provides a detailed markdown summary of the research as a report to the user.",
     )
 
-    return builder.build()
+    return builder
 
 
-if __name__ == "__main__":
-    # Create and save the gallery
-    gallery = create_default_gallery_builder().build()
+# if __name__ == "__main__":
+#     # Create and save the gallery
+#     gallery = create_default_gallery_builder().build()
 
-    # Save to file
-    with open("gallery_default.json", "w") as f:
-        f.write(gallery.model_dump_json(indent=2))
+#     # Save to file
+#     with open("gallery_default.json", "w") as f:
+#         f.write(gallery.model_dump_json(indent=2))
