@@ -46,6 +46,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         runtime: AgentRuntime | None = None,
     ) -> None:
         self.tenant_client = TenantClient()
+        self.manager_name = manager_name
 
         super().__init__(
             participants=participants,

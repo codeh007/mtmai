@@ -166,6 +166,7 @@ from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
 from mtmai.clients.rest.models.model_properties import ModelProperties
 from mtmai.clients.rest.models.model_run import ModelRun
+from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage

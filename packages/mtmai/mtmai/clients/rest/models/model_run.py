@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,9 +28,9 @@ class ModelRun(BaseModel):
     ModelRun
     """ # noqa: E501
     metadata: APIResourceMeta
-    request: Optional[Dict[str, StrictStr]] = None
-    response: Optional[Dict[str, StrictStr]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "request", "response"]
+    llm_messages: Optional[Dict[str, StrictStr]] = Field(default=None, alias="llmMessages")
+    llm_response: Optional[Dict[str, StrictStr]] = Field(default=None, alias="llmResponse")
+    __properties: ClassVar[List[str]] = ["metadata", "llmMessages", "llmResponse"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,8 +87,8 @@ class ModelRun(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "request": obj.get("request"),
-            "response": obj.get("response")
+            "llmMessages": obj.get("llmMessages"),
+            "llmResponse": obj.get("llmResponse")
         })
         return _obj
 
