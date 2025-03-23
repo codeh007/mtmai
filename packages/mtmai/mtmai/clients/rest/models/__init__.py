@@ -184,7 +184,6 @@ from mtmai.clients.rest.models.or_termination_component import OrTerminationComp
 from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
-from mtmai.clients.rest.models.participants_property import ParticipantsProperty
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
