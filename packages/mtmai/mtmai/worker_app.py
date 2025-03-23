@@ -10,11 +10,11 @@ def get_workflows_types():
     from mtmai.flows.flow_ag import FlowAg
     from mtmai.flows.flow_browser import FlowBrowser
     from mtmai.flows.flow_com import FlowCom
+    from mtmai.flows.flow_gallery import FlowGallery
     from mtmai.flows.flow_llm import FlowModel
     from mtmai.flows.flow_manager import FlowManager
     from mtmai.flows.flow_research import FlowResearch
     from mtmai.flows.flow_smolagent import FlowSmolagent
-    from mtmai.flows.flow_subdemo import FlowSubDemo
     from mtmai.flows.flow_team import FlowTeam
     from mtmai.flows.flow_tenant_settings import FlowTenantSettings
 
@@ -23,12 +23,12 @@ def get_workflows_types():
         FlowTenantSettings,
         FlowSmolagent,
         FlowTeam,
-        FlowSubDemo,
         FlowManager,
         FlowResearch,
         FlowBrowser,
         FlowModel,
         FlowCom,
+        FlowGallery,
     ]
 
 

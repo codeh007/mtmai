@@ -1,3 +1,4 @@
+from clients.rest.models.flow_names import FlowNames
 from clients.rest.models.run_flow_model_input import RunFlowModelInput
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
@@ -10,8 +11,8 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name="com",
-    on_events=["com"],
+    name=FlowNames.COM,
+    on_events=[FlowNames.COM],
 )
 class FlowCom:
     @mtmapp.step(timeout="60m")

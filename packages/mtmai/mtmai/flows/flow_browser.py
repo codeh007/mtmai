@@ -1,3 +1,4 @@
+from clients.rest.models.flow_names import FlowNames
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.context.context import Context
@@ -7,8 +8,8 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name="browser",
-    on_events=["browser"],
+    name=FlowNames.BROWSER,
+    on_events=[FlowNames.BROWSER],
 )
 class FlowBrowser:
     @mtmapp.step(timeout="60m")
