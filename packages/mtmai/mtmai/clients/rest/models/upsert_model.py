@@ -27,6 +27,7 @@ class UpsertModel(BaseModel):
     UpsertModel
     """ # noqa: E501
     name: StrictStr
+    model: StrictStr
     provider: StrictStr
     api_key: StrictStr = Field(alias="apiKey")
     api_base: StrictStr = Field(alias="apiBase")
@@ -36,8 +37,8 @@ class UpsertModel(BaseModel):
     vision: StrictBool
     function_calling: StrictBool = Field(alias="functionCalling")
     json_output: StrictBool = Field(alias="jsonOutput")
-    tags: List[StrictStr]
-    __properties: ClassVar[List[str]] = ["name", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput", "tags"]
+    tags: Optional[List[StrictStr]] = None
+    __properties: ClassVar[List[str]] = ["name", "model", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput", "tags"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,6 +92,7 @@ class UpsertModel(BaseModel):
 
         _obj = cls.model_validate({
             "name": obj.get("name"),
+            "model": obj.get("model"),
             "provider": obj.get("provider"),
             "apiKey": obj.get("apiKey"),
             "apiBase": obj.get("apiBase"),
