@@ -83,7 +83,6 @@ from mtmai.clients.rest.models.code_highlight import CodeHighlight
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.common_result import CommonResult
-from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmai.clients.rest.models.create_api_token_response import CreateAPITokenResponse
@@ -129,7 +128,6 @@ from mtmai.clients.rest.models.gallery_list import GalleryList
 from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from mtmai.clients.rest.models.gallery_update import GalleryUpdate
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
-from mtmai.clients.rest.models.handoff_component import HandoffComponent
 from mtmai.clients.rest.models.handoff_config import HandoffConfig
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
@@ -151,10 +149,8 @@ from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderBy
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
 from mtmai.clients.rest.models.magentic_one_orchestrator_state import MagenticOneOrchestratorState
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
-from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_config import ModelConfig
-from mtmai.clients.rest.models.model_context import ModelContext
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
@@ -248,7 +244,6 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.swarm_manager_state import SwarmManagerState
-from mtmai.clients.rest.models.system_component import SystemComponent
 from mtmai.clients.rest.models.system_config import SystemConfig
 from mtmai.clients.rest.models.team import Team
 from mtmai.clients.rest.models.team_list import TeamList
@@ -262,7 +257,6 @@ from mtmai.clients.rest.models.tenant import Tenant
 from mtmai.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmai.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
 from mtmai.clients.rest.models.tenant_alerting_settings import TenantAlertingSettings
-from mtmai.clients.rest.models.tenant_component import TenantComponent
 from mtmai.clients.rest.models.tenant_component_config import TenantComponentConfig
 from mtmai.clients.rest.models.tenant_invite import TenantInvite
 from mtmai.clients.rest.models.tenant_invite_list import TenantInviteList
@@ -284,7 +278,6 @@ from mtmai.clients.rest.models.text_message import TextMessage
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
-from mtmai.clients.rest.models.tool_component import ToolComponent
 from mtmai.clients.rest.models.tool_config import ToolConfig
 from mtmai.clients.rest.models.tool_types import ToolTypes
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest

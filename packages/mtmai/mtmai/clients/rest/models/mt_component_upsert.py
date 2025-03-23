@@ -26,15 +26,15 @@ class MtComponentUpsert(BaseModel):
     """
     MtComponentUpsert
     """ # noqa: E501
+    gallery_id: StrictStr = Field(alias="galleryId")
     label: StrictStr
     description: StrictStr
     provider: StrictStr
     component_type: StrictStr = Field(alias="componentType")
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    gallery_id: StrictStr = Field(alias="galleryId")
     config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["label", "description", "provider", "componentType", "version", "componentVersion", "galleryId", "config"]
+    __properties: ClassVar[List[str]] = ["galleryId", "label", "description", "provider", "componentType", "version", "componentVersion", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,13 +87,13 @@ class MtComponentUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "galleryId": obj.get("galleryId"),
             "label": obj.get("label"),
             "description": obj.get("description"),
             "provider": obj.get("provider"),
             "componentType": obj.get("componentType"),
             "version": obj.get("version"),
             "componentVersion": obj.get("componentVersion"),
-            "galleryId": obj.get("galleryId"),
             "config": obj.get("config")
         })
         return _obj

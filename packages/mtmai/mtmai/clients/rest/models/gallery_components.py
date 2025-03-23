@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.component_model import ComponentModel
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,10 +26,10 @@ class GalleryComponents(BaseModel):
     """
     GalleryComponents
     """ # noqa: E501
-    agents: List[ComponentModel]
-    models: List[ComponentModel]
-    tools: List[ComponentModel]
-    terminations: List[ComponentModel]
+    agents: List[Dict[str, Any]]
+    models: List[Dict[str, Any]]
+    tools: List[Dict[str, Any]]
+    terminations: List[Dict[str, Any]]
     __properties: ClassVar[List[str]] = ["agents", "models", "tools", "terminations"]
 
     model_config = ConfigDict(
@@ -72,34 +71,6 @@ class GalleryComponents(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in agents (list)
-        _items = []
-        if self.agents:
-            for _item_agents in self.agents:
-                if _item_agents:
-                    _items.append(_item_agents.to_dict())
-            _dict['agents'] = _items
-        # override the default output from pydantic by calling `to_dict()` of each item in models (list)
-        _items = []
-        if self.models:
-            for _item_models in self.models:
-                if _item_models:
-                    _items.append(_item_models.to_dict())
-            _dict['models'] = _items
-        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
-        _items = []
-        if self.tools:
-            for _item_tools in self.tools:
-                if _item_tools:
-                    _items.append(_item_tools.to_dict())
-            _dict['tools'] = _items
-        # override the default output from pydantic by calling `to_dict()` of each item in terminations (list)
-        _items = []
-        if self.terminations:
-            for _item_terminations in self.terminations:
-                if _item_terminations:
-                    _items.append(_item_terminations.to_dict())
-            _dict['terminations'] = _items
         return _dict
 
     @classmethod
@@ -112,10 +83,10 @@ class GalleryComponents(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "agents": [ComponentModel.from_dict(_item) for _item in obj["agents"]] if obj.get("agents") is not None else None,
-            "models": [ComponentModel.from_dict(_item) for _item in obj["models"]] if obj.get("models") is not None else None,
-            "tools": [ComponentModel.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
-            "terminations": [ComponentModel.from_dict(_item) for _item in obj["terminations"]] if obj.get("terminations") is not None else None
+            "agents": obj.get("agents"),
+            "models": obj.get("models"),
+            "tools": obj.get("tools"),
+            "terminations": obj.get("terminations")
         })
         return _obj
 

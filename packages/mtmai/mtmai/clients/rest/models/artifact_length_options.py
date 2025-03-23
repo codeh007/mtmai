@@ -20,7 +20,7 @@ from typing_extensions import Self
 
 class ArtifactLengthOptions(str, Enum):
     """
-    工具内容长度,(文章,代码内容长度)
+    ArtifactLengthOptions
     """
 
     """

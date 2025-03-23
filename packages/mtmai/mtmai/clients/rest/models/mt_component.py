@@ -28,15 +28,15 @@ class MtComponent(BaseModel):
     MtComponent
     """ # noqa: E501
     metadata: APIResourceMeta
+    gallery_id: StrictStr = Field(alias="galleryId")
     label: StrictStr
     description: StrictStr
     provider: StrictStr
     component_type: StrictStr = Field(alias="componentType")
     version: StrictInt
     component_version: StrictInt = Field(alias="componentVersion")
-    gallery_id: StrictStr = Field(alias="galleryId")
     config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "provider", "componentType", "version", "componentVersion", "galleryId", "config"]
+    __properties: ClassVar[List[str]] = ["metadata", "galleryId", "label", "description", "provider", "componentType", "version", "componentVersion", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,13 +93,13 @@ class MtComponent(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "galleryId": obj.get("galleryId"),
             "label": obj.get("label"),
             "description": obj.get("description"),
             "provider": obj.get("provider"),
             "componentType": obj.get("componentType"),
             "version": obj.get("version"),
             "componentVersion": obj.get("componentVersion"),
-            "galleryId": obj.get("galleryId"),
             "config": obj.get("config")
         })
         return _obj

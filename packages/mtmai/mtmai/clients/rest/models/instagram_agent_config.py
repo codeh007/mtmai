@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.memory_config import MemoryConfig
 from mtmai.clients.rest.models.mt_component import MtComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -31,7 +30,7 @@ class InstagramAgentConfig(BaseModel):
     name: StrictStr
     description: StrictStr
     model_context: Optional[Dict[str, Any]] = None
-    memory: Optional[MemoryConfig] = None
+    memory: Optional[Dict[str, Any]] = None
     model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
     model_client: MtComponent
@@ -80,9 +79,6 @@ class InstagramAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of memory
-        if self.memory:
-            _dict['memory'] = self.memory.to_dict()
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
@@ -101,7 +97,7 @@ class InstagramAgentConfig(BaseModel):
             "name": obj.get("name"),
             "description": obj.get("description"),
             "model_context": obj.get("model_context"),
-            "memory": MemoryConfig.from_dict(obj["memory"]) if obj.get("memory") is not None else None,
+            "memory": obj.get("memory"),
             "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
             "model_client": MtComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
