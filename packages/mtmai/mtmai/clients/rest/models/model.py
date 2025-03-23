@@ -38,7 +38,8 @@ class Model(BaseModel):
     vision: StrictBool
     function_calling: StrictBool = Field(alias="functionCalling")
     json_output: StrictBool = Field(alias="jsonOutput")
-    __properties: ClassVar[List[str]] = ["metadata", "name", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput"]
+    tags: List[StrictStr]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "provider", "apiKey", "apiBase", "vendor", "description", "family", "vision", "functionCalling", "jsonOutput", "tags"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -104,7 +105,8 @@ class Model(BaseModel):
             "family": obj.get("family"),
             "vision": obj.get("vision"),
             "functionCalling": obj.get("functionCalling"),
-            "jsonOutput": obj.get("jsonOutput")
+            "jsonOutput": obj.get("jsonOutput"),
+            "tags": obj.get("tags")
         })
         return _obj
 
