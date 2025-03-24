@@ -1,6 +1,6 @@
 .env
 env/
-
+.vol
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
