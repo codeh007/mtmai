@@ -1,7 +1,6 @@
-from autogen_agentchat.base import TaskResult
+from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import TextMessage, ThoughtEvent
 from loguru import logger
-
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
@@ -10,7 +9,6 @@ from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
-from mtmai.teams.instagram_team import InstagramTeam
 from mtmai.worker_app import mtmapp
 
 
@@ -39,7 +37,7 @@ class FlowAg:
             raise e
         if component_data.component_type == ComponentTypes.TEAM:
             comp_dict = component_data.model_dump()
-            team = InstagramTeam.load_component(comp_dict)
+            team = Team.load_component(comp_dict)
         else:
             raise ValueError(f"不支持组件类型: {component_data.component_type}")
 

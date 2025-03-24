@@ -6,33 +6,6 @@ from mtmai.hatchet import Hatchet
 mtmapp = Hatchet()
 
 
-# def get_workflows_types():
-#     from flows.flow_tenant import FlowTenant
-
-#     from mtmai.flows.flow_ag import FlowAg
-#     from mtmai.flows.flow_browser import FlowBrowser
-#     from mtmai.flows.flow_com import FlowCom
-#     from mtmai.flows.flow_llm import FlowModel
-#     from mtmai.flows.flow_manager import FlowManager
-#     from mtmai.flows.flow_research import FlowResearch
-#     from mtmai.flows.flow_smolagent import FlowSmolagent
-#     from mtmai.flows.flow_team import FlowTeam
-#     from mtmai.flows.flow_tenant_settings import FlowTenantSettings
-
-#     return [
-#         FlowAg,
-#         FlowTenantSettings,
-#         FlowSmolagent,
-#         FlowTeam,
-#         FlowManager,
-#         FlowResearch,
-#         FlowBrowser,
-#         FlowModel,
-#         FlowCom,
-#         FlowTenant,
-#     ]
-
-
 async def run_worker():
     logger.info("booting worker")
     await mtmapp.boot()

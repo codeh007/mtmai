@@ -7,8 +7,6 @@ from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
-# APP_ROOT = os.getenv("MTMAI_APP_ROOT", os.getcwd())
-
 
 def parse_cors(v: Any) -> list[str] | str:
     if v == "*":
@@ -178,9 +176,6 @@ class Settings(BaseSettings):
     DOCKERHUB_PASSWORD: str | None = None
     DOCKERHUB_USER: str | None = None
 
-    # langgraph
-    # langgraph_checkpointer: Literal["memory", "postgres"] = "postgres"
-
     # http
     HTTP_PROXY: str | None = None
     HTTPS_PROXY: str | None = None
@@ -195,12 +190,6 @@ class Settings(BaseSettings):
     SELENIUM_DISPLAY: str | None = None  # ":1"
     SELENIUM_PORT: int = 4444
     SELENIUM_HUB_URL: str | None = None
-
-    # 其他
-    # graph_config_path: str = "configs/graph_config.yml"
-    # mtforms_config_path: str = "configs/mtforms.yml"
-    # chainlit
-    # CHAINLIT_AUTH_SECRET: str | None = None
 
     # prefect
     PREFECT_API_KEY: str | None = None
@@ -220,6 +209,10 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = os.environ.get("OPENAI_API_KEY", "openai_key_not_set")
     OPENAI_BASE_URL: str | None = os.environ.get(
         "OPENAI_BASE_URL", "openai_base_url_not_set"
+    )
+
+    NVIDIA_API_KEY: str | None = os.environ.get(
+        "NVIDIA_API_KEY", "nvidia_api_key_not_set"
     )
 
 

@@ -40,12 +40,12 @@ class FlowTenant:
                 com=component_id,
                 mt_component_upsert=MtComponentUpsert(
                     galleryId=gallery_id,
-                    componentType=component.component_type,
+                    component_type=component.component_type,
                     provider=component.provider,
                     label=component.label,
                     description=component.description,
                     version=component.version,
-                    componentVersion=component.component_version,
+                    component_version=component.component_version,
                     config=component.config,
                 ).model_dump(),
             )

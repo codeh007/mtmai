@@ -6,14 +6,15 @@ from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import ComponentModel
-from autogen_core.models import ModelInfo
+from autogen_core.models import ModelFamily, ModelInfo
 from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
 from autogen_ext.models.anthropic import AnthropicChatCompletionClient
 from autogen_ext.models.openai import OpenAIChatCompletionClient
-from autogen_ext.models.openai._openai_client import AzureOpenAIChatCompletionClient
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from mtmai import tools as tools
+from mtmai.core.config import settings
+from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from pydantic import BaseModel, ConfigDict, SecretStr
 
 
@@ -217,6 +218,42 @@ def create_default_gallery_builder() -> GalleryBuilder:
         label="OpenAI GPT-4o Mini",
         description="OpenAI GPT-4o-mini",
     )
+
+    nvidia_model = MtOpenAIChatCompletionClient(
+        model="deepseek-ai/deepseek-r1",
+        api_key=settings.NVIDIA_API_KEY,
+        base_url="https://api.nvidia.com/v1",
+        model_info=ModelInfo(
+            vision=False,
+            function_calling=False,
+            structured_output=False,
+            json_output=False,
+            family=ModelFamily.R1,
+        ),
+    )
+    builder.add_model(
+        nvidia_model.dump_component(),
+        label="Nvidia DeepSeek R1",
+        description="Nvidia DeepSeek R1",
+    )
+
+    nvidia_model_llama3 = MtOpenAIChatCompletionClient(
+        model="nvidia/llama-3.3-nemotron-super-49b-v1",
+        api_key=settings.NVIDIA_API_KEY,
+        base_url="https://api.nvidia.com/v1",
+        model_info=ModelInfo(
+            vision=False,
+            function_calling=True,
+            json_output=True,
+            structured_output=True,
+            family=ModelFamily.UNKNOWN,
+        ),
+    )
+    builder.add_model(
+        nvidia_model_llama3.dump_component(),
+        label="Nvidia Llama3",
+        description="Nvidia Llama3",
+    )
     # Create Mistral vllm model
     mistral_vllm_model = OpenAIChatCompletionClient(
         model="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
@@ -243,18 +280,18 @@ def create_default_gallery_builder() -> GalleryBuilder:
     )
 
     # create an azure mode
-    az_model_client = AzureOpenAIChatCompletionClient(
-        azure_deployment="{your-azure-deployment}",
-        model="gpt-4o-mini",
-        api_version="2024-06-01",
-        azure_endpoint="https://{your-custom-endpoint}.openai.azure.com/",
-        api_key="test",
-    )
-    builder.add_model(
-        az_model_client.dump_component(),
-        label="AzureOpenAI GPT-4o-mini",
-        description="GPT-4o Mini Azure OpenAI model client.",
-    )
+    # az_model_client = AzureOpenAIChatCompletionClient(
+    #     azure_deployment="{your-azure-deployment}",
+    #     model="gpt-4o-mini",
+    #     api_version="2024-06-01",
+    #     azure_endpoint="https://{your-custom-endpoint}.openai.azure.com/",
+    #     api_key="test",
+    # )
+    # builder.add_model(
+    #     az_model_client.dump_component(),
+    #     label="AzureOpenAI GPT-4o-mini",
+    #     description="GPT-4o Mini Azure OpenAI model client.",
+    # )
 
     builder.add_tool(
         tools.calculator_tool.dump_component(),
@@ -307,7 +344,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
     selector_default_team = SelectorGroupChat(
         participants=[calc_assistant, critic_agent],
         termination_condition=calc_or_term,
-        model_client=base_model,
+        model_client=nvidia_model_llama3,
     )
     builder.add_team(
         selector_default_team.dump_component(),
@@ -319,7 +356,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
     websurfer_agent = MultimodalWebSurfer(
         name="websurfer_agent",
         description="an agent that solves tasks by browsing the web",
-        model_client=base_model,
+        model_client=nvidia_model_llama3,
         headless=True,
     )
     builder.add_agent(
@@ -366,7 +403,7 @@ Read the above conversation. Then select the next role from {participants} to pl
     websurfer_team = SelectorGroupChat(
         participants=[websurfer_agent, verification_assistant, web_user_proxy],
         selector_prompt=selector_prompt,
-        model_client=base_model,
+        model_client=nvidia_model_llama3,
         termination_condition=web_termination,
     )
 
@@ -409,12 +446,12 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     # Create deep research agent
-    model_client = OpenAIChatCompletionClient(model="gpt-4o", temperature=0.7)
+    # model_client = OpenAIChatCompletionClient(model="gpt-4o", temperature=0.7)
 
     research_assistant = AssistantAgent(
         name="research_assistant",
         description="A research assistant that performs web searches and analyzes information",
-        model_client=model_client,
+        model_client=nvidia_model_llama3,
         tools=[tools.google_search_tool, tools.fetch_webpage_tool],
         system_message="""You are a research assistant focused on finding accurate information.
         Use the google_search tool to find relevant information.
@@ -426,7 +463,7 @@ Read the above conversation. Then select the next role from {participants} to pl
     verifier = AssistantAgent(
         name="verifier",
         description="A verification specialist who ensures research quality and completeness",
-        model_client=model_client,
+        model_client=nvidia_model_llama3,
         system_message="""You are a research verification specialist.
         Your role is to:
         1. Verify that search queries are effective and suggest improvements if needed
@@ -444,7 +481,7 @@ Read the above conversation. Then select the next role from {participants} to pl
     summary_agent = AssistantAgent(
         name="summary_agent",
         description="A summary agent that provides a detailed markdown summary of the research as a report to the user.",
-        model_client=model_client,
+        model_client=nvidia_model_llama3,
         system_message="""You are a summary agent. Your role is to provide a detailed markdown summary of the research as a report to the user. Your report should have a reasonable title that matches the research question and should summarize the key details in the results found in natural an actionable manner. The main results/answer should be in the first paragraph. Where reasonable, your report should have clear comparison tables that drive critical insights. Most importantly, you should have a reference section and cite the key sources (where available) for facts obtained INSIDE THE MAIN REPORT. Also, where appropriate, you may add images if available that illustrate concepts needed for the summary.
         Your report should end with the word "TERMINATE" to signal the end of the conversation.""",
     )
@@ -475,7 +512,7 @@ Read the above conversation. Then select the next role from {participants} to pl
 
     deep_research_team = SelectorGroupChat(
         participants=[research_assistant, verifier, summary_agent],
-        model_client=model_client,
+        model_client=nvidia_model_llama3,
         termination_condition=termination,
         selector_prompt=selector_prompt,
         allow_repeated_speaker=True,
@@ -488,12 +525,3 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     return builder
-
-
-# if __name__ == "__main__":
-#     # Create and save the gallery
-#     gallery = create_default_gallery_builder().build()
-
-#     # Save to file
-#     with open("gallery_default.json", "w") as f:
-#         f.write(gallery.model_dump_json(indent=2))

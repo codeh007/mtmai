@@ -32,11 +32,11 @@ class MtComponent(BaseModel):
     label: StrictStr
     description: StrictStr
     provider: StrictStr
-    component_type: StrictStr = Field(alias="componentType")
+    component_type: StrictStr
     version: StrictInt
-    component_version: StrictInt = Field(alias="componentVersion")
+    component_version: StrictInt
     config: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "galleryId", "label", "description", "provider", "componentType", "version", "componentVersion", "config"]
+    __properties: ClassVar[List[str]] = ["metadata", "galleryId", "label", "description", "provider", "component_type", "version", "component_version", "config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,9 +97,9 @@ class MtComponent(BaseModel):
             "label": obj.get("label"),
             "description": obj.get("description"),
             "provider": obj.get("provider"),
-            "componentType": obj.get("componentType"),
+            "component_type": obj.get("component_type"),
             "version": obj.get("version"),
-            "componentVersion": obj.get("componentVersion"),
+            "component_version": obj.get("component_version"),
             "config": obj.get("config")
         })
         return _obj
