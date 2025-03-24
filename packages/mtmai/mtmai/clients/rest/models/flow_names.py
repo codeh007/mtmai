@@ -32,7 +32,7 @@ class FlowNames(str, Enum):
     TENANT_SETTINGS = 'tenant_settings'
     SMOLA = 'smola'
     TEAM = 'team'
-    GALLERY = 'gallery'
+    TENANT = 'tenant'
     COM = 'com'
 
     @classmethod

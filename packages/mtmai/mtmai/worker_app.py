@@ -7,10 +7,11 @@ mtmapp = Hatchet()
 
 
 def get_workflows_types():
+    from flows.flow_tenant import FlowTenant
+
     from mtmai.flows.flow_ag import FlowAg
     from mtmai.flows.flow_browser import FlowBrowser
     from mtmai.flows.flow_com import FlowCom
-    from mtmai.flows.flow_gallery import FlowGallery
     from mtmai.flows.flow_llm import FlowModel
     from mtmai.flows.flow_manager import FlowManager
     from mtmai.flows.flow_research import FlowResearch
@@ -28,7 +29,7 @@ def get_workflows_types():
         FlowBrowser,
         FlowModel,
         FlowCom,
-        FlowGallery,
+        FlowTenant,
     ]
 
 

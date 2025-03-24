@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.agent_run_input_other import AgentRunInputOther
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -36,8 +35,7 @@ class AgentRunInput(BaseModel):
     component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
     topic: Optional[StrictStr] = None
     source: Optional[StrictStr] = None
-    other: Optional[AgentRunInputOther] = None
-    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source", "other"]
+    __properties: ClassVar[List[str]] = ["sessionId", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -78,9 +76,6 @@ class AgentRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of other
-        if self.other:
-            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
@@ -101,8 +96,7 @@ class AgentRunInput(BaseModel):
             "resourceId": obj.get("resourceId"),
             "componentId": obj.get("componentId"),
             "topic": obj.get("topic"),
-            "source": obj.get("source"),
-            "other": AgentRunInputOther.from_dict(obj["other"]) if obj.get("other") is not None else None
+            "source": obj.get("source")
         })
         return _obj
 

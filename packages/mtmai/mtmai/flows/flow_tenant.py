@@ -10,10 +10,10 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name=FlowNames.GALLERY,
-    on_events=[FlowNames.GALLERY],
+    name=FlowNames.TENANT,
+    on_events=[FlowNames.TENANT],
 )
-class FlowGallery:
+class FlowTenant:
     @mtmapp.step(timeout="3m")
     async def entry(self, hatctx: Context):
         from mtmai.gallery.builder import create_default_gallery_builder
