@@ -77,10 +77,10 @@ from openai.types.chat import (
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.shared_params import FunctionDefinition, FunctionParameters
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from typing_extensions import Self, Unpack
 
-from mtmai.clients.rest.models.model_config import ModelConfig
+# from mtmai.clients.rest.models.model_config import ModelConfig
 
 # ###########################################################################################
 # 主要改动:
@@ -1134,7 +1134,7 @@ class MtOpenAIChatCompletionClient(
     MTBaseOpenAIChatCompletionClient, Component[OpenAIClientConfigurationConfigModel]
 ):
     component_type = "model"
-    component_config_schema = ModelConfig
+    component_config_schema = OpenAIClientConfigurationConfigModel
     component_provider_override = "mtmai.model_client.MtOpenAIChatCompletionClient"
 
     def __init__(self, **kwargs: Unpack[OpenAIClientConfiguration]):
@@ -1193,4 +1193,9 @@ class MtOpenAIChatCompletionClient(
     @classmethod
     def _from_config(cls, config: OpenAIClientConfigurationConfigModel) -> Self:
         copied_config = config.model_copy().model_dump(exclude_none=True)
+
+        # Handle api_key as SecretStr
+        if "api_key" in copied_config and isinstance(config.api_key, SecretStr):
+            copied_config["api_key"] = config.api_key.get_secret_value()
+
         return cls(**copied_config)

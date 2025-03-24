@@ -110,11 +110,6 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
-    # EMAIL_TEST_USER: str = "test@example.com"
-    # FIRST_SUPERUSER: str = "mt@mt.com"
-    # FIRST_SUPERUSER_PASSWORD: str = "feihuo321"
-    # FIRST_SUPERUSER_EMAIL: str = "mt@mt.com"
-
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (
@@ -200,7 +195,6 @@ class Settings(BaseSettings):
     WORKER_INTERVAL: int = 3
     WORKER_MAX_RETRY: int = 1000
     GOMTM_URL: str = "http://127.0.0.1:8383"
-    # HATCHET_CLIENT_TOKEN: str | None = None
     AG_HOST_ADDRESS: str = "0.0.0.0:7777"
     DEFAULT_CLIENT_TIMEOUT: int = 20
     GOMTM_API_PATH_PREFIX: str = "/mtmapi"
@@ -211,9 +205,9 @@ class Settings(BaseSettings):
         "OPENAI_BASE_URL", "openai_base_url_not_set"
     )
 
-    NVIDIA_API_KEY: str | None = os.environ.get(
-        "NVIDIA_API_KEY", "nvidia_api_key_not_set"
-    )
+    @property
+    def NVIDIA_API_KEY(self) -> str | None:
+        return os.environ.get("NVIDIA_API_KEY", "nvidia_api_key_not_set")
 
 
 settings = Settings()  # type: ignore

@@ -212,17 +212,17 @@ def create_default_gallery_builder() -> GalleryBuilder:
     )
 
     # Create base model client
-    base_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
-    builder.add_model(
-        base_model.dump_component(),
-        label="OpenAI GPT-4o Mini",
-        description="OpenAI GPT-4o-mini",
-    )
+    # base_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
+    # builder.add_model(
+    #     base_model.dump_component(),
+    #     label="OpenAI GPT-4o Mini",
+    #     description="OpenAI GPT-4o-mini",
+    # )
 
     nvidia_model = MtOpenAIChatCompletionClient(
         model="deepseek-ai/deepseek-r1",
         api_key=settings.NVIDIA_API_KEY,
-        base_url="https://api.nvidia.com/v1",
+        base_url="https://integrate.api.nvidia.com/v1",
         model_info=ModelInfo(
             vision=False,
             function_calling=False,
@@ -240,7 +240,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
     nvidia_model_llama3 = MtOpenAIChatCompletionClient(
         model="nvidia/llama-3.3-nemotron-super-49b-v1",
         api_key=settings.NVIDIA_API_KEY,
-        base_url="https://api.nvidia.com/v1",
+        base_url="https://integrate.api.nvidia.com/v1",
         model_info=ModelInfo(
             vision=False,
             function_calling=True,
@@ -254,6 +254,8 @@ def create_default_gallery_builder() -> GalleryBuilder:
         label="Nvidia Llama3",
         description="Nvidia Llama3",
     )
+    base_model = nvidia_model_llama3
+
     # Create Mistral vllm model
     mistral_vllm_model = OpenAIChatCompletionClient(
         model="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",

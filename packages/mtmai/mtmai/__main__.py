@@ -19,7 +19,6 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    logger.info("initing worker")
     from worker_app import run_worker
 
     logger.info("running worker")
