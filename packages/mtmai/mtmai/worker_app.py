@@ -6,31 +6,31 @@ from mtmai.hatchet import Hatchet
 mtmapp = Hatchet()
 
 
-def get_workflows_types():
-    from flows.flow_tenant import FlowTenant
+# def get_workflows_types():
+#     from flows.flow_tenant import FlowTenant
 
-    from mtmai.flows.flow_ag import FlowAg
-    from mtmai.flows.flow_browser import FlowBrowser
-    from mtmai.flows.flow_com import FlowCom
-    from mtmai.flows.flow_llm import FlowModel
-    from mtmai.flows.flow_manager import FlowManager
-    from mtmai.flows.flow_research import FlowResearch
-    from mtmai.flows.flow_smolagent import FlowSmolagent
-    from mtmai.flows.flow_team import FlowTeam
-    from mtmai.flows.flow_tenant_settings import FlowTenantSettings
+#     from mtmai.flows.flow_ag import FlowAg
+#     from mtmai.flows.flow_browser import FlowBrowser
+#     from mtmai.flows.flow_com import FlowCom
+#     from mtmai.flows.flow_llm import FlowModel
+#     from mtmai.flows.flow_manager import FlowManager
+#     from mtmai.flows.flow_research import FlowResearch
+#     from mtmai.flows.flow_smolagent import FlowSmolagent
+#     from mtmai.flows.flow_team import FlowTeam
+#     from mtmai.flows.flow_tenant_settings import FlowTenantSettings
 
-    return [
-        FlowAg,
-        FlowTenantSettings,
-        FlowSmolagent,
-        FlowTeam,
-        FlowManager,
-        FlowResearch,
-        FlowBrowser,
-        FlowModel,
-        FlowCom,
-        FlowTenant,
-    ]
+#     return [
+#         FlowAg,
+#         FlowTenantSettings,
+#         FlowSmolagent,
+#         FlowTeam,
+#         FlowManager,
+#         FlowResearch,
+#         FlowBrowser,
+#         FlowModel,
+#         FlowCom,
+#         FlowTenant,
+#     ]
 
 
 async def run_worker():
@@ -54,7 +54,57 @@ async def run_worker():
     # 另外一个持续运行的团队
     # team2 = DemoHandoffsTeam()
     # 注册工作流
-    for workflow_type in get_workflows_types():
-        worker.register_workflow(workflow_type())
+    # for workflow_type in get_workflows_types():
+    #     worker.register_workflow(workflow_type())
+
+    from flows.flow_tenant import FlowTenant
+
+    worker.register_workflow(FlowTenant())
+    logger.info("register tenant workflow")
+
+    from flows.flow_tenant_settings import FlowTenantSettings
+
+    worker.register_workflow(FlowTenantSettings())
+    logger.info("register tenant settings workflow")
+
+    from flows.flow_smolagent import FlowSmolagent
+
+    worker.register_workflow(FlowSmolagent())
+    logger.info("register smolagent workflow")
+
+    from flows.flow_team import FlowTeam
+
+    worker.register_workflow(FlowTeam())
+    logger.info("register team workflow")
+
+    from flows.flow_manager import FlowManager
+
+    worker.register_workflow(FlowManager())
+    logger.info("register manager workflow")
+
+    from flows.flow_research import FlowResearch
+
+    worker.register_workflow(FlowResearch())
+    logger.info("register research workflow")
+
+    from flows.flow_browser import FlowBrowser
+
+    worker.register_workflow(FlowBrowser())
+    logger.info("register browser workflow")
+
+    from flows.flow_ag import FlowAg
+
+    worker.register_workflow(FlowAg())
+    logger.info("register ag workflow")
+
+    from flows.flow_com import FlowCom
+
+    worker.register_workflow(FlowCom())
+    logger.info("register com workflow")
+
+    # from flows.flow_model import FlowModel
+
+    # worker.register_workflow(FlowModel())
+    # logger.info("register model workflow")
 
     await worker.async_start()
