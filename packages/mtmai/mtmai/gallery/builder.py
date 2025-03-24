@@ -359,7 +359,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
         name="websurfer_agent",
         description="an agent that solves tasks by browsing the web",
         model_client=nvidia_model_llama3,
-        headless=True,
+        headless=False,
     )
     builder.add_agent(
         websurfer_agent.dump_component(),

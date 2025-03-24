@@ -1,5 +1,9 @@
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import TextMessage, ThoughtEvent
+from autogen_agentchat.messages import (
+    TextMessage,
+    ThoughtEvent,
+    UserInputRequestedEvent,
+)
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -87,6 +91,14 @@ class FlowAg:
                         message_type="thought",
                     ),
                 )
+            elif isinstance(event, UserInputRequestedEvent):
+                logger.warning(f"用户输入请求: {event}")
+                return {
+                    "status": "success",
+                    "data": {
+                        "user_input": event.content,
+                    },
+                }
             else:
                 logger.warning(f"(FlowAg.run_stream)不支持的消息类型: {type(event)}")
         if team and hasattr(team, "_participants"):
