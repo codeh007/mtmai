@@ -7,12 +7,12 @@ from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermi
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import ComponentModel
 from autogen_core.models import ModelFamily, ModelInfo
-from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
 from autogen_ext.models.anthropic import AnthropicChatCompletionClient
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from mtmai import tools as tools
+from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from pydantic import BaseModel, ConfigDict, SecretStr
@@ -355,7 +355,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
     )
 
     # Create web surfer agent
-    websurfer_agent = MultimodalWebSurfer(
+    websurfer_agent = MtMultimodalWebSurfer(
         name="websurfer_agent",
         description="an agent that solves tasks by browsing the web",
         model_client=nvidia_model_llama3,
