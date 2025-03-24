@@ -30,6 +30,7 @@ from mtmai.clients.rest.api.env_api import EnvApi
 from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.galleries_api import GalleriesApi
 from mtmai.clients.rest.api.hf_api import HfApi
+from mtmai.clients.rest.api.instagram_api import InstagramApi
 from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api.model_run_api import ModelRunApi
 from mtmai.clients.rest.api.platform_api import PlatformApi

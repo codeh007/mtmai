@@ -130,10 +130,13 @@ from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffR
 from mtmai.clients.rest.models.handoff_config import HandoffConfig
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
+from mtmai.clients.rest.models.ig_login import IGLogin
+from mtmai.clients.rest.models.ig_login_response import IGLoginResponse
 from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.instagram_test200_response import InstagramTest200Response
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus
