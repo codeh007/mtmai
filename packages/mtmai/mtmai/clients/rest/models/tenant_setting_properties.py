@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,8 +26,8 @@ class TenantSettingProperties(BaseModel):
     """
     TenantSettingProperties
     """ # noqa: E501
-    enabled_instagram_task: Optional[StrictBool] = Field(default=None, description="Whether the tenant has enabled instagram task")
-    __properties: ClassVar[List[str]] = ["enabled_instagram_task"]
+    content: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,6 +68,11 @@ class TenantSettingProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if content (nullable) is None
+        # and model_fields_set contains the field
+        if self.content is None and "content" in self.model_fields_set:
+            _dict['content'] = None
+
         return _dict
 
     @classmethod
@@ -80,7 +85,7 @@ class TenantSettingProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "enabled_instagram_task": obj.get("enabled_instagram_task")
+            "content": obj.get("content")
         })
         return _obj
 

@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,8 +28,8 @@ class TenantSetting(BaseModel):
     TenantSetting
     """ # noqa: E501
     metadata: APIResourceMeta
-    enabled_instagram_task: Optional[StrictBool] = Field(default=None, description="Whether the tenant has enabled instagram task")
-    __properties: ClassVar[List[str]] = ["metadata", "enabled_instagram_task"]
+    content: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["metadata", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,6 +73,11 @@ class TenantSetting(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
+        # set to None if content (nullable) is None
+        # and model_fields_set contains the field
+        if self.content is None and "content" in self.model_fields_set:
+            _dict['content'] = None
+
         return _dict
 
     @classmethod
@@ -86,7 +91,7 @@ class TenantSetting(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "enabled_instagram_task": obj.get("enabled_instagram_task")
+            "content": obj.get("content")
         })
         return _obj
 
