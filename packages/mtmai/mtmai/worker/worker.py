@@ -13,7 +13,6 @@ from typing import Any, Callable, TypeVar, get_type_hints
 
 from autogen_core import AgentRuntime, SingleThreadedAgentRuntime
 from loguru import logger
-from mtmai.clients.agent_runtime.mtm_runtime import MtmAgentRuntime
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
@@ -199,7 +198,7 @@ class Worker:
             handle_kill=self.handle_kill,
             debug=self.client.debug,
             labels=self.labels,
-            ag_runtime=self.agent_runtime,
+            # ag_runtime=self.agent_runtime,
             sys_team=self.sys_team,
         )
 
@@ -229,10 +228,10 @@ class Worker:
             logger.error(f"failed to start action listener: {e}")
             sys.exit(1)
 
-    async def _start_ag_runtime(self) -> AgentRuntime:
-        self.agent_runtime = MtmAgentRuntime(config=self.config)
-        await self.agent_runtime.start()
-        return self.agent_runtime
+    # async def _start_ag_runtime(self) -> AgentRuntime:
+    #     self.agent_runtime = MtmAgentRuntime(config=self.config)
+    #     await self.agent_runtime.start()
+    #     return self.agent_runtime
 
     async def _check_listener_health(self) -> None:
         logger.debug("starting action listener health check...")

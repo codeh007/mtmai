@@ -10,7 +10,6 @@ from multiprocessing import Queue
 from threading import Thread, current_thread
 from typing import Any, Callable, Dict, cast
 
-from autogen_core import AgentRuntime
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
 from mtmai.clients.admin import new_admin
@@ -61,7 +60,7 @@ class Runner:
     def __init__(
         self,
         name: str,
-        ag_runtime: AgentRuntime,
+        # ag_runtime: AgentRuntime,
         event_queue: "Queue[Any]",
         sys_team: SysTeam,
         max_runs: int | None = None,
@@ -110,7 +109,7 @@ class Runner:
             self.config,
             self.ag,
         )
-        self.ag_runtime = ag_runtime
+        # self.ag_runtime = ag_runtime
         self.sys_team = sys_team
 
     def create_workflow_run_url(self, action: Action) -> str:
@@ -336,7 +335,7 @@ class Runner:
             namespace=self.client.config.namespace,
             validator_registry=self.validator_registry,
             config=self.config,
-            ag_runtime=self.ag_runtime,
+            # ag_runtime=self.ag_runtime,
             sys_team=self.sys_team,
         )
 

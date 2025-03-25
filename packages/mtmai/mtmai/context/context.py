@@ -5,7 +5,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any, TypeVar, cast
 from warnings import warn
 
-from autogen_core import AgentRuntime
 from loguru import logger
 from mtmai.clients.admin import (
     AdminClient,
@@ -33,8 +32,6 @@ from pydantic import BaseModel, StrictStr
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
 T = TypeVar("T", bound=BaseModel)
-
-# backend_url_context: ContextVar[str] = ContextVar("backend_url", default=None)
 
 
 def get_caller_file_path() -> str:
@@ -91,7 +88,7 @@ class ContextAioImpl(BaseContext):
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
         config: ClientConfig,
-        ag_runtime: AgentRuntime,
+        # ag_runtime: AgentRuntime,
         sys_team: SysTeam,
         namespace: str = "",
     ):
@@ -108,7 +105,7 @@ class ContextAioImpl(BaseContext):
         self.ag = ag_client
         self.ag_client2 = ag_client2
         self.config = config
-        self.ag_runtime = ag_runtime
+        # self.ag_runtime = ag_runtime
         self.sys_team = sys_team
 
     @tenacity_retry
@@ -181,7 +178,7 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        ag_runtime: AgentRuntime,
+        # ag_runtime: AgentRuntime,
         sys_team: SysTeam,
         config: ClientConfig,
         namespace: str = "",
@@ -202,7 +199,7 @@ class Context(BaseContext):
             namespace=namespace,
             ag_client=ag_client,
             ag_client2=ag_client2,
-            ag_runtime=ag_runtime,
+            # ag_runtime=ag_runtime,
             sys_team=sys_team,
             config=config,
         )
@@ -212,7 +209,7 @@ class Context(BaseContext):
         self.rest = rest_client
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
-        self.ag_runtime = ag_runtime
+        # self.ag_runtime = ag_runtime
         self.sys_team = sys_team
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON

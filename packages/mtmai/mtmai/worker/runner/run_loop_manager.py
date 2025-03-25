@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Callable, TypeVar
 
-from autogen_core import AgentRuntime
 from loguru import logger
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
@@ -29,7 +28,7 @@ class WorkerActionRunLoopManager:
     action_queue: Queue
     event_queue: Queue
     loop: asyncio.AbstractEventLoop
-    ag_runtime: AgentRuntime
+    # ag_runtime: AgentRuntime
     sys_team: SysTeam
 
     handle_kill: bool = True
@@ -85,7 +84,7 @@ class WorkerActionRunLoopManager:
             validator_registry=self.validator_registry,
             config=self.config,
             labels=self.labels,
-            ag_runtime=self.ag_runtime,
+            # ag_runtime=self.ag_runtime,
             sys_team=self.sys_team,
         )
 
