@@ -26,8 +26,6 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from typing_extensions import Self
 
-# from ..clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
-
 
 class InstagramTeamConfig(RoundRobinGroupChatConfig):
     manager_name: str = "RoundRobinGroupChatManager"

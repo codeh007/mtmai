@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
+from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
@@ -16,6 +17,7 @@ from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from pydantic import BaseModel, ConfigDict, SecretStr
+from teams.instagram_team import InstagramTeam
 
 
 class GalleryComponents(BaseModel):
@@ -524,6 +526,22 @@ Read the above conversation. Then select the next role from {participants} to pl
         deep_research_team.dump_component(),
         label="Deep Research Team",
         description="A team with 3 agents - a Research Assistant that performs web searches and analyzes information, a Verifier that ensures research quality and completeness, and a Summary Agent that provides a detailed markdown summary of the research as a report to the user.",
+    )
+
+    # instagram team ==============================================================
+    instagram_agent = InstagramAgent(
+        name="instagram_agent",
+        description="an agent that interacts with instagram",
+        model_client=nvidia_model_llama3,
+    )
+    instagram_team = InstagramTeam(
+        participants=[instagram_agent],
+        model_client=nvidia_model_llama3,
+    )
+    builder.add_team(
+        instagram_team.dump_component(),
+        label="Instagram Team",
+        description="A team with an Instagram agent that interacts with instagram.",
     )
 
     return builder
