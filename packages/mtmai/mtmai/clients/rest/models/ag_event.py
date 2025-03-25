@@ -99,7 +99,6 @@ class AgEvent(BaseModel):
             "data": obj.get("data"),
             "framework": obj.get("framework"),
             "stepRunId": obj.get("stepRunId"),
-            "meta": obj.get("meta")
         })
         return _obj
 

@@ -46,7 +46,7 @@ class OpenAIModelConfig(BaseModel):
     top_p: Optional[Union[StrictFloat, StrictInt]] = None
     user: Optional[StrictStr] = None
     organization: Optional[StrictStr] = None
-    default_headers: Optional[Dict[str, Any]] = None
+    default_headers: Optional[Dict[str, StrictStr]] = None
     model_info: Optional[ModelInfo] = None
     __properties: ClassVar[List[str]] = ["model", "model_type", "api_key", "base_url", "timeout", "max_retries", "frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "organization", "default_headers", "model_info"]
 

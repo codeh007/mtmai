@@ -29,12 +29,12 @@ class AgentConfig(BaseModel):
     """ # noqa: E501
     name: StrictStr
     description: StrictStr
-    model_context: Optional[Dict[str, Any]] = None
-    memory: Optional[Dict[str, Any]] = None
+    model_context: Optional[Dict[str, Dict[str, Any]]] = None
+    memory: Optional[Dict[str, Dict[str, Any]]] = None
     model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
     model_client: MtComponent
-    tools: List[Dict[str, Any]]
+    tools: List[Dict[str, Dict[str, Any]]]
     handoffs: List[StrictStr]
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr

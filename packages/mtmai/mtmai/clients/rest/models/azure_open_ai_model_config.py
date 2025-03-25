@@ -46,7 +46,7 @@ class AzureOpenAIModelConfig(BaseModel):
     top_p: Optional[Union[StrictFloat, StrictInt]] = None
     user: Optional[StrictStr] = None
     organization: Optional[StrictStr] = None
-    default_headers: Optional[Dict[str, Any]] = None
+    default_headers: Optional[Dict[str, StrictStr]] = None
     model_info: Optional[ModelInfo] = None
     azure_deployment: StrictStr
     api_version: StrictStr

@@ -26,7 +26,7 @@ class MtTaskResult(BaseModel):
     """
     MtTaskResult
     """ # noqa: E501
-    messages: List[Dict[str, Any]]
+    messages: List[Dict[str, Dict[str, Any]]]
     stop_reason: StrictStr
     __properties: ClassVar[List[str]] = ["messages", "stop_reason"]
 
