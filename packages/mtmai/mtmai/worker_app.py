@@ -75,10 +75,10 @@ async def run_worker():
     worker.register_workflow(FlowCom())
     logger.info("register com workflow")
 
-    from flows.flow_ig import FlowIG
+    # from flows.flow_ig import FlowIG
 
-    worker.register_workflow(FlowIG())
-    logger.info("register ig workflow")
+    # worker.register_workflow(FlowIG())
+    # logger.info("register ig workflow")
 
     # from flows.flow_model import FlowModel
 

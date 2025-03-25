@@ -11,6 +11,7 @@ from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
+from mtmai.mtlibs.instagrapi import Client
 from typing_extensions import Self
 
 
@@ -75,6 +76,23 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             if isinstance(message, Response):
                 return message
         raise AssertionError("The stream should have returned the final result.")
+
+    async def example(self):
+        IG_USERNAME = ""
+        IG_PASSWORD = ""
+        IG_CREDENTIAL_PATH = "./ig_settings.json"
+        # SLEEP_TIME = "600"  # in seconds
+
+        ig_client = Client()
+        ig_client.login(IG_USERNAME, IG_PASSWORD)
+        ig_client.dump_settings(IG_CREDENTIAL_PATH)
+
+        userid = ig_client.user_id_from_username("hello")
+        ig_client.user_follow(userid)
+        ig_client.user_unfollow(userid)
+        ig_client.user_followers(userid, amount=10)
+        ig_client.user_following(userid, amount=10)
+        ig_client.user_followers_full(userid, amount=10)
 
     @classmethod
     def _from_config(cls, config: AgentConfig | InstagramAgentConfig) -> Self:
