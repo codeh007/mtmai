@@ -180,7 +180,7 @@ from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmai.clients.rest.models.platform_account_properties import PlatformAccountProperties
-from mtmai.clients.rest.models.platform_account_update import PlatformAccountUpdate
+from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.clients.rest.models.platform_list import PlatformList
 from mtmai.clients.rest.models.platform_update import PlatformUpdate
 from mtmai.clients.rest.models.post import Post

@@ -28,6 +28,8 @@ class PlatformAccount(BaseModel):
     PlatformAccount
     """ # noqa: E501
     metadata: APIResourceMeta
+    label: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
     username: StrictStr
     email: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
@@ -38,7 +40,7 @@ class PlatformAccount(BaseModel):
     comment: Optional[StrictStr] = None
     tags: Optional[List[StrictStr]] = None
     properties: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["metadata", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
+    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,6 +102,8 @@ class PlatformAccount(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "label": obj.get("label"),
+            "description": obj.get("description"),
             "username": obj.get("username"),
             "email": obj.get("email"),
             "password": obj.get("password"),
