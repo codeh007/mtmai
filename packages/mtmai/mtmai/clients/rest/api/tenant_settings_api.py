@@ -1166,7 +1166,7 @@ class TenantSettingsApi:
         ]
 
         return self.api_client.param_serialize(
-            method='PATCH',
+            method='POST',
             resource_path='/api/v1/tenants/{tenant}/settings/{setting}',
             path_params=_path_params,
             query_params=_query_params,
