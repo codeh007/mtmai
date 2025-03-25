@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictStr
+from pydantic import Field, StrictBool, StrictInt, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.mt_resource import MtResource
@@ -332,6 +332,9 @@ class ResourceApi:
     async def resource_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        enabled: Optional[StrictBool] = None,
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -347,10 +350,15 @@ class ResourceApi:
     ) -> MtResourceList:
         """resource_list
 
-        获取资源列表
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param enabled:
+        :type enabled: bool
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -375,6 +383,9 @@ class ResourceApi:
 
         _param = self._resource_list_serialize(
             tenant=tenant,
+            enabled=enabled,
+            limit=limit,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -402,6 +413,9 @@ class ResourceApi:
     async def resource_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        enabled: Optional[StrictBool] = None,
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -417,10 +431,15 @@ class ResourceApi:
     ) -> ApiResponse[MtResourceList]:
         """resource_list
 
-        获取资源列表
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param enabled:
+        :type enabled: bool
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -445,6 +464,9 @@ class ResourceApi:
 
         _param = self._resource_list_serialize(
             tenant=tenant,
+            enabled=enabled,
+            limit=limit,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -472,6 +494,9 @@ class ResourceApi:
     async def resource_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        enabled: Optional[StrictBool] = None,
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -487,10 +512,15 @@ class ResourceApi:
     ) -> RESTResponseType:
         """resource_list
 
-        获取资源列表
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param enabled:
+        :type enabled: bool
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -515,6 +545,9 @@ class ResourceApi:
 
         _param = self._resource_list_serialize(
             tenant=tenant,
+            enabled=enabled,
+            limit=limit,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -537,6 +570,9 @@ class ResourceApi:
     def _resource_list_serialize(
         self,
         tenant,
+        enabled,
+        limit,
+        offset,
         _request_auth,
         _content_type,
         _headers,
@@ -561,6 +597,18 @@ class ResourceApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if enabled is not None:
+            
+            _query_params.append(('enabled', enabled))
+            
+        if limit is not None:
+            
+            _query_params.append(('limit', limit))
+            
+        if offset is not None:
+            
+            _query_params.append(('offset', offset))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
