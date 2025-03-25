@@ -26,13 +26,13 @@ class FlowNames(str, Enum):
     """
     allowed enum values
     """
-    ASSISANT = 'assisant'
+    SYS = 'sys'
+    TENANT = 'tenant'
+    ASSISTANT = 'assistant'
     AG = 'ag'
     BROWSER = 'browser'
-    TENANT_SETTINGS = 'tenant_settings'
     SMOLA = 'smola'
     TEAM = 'team'
-    TENANT = 'tenant'
     COM = 'com'
 
     @classmethod

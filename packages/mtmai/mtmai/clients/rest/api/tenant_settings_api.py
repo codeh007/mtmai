@@ -18,8 +18,8 @@ from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.model_list import ModelList
 from mtmai.clients.rest.models.tenant_setting import TenantSetting
+from mtmai.clients.rest.models.tenant_setting_list import TenantSettingList
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -620,7 +620,7 @@ class TenantSettingsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ModelList:
+    ) -> TenantSettingList:
         """tenant_settings_list
 
 
@@ -657,7 +657,7 @@ class TenantSettingsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ModelList",
+            '200': "TenantSettingList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -689,7 +689,7 @@ class TenantSettingsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ModelList]:
+    ) -> ApiResponse[TenantSettingList]:
         """tenant_settings_list
 
 
@@ -726,7 +726,7 @@ class TenantSettingsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ModelList",
+            '200': "TenantSettingList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -795,7 +795,7 @@ class TenantSettingsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ModelList",
+            '200': "TenantSettingList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",

@@ -270,6 +270,8 @@ from mtmai.clients.rest.models.tenant_resource import TenantResource
 from mtmai.clients.rest.models.tenant_resource_limit import TenantResourceLimit
 from mtmai.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmai.clients.rest.models.tenant_setting import TenantSetting
+from mtmai.clients.rest.models.tenant_setting_list import TenantSettingList
+from mtmai.clients.rest.models.tenant_setting_properties import TenantSettingProperties
 from mtmai.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 from mtmai.clients.rest.models.termination_types import TerminationTypes
