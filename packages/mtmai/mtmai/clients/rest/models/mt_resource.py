@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
@@ -28,13 +28,14 @@ class MtResource(BaseModel):
     MtResource
     """ # noqa: E501
     metadata: APIResourceMeta
-    title: StrictStr = Field(description="The resource title")
-    description: Optional[StrictStr] = Field(default=None, description="The resource description")
-    version: Optional[StrictStr] = Field(default=None, description="The resource version")
-    url: Optional[StrictStr] = Field(default=None, description="The resource url")
-    type: StrictStr = Field(description="The resource type")
+    title: StrictStr
+    description: Optional[StrictStr] = None
+    version: Optional[StrictStr] = None
+    url: Optional[StrictStr] = None
+    type: StrictStr
     content: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content"]
+    enabled: Optional[StrictBool] = None
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "version", "url", "type", "content", "enabled"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,7 +97,8 @@ class MtResource(BaseModel):
             "version": obj.get("version"),
             "url": obj.get("url"),
             "type": obj.get("type"),
-            "content": obj.get("content")
+            "content": obj.get("content"),
+            "enabled": obj.get("enabled")
         })
         return _obj
 
