@@ -8,11 +8,12 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage
-from autogen_core import CancellationToken, Component
+from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
+from loguru import logger
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.mtlibs.instagrapi import Client
@@ -28,10 +29,16 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
+from pydantic import BaseModel
 from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
 CHALLENGE_PASSWORD = ""
+
+
+class IgAccountMessage(BaseModel):
+    username: str
+    password: str
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
@@ -41,8 +48,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     def __init__(
         self,
         name: str,
-        username: str,
-        password: str,
+        # username: str,
+        # password: str,
         model_client: ChatCompletionClient,
         *,
         tools: List[
@@ -60,8 +67,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         tool_call_summary_format: str = "{result}",
         memory: Sequence[Memory] | None = None,
     ) -> None:
-        self._username = username
-        self._password = password
+        # self._username = username
+        # self._password = password
         super().__init__(
             name=name,
             model_client=model_client,
@@ -76,21 +83,25 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             memory=memory,
         )
 
-    # @message_handler
-    # async def handle_user_task(self, message: UserTask, ctx: MessageContext) -> None:
-    #     # human_input = input("Human agent input: ")
-    #     human_input = await self.get_user_input("Human agent input: ")
-    #     logger.info("TODO: need human input")
-    #     logger.info(f"{'-'*80}\n{self.id.type}:\n{human_input}", flush=True)
-    #     message.context.append(
-    #         AssistantMessage(content=human_input, source=self.id.type)
-    #     )
-    #     await self.publish_message(
-    #         AgentResponse(
-    #             context=message.context, reply_to_topic_type=self._agent_topic_type
-    #         ),
-    #         topic_id=TopicId(self._user_topic_type, source=self.id.key),
-    # )
+    @message_handler
+    async def handle_ig_account(
+        self, message: IgAccountMessage, ctx: MessageContext
+    ) -> None:
+        """初始化社交账号"""
+        logger.info(f"handle_ig_account: {message}")
+        # human_input = input("Human agent input: ")
+        # human_input = await self.get_user_input("Human agent input: ")
+        # logger.info("TODO: need human input")
+        # logger.info(f"{'-'*80}\n{self.id.type}:\n{human_input}", flush=True)
+        # message.context.append(
+        #     AssistantMessage(content=human_input, source=self.id.type)
+        # )
+        # await self.publish_message(
+        #     AgentResponse(
+        #         context=message.context, reply_to_topic_type=self._agent_topic_type
+        #     ),
+        #     topic_id=TopicId(self._user_topic_type, source=self.id.key),
+        # )
 
     async def on_messages(
         self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
@@ -359,8 +370,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             # _config=config.
             return cls(
                 name=config.name,
-                username=config.username,
-                password=config.password,
+                # username=config.username,
+                # password=config.password,
                 model_client=ChatCompletionClient.load_component(config.model_client),
                 tools=[BaseTool.load_component(tool) for tool in config.tools]
                 if config.tools
@@ -375,8 +386,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         else:
             return cls(
                 name=config.name,
-                username=config.username,
-                password=config.password,
+                # username=config.username,
+                # password=config.password,
                 model_client=ChatCompletionClient.load_component(
                     config.model_client.model_dump()
                 ),

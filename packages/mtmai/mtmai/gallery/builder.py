@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
-from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
@@ -16,8 +15,9 @@ from mtmai import tools as tools
 from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
+from mtmai.teams.instagram_team import InstagramTeam
+from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
-from teams.instagram_team import InstagramTeam
 
 
 class GalleryComponents(BaseModel):
@@ -535,13 +535,13 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     # instagram team ==============================================================
-    instagram_agent = InstagramAgent(
-        name="instagram_agent",
-        description="an agent that interacts with instagram",
-        model_client=nvidia_model_llama3,
-    )
+    # instagram_agent = InstagramAgent(
+    #     name="instagram_agent",
+    #     description="an agent that interacts with instagram",
+    #     model_client=nvidia_model_llama3,
+    # )
     instagram_team = InstagramTeam(
-        participants=[instagram_agent],
+        participants=[],
         model_client=nvidia_model_llama3,
     )
     builder.add_team(
@@ -550,8 +550,8 @@ Read the above conversation. Then select the next role from {participants} to pl
         description="A team with an Instagram agent that interacts with instagram.",
     )
 
-    tenant_team = InstagramTeam(
-        participants=[instagram_agent],
+    tenant_team = TenantTeam(
+        participants=[],
         model_client=nvidia_model_llama3,
     )
     builder.add_team(
