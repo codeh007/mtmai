@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool
+from pydantic import BaseModel, ConfigDict, StrictBool
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,7 +26,7 @@ class TenantSettingContent(BaseModel):
     """
     TenantSettingContent
     """ # noqa: E501
-    enabled_instagram_task: Optional[StrictBool] = Field(default=None, description="Whether the tenant has enabled instagram task")
+    enabled_instagram_task: Optional[StrictBool] = None
     __properties: ClassVar[List[str]] = ["enabled_instagram_task"]
 
     model_config = ConfigDict(
