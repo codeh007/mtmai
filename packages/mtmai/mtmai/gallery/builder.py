@@ -193,6 +193,12 @@ class GalleryBuilder:
             ),
         )
 
+    def get_team(self, label: str) -> ComponentModel:
+        for team in self.teams:
+            if team.label == label:
+                return team
+        return None
+
 
 def create_default_gallery_builder() -> GalleryBuilder:
     """Create a default gallery with all components including calculator and web surfer teams."""
@@ -542,6 +548,16 @@ Read the above conversation. Then select the next role from {participants} to pl
         instagram_team.dump_component(),
         label="Instagram Team",
         description="A team with an Instagram agent that interacts with instagram.",
+    )
+
+    tenant_team = InstagramTeam(
+        participants=[instagram_agent],
+        model_client=nvidia_model_llama3,
+    )
+    builder.add_team(
+        tenant_team.dump_component(),
+        label="Tenant Team",
+        description="租户管理专用团队",
     )
 
     return builder

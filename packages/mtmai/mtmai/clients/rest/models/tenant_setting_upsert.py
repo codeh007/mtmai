@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.tenant_setting_content import TenantSettingContent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,7 +27,7 @@ class TenantSettingUpsert(BaseModel):
     """
     TenantSettingUpsert
     """ # noqa: E501
-    content: Optional[Any] = None
+    content: Optional[TenantSettingContent] = None
     __properties: ClassVar[List[str]] = ["content"]
 
     model_config = ConfigDict(
@@ -68,11 +69,9 @@ class TenantSettingUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if content (nullable) is None
-        # and model_fields_set contains the field
-        if self.content is None and "content" in self.model_fields_set:
-            _dict['content'] = None
-
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
@@ -85,7 +84,7 @@ class TenantSettingUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "content": obj.get("content")
+            "content": TenantSettingContent.from_dict(obj["content"]) if obj.get("content") is not None else None
         })
         return _obj
 

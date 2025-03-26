@@ -270,6 +270,7 @@ from mtmai.clients.rest.models.tenant_resource import TenantResource
 from mtmai.clients.rest.models.tenant_resource_limit import TenantResourceLimit
 from mtmai.clients.rest.models.tenant_resource_policy import TenantResourcePolicy
 from mtmai.clients.rest.models.tenant_setting import TenantSetting
+from mtmai.clients.rest.models.tenant_setting_content import TenantSettingContent
 from mtmai.clients.rest.models.tenant_setting_list import TenantSettingList
 from mtmai.clients.rest.models.tenant_setting_properties import TenantSettingProperties
 from mtmai.clients.rest.models.tenant_setting_upsert import TenantSettingUpsert

@@ -17,18 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, StrictBool
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.tenant_setting_content import TenantSettingContent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TenantSettingProperties(BaseModel):
+class TenantSettingContent(BaseModel):
     """
-    TenantSettingProperties
+    TenantSettingContent
     """ # noqa: E501
-    content: Optional[TenantSettingContent] = None
-    __properties: ClassVar[List[str]] = ["content"]
+    enabled_instagram_task: Optional[StrictBool] = Field(default=None, description="Whether the tenant has enabled instagram task")
+    __properties: ClassVar[List[str]] = ["enabled_instagram_task"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +47,7 @@ class TenantSettingProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TenantSettingProperties from a JSON string"""
+        """Create an instance of TenantSettingContent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,14 +68,11 @@ class TenantSettingProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of content
-        if self.content:
-            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TenantSettingProperties from a dict"""
+        """Create an instance of TenantSettingContent from a dict"""
         if obj is None:
             return None
 
@@ -84,7 +80,7 @@ class TenantSettingProperties(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "content": TenantSettingContent.from_dict(obj["content"]) if obj.get("content") is not None else None
+            "enabled_instagram_task": obj.get("enabled_instagram_task")
         })
         return _obj
 
