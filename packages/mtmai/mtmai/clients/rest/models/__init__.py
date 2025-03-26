@@ -37,6 +37,7 @@ from mtmai.clients.rest.models.agent_event import AgentEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
+from mtmai.clients.rest.models.agent_message_type import AgentMessageType
 from mtmai.clients.rest.models.agent_properties import AgentProperties
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_types import AgentTypes
@@ -212,7 +213,6 @@ from mtmai.clients.rest.models.response_format import ResponseFormat
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState
 from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
-from mtmai.clients.rest.models.run_status import RunStatus
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
 from mtmai.clients.rest.models.scheduled_workflows import ScheduledWorkflows
