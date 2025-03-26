@@ -4,7 +4,7 @@ import random
 import re
 from typing import Any, Awaitable, Callable, List, Sequence
 
-from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.agents import BaseChatAgent
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage
@@ -41,15 +41,13 @@ class IgAccountMessage(BaseModel):
     password: str
 
 
-class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
+class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
     def __init__(
         self,
         name: str,
-        # username: str,
-        # password: str,
         model_client: ChatCompletionClient,
         *,
         tools: List[
@@ -67,8 +65,6 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         tool_call_summary_format: str = "{result}",
         memory: Sequence[Memory] | None = None,
     ) -> None:
-        # self._username = username
-        # self._password = password
         super().__init__(
             name=name,
             model_client=model_client,
