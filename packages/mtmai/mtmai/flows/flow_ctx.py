@@ -46,7 +46,7 @@ class FlowCtx:
         return team
 
     async def load_agent(self, agent_comp_id_or_name: str):
-        agent = InstagramAgent()
+        agent = await InstagramAgent.from_context()
         return agent
 
     @classmethod

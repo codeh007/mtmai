@@ -11,6 +11,8 @@ from autogen_core import CancellationToken, Component, MessageContext, message_h
 from autogen_core.memory import Memory
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
+from autogen_ext.tools.mcp import mcp_server_tools
+from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
 from pydantic import BaseModel
@@ -45,29 +47,33 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
-    def __init__(
-        self,
-        # name: str,
-        # model_client: ChatCompletionClient,
-        *,
-        description: str = "An agent that provides assistance with ability to use tools.",
-    ) -> None:
-        name = "InstagramAgent"
+    # def __init__(
+    #     self,
+    #     # name: str,
+    #     # model_client: ChatCompletionClient,
+    #     *,
+    #     description: str = "An agent that provides assistance with ability to use tools.",
+    # ) -> None:
+    #     name = "InstagramAgent"
 
-        model_client = get_default_model_client()
-        super().__init__(
-            name=name,
-            model_client=model_client,
-            # tools=tools,
-            # handoffs=handoffs,
-            # model_context=model_context,
-            description=description,
-            # system_message=system_message,
-            # model_client_stream=model_client_stream,
-            # reflect_on_tool_use=reflect_on_tool_use,
-            # tool_call_summary_format=tool_call_summary_format,
-            # memory=memory,
-        )
+    #     model_client = get_default_model_client()
+    #     tenant_client = TenantClient()
+    #     server_params = tenant_client.get_mcp_endpoint()
+
+    #     # Get all available tools from the server
+    #     super().__init__(
+    #         name=name,
+    #         model_client=model_client,
+    #         # tools=tools,
+    #         # handoffs=handoffs,
+    #         # model_context=model_context,
+    #         description=description,
+    #         # system_message=system_message,
+    #         # model_client_stream=model_client_stream,
+    #         # reflect_on_tool_use=reflect_on_tool_use,
+    #         # tool_call_summary_format=tool_call_summary_format,
+    #         # memory=memory,
+    #     )
 
     @message_handler
     async def handle_ig_account(
@@ -384,6 +390,28 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
                 reflect_on_tool_use=config.reflect_on_tool_use,
                 tool_call_summary_format=config.tool_call_summary_format,
             )
+
+    @classmethod
+    async def from_context(cls) -> Self:
+        tenant_client = TenantClient()
+        model_client = get_default_model_client()
+
+        server_params = await tenant_client.get_mcp_endpoint()
+        tools = await mcp_server_tools(server_params)
+
+        return cls(
+            name="InstagramAgent",
+            model_client=model_client,
+            tools=tools,
+            handoffs=[],
+            model_context=None,
+            memory=[],
+            description="An agent that provides assistance with ability to use tools.",
+            # system_message=config.system_message,
+            # model_client_stream=config.model_client_stream,
+            # reflect_on_tool_use=config.reflect_on_tool_use,
+            # tool_call_summary_format=config.tool_call_summary_format,
+        )
 
     async def on_reset(self, cancellation_token: CancellationToken) -> None:
         pass
