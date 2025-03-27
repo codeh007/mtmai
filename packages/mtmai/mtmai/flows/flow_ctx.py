@@ -1,3 +1,4 @@
+from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.base import Team
 from clients.rest.models.component_types import ComponentTypes
 from context.context_client import TenantClient
@@ -16,6 +17,8 @@ class FlowCtx:
         self.session_id = get_chat_session_id_ctx()
         self.tid = get_tenant_id()
 
+    # 看起来过时了,原因是, autogen 中的team 的行为本身就可以立即为一个agent,
+    # 因此,后续的设计以 agent 自身作为主导,而不是team
     async def load_team(self, team_comp_id_or_name: str):
         if is_uuid(team_comp_id_or_name):
             # 从数据库加载
@@ -41,6 +44,10 @@ class FlowCtx:
             return tenant_team
 
         return team
+
+    async def load_agent(self, agent_comp_id_or_name: str):
+        agent = InstagramAgent()
+        return agent
 
     @classmethod
     def from_hatctx(cls, hatctx: Context) -> Self:

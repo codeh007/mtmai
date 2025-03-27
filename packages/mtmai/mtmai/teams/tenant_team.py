@@ -3,7 +3,12 @@ import uuid
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from autogen_agentchat.base import ChatAgent, TaskResult, Team, TerminationCondition
-from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
+from autogen_agentchat.messages import (
+    AgentEvent,
+    ChatMessage,
+    ModelClientStreamingChunkEvent,
+    TextMessage,
+)
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
@@ -30,7 +35,7 @@ from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 
 
@@ -148,19 +153,8 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
         task: str | ChatMessage | Sequence[ChatMessage] | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
-        if not self._initialized:
-            await self._init(self._runtime)
-        # async for event in super().run_stream(
-        #     task=task, cancellation_token=cancellation_token
-        # ):
-        #     if isinstance(event, TaskResult):
-        #         yield event
-        #     else:
-        #         await self.tenant_client.emit(event)
-        #         yield event
-
         session_id = get_chat_session_id_ctx()
-        tenant_id = get_tenant_id()
+        # tenant_id = get_tenant_id()
         model_client = get_default_model_client()
         # Register the sales agent.
         platform_account_type = await AIAgent.register(
@@ -189,16 +183,152 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
         )
 
         await self._runtime.publish_message(
-            TextMessage(), topic_id=TopicId(platform_account_type, source=session_id)
+            TextMessage(content="hello", source="user"),
+            topic_id=TopicId(platform_account_topic_type, source=session_id),
+            # topic_id=platform_account_type,
         )
 
-        # await self.tenant_client.ag.save_team_state(
-        #     team=self,
-        #     componentId=self._team_id,
-        #     tenant_id=self.tenant_client.tenant_id,
-        #     chat_id=self.session_id,
-        # )
-        await self._runtime.stop_when_idle()
+        # messages: List[ChatMessage] | None = None
+        # if task is None:
+        #     pass
+        # elif isinstance(task, str):
+        #     messages = [TextMessage(content=task, source="user")]
+        # elif isinstance(task, ChatMessage):
+        #     messages = [task]
+        # elif isinstance(task, list):
+        #     if not task:
+        #         raise ValueError("Task list cannot be empty.")
+        #     messages = []
+        #     for msg in task:
+        #         if not isinstance(msg, ChatMessage):
+        #             raise ValueError(
+        #                 "All messages in task list must be valid ChatMessage types"
+        #             )
+        #         messages.append(msg)
+        # else:
+        #     raise ValueError(
+        #         "Task must be a string, a ChatMessage, or a list of ChatMessage."
+        #     )
+        # Check if the messages types are registered with the message factory.
+        # if messages is not None:
+        #     for msg in messages:
+        #         if not self._message_factory.is_registered(msg.__class__):
+        #             raise ValueError(
+        #                 f"Message type {msg.__class__} is not registered with the message factory. "
+        #                 "Please register it with the message factory by adding it to the "
+        #                 "custom_message_types list when creating the team."
+        #             )
+
+        if self._is_running:
+            raise ValueError(
+                "The team is already running, it cannot run again until it is stopped."
+            )
+        self._is_running = True
+
+        # if self._embedded_runtime:
+        #     # Start the embedded runtime.
+        #     assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+        #     self._runtime.start()
+
+        if not self._initialized:
+            await self._init(self._runtime)
+
+        shutdown_task: asyncio.Task[None] | None = None
+        # if self._embedded_runtime:
+
+        #     async def stop_runtime() -> None:
+        #         assert isinstance(self._runtime, SingleThreadedAgentRuntime)
+        #         try:
+        #             # This will propagate any exceptions raised.
+        #             await self._runtime.stop_when_idle()
+        #         finally:
+        #             # Stop the consumption of messages and end the stream.
+        #             # NOTE: we also need to put a GroupChatTermination event here because when the group chat
+        #             # has an exception, the group chat manager may not be able to put a GroupChatTermination event in the queue.
+        #             await self._output_message_queue.put(
+        #                 GroupChatTermination(
+        #                     message=StopMessage(content="Exception occurred.", source=self._group_chat_manager_name)
+        #                 )
+        #             )
+
+        #     # Create a background task to stop the runtime when the group chat
+        #     # is stopped or has an exception.
+        #     shutdown_task = asyncio.create_task(stop_runtime())
+
+        try:
+            # Run the team by sending the start message to the group chat manager.
+            # The group chat manager will start the group chat by relaying the message to the participants
+            # and the group chat manager.
+            # await self._runtime.send_message(
+            #     GroupChatStart(messages=messages),
+            #     recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
+            #     cancellation_token=cancellation_token,
+            # )
+            # Collect the output messages in order.
+            output_messages: List[AgentEvent | ChatMessage] = []
+            stop_reason: str | None = None
+            # Yield the messsages until the queue is empty.
+            while True:
+                message_future = asyncio.ensure_future(self._output_message_queue.get())
+                if cancellation_token is not None:
+                    cancellation_token.link_future(message_future)
+                # Wait for the next message, this will raise an exception if the task is cancelled.
+                message = await message_future
+                # if isinstance(message, GroupChatTermination):
+                #     # If the message is None, it means the group chat has terminated.
+                #     # TODO: how do we handle termination when the runtime is not embedded
+                #     # and there is an exception in the group chat?
+                #     # The group chat manager may not be able to put a GroupChatTermination event in the queue,
+                #     # and this loop will never end.
+                #     stop_reason = message.message.content
+                #     break
+                yield message
+                if isinstance(message, ModelClientStreamingChunkEvent):
+                    # Skip the model client streaming chunk events.
+                    continue
+                output_messages.append(message)
+
+            # Yield the final result.
+            yield TaskResult(messages=output_messages, stop_reason=stop_reason)
+
+        finally:
+            try:
+                if shutdown_task is not None:
+                    # Wait for the shutdown task to finish.
+                    # This will propagate any exceptions raised.
+                    await shutdown_task
+            finally:
+                # Clear the output message queue.
+                while not self._output_message_queue.empty():
+                    self._output_message_queue.get_nowait()
+
+                # Indicate that the team is no longer running.
+                self._is_running = False
+
+    # async def run_stream2(
+    #     self,
+    #     *,
+    #     task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    #     if not self._initialized:
+    #         await self._init(self._runtime)
+    #     # async for event in super().run_stream(
+    #     #     task=task, cancellation_token=cancellation_token
+    #     # ):
+    #     #     if isinstance(event, TaskResult):
+    #     #         yield event
+    #     #     else:
+    #     #         await self.tenant_client.emit(event)
+    #     #         yield event
+
+    #     # await self.tenant_client.ag.save_team_state(
+    #     #     team=self,
+    #     #     componentId=self._team_id,
+    #     #     tenant_id=self.tenant_client.tenant_id,
+    #     #     chat_id=self.session_id,
+    #     # )
+    #     await self._runtime.stop_when_idle()
 
     async def reset(self) -> None:
         # if not self._initialized:
