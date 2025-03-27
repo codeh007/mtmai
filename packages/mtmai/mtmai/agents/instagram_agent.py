@@ -15,6 +15,7 @@ from autogen_ext.tools.mcp import mcp_server_tools
 from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
+from mtlibs.mcp import print_mcp_tools
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -398,6 +399,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
         server_params = await tenant_client.get_mcp_endpoint()
         tools = await mcp_server_tools(server_params)
+        print_mcp_tools(tools)
 
         return cls(
             name="InstagramAgent",
