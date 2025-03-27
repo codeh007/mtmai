@@ -14,6 +14,9 @@ from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from loguru import logger
+from pydantic import BaseModel
+from typing_extensions import Self
+
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.mtlibs.instagrapi import Client
@@ -29,8 +32,6 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-from pydantic import BaseModel
-from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
 CHALLENGE_PASSWORD = ""
@@ -345,7 +346,6 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
         # except (ClientLoginRequired, PleaseWaitFewMinutes, ClientForbiddenError):
         #     # Logical level
         #     cl.set_proxy(next_proxy())
-
         """
 
         return random.choice(
@@ -359,15 +359,11 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
     @classmethod
     def _from_config(cls, config: AgentConfig | InstagramAgentConfig) -> Self:
         """Create an assistant agent from a declarative config."""
-        # self._username = config.username
-        # self._password = config.password
         _config = config
         if isinstance(config, AgentConfig):
             # _config=config.
             return cls(
                 name=config.name,
-                # username=config.username,
-                # password=config.password,
                 model_client=ChatCompletionClient.load_component(config.model_client),
                 tools=[BaseTool.load_component(tool) for tool in config.tools]
                 if config.tools
@@ -382,8 +378,6 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
         else:
             return cls(
                 name=config.name,
-                # username=config.username,
-                # password=config.password,
                 model_client=ChatCompletionClient.load_component(
                     config.model_client.model_dump()
                 ),
