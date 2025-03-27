@@ -11,13 +11,13 @@ from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
 from autogen_ext.models.anthropic import AnthropicChatCompletionClient
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
+from pydantic import BaseModel, ConfigDict, SecretStr
+
 from mtmai import tools as tools
 from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
-from mtmai.teams.instagram_team import InstagramTeam
 from mtmai.teams.tenant_team import TenantTeam
-from pydantic import BaseModel, ConfigDict, SecretStr
 
 
 class GalleryComponents(BaseModel):
@@ -193,11 +193,18 @@ class GalleryBuilder:
             ),
         )
 
+    def set_default_team(self, team: ComponentModel):
+        self.default_team = team
+
     def get_team(self, label: str) -> ComponentModel:
+        team_found = None
         for team in self.teams:
             if team.label == label:
-                return team
-        return None
+                team_found = team
+                break
+        if team_found is None:
+            raise ValueError(f"Team not found: {label}")
+        return team_found
 
 
 def create_default_gallery_builder() -> GalleryBuilder:
@@ -540,24 +547,24 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     description="an agent that interacts with instagram",
     #     model_client=nvidia_model_llama3,
     # )
-    instagram_team = InstagramTeam(
-        participants=[],
-        model_client=nvidia_model_llama3,
-    )
-    builder.add_team(
-        instagram_team.dump_component(),
-        label="Instagram Team",
-        description="A team with an Instagram agent that interacts with instagram.",
-    )
+    # instagram_team = InstagramTeam(
+    #     participants=[],
+    #     # model_client=nvidia_model_llama3,
+    # )
+    # builder.add_team(
+    #     instagram_team.dump_component(),
+    #     label="Instagram Team",
+    #     description="A team with an Instagram agent that interacts with instagram.",
+    # )
 
     tenant_team = TenantTeam(
         participants=[],
-        model_client=nvidia_model_llama3,
+        # model_client=nvidia_model_llama3,
     )
     builder.add_team(
         tenant_team.dump_component(),
         label="Tenant Team",
         description="租户管理专用团队",
     )
-
+    builder.set_default_team(tenant_team)
     return builder

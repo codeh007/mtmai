@@ -2,6 +2,7 @@ import email
 import imaplib
 import random
 import re
+from abc import abstractmethod
 from typing import Any, Awaitable, Callable, List, Sequence
 
 from autogen_agentchat.agents import BaseChatAgent
@@ -395,3 +396,11 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
                 reflect_on_tool_use=config.reflect_on_tool_use,
                 tool_call_summary_format=config.tool_call_summary_format,
             )
+
+    async def on_reset(self, cancellation_token: CancellationToken) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def produced_message_types(self) -> Sequence[type[ChatMessage]]:
+        pass

@@ -28,6 +28,7 @@ class AgentEventType(str, Enum):
     """
     THOUGHTEVENT = 'ThoughtEvent'
     TEXTMESSAGE = 'TextMessage'
+    PLATFORMACCOUNTINPUT = 'PlatformAccountInput'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

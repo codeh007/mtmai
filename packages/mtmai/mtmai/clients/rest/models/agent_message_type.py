@@ -29,7 +29,7 @@ class AgentMessageType(str, Enum):
     TEXT = 'text'
     IMAGE = 'image'
     FILE = 'file'
-    PLATFORM_ACCOUNT = 'platform_account'
+    PLATFORMACCOUNTINPUT = 'PlatformAccountInput'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -34,10 +34,10 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.clients.rest.models.agent_event import AgentEvent
+from mtmai.clients.rest.models.agent_event_one_of import AgentEventOneOf
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
-from mtmai.clients.rest.models.agent_message_type import AgentMessageType
 from mtmai.clients.rest.models.agent_properties import AgentProperties
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_types import AgentTypes
