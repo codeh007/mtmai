@@ -2,20 +2,13 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, Awaitable, Callable, List, Sequence
+from typing import List, Sequence
 
-from autogen_agentchat.base import Handoff as HandoffBase
+from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage, TextMessage
-from autogen_core import (
-    CancellationToken,
-    Component,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
-)
+from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
-from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from loguru import logger
@@ -48,7 +41,7 @@ class IgAccountMessage(BaseModel):
     password: str
 
 
-class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
+class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
@@ -57,36 +50,23 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
         # name: str,
         # model_client: ChatCompletionClient,
         *,
-        tools: List[
-            BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
-        ]
-        | None = None,
-        handoffs: List[HandoffBase | str] | None = None,
-        model_context: ChatCompletionContext | None = None,
         description: str = "An agent that provides assistance with ability to use tools.",
-        system_message: (
-            str | None
-        ) = "You are a helpful AI assistant. Solve tasks using your tools. Reply with TERMINATE when the task has been completed.",
-        model_client_stream: bool = False,
-        reflect_on_tool_use: bool = False,
-        tool_call_summary_format: str = "{result}",
-        memory: Sequence[Memory] | None = None,
     ) -> None:
-        self.name = "InstagramAgent"
+        name = "InstagramAgent"
 
         model_client = get_default_model_client()
         super().__init__(
-            name=self.name,
+            name=name,
             model_client=model_client,
-            tools=tools,
-            handoffs=handoffs,
-            model_context=model_context,
+            # tools=tools,
+            # handoffs=handoffs,
+            # model_context=model_context,
             description=description,
-            system_message=system_message,
-            model_client_stream=model_client_stream,
-            reflect_on_tool_use=reflect_on_tool_use,
-            tool_call_summary_format=tool_call_summary_format,
-            memory=memory,
+            # system_message=system_message,
+            # model_client_stream=model_client_stream,
+            # reflect_on_tool_use=reflect_on_tool_use,
+            # tool_call_summary_format=tool_call_summary_format,
+            # memory=memory,
         )
 
     @message_handler
@@ -412,7 +392,3 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
         return (TextMessage,)
         pass
-
-    @property
-    def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-        return (TextMessage,)
