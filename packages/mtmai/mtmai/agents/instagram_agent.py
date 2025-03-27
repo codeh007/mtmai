@@ -4,16 +4,22 @@ import random
 import re
 from typing import Any, Awaitable, Callable, List, Sequence
 
-from autogen_agentchat.agents import BaseChatAgent
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage, TextMessage
-from autogen_core import CancellationToken, Component, MessageContext, message_handler
+from autogen_core import (
+    CancellationToken,
+    Component,
+    MessageContext,
+    RoutedAgent,
+    message_handler,
+)
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from loguru import logger
+from model_client.utils import get_default_model_client
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -42,14 +48,14 @@ class IgAccountMessage(BaseModel):
     password: str
 
 
-class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
+class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
     def __init__(
         self,
-        name: str,
-        model_client: ChatCompletionClient,
+        # name: str,
+        # model_client: ChatCompletionClient,
         *,
         tools: List[
             BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
@@ -68,6 +74,7 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
     ) -> None:
         self.name = "InstagramAgent"
 
+        model_client = get_default_model_client()
         super().__init__(
             name=self.name,
             model_client=model_client,
@@ -399,6 +406,11 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
             )
 
     async def on_reset(self, cancellation_token: CancellationToken) -> None:
+        pass
+
+    @property
+    def produced_message_types(self) -> Sequence[type[ChatMessage]]:
+        return (TextMessage,)
         pass
 
     @property
