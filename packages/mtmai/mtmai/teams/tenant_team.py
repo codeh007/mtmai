@@ -1,9 +1,9 @@
 import asyncio
+import uuid
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
-from agents.instagram_agent import InstagramAgent
-from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
-from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.base import ChatAgent, TaskResult, Team, TerminationCondition
+from autogen_agentchat.messages import AgentEvent, ChatMessage, TextMessage
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
@@ -20,12 +20,18 @@ from autogen_core import (
     CancellationToken,
     Component,
     SingleThreadedAgentRuntime,
+    TopicId,
 )
+from autogen_core.models import SystemMessage
+from typing_extensions import Self
+
+from mtmai.agents._agents import platform_account_topic_type
+from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.context.context_client import TenantClient
-from mtmai.context.ctx import get_chat_session_id_ctx
-from typing_extensions import Self
+from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.model_client.utils import get_default_model_client
 
 
 class TenantTeamConfig(RoundRobinGroupChatConfig):
@@ -46,19 +52,41 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
     ) -> None:
         self.tenant_client = TenantClient()
         self.manager_name = manager_name
-
-        participants = participants or []
-        if len(participants) == 0:
-            instagram_agent = InstagramAgent()
-            participants = [instagram_agent]
-        super().__init__(
-            participants=participants,
-            group_chat_manager_name=manager_name,
-            group_chat_manager_class=RoundRobinGroupChatManager,
-            termination_condition=termination_condition,
-            max_turns=max_turns,
-            runtime=runtime,
+        self._runtime = SingleThreadedAgentRuntime(
+            # ignore_unhandled_exceptions=False,
         )
+
+        self._termination_condition = termination_condition
+        self._max_turns = max_turns
+
+        # Constants for the group chat.
+        self._team_id = str(uuid.uuid4())
+        self._group_topic_type = "group_topic"
+        self._output_topic_type = "output_topic"
+        self._group_chat_manager_topic_type = "group_chat_manager"
+        # self._participant_topic_types: List[str] = [
+        #     participant.name for participant in participants
+        # ]
+        # self._participant_descriptions: List[str] = [
+        #     participant.description for participant in participants
+        # ]
+        self._collector_agent_type = "collect_output_messages"
+
+        # Constants for the closure agent to collect the output messages.
+        self._stop_reason: str | None = None
+        self._output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | None] = (
+            asyncio.Queue()
+        )
+
+        # Create a runtime for the team.
+        # TODO: The runtime should be created by a managed context.
+        # Background exceptions must not be ignored as it results in non-surfaced exceptions and early team termination.
+        self._runtime = SingleThreadedAgentRuntime(
+            # ignore_unhandled_exceptions=False,
+        )
+        self._initialized = False
+        self._is_running = False
+        self.teams: list[Team] = []
 
     def _create_group_chat_manager_factory(
         self,
@@ -110,7 +138,8 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
-        await super()._init(runtime)
+
+        # await super()._init(runtime)
         runtime.start()
 
     async def run_stream(
@@ -121,21 +150,55 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
             await self._init(self._runtime)
-        async for event in super().run_stream(
-            task=task, cancellation_token=cancellation_token
-        ):
-            if isinstance(event, TaskResult):
-                yield event
-            else:
-                await self.tenant_client.emit(event)
-                yield event
+        # async for event in super().run_stream(
+        #     task=task, cancellation_token=cancellation_token
+        # ):
+        #     if isinstance(event, TaskResult):
+        #         yield event
+        #     else:
+        #         await self.tenant_client.emit(event)
+        #         yield event
 
-        await self.tenant_client.ag.save_team_state(
-            team=self,
-            componentId=self._team_id,
-            tenant_id=self.tenant_client.tenant_id,
-            chat_id=self.session_id,
+        session_id = get_chat_session_id_ctx()
+        tenant_id = get_tenant_id()
+        model_client = get_default_model_client()
+        # Register the sales agent.
+        platform_account_type = await AIAgent.register(
+            self._runtime,
+            type=platform_account_topic_type,  # Using the topic type as the agent type.
+            factory=lambda: AIAgent(
+                description="A sales agent.",
+                system_message=SystemMessage(
+                    content="You are a sales agent for ACME Inc."
+                    "Always answer in a sentence or less."
+                    "Follow the following routine with the user:"
+                    "1. Ask them about any problems in their life related to catching roadrunners.\n"
+                    "2. Casually mention one of ACME's crazy made-up products can help.\n"
+                    " - Don't mention price.\n"
+                    "3. Once the user is bought in, drop a ridiculous price.\n"
+                    "4. Only after everything, and if the user says yes, "
+                    "tell them a crazy caveat and execute their order.\n"
+                    ""
+                ),
+                model_client=model_client,
+                tools=[],
+                # delegate_tools=[transfer_back_to_triage_tool],
+                # agent_topic_type=sales_agent_topic_type,
+                # user_topic_type=user_topic_type,
+            ),
         )
+
+        await self._runtime.publish_message(
+            TextMessage(), topic_id=TopicId(platform_account_type, source=session_id)
+        )
+
+        # await self.tenant_client.ag.save_team_state(
+        #     team=self,
+        #     componentId=self._team_id,
+        #     tenant_id=self.tenant_client.tenant_id,
+        #     chat_id=self.session_id,
+        # )
+        await self._runtime.stop_when_idle()
 
     async def reset(self) -> None:
         # if not self._initialized:
@@ -182,25 +245,26 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
         #     next_speaker_index=self._next_speaker_index,
         # )
         # return state.model_dump()
-        state = await super().save_state()
-        return state
+        # state = await super().save_state()
+        return {}
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await super().load_state(state)
 
     def _to_config(self) -> TenantTeamConfig:
         participants = [
-            participant.dump_component() for participant in self._participants
+            # participant.dump_component() for participant in self._participants
         ]
         termination_condition = (
-            self._termination_condition.dump_component()
-            if self._termination_condition
-            else None
+            # self._termination_condition.dump_component()
+            # if self._termination_condition
+            # else None
+            None
         )
         return TenantTeamConfig(
             participants=participants,
             termination_condition=termination_condition,
-            max_turns=self._max_turns,
+            # max_turns=self._max_turns,
         )
 
     @classmethod

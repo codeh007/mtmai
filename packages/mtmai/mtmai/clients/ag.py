@@ -7,6 +7,7 @@ from autogen_core import ComponentModel
 from clients.rest.api.agent_api import AgentApi
 from clients.rest.api.team_api import TeamApi
 from connecpy.context import ClientContext
+
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
@@ -110,6 +111,8 @@ class AgClient:
         chat_id: str,
         tenant_id: str,
     ) -> dict:
+        if not chat_id:
+            return None
         try:
             ag_state = await self.ag_state_api.ag_state_get(
                 tenant=tenant_id,
@@ -119,7 +122,6 @@ class AgClient:
                 if hasattr(ag_state.state, "actual_instance"):
                     return ag_state.state.actual_instance.model_dump()
             return ag_state.state.model_dump()
-            # return ag_state.
 
         except NotFoundException:
             return None

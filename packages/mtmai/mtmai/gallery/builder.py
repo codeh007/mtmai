@@ -17,6 +17,7 @@ from mtmai import tools as tools
 from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
+from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.tenant_team import TenantTeam
 
 
@@ -252,18 +253,7 @@ def create_default_gallery_builder() -> GalleryBuilder:
         description="Nvidia DeepSeek R1",
     )
 
-    nvidia_model_llama3 = MtOpenAIChatCompletionClient(
-        model="nvidia/llama-3.3-nemotron-super-49b-v1",
-        api_key=settings.NVIDIA_API_KEY,
-        base_url="https://integrate.api.nvidia.com/v1",
-        model_info=ModelInfo(
-            vision=False,
-            function_calling=True,
-            json_output=True,
-            structured_output=True,
-            family=ModelFamily.UNKNOWN,
-        ),
-    )
+    nvidia_model_llama3 = get_default_model_client()
     builder.add_model(
         nvidia_model_llama3.dump_component(),
         label="Nvidia Llama3",

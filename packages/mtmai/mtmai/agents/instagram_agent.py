@@ -2,13 +2,12 @@ import email
 import imaplib
 import random
 import re
-from abc import abstractmethod
 from typing import Any, Awaitable, Callable, List, Sequence
 
 from autogen_agentchat.agents import BaseChatAgent
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
-from autogen_agentchat.messages import ChatMessage
+from autogen_agentchat.messages import ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
@@ -67,8 +66,10 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
         tool_call_summary_format: str = "{result}",
         memory: Sequence[Memory] | None = None,
     ) -> None:
+        self.name = "InstagramAgent"
+
         super().__init__(
-            name=name,
+            name=self.name,
             model_client=model_client,
             tools=tools,
             handoffs=handoffs,
@@ -401,6 +402,5 @@ class InstagramAgent(BaseChatAgent, Component[InstagramAgentConfig]):
         pass
 
     @property
-    @abstractmethod
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-        pass
+        return (TextMessage,)
