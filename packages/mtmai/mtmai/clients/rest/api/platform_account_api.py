@@ -19,6 +19,7 @@ from typing_extensions import Annotated
 from pydantic import Field
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.platform_account import PlatformAccount
+from mtmai.clients.rest.models.platform_account_create import PlatformAccountCreate
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 
@@ -44,7 +45,7 @@ class PlatformAccountApi:
     async def platform_account_create(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform_account: PlatformAccount,
+        platform_account_create: PlatformAccountCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -64,8 +65,8 @@ class PlatformAccountApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform_account: (required)
-        :type platform_account: PlatformAccount
+        :param platform_account_create: (required)
+        :type platform_account_create: PlatformAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,7 +91,7 @@ class PlatformAccountApi:
 
         _param = self._platform_account_create_serialize(
             tenant=tenant,
-            platform_account=platform_account,
+            platform_account_create=platform_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -117,7 +118,7 @@ class PlatformAccountApi:
     async def platform_account_create_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform_account: PlatformAccount,
+        platform_account_create: PlatformAccountCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -137,8 +138,8 @@ class PlatformAccountApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform_account: (required)
-        :type platform_account: PlatformAccount
+        :param platform_account_create: (required)
+        :type platform_account_create: PlatformAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -163,7 +164,7 @@ class PlatformAccountApi:
 
         _param = self._platform_account_create_serialize(
             tenant=tenant,
-            platform_account=platform_account,
+            platform_account_create=platform_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -190,7 +191,7 @@ class PlatformAccountApi:
     async def platform_account_create_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform_account: PlatformAccount,
+        platform_account_create: PlatformAccountCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -210,8 +211,8 @@ class PlatformAccountApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform_account: (required)
-        :type platform_account: PlatformAccount
+        :param platform_account_create: (required)
+        :type platform_account_create: PlatformAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -236,7 +237,7 @@ class PlatformAccountApi:
 
         _param = self._platform_account_create_serialize(
             tenant=tenant,
-            platform_account=platform_account,
+            platform_account_create=platform_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -258,7 +259,7 @@ class PlatformAccountApi:
     def _platform_account_create_serialize(
         self,
         tenant,
-        platform_account,
+        platform_account_create,
         _request_auth,
         _content_type,
         _headers,
@@ -286,8 +287,8 @@ class PlatformAccountApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if platform_account is not None:
-            _body_params = platform_account
+        if platform_account_create is not None:
+            _body_params = platform_account_create
 
 
         # set the HTTP header `Accept`

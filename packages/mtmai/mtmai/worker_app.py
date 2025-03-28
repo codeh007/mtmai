@@ -10,6 +10,10 @@ async def run_worker():
     logger.info("booting worker")
     await mtmapp.boot()
 
+    from mtmai.otel import setup_instrument
+
+    setup_instrument()
+
     worker = mtmapp.worker(settings.WORKER_NAME)
     _start_coroutine = worker.agent_runtime.start()
     if _start_coroutine:
