@@ -13,17 +13,6 @@ from smolagents.agents import ActionStep
 from tools.instagram_tool import InstagramLoginTool
 
 
-def setup_inferstruc():
-    from openinference.instrumentation.smolagents import SmolagentsInstrumentor
-    from phoenix.otel import register
-
-    register()
-    SmolagentsInstrumentor().instrument()
-
-
-setup_inferstruc()
-
-
 @mtmapp.workflow(
     name=FlowNames.AG,
     on_events=[f"{FlowNames.AG}"],
