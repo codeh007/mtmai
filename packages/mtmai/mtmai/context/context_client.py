@@ -1,6 +1,9 @@
 from typing import Any
 
 from autogen_ext.tools.mcp import SseServerParams
+from clients.rest.api.platform_account_api import PlatformAccountApi
+from clients.rest.api_client import ApiClient
+from clients.rest.configuration import Configuration
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.context.ctx import (
@@ -49,12 +52,40 @@ class TenantClient:
         if self.access_token is None:
             raise ValueError("access_token context is not set")
 
+        # self.server_url = server_url
+        # self.access_token = access_token
+        # self.client_context = ClientContext(
+        #     headers={
+        #         "Authorization": f"Bearer {access_token}",
+        #     }
+        # )
+        self.client_config = Configuration(
+            host=self.server_url,
+            access_token=self.access_token,
+        )
+
+    @property
+    def api_client(self):
+        if hasattr(self, "_api_client"):
+            return self._api_client
+        self._api_client = ApiClient(configuration=self.client_config)
+        return self._api_client
+
     @property
     def ag(self) -> AgClient:
         if hasattr(self, "_ag"):
             return self._ag
         self._ag = AgClient(get_server_url(), get_access_token())
         return self._ag
+
+    @property
+    def platform_account_api(self):
+        if hasattr(self, "_platform_account_api"):
+            return self._platform_account_api
+        self._platform_account_api = PlatformAccountApi(self.api_client)
+        # self._ag_state_api = AgStateApi(self.api_client)
+        # return self._ag_state_api
+        return self._platform_account_api
 
     @property
     def event(self) -> EventClient:

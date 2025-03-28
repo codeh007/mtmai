@@ -120,7 +120,8 @@ dependencies = [
     "html2text>=2024.2.26",
     "azure-core>=1.32.0",
     "azure-identity>=1.21.0",
-    "pycryptodome>=3.22.0",
+    # "pycryptodome>=3.22.0",
+    "pycryptodomex>=3.22.0",
 ]
 
 

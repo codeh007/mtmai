@@ -30,44 +30,21 @@ class FlowPlatformAccount:
         if not tid:
             raise ValueError("tenant_id is required")
 
-        # 1: 加载 agent
-        #    原因: 所谓的智能体编排实际是由一个 supervisor agent 通过 消息类型决定调用下一个子流程
-        #    hatchet 的子工作流,本身支持并发.
+        platform_account_data = (
+            await tenant_client.platform_account_api.platform_account_get(
+                tenant=tid,
+                platform_account=input.platform_account_id,
+            )
+        )
+        logger.info(f"platform_account_data: {platform_account_data}")
 
-        # agent = await flowctx.load_agent(input.component_id)
-        # if session_id:
-        #     # TODO: 加载agent state
-        #     pass
+        # STEP1: 登录
+        from mtmai.mtlibs.instagrapi import Client
 
-        # task = """调用工具,获取这个页面: https://docs.postiz.com/providers/instagram, 然后总结这个页面的内容提要"""
-        # output_stream = agent.on_messages_stream(
-        #     [TextMessage(content=task, source="user")],
-        #     cancellation_token=CancellationToken(),
-        # )
-        # last_txt_message = ""
-        # async for message in output_stream:
-        #     if isinstance(message, ToolCallRequestEvent):
-        #         for tool_call in message.content:
-        #             logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
-        #     if isinstance(message, ToolCallExecutionEvent):
-        #         for result in message.content:
-        #             # Compute formatted text separately to avoid backslashes in the f-string expression.
-        #             formatted_text = result.content[:200].replace("\n", r"\n")
-        #             logger.info(f"  [observe]> {formatted_text} [/observe]")
-        #     if isinstance(message, Response):
-        #         if isinstance(message.chat_message, TextMessage):
-        #             last_txt_message += message.chat_message.content
-        #         elif isinstance(message.chat_message, ToolCallSummaryMessage):
-        #             content = message.chat_message.content
-        #             # only print the first 100 characters
-        #             # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
-        #             last_txt_message += content
-        #         else:
-        #             raise ValueError(f"Unexpected message type: {message.chat_message}")
-        #         logger.info(last_txt_message)
+        ig_client = Client()
+        login_result = ig_client.login(
+            platform_account_data.username, platform_account_data.password
+        )
+        # ig_client.dump_settings(IG_CREDENTIAL_PATH)
 
-        # for result in run_smola_agent():
-        #     logger.info(f"result: {result}")
-
-        logger.info(f"(FlowPlatformAccount)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}
