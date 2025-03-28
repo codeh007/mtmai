@@ -61,7 +61,6 @@ class PlatformAccountApi:
     ) -> PlatformAccount:
         """platform_account_create
 
-        create platform_account
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -134,7 +133,6 @@ class PlatformAccountApi:
     ) -> ApiResponse[PlatformAccount]:
         """platform_account_create
 
-        create platform_account
 
         :param tenant: The tenant id (required)
         :type tenant: str
@@ -207,7 +205,6 @@ class PlatformAccountApi:
     ) -> RESTResponseType:
         """platform_account_create
 
-        create platform_account
 
         :param tenant: The tenant id (required)
         :type tenant: str

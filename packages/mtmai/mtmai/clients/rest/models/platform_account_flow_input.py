@@ -27,8 +27,8 @@ class PlatformAccountFlowInput(BaseModel):
     PlatformAccountFlowInput
     """ # noqa: E501
     type: Optional[StrictStr] = None
-    source: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "source"]
+    platform_account_id: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "platform_account_id"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -92,7 +92,7 @@ class PlatformAccountFlowInput(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
-            "source": obj.get("source")
+            "platform_account_id": obj.get("platform_account_id")
         })
         return _obj
 
