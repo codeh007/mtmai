@@ -1,14 +1,6 @@
-from autogen_agentchat.base import Response
-from autogen_agentchat.messages import (
-    TextMessage,
-    ToolCallExecutionEvent,
-    ToolCallRequestEvent,
-    ToolCallSummaryMessage,
-)
-from autogen_core import CancellationToken
 from flows.flow_ctx import FlowCtx
 from loguru import logger
-
+from model_client.utils import get_custom_model
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.flow_names import FlowNames
@@ -16,6 +8,7 @@ from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.worker_app import mtmapp
+from tools.instagram_tool import InstagramLoginTool
 
 
 @mtmapp.workflow(
@@ -45,39 +38,53 @@ class FlowAg:
         #    原因: 所谓的智能体编排实际是由一个 supervisor agent 通过 消息类型决定调用下一个子流程
         #    hatchet 的子工作流,本身支持并发.
 
-        agent = await flowctx.load_agent(input.component_id)
-        if session_id:
-            # TODO: 加载agent state
-            pass
+        # agent = await flowctx.load_agent(input.component_id)
+        # if session_id:
+        #     # TODO: 加载agent state
+        #     pass
 
-        task = "hello"
-        output_stream = agent.on_messages_stream(
-            [TextMessage(content=task, source="user")],
-            cancellation_token=CancellationToken(),
-        )
-        last_txt_message = ""
-        async for message in output_stream:
-            if isinstance(message, ToolCallRequestEvent):
-                for tool_call in message.content:
-                    logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
+        # task = """调用工具,获取这个页面: https://docs.postiz.com/providers/instagram, 然后总结这个页面的内容提要"""
+        # output_stream = agent.on_messages_stream(
+        #     [TextMessage(content=task, source="user")],
+        #     cancellation_token=CancellationToken(),
+        # )
+        # last_txt_message = ""
+        # async for message in output_stream:
+        #     if isinstance(message, ToolCallRequestEvent):
+        #         for tool_call in message.content:
+        #             logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
 
-            if isinstance(message, ToolCallExecutionEvent):
-                for result in message.content:
-                    # Compute formatted text separately to avoid backslashes in the f-string expression.
-                    formatted_text = result.content[:200].replace("\n", r"\n")
-                    logger.info(f"  [observe]> {formatted_text} [/observe]")
+        #     if isinstance(message, ToolCallExecutionEvent):
+        #         for result in message.content:
+        #             # Compute formatted text separately to avoid backslashes in the f-string expression.
+        #             formatted_text = result.content[:200].replace("\n", r"\n")
+        #             logger.info(f"  [observe]> {formatted_text} [/observe]")
 
-            if isinstance(message, Response):
-                if isinstance(message.chat_message, TextMessage):
-                    last_txt_message += message.chat_message.content
-                elif isinstance(message.chat_message, ToolCallSummaryMessage):
-                    content = message.chat_message.content
-                    # only print the first 100 characters
-                    # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
-                    last_txt_message += content
-                else:
-                    raise ValueError(f"Unexpected message type: {message.chat_message}")
-                logger.info(last_txt_message)
+        #     if isinstance(message, Response):
+        #         if isinstance(message.chat_message, TextMessage):
+        #             last_txt_message += message.chat_message.content
+        #         elif isinstance(message.chat_message, ToolCallSummaryMessage):
+        #             content = message.chat_message.content
+        #             # only print the first 100 characters
+        #             # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
+        #             last_txt_message += content
+        #         else:
+        #             raise ValueError(f"Unexpected message type: {message.chat_message}")
+        #         logger.info(last_txt_message)
+
+        for result in run_smola_agent():
+            logger.info(f"result: {result}")
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
-        return {"result": last_txt_message}
+        return {"result": "todo"}
+
+
+def run_smola_agent():
+    from smolagents import CodeAgent
+
+    model = get_custom_model()
+    # agent = CodeAgent(tools=[DuckDuckGoSearchTool()], model=model)
+    agent = CodeAgent(tools=[InstagramLoginTool()], model=model)
+    result = agent.run("使用工具, 登录到instagram, 然后获取我的粉丝列表")
+    logger.info(f"result: {result}")
+    yield result

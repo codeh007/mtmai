@@ -1,7 +1,7 @@
 import os
 from urllib.parse import urlparse
 
-from ..mtlibs.env import is_in_docker, is_in_testing, is_in_vercel
+from mtmai.mtlibs.env import is_in_docker, is_in_testing, is_in_vercel
 
 
 def is_in_dev() -> bool:

@@ -195,7 +195,7 @@ class Settings(BaseSettings):
     WORKER_INTERVAL: int = 3
     WORKER_MAX_RETRY: int = 1000
     GOMTM_URL: str = "http://127.0.0.1:8383"
-    AG_HOST_ADDRESS: str = "0.0.0.0:7777"
+    # AG_HOST_ADDRESS: str = "0.0.0.0:7777"
     DEFAULT_CLIENT_TIMEOUT: int = 20
     GOMTM_API_PATH_PREFIX: str = "/mtmapi"
 
@@ -208,6 +208,10 @@ class Settings(BaseSettings):
     @property
     def NVIDIA_API_KEY(self) -> str | None:
         return os.environ.get("NVIDIA_API_KEY", "nvidia_api_key_not_set")
+
+    @property
+    def HF_TOKEN(self) -> str | None:
+        return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 
 
 settings = Settings()  # type: ignore
