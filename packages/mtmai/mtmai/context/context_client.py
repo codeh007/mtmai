@@ -2,6 +2,7 @@ from typing import Any
 
 from autogen_ext.tools.mcp import SseServerParams
 from clients.rest.api.platform_account_api import PlatformAccountApi
+from clients.rest.api.resource_api import ResourceApi
 from clients.rest.api_client import ApiClient
 from clients.rest.configuration import Configuration
 from mtmai.clients.ag import AgClient
@@ -11,6 +12,7 @@ from mtmai.context.ctx import (
     META_RUN_BY_USER_ID,
     META_SESSION_ID,
     get_access_token,
+    get_chat_session_id_ctx,
     get_run_id,
     get_server_url,
     get_step_run_id,
@@ -42,9 +44,10 @@ def parse_ctx_from_action(action: Action):
 class TenantClient:
     def __init__(self):
         self.tenant_id = get_tenant_id()
+        assert self.tenant_id is not None
         self.run_id = get_run_id()
         self.step_run_id = get_step_run_id()
-
+        self.session_id = get_chat_session_id_ctx()
         self.server_url = get_server_url()
         if self.server_url is None:
             raise ValueError("server_url context is not set")
@@ -83,9 +86,14 @@ class TenantClient:
         if hasattr(self, "_platform_account_api"):
             return self._platform_account_api
         self._platform_account_api = PlatformAccountApi(self.api_client)
-        # self._ag_state_api = AgStateApi(self.api_client)
-        # return self._ag_state_api
         return self._platform_account_api
+
+    @property
+    def resource_api(self):
+        if hasattr(self, "_resource_api"):
+            return self._resource_api
+        self._resource_api = ResourceApi(self.api_client)
+        return self._resource_api
 
     @property
     def event(self) -> EventClient:
