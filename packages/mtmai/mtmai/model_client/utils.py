@@ -29,15 +29,18 @@ def get_custom_model():
     # model_id = "meta-llama/Llama-3.3-70B-Instruct"
     # client = InferenceClient(model=model_id)
     open_ai_client = OpenAIServerModel(
-        model_id="nvidia/llama-3.3-nemotron-super-49b-v1",
+        # model_id="nvidia/llama-3.3-nemotron-super-49b-v1",
+        model_id="nvidia_nim/deepseek-ai/deepseek-r1",
         api_base="https://integrate.api.nvidia.com/v1",
         api_key=settings.NVIDIA_API_KEY,
     )
     model = LiteLLMModel(
-        model_id="nvidia_nim/meta/llama3-70b-instruct",
+        # model_id="nvidia_nim/llama-3.3-nemotron-super-49b-v1",
+        model_id="nvidia_nim/deepseek-ai/deepseek-r1",
+        api_key=settings.NVIDIA_API_KEY,
         temperature=0.2,
         max_tokens=10000,
-        stop=["Task"],
+        # stop=["Task"],
     )
 
     # fal_ai_client = InferenceClient(

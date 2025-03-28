@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.agent_event import AgentEvent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +28,7 @@ class BaseGroupChatManagerState(BaseModel):
     """ # noqa: E501
     type: Optional[StrictStr] = None
     version: Optional[StrictStr] = None
-    message_thread: Optional[List[AgentEvent]] = None
+    message_thread: Optional[List[Dict[str, Any]]] = None
     current_turn: Optional[StrictInt] = None
     __properties: ClassVar[List[str]] = ["type", "version", "message_thread", "current_turn"]
 
@@ -82,13 +81,6 @@ class BaseGroupChatManagerState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in message_thread (list)
-        _items = []
-        if self.message_thread:
-            for _item_message_thread in self.message_thread:
-                if _item_message_thread:
-                    _items.append(_item_message_thread.to_dict())
-            _dict['message_thread'] = _items
         return _dict
 
     @classmethod
@@ -103,7 +95,7 @@ class BaseGroupChatManagerState(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "version": obj.get("version"),
-            "message_thread": [AgentEvent.from_dict(_item) for _item in obj["message_thread"]] if obj.get("message_thread") is not None else None,
+            "message_thread": obj.get("message_thread"),
             "current_turn": obj.get("current_turn")
         })
         return _obj

@@ -179,6 +179,7 @@ from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
+from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmai.clients.rest.models.platform_account_properties import PlatformAccountProperties
 from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert

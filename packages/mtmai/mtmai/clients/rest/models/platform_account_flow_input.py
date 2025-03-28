@@ -17,31 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class RoundRobinManagerState(BaseModel):
+class PlatformAccountFlowInput(BaseModel):
     """
-    RoundRobinManagerState
+    PlatformAccountFlowInput
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    version: Optional[StrictStr] = None
-    message_thread: Optional[List[Dict[str, Any]]] = None
-    current_turn: Optional[StrictInt] = None
-    next_speaker_index: Optional[StrictInt] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "message_thread", "current_turn", "next_speaker_index"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['RoundRobinManagerState']):
-            raise ValueError("must be one of enum values ('RoundRobinManagerState')")
-        return value
+    account_id: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["account_id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -61,7 +47,7 @@ class RoundRobinManagerState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of RoundRobinManagerState from a JSON string"""
+        """Create an instance of PlatformAccountFlowInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -86,7 +72,7 @@ class RoundRobinManagerState(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of RoundRobinManagerState from a dict"""
+        """Create an instance of PlatformAccountFlowInput from a dict"""
         if obj is None:
             return None
 
@@ -94,11 +80,7 @@ class RoundRobinManagerState(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "version": obj.get("version"),
-            "message_thread": obj.get("message_thread"),
-            "current_turn": obj.get("current_turn"),
-            "next_speaker_index": obj.get("next_speaker_index")
+            "account_id": obj.get("account_id")
         })
         return _obj
 
