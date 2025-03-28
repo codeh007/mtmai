@@ -1,3 +1,4 @@
+from clients.rest.models.flow_names import FlowNames
 from flows.flow_ctx import FlowCtx
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
@@ -11,8 +12,8 @@ from mtmai.worker_app import mtmapp
 
 
 @mtmapp.workflow(
-    name="platform_account",
-    on_events=["platform_account"],
+    name=FlowNames.PLATFORM_ACCOUNT,
+    on_events=[f"{FlowNames.PLATFORM_ACCOUNT}"],
 )
 class FlowPlatformAccount:
     @mtmapp.step(timeout="5m")
@@ -65,8 +66,8 @@ class FlowPlatformAccount:
         #             raise ValueError(f"Unexpected message type: {message.chat_message}")
         #         logger.info(last_txt_message)
 
-        for result in run_smola_agent():
-            logger.info(f"result: {result}")
+        # for result in run_smola_agent():
+        #     logger.info(f"result: {result}")
 
-        logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
+        logger.info(f"(FlowPlatformAccount)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}

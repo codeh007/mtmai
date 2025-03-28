@@ -59,4 +59,9 @@ async def run_worker():
     worker.register_workflow(FlowCom())
     logger.info("register com workflow")
 
+    from flows.flow_platform_account import FlowPlatformAccount
+
+    worker.register_workflow(FlowPlatformAccount())
+    logger.info("register com workflow")
+
     await worker.async_start()
