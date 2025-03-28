@@ -22,7 +22,7 @@ def get_default_model_client():
 
 def get_custom_model():
     from huggingface_hub import login
-    from smolagents import OpenAIServerModel
+    from smolagents import LiteLLMModel, OpenAIServerModel
 
     login(settings.HF_TOKEN)
 
@@ -32,6 +32,12 @@ def get_custom_model():
         model_id="nvidia/llama-3.3-nemotron-super-49b-v1",
         api_base="https://integrate.api.nvidia.com/v1",
         api_key=settings.NVIDIA_API_KEY,
+    )
+    model = LiteLLMModel(
+        model_id="nvidia_nim/meta/llama3-70b-instruct",
+        temperature=0.2,
+        max_tokens=10000,
+        stop=["Task"],
     )
 
     # fal_ai_client = InferenceClient(
@@ -46,4 +52,4 @@ def get_custom_model():
     #     answer = response.choices[0].message
     #     return answer
 
-    return open_ai_client
+    return model
