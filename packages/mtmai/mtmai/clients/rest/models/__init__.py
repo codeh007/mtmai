@@ -210,6 +210,7 @@ from mtmai.clients.rest.models.replay_workflow_runs_request import ReplayWorkflo
 from mtmai.clients.rest.models.replay_workflow_runs_response import ReplayWorkflowRunsResponse
 from mtmai.clients.rest.models.request_usage import RequestUsage
 from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
+from mtmai.clients.rest.models.resource_flow_input import ResourceFlowInput
 from mtmai.clients.rest.models.response_format import ResponseFormat
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.round_robin_manager_state import RoundRobinManagerState

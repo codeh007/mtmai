@@ -4,7 +4,6 @@ import time
 
 class PasswordMixin:
     def password_encrypt(self, password):
-        # 提示: 可能用不上,毕竟增加了对 Cryptodome 的依赖
         from Cryptodome.Cipher import AES, PKCS1_v1_5
         from Cryptodome.PublicKey import RSA
         from Cryptodome.Random import get_random_bytes

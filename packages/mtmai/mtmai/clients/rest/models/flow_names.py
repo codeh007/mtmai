@@ -35,6 +35,7 @@ class FlowNames(str, Enum):
     TEAM = 'team'
     COM = 'com'
     PLATFORM_ACCOUNT = 'platform_account'
+    RESOURCE = 'resource'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
