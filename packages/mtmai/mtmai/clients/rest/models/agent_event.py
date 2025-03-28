@@ -17,14 +17,14 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.agent_event_one_of import AgentEventOneOf
+from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
 from mtmai.clients.rest.models.text_message import TextMessage
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTEVENT_ONE_OF_SCHEMAS = ["AgentEventOneOf", "TextMessage", "ThoughtEvent"]
+AGENTEVENT_ONE_OF_SCHEMAS = ["PlatformAccountFlowInput", "TextMessage", "ThoughtEvent"]
 
 class AgentEvent(BaseModel):
     """
@@ -34,10 +34,10 @@ class AgentEvent(BaseModel):
     oneof_schema_1_validator: Optional[ThoughtEvent] = None
     # data type: TextMessage
     oneof_schema_2_validator: Optional[TextMessage] = None
-    # data type: AgentEventOneOf
-    oneof_schema_3_validator: Optional[AgentEventOneOf] = None
-    actual_instance: Optional[Union[AgentEventOneOf, TextMessage, ThoughtEvent]] = None
-    one_of_schemas: Set[str] = { "AgentEventOneOf", "TextMessage", "ThoughtEvent" }
+    # data type: PlatformAccountFlowInput
+    oneof_schema_3_validator: Optional[PlatformAccountFlowInput] = None
+    actual_instance: Optional[Union[PlatformAccountFlowInput, TextMessage, ThoughtEvent]] = None
+    one_of_schemas: Set[str] = { "PlatformAccountFlowInput", "TextMessage", "ThoughtEvent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -70,17 +70,17 @@ class AgentEvent(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TextMessage`")
         else:
             match += 1
-        # validate data type: AgentEventOneOf
-        if not isinstance(v, AgentEventOneOf):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentEventOneOf`")
+        # validate data type: PlatformAccountFlowInput
+        if not isinstance(v, PlatformAccountFlowInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountFlowInput`")
         else:
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentEvent with oneOf schemas: AgentEventOneOf, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentEvent with oneOf schemas: PlatformAccountFlowInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentEvent with oneOf schemas: AgentEventOneOf, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentEvent with oneOf schemas: PlatformAccountFlowInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -107,19 +107,19 @@ class AgentEvent(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentEventOneOf
+        # deserialize data into PlatformAccountFlowInput
         try:
-            instance.actual_instance = AgentEventOneOf.from_json(json_str)
+            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentEvent with oneOf schemas: AgentEventOneOf, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentEvent with oneOf schemas: PlatformAccountFlowInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentEvent with oneOf schemas: AgentEventOneOf, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentEvent with oneOf schemas: PlatformAccountFlowInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -133,7 +133,7 @@ class AgentEvent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventOneOf, TextMessage, ThoughtEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], PlatformAccountFlowInput, TextMessage, ThoughtEvent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

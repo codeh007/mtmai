@@ -1,7 +1,9 @@
 from flows.flow_ctx import FlowCtx
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.platform_account_flow_input import (
+    PlatformAccountFlowInput,
+)
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
@@ -16,14 +18,10 @@ class FlowPlatformAccount:
     @mtmapp.step(timeout="5m")
     async def entry(self, hatctx: Context):
         """
-        设计概要:
-        1: 入口可以理解为一个团队,Agent,或一个langgraph的flow
-        2: 入口 使用 session_id 来标识团队的状态
-        3: autogen 的内置团队看起来没有达到预期的设计目标, 因此不要过度依赖 autogen 的组件.
-        4: 类似 autogen 中的 team 状态管理,多智能体间对话的实现, 完全可以使用 hatchet 工作流来实现.
+        社交媒体账号的初始化
         """
         flowctx = FlowCtx().from_hatctx(hatctx)
-        input = AgentRunInput.model_validate(hatctx.input)
+        input = PlatformAccountFlowInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()
@@ -50,13 +48,11 @@ class FlowPlatformAccount:
         #     if isinstance(message, ToolCallRequestEvent):
         #         for tool_call in message.content:
         #             logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
-
         #     if isinstance(message, ToolCallExecutionEvent):
         #         for result in message.content:
         #             # Compute formatted text separately to avoid backslashes in the f-string expression.
         #             formatted_text = result.content[:200].replace("\n", r"\n")
         #             logger.info(f"  [observe]> {formatted_text} [/observe]")
-
         #     if isinstance(message, Response):
         #         if isinstance(message.chat_message, TextMessage):
         #             last_txt_message += message.chat_message.content

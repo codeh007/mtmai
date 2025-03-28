@@ -20,6 +20,7 @@ from pydantic import Field
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
+from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -881,11 +882,11 @@ class PlatformAccountApi:
 
 
     @validate_call
-    async def platform_account_update(
+    async def platform_account_upsert(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
-        platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
+        platform_account_upsert: Annotated[PlatformAccountUpsert, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -907,8 +908,8 @@ class PlatformAccountApi:
         :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
-        :param platform_account2: The platform_account properties to update (required)
-        :type platform_account2: PlatformAccount
+        :param platform_account_upsert: The platform_account properties to update (required)
+        :type platform_account_upsert: PlatformAccountUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -931,10 +932,10 @@ class PlatformAccountApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._platform_account_update_serialize(
+        _param = self._platform_account_upsert_serialize(
             tenant=tenant,
             platform_account=platform_account,
-            platform_account2=platform_account2,
+            platform_account_upsert=platform_account_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -958,11 +959,11 @@ class PlatformAccountApi:
 
 
     @validate_call
-    async def platform_account_update_with_http_info(
+    async def platform_account_upsert_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
-        platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
+        platform_account_upsert: Annotated[PlatformAccountUpsert, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -984,8 +985,8 @@ class PlatformAccountApi:
         :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
-        :param platform_account2: The platform_account properties to update (required)
-        :type platform_account2: PlatformAccount
+        :param platform_account_upsert: The platform_account properties to update (required)
+        :type platform_account_upsert: PlatformAccountUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1008,10 +1009,10 @@ class PlatformAccountApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._platform_account_update_serialize(
+        _param = self._platform_account_upsert_serialize(
             tenant=tenant,
             platform_account=platform_account,
-            platform_account2=platform_account2,
+            platform_account_upsert=platform_account_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1035,11 +1036,11 @@ class PlatformAccountApi:
 
 
     @validate_call
-    async def platform_account_update_without_preload_content(
+    async def platform_account_upsert_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform_account: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform_account id")],
-        platform_account2: Annotated[PlatformAccount, Field(description="The platform_account properties to update")],
+        platform_account_upsert: Annotated[PlatformAccountUpsert, Field(description="The platform_account properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1061,8 +1062,8 @@ class PlatformAccountApi:
         :type tenant: str
         :param platform_account: The platform_account id (required)
         :type platform_account: str
-        :param platform_account2: The platform_account properties to update (required)
-        :type platform_account2: PlatformAccount
+        :param platform_account_upsert: The platform_account properties to update (required)
+        :type platform_account_upsert: PlatformAccountUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1085,10 +1086,10 @@ class PlatformAccountApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._platform_account_update_serialize(
+        _param = self._platform_account_upsert_serialize(
             tenant=tenant,
             platform_account=platform_account,
-            platform_account2=platform_account2,
+            platform_account_upsert=platform_account_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1107,11 +1108,11 @@ class PlatformAccountApi:
         return response_data.response
 
 
-    def _platform_account_update_serialize(
+    def _platform_account_upsert_serialize(
         self,
         tenant,
         platform_account,
-        platform_account2,
+        platform_account_upsert,
         _request_auth,
         _content_type,
         _headers,
@@ -1141,8 +1142,8 @@ class PlatformAccountApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if platform_account2 is not None:
-            _body_params = platform_account2
+        if platform_account_upsert is not None:
+            _body_params = platform_account_upsert
 
 
         # set the HTTP header `Accept`
