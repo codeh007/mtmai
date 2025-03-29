@@ -2,13 +2,16 @@ import email
 import imaplib
 import random
 import re
-from typing import List, Sequence
+from typing import Any, Awaitable, Callable, Dict, List, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
+from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage, TextMessage
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
+from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from autogen_ext.tools.mcp import mcp_server_tools
@@ -16,11 +19,9 @@ from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
 from mtlibs.mcp import print_mcp_tools
-from pydantic import BaseModel
-from typing_extensions import Self
-
 from mtmai.clients.rest.models.agent_config import AgentConfig
-from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
+
+# from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.exceptions import (
     BadPassword,
@@ -34,47 +35,68 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
+from pydantic import BaseModel
+from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
 CHALLENGE_PASSWORD = ""
 
 
 class IgAccountMessage(BaseModel):
-    username: str
-    password: str
+    username: str | None = None
+    password: str | None = None
+
+
+class InstagramAgentConfig(AssistantAgentConfig):
+    username: str | None = None
+    password: str | None = None
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
-    # def __init__(
-    #     self,
-    #     # name: str,
-    #     # model_client: ChatCompletionClient,
-    #     *,
-    #     description: str = "An agent that provides assistance with ability to use tools.",
-    # ) -> None:
-    #     name = "InstagramAgent"
+    def __init__(
+        self,
+        name: str,
+        model_client: ChatCompletionClient,
+        *,
+        tools: List[
+            BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
+        ]
+        | None = None,
+        handoffs: List[HandoffBase | str] | None = None,
+        model_context: ChatCompletionContext | None = None,
+        description: str = "An agent that provides assistance with ability to use tools.",
+        system_message: (
+            str | None
+        ) = "You are a helpful AI assistant. Solve tasks using your tools. Reply with TERMINATE when the task has been completed.",
+        model_client_stream: bool = False,
+        reflect_on_tool_use: bool = False,
+        tool_call_summary_format: str = "{result}",
+        memory: Sequence[Memory] | None = None,
+        metadata: Dict[str, str] | None = None,
+    ) -> None:
+        name = "InstagramAgent"
 
-    #     model_client = get_default_model_client()
-    #     tenant_client = TenantClient()
-    #     server_params = tenant_client.get_mcp_endpoint()
+        model_client = get_default_model_client()
+        tenant_client = TenantClient()
+        server_params = tenant_client.get_mcp_endpoint()
 
-    #     # Get all available tools from the server
-    #     super().__init__(
-    #         name=name,
-    #         model_client=model_client,
-    #         # tools=tools,
-    #         # handoffs=handoffs,
-    #         # model_context=model_context,
-    #         description=description,
-    #         # system_message=system_message,
-    #         # model_client_stream=model_client_stream,
-    #         # reflect_on_tool_use=reflect_on_tool_use,
-    #         # tool_call_summary_format=tool_call_summary_format,
-    #         # memory=memory,
-    #     )
+        # Get all available tools from the server
+        super().__init__(
+            name=name,
+            model_client=model_client,
+            tools=tools,
+            handoffs=handoffs,
+            model_context=model_context,
+            description=description,
+            system_message=system_message,
+            model_client_stream=model_client_stream,
+            reflect_on_tool_use=reflect_on_tool_use,
+            tool_call_summary_format=tool_call_summary_format,
+            memory=memory,
+        )
 
     @message_handler
     async def handle_ig_account(
