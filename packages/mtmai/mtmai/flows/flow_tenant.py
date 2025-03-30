@@ -1,12 +1,13 @@
 from clients.rest.models.flow_names import FlowNames
+from clients.rest.models.mt_component_upsert import MtComponentUpsert
 from clients.rest.models.run_flow_model_input import RunFlowModelInput
-from clients.rest.models.tenant_setting_content import TenantSettingContent
+from gallery.builder import create_default_gallery_builder
+from mtlibs.id import generate_uuid
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.worker_app import mtmapp
-from teams.tenant_team import TenantTeam
 
 
 @mtmapp.workflow(
@@ -21,22 +22,24 @@ class FlowTenant:
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()
         tid = get_tenant_id()
-
-        # TODO: 从服务器获取
-        tenant_setting = TenantSettingContent(
-            enabled_instagram_task=True,
-        )
-
-        # gallery_builder = builder.create_default_gallery_builder()
-        # tenant_team_component = gallery_builder.get_team("Tenant Team")
-        # tenant_team = Team.load_component(tenant_team_component)
-
-        tenant_team = TenantTeam()
-        result2 = await tenant_team.run(hatctx)
-        if tenant_setting.enabled_instagram_task:
-            pass
+        gallery_builder = create_default_gallery_builder()
+        gallery_id = generate_uuid()
+        for component in gallery_builder.teams:
+            mt_component_upsert = MtComponentUpsert(
+                galleryId=gallery_id,
+                label=component.label,
+                description=component.description,
+                version=component.version,
+                component_version=component.component_version,
+                provider=component.provider,
+                component_type=component.component_type,
+                config=component.config,
+            )
+            await tenant_client.coms_api.coms_upsert(
+                tenant=tid,
+                com=generate_uuid(),
+                mt_component_upsert=mt_component_upsert.model_dump(),
+            )
         return {
             "success": True,
-            "tenant_id": tid,
-            "message": "tenant success",
         }

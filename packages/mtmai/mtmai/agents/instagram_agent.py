@@ -79,9 +79,9 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     ) -> None:
         name = "InstagramAgent"
 
-        model_client = get_default_model_client()
-        tenant_client = TenantClient()
-        server_params = tenant_client.get_mcp_endpoint()
+        model_client = model_client or get_default_model_client()
+        # tenant_client = TenantClient()
+        # server_params = tenant_client.get_mcp_endpoint()
 
         # Get all available tools from the server
         super().__init__(
@@ -443,4 +443,3 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     @property
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
         return (TextMessage,)
-        pass

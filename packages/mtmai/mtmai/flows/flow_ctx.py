@@ -1,21 +1,19 @@
-from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.base import Team
 from clients.rest.models.component_types import ComponentTypes
 from context.context_client import TenantClient
-from context.ctx import get_chat_session_id_ctx, get_tenant_id
+from context.ctx import get_chat_session_id_ctx
 from loguru import logger
 from mtlibs.id import is_uuid
-from typing_extensions import Self
-
 from mtmai.context.context import Context
 from mtmai.gallery import builder
+from typing_extensions import Self
 
 
 class FlowCtx:
     def __init__(self):
         self.tenant_client = TenantClient()
         self.session_id = get_chat_session_id_ctx()
-        self.tid = get_tenant_id()
+        # self.tid = get_tenant_id()
 
     # 看起来过时了,原因是, autogen 中的team 的行为本身就可以立即为一个agent,
     # 因此,后续的设计以 agent 自身作为主导,而不是team
@@ -24,8 +22,8 @@ class FlowCtx:
             # 从数据库加载
             try:
                 component_data = await self.tenant_client.ag.coms_api.coms_get(
-                    tenant=self.tid,
-                    com=input.component_id,
+                    tenant=self.tenant_client.tenant_id,
+                    com=team_comp_id_or_name,
                 )
                 logger.info(f"component data: {component_data}")
             except Exception as e:
@@ -36,6 +34,8 @@ class FlowCtx:
                 comp_dict = component_data.model_dump()
                 team = Team.load_component(comp_dict)
                 self.team = team
+            else:
+                raise ValueError(f"组件类型错误: {component_data.component_type}")
 
         else:
             gallery_builder = builder.create_default_gallery_builder()
@@ -45,9 +45,9 @@ class FlowCtx:
 
         return team
 
-    async def load_agent(self, agent_comp_id_or_name: str):
-        agent = await InstagramAgent.from_context()
-        return agent
+    # async def load_agent(self, agent_comp_id_or_name: str):
+    #     agent = await InstagramAgent.from_context()
+    #     return agent
 
     @classmethod
     def from_hatctx(cls, hatctx: Context) -> Self:

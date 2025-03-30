@@ -1,3 +1,10 @@
+from autogen_agentchat.base import Response
+from autogen_agentchat.messages import (
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+    ToolCallSummaryMessage,
+)
 from flows.flow_ctx import FlowCtx
 from loguru import logger
 from model_client.utils import get_custom_model
@@ -45,37 +52,41 @@ class FlowAg:
         #     # TODO: 加载agent state
         #     pass
 
-        # task = """调用工具,获取这个页面: https://docs.postiz.com/providers/instagram, 然后总结这个页面的内容提要"""
+        task = """调用工具,获取这个页面: https://docs.postiz.com/providers/instagram, 然后总结这个页面的内容提要"""
         # output_stream = agent.on_messages_stream(
         #     [TextMessage(content=task, source="user")],
         #     cancellation_token=CancellationToken(),
         # )
-        # last_txt_message = ""
-        # async for message in output_stream:
-        #     if isinstance(message, ToolCallRequestEvent):
-        #         for tool_call in message.content:
-        #             logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
+        last_txt_message = ""
+        team = await flowctx.load_team(input.component_id)
+        output_stream = team.run_stream(
+            task=task, cancellation_token=cancellation_token
+        )
+        async for message in output_stream:
+            if isinstance(message, ToolCallRequestEvent):
+                for tool_call in message.content:
+                    logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
 
-        #     if isinstance(message, ToolCallExecutionEvent):
-        #         for result in message.content:
-        #             # Compute formatted text separately to avoid backslashes in the f-string expression.
-        #             formatted_text = result.content[:200].replace("\n", r"\n")
-        #             logger.info(f"  [observe]> {formatted_text} [/observe]")
+            if isinstance(message, ToolCallExecutionEvent):
+                for result in message.content:
+                    # Compute formatted text separately to avoid backslashes in the f-string expression.
+                    formatted_text = result.content[:200].replace("\n", r"\n")
+                    logger.info(f"  [observe]> {formatted_text} [/observe]")
 
-        #     if isinstance(message, Response):
-        #         if isinstance(message.chat_message, TextMessage):
-        #             last_txt_message += message.chat_message.content
-        #         elif isinstance(message.chat_message, ToolCallSummaryMessage):
-        #             content = message.chat_message.content
-        #             # only print the first 100 characters
-        #             # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
-        #             last_txt_message += content
-        #         else:
-        #             raise ValueError(f"Unexpected message type: {message.chat_message}")
-        #         logger.info(last_txt_message)
+            if isinstance(message, Response):
+                if isinstance(message.chat_message, TextMessage):
+                    last_txt_message += message.chat_message.content
+                elif isinstance(message.chat_message, ToolCallSummaryMessage):
+                    content = message.chat_message.content
+                    # only print the first 100 characters
+                    # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
+                    last_txt_message += content
+                else:
+                    raise ValueError(f"Unexpected message type: {message.chat_message}")
+                logger.info(last_txt_message)
 
-        for result in run_smola_agent():
-            logger.info(f"result: {result}")
+        # for result in run_smola_agent():
+        #     logger.info(f"result: {result}")
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}

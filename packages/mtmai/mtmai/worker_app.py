@@ -38,10 +38,10 @@ async def run_worker():
     worker.register_workflow(FlowTeam())
     logger.info("register team workflow")
 
-    from flows.flow_manager import FlowManager
+    # from flows.flow_manager import FlowManager
 
-    worker.register_workflow(FlowManager())
-    logger.info("register manager workflow")
+    # worker.register_workflow(FlowManager())
+    # logger.info("register manager workflow")
 
     from flows.flow_research import FlowResearch
 
