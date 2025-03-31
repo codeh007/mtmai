@@ -35,6 +35,10 @@ class InstagramTeamConfig(BaseModel):
     max_stalls: int
     final_answer_prompt: str
 
+    # 新增
+    username: str | None = None
+    password: str | None = None
+
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     component_provider_override = (
@@ -52,6 +56,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         runtime: AgentRuntime | None = None,
         max_stalls: int = 3,
         final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None:
         super().__init__(
             participants,
@@ -70,6 +76,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self._model_client = model_client
         self._max_stalls = max_stalls
         self._final_answer_prompt = final_answer_prompt
+        self._username = username
+        self._password = password
 
     def _create_group_chat_manager_factory(
         self,
@@ -100,6 +108,8 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             self._final_answer_prompt,
             output_message_queue,
             termination_condition,
+            username=self._username,
+            password=self._password,
         )
 
     async def _init(self, runtime: AgentRuntime):
@@ -188,9 +198,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             ignore_unhandled_exceptions=False,
         )
         if config.model_client:
-            # model_client = MtOpenAIChatCompletionClient.load_component(
-            #     config.model_client
-            # )
             model_client = ChatCompletionClient.load_component(config.model_client)
 
         else:
@@ -205,8 +212,11 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             max_stalls=config.max_stalls or 3,
             final_answer_prompt=config.final_answer_prompt
             or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
+            username=config.username,
+            password=config.password,
         )
 
     # @classmethod
     # def from_empty(cls) -> Self:
+    #     return cls(participants=[], manager_name="RoundRobinGroupChatManager")
     #     return cls(participants=[], manager_name="RoundRobinGroupChatManager")

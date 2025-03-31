@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Any, Dict, List, Mapping
 
+from agents.instagram_agent import IgAccountMessage
 from autogen_agentchat.base import Response, TerminationCondition
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -62,14 +63,15 @@ trace_logger = logging.getLogger(TRACE_LOGGER_NAME)
 
 
 class InstagramOrchestratorState(BaseGroupChatManagerState):
-    """State for :class:`~autogen_agentchat.teams.MagneticOneGroupChat` orchestrator."""
-
     task: str = Field(default="")
     facts: str = Field(default="")
     plan: str = Field(default="")
     n_rounds: int = Field(default=0)
     n_stalls: int = Field(default=0)
     type: str = Field(default="InstagramOrchestratorState")
+
+    username: str = Field(default="")
+    password: str = Field(default="")
 
 
 class InstagramOrchestrator(BaseGroupChatManager):
@@ -92,6 +94,8 @@ class InstagramOrchestrator(BaseGroupChatManager):
             AgentEvent | ChatMessage | GroupChatTermination
         ],
         termination_condition: TerminationCondition | None,
+        username: str,
+        password: str,
     ):
         super().__init__(
             name,
@@ -114,6 +118,8 @@ class InstagramOrchestrator(BaseGroupChatManager):
         self._plan = ""
         self._n_rounds = 0
         self._n_stalls = 0
+        self._username = username
+        self._password = password
 
         # Produce a team description. Each agent sould appear on a single line.
         self._team_description = ""
@@ -182,6 +188,12 @@ class InstagramOrchestrator(BaseGroupChatManager):
 
         # Validate the group state given all the messages.
         await self.validate_group_state(message.messages)
+
+        # 新增:
+        await self.publish_message(
+            IgAccountMessage(username=self._username, password=self._password),
+            topic_id=DefaultTopicId(type=self._output_topic_type),
+        )
 
         # Log the message to the output topic.
         await self.publish_message(

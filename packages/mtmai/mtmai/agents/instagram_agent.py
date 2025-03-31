@@ -20,8 +20,6 @@ from loguru import logger
 from model_client.utils import get_default_model_client
 from mtlibs.mcp import print_mcp_tools
 from mtmai.clients.rest.models.agent_config import AgentConfig
-
-# from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.exceptions import (
     BadPassword,
@@ -77,12 +75,13 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         memory: Sequence[Memory] | None = None,
         metadata: Dict[str, str] | None = None,
     ) -> None:
-        name = "InstagramAgent"
+        name = name or "InstagramAgent"
 
         model_client = model_client or get_default_model_client()
         # tenant_client = TenantClient()
         # server_params = tenant_client.get_mcp_endpoint()
 
+        self.ig_client = Client()
         # Get all available tools from the server
         super().__init__(
             name=name,
@@ -104,19 +103,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     ) -> None:
         """初始化社交账号"""
         logger.info(f"handle_ig_account: {message}")
-        # human_input = input("Human agent input: ")
-        # human_input = await self.get_user_input("Human agent input: ")
-        # logger.info("TODO: need human input")
-        # logger.info(f"{'-'*80}\n{self.id.type}:\n{human_input}", flush=True)
-        # message.context.append(
-        #     AssistantMessage(content=human_input, source=self.id.type)
-        # )
-        # await self.publish_message(
-        #     AgentResponse(
-        #         context=message.context, reply_to_topic_type=self._agent_topic_type
-        #     ),
-        #     topic_id=TopicId(self._user_topic_type, source=self.id.key),
-        # )
+        self.ig_client.login(message.username, message.password)
 
     async def on_messages(
         self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
@@ -132,16 +119,15 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         IG_CREDENTIAL_PATH = "./ig_settings.json"
         # SLEEP_TIME = "600"  # in seconds
 
-        ig_client = Client()
-        ig_client.login(IG_USERNAME, IG_PASSWORD)
-        ig_client.dump_settings(IG_CREDENTIAL_PATH)
+        self.ig_client.login(IG_USERNAME, IG_PASSWORD)
+        self.ig_client.dump_settings(IG_CREDENTIAL_PATH)
 
-        userid = ig_client.user_id_from_username("hello")
-        ig_client.user_follow(userid)
-        ig_client.user_unfollow(userid)
-        ig_client.user_followers(userid, amount=10)
-        ig_client.user_following(userid, amount=10)
-        ig_client.user_followers_full(userid, amount=10)
+        userid = self.ig_client.user_id_from_username("hello")
+        self.ig_client.user_follow(userid)
+        self.ig_client.user_unfollow(userid)
+        self.ig_client.user_followers(userid, amount=10)
+        self.ig_client.user_following(userid, amount=10)
+        self.ig_client.user_followers_full(userid, amount=10)
 
     async def get_code_from_email(username):
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
