@@ -17,7 +17,9 @@ from autogen_agentchat.messages import (
     ToolCallRequestEvent,
     ToolCallSummaryMessage,
 )
-from autogen_agentchat.state import MagenticOneOrchestratorState
+
+# from autogen_agentchat.state import MagenticOneOrchestratorState
+from autogen_agentchat.state import BaseGroupChatManagerState
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
@@ -54,8 +56,20 @@ from autogen_core.models import (
     LLMMessage,
     UserMessage,
 )
+from pydantic import Field
 
 trace_logger = logging.getLogger(TRACE_LOGGER_NAME)
+
+
+class InstagramOrchestratorState(BaseGroupChatManagerState):
+    """State for :class:`~autogen_agentchat.teams.MagneticOneGroupChat` orchestrator."""
+
+    task: str = Field(default="")
+    facts: str = Field(default="")
+    plan: str = Field(default="")
+    n_rounds: int = Field(default=0)
+    n_stalls: int = Field(default=0)
+    type: str = Field(default="InstagramOrchestratorState")
 
 
 class InstagramOrchestrator(BaseGroupChatManager):
@@ -248,7 +262,7 @@ class InstagramOrchestrator(BaseGroupChatManager):
         pass
 
     async def save_state(self) -> Mapping[str, Any]:
-        state = MagenticOneOrchestratorState(
+        state = InstagramOrchestratorState(
             message_thread=[msg.dump() for msg in self._message_thread],
             current_turn=self._current_turn,
             task=self._task,
@@ -260,7 +274,7 @@ class InstagramOrchestrator(BaseGroupChatManager):
         return state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        orchestrator_state = MagenticOneOrchestratorState.model_validate(state)
+        orchestrator_state = InstagramOrchestratorState.model_validate(state)
         self._message_thread = [
             self._message_factory.create(message)
             for message in orchestrator_state.message_thread
