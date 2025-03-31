@@ -8,31 +8,32 @@ from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_agentchat.teams._group_chat._magentic_one._prompts import (
     ORCHESTRATOR_FINAL_ANSWER_PROMPT,
 )
-from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
-    RoundRobinGroupChatConfig,
-    RoundRobinGroupChatManager,
-)
-from autogen_agentchat.teams._group_chat._selector_group_chat import (
-    SelectorGroupChatManager,
-)
-from autogen_agentchat.teams._group_chat._sequential_routed_agent import (
-    SequentialRoutedAgent,
-)
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
     Component,
+    ComponentModel,
     SingleThreadedAgentRuntime,
 )
 from autogen_core.models import ChatCompletionClient
+from model_client.model_client import MtOpenAIChatCompletionClient
+from model_client.utils import get_default_model_client
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
+from pydantic import BaseModel
 from teams.instagram_team.instagram_manager import InstagramOrchestrator
 from typing_extensions import Self
 
 
-class InstagramTeamConfig(RoundRobinGroupChatConfig):
-    manager_name: str = "RoundRobinGroupChatManager"
+class InstagramTeamConfig(BaseModel):
+    """The declarative configuration for a MagenticOneGroupChat."""
+
+    participants: List[ComponentModel]
+    model_client: ComponentModel
+    termination_condition: ComponentModel | None = None
+    max_turns: int | None = None
+    max_stalls: int
+    final_answer_prompt: str
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
@@ -42,13 +43,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     component_config_schema = InstagramTeamConfig
 
     def __init__(
-        # self,
-        # participants: List[ComponentModel] = [],
-        # manager_name: str = "RoundRobinGroupChatManager",
-        # termination_condition: TerminationCondition | None = None,
-        # max_turns: int | None = None,
-        # runtime: AgentRuntime | None = None,
-        # custom_message_types: List[type[AgentEvent] | type[ChatMessage]] | None = None,
         self,
         participants: List[ChatAgent],
         model_client: ChatCompletionClient,
@@ -59,18 +53,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         max_stalls: int = 3,
         final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
-        # self.tenant_client = TenantClient()
-        # self.manager_name = manager_name
-
-        # super().__init__(
-        #     participants=participants,
-        #     group_chat_manager_name=manager_name,
-        #     group_chat_manager_class=RoundRobinGroupChatManager,
-        #     termination_condition=termination_condition,
-        #     max_turns=max_turns,
-        #     runtime=runtime,
-        #     custom_message_types=custom_message_types,
-        # )
         super().__init__(
             participants,
             group_chat_manager_name="InstagramOrchestrator",
@@ -97,50 +79,26 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         participant_topic_types: List[str],
         participant_names: List[str],
         participant_descriptions: List[str],
-        output_message_queue: asyncio.Queue[
-            AgentEvent | ChatMessage | GroupChatTermination
-        ],
+        output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | GroupChatTermination],
         termination_condition: TerminationCondition | None,
         max_turns: int | None,
         message_factory: MessageFactory,
-    ) -> Callable[[], SequentialRoutedAgent]:
-        def _factory() -> RoundRobinGroupChatManager:
-            if self.manager_name == "RoundRobinGroupChatManager":
-                return RoundRobinGroupChatManager(
-                    name,
-                    group_topic_type,
-                    output_topic_type,
-                    participant_topic_types,
-                    participant_names,
-                    participant_descriptions,
-                    output_message_queue,
-                    termination_condition,
-                    max_turns,
-                    message_factory,
-                )
-            elif self.manager_name == "SelectorGroupChatManager":
-                return SelectorGroupChatManager(
-                    name,
-                    group_topic_type,
-                    output_topic_type,
-                    participant_topic_types,
-                    participant_names,
-                    participant_descriptions,
-                    output_message_queue,
-                    termination_condition,
-                    max_turns,
-                    self._model_client,
-                    self._selector_prompt,
-                    self._allow_repeated_speaker,
-                    self._selector_func,
-                    self._max_selector_attempts,
-                    self._candidate_func,
-                    message_factory=message_factory,
-                )
-            else:
-                raise ValueError(f"Invalid manager name: {self.manager_name}")
-
-        return _factory
+    ) -> Callable[[], InstagramOrchestrator]:
+        return lambda: InstagramOrchestrator(
+            name,
+            group_topic_type,
+            output_topic_type,
+            participant_topic_types,
+            participant_names,
+            participant_descriptions,
+            max_turns,
+            message_factory,
+            self._model_client,
+            self._max_stalls,
+            self._final_answer_prompt,
+            output_message_queue,
+            termination_condition,
+        )
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
@@ -239,11 +197,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     def _from_config(cls, config: InstagramTeamConfig) -> Self:
         session_id = get_chat_session_id_ctx()
         participants = []
-        # if hasattr(config, "actual_instance"):
-        #     config = config.actual_instance
-        # if hasattr(config.participants, "actual_instance"):
-        #     config.participants = config.participants.actual_instance
-        # config.participants[0].oneof_schema_1_validator.
         for participant in config.participants:
             # if hasattr(participant, "actual_instance") and participant.actual_instance:
             #     participant = participant.actual_instance
@@ -262,17 +215,21 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             intervention_handlers=[needs_user_input_handler],
             ignore_unhandled_exceptions=False,
         )
-        manager_name = config.manager_name
+        if config.model_client:
+            model_client = MtOpenAIChatCompletionClient.load_component(
+                config.model_client
+            )
+        else:
+            model_client = get_default_model_client()
+
         return cls(
             participants=participants,
-            manager_name=manager_name,
             termination_condition=termination_condition,
-            max_turns=config.max_turns,
             runtime=runtime,
+            model_client=model_client,
+            max_turns=config.max_turns,
+            max_stalls=config.max_stalls,
         )
-        #     max_turns=config.max_turns,
-        #     runtime=runtime,
-        # )
 
     # @classmethod
     # def from_empty(cls) -> Self:
