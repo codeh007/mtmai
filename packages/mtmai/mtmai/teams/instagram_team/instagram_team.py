@@ -16,6 +16,7 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
 )
 from autogen_core.models import ChatCompletionClient
+from context.context_client import TenantClient
 from model_client.utils import get_default_model_client
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -52,6 +53,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         max_stalls: int = 3,
         final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
+        self.tenant_client = TenantClient()
         super().__init__(
             participants,
             group_chat_manager_name="InstagramOrchestrator",
