@@ -79,7 +79,9 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         participant_topic_types: List[str],
         participant_names: List[str],
         participant_descriptions: List[str],
-        output_message_queue: asyncio.Queue[AgentEvent | ChatMessage | GroupChatTermination],
+        output_message_queue: asyncio.Queue[
+            AgentEvent | ChatMessage | GroupChatTermination
+        ],
         termination_condition: TerminationCondition | None,
         max_turns: int | None,
         message_factory: MessageFactory,
@@ -227,8 +229,10 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             termination_condition=termination_condition,
             runtime=runtime,
             model_client=model_client,
-            max_turns=config.max_turns,
-            max_stalls=config.max_stalls,
+            max_turns=config.max_turns or 20,
+            max_stalls=config.max_stalls or 3,
+            final_answer_prompt=config.final_answer_prompt
+            or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
         )
 
     # @classmethod
