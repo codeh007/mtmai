@@ -128,7 +128,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
         state = await self.save_state()
         await self.tenant_client.ag.save_team_state(
-            # team=self,
             componentId=self._team_id,
             tenant_id=self.tenant_client.tenant_id,
             chat_id=self.session_id,
@@ -136,41 +135,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         )
 
     async def reset(self) -> None:
-        # if not self._initialized:
-        #     await self._init(self._runtime)
-
-        # if self._is_running:
-        #     raise RuntimeError("The group chat is currently running. It must be stopped before it can be reset.")
-        # self._is_running = True
-
-        # if self._embedded_runtime:
-        #     # Start the runtime.
-        #     assert isinstance(self._runtime, SingleThreadedAgentRuntime)
-        #     self._runtime.start()
-
-        # try:
-        #     # Send a reset messages to all participants.
-        #     for participant_topic_type in self._participant_topic_types:
-        #         await self._runtime.send_message(
-        #             GroupChatReset(),
-        #             recipient=AgentId(type=participant_topic_type, key=self._team_id),
-        #         )
-        #     # Send a reset message to the group chat manager.
-        #     await self._runtime.send_message(
-        #         GroupChatReset(),
-        #         recipient=AgentId(type=self._group_chat_manager_topic_type, key=self._team_id),
-        #     )
-        # finally:
-        #     if self._embedded_runtime:
-        #         # Stop the runtime.
-        #         assert isinstance(self._runtime, SingleThreadedAgentRuntime)
-        #         await self._runtime.stop_when_idle()
-
-        #     # Reset the output message queue.
-        #     while not self._output_message_queue.empty():
-        #         self._output_message_queue.get_nowait()
-
-        #     # Indicate that the team is no longer running.
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
