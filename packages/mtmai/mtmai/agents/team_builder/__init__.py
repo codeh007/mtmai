@@ -1,4 +1,4 @@
-from ...teams.instagram_team import InstagramTeam
+from ...teams.instagram_team.instagram_team import InstagramTeam
 from .article_gen_teambuilder import ArticleGenTeamBuilder
 from .assisant_team_builder import AssistantTeamBuilder
 from .m1_web_builder import M1WebTeamBuilder

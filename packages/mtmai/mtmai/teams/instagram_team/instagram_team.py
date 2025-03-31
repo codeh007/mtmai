@@ -5,6 +5,9 @@ from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
+from autogen_agentchat.teams._group_chat._magentic_one._prompts import (
+    ORCHESTRATOR_FINAL_ANSWER_PROMPT,
+)
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
     RoundRobinGroupChatManager,
@@ -21,10 +24,10 @@ from autogen_core import (
     Component,
     SingleThreadedAgentRuntime,
 )
+from autogen_core.models import ChatCompletionClient
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.clients.rest.models.component_model import ComponentModel
-from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
+from teams.instagram_team.instagram_manager import InstagramOrchestrator
 from typing_extensions import Self
 
 
@@ -33,30 +36,58 @@ class InstagramTeamConfig(RoundRobinGroupChatConfig):
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
-    component_provider_override = "mtmai.teams.instagram_team.InstagramTeam"
+    component_provider_override = (
+        "mtmai.teams.instagram_team.instagram_team.InstagramTeam"
+    )
     component_config_schema = InstagramTeamConfig
 
     def __init__(
+        # self,
+        # participants: List[ComponentModel] = [],
+        # manager_name: str = "RoundRobinGroupChatManager",
+        # termination_condition: TerminationCondition | None = None,
+        # max_turns: int | None = None,
+        # runtime: AgentRuntime | None = None,
+        # custom_message_types: List[type[AgentEvent] | type[ChatMessage]] | None = None,
         self,
-        participants: List[ComponentModel] = [],
-        manager_name: str = "RoundRobinGroupChatManager",
+        participants: List[ChatAgent],
+        model_client: ChatCompletionClient,
+        *,
         termination_condition: TerminationCondition | None = None,
-        max_turns: int | None = None,
+        max_turns: int | None = 20,
         runtime: AgentRuntime | None = None,
-        custom_message_types: List[type[AgentEvent] | type[ChatMessage]] | None = None,
+        max_stalls: int = 3,
+        final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
-        self.tenant_client = TenantClient()
-        self.manager_name = manager_name
+        # self.tenant_client = TenantClient()
+        # self.manager_name = manager_name
 
+        # super().__init__(
+        #     participants=participants,
+        #     group_chat_manager_name=manager_name,
+        #     group_chat_manager_class=RoundRobinGroupChatManager,
+        #     termination_condition=termination_condition,
+        #     max_turns=max_turns,
+        #     runtime=runtime,
+        #     custom_message_types=custom_message_types,
+        # )
         super().__init__(
-            participants=participants,
-            group_chat_manager_name=manager_name,
-            group_chat_manager_class=RoundRobinGroupChatManager,
+            participants,
+            group_chat_manager_name="InstagramOrchestrator",
+            group_chat_manager_class=InstagramOrchestrator,
             termination_condition=termination_condition,
             max_turns=max_turns,
             runtime=runtime,
-            custom_message_types=custom_message_types,
         )
+
+        # Validate the participants.
+        if len(participants) == 0:
+            raise ValueError(
+                "At least one participant is required for MagenticOneGroupChat."
+            )
+        self._model_client = model_client
+        self._max_stalls = max_stalls
+        self._final_answer_prompt = final_answer_prompt
 
     def _create_group_chat_manager_factory(
         self,
@@ -243,6 +274,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         #     runtime=runtime,
         # )
 
-    @classmethod
-    def from_empty(cls) -> Self:
-        return cls(participants=[], manager_name="RoundRobinGroupChatManager")
+    # @classmethod
+    # def from_empty(cls) -> Self:
+    #     return cls(participants=[], manager_name="RoundRobinGroupChatManager")

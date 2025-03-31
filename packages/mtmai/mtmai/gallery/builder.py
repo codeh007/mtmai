@@ -19,7 +19,7 @@ from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
-from teams.instagram_team import InstagramTeam
+from teams.instagram_team.instagram_team import InstagramTeam
 
 
 class GalleryComponents(BaseModel):
