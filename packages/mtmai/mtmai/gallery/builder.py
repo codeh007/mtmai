@@ -4,8 +4,12 @@ from typing import List, Optional
 
 from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
-from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
-from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
+from autogen_agentchat.conditions import (
+    HandoffTermination,
+    MaxMessageTermination,
+    TextMentionTermination,
+)
+from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat, Swarm
 from autogen_core import ComponentModel
 from autogen_core.models import ModelFamily, ModelInfo
 from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
@@ -537,6 +541,7 @@ Read the above conversation. Then select the next role from {participants} to pl
         name="instagram_agent",
         description="an agent that interacts with instagram",
         model_client=nvidia_model_llama3,
+        handoffs=["user"],
     )
     instagram_team = InstagramTeam(
         participants=[instagram_agent],
@@ -559,5 +564,30 @@ Read the above conversation. Then select the next role from {participants} to pl
         label="Tenant Team",
         description="租户管理专用团队",
     )
+
+    termination = HandoffTermination(target="user") | TextMentionTermination(
+        "TERMINATE"
+    )
+    instagram_swarm = Swarm(
+        participants=[instagram_agent],
+        max_turns=20,
+        termination_condition=termination,
+    )
+    builder.add_team(
+        instagram_swarm.dump_component(),
+        label="Instagram Team(swarm)",
+        description="A team with an Instagram agent that interacts with instagram.",
+    )
+
+    tenant_team = TenantTeam(
+        participants=[],
+        # model_client=nvidia_model_llama3,
+    )
+    builder.add_team(
+        tenant_team.dump_component(),
+        label="Tenant Team",
+        description="租户管理专用团队",
+    )
+
     builder.set_default_team(tenant_team)
     return builder

@@ -8,7 +8,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
-from autogen_agentchat.messages import ChatMessage, TextMessage
+from autogen_agentchat.messages import ChatMessage, HandoffMessage, TextMessage
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
@@ -19,7 +19,6 @@ from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
 from mtlibs.mcp import print_mcp_tools
-from mtmai.clients.rest.models.agent_config import AgentConfig
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.exceptions import (
     BadPassword,
@@ -361,44 +360,28 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         )
 
     @classmethod
-    def _from_config(cls, config: AgentConfig | InstagramAgentConfig) -> Self:
+    def _from_config(cls, config: InstagramAgentConfig) -> Self:
         """Create an assistant agent from a declarative config."""
         _config = config
-        if isinstance(config, AgentConfig):
-            # _config=config.
-            return cls(
-                name=config.name,
-                model_client=ChatCompletionClient.load_component(config.model_client),
-                tools=[BaseTool.load_component(tool) for tool in config.tools]
-                if config.tools
-                else None,
-                handoffs=config.handoffs,
-                model_context=None,
-                memory=[Memory.load_component(memory) for memory in config.memory]
-                if config.memory
-                else None,
-                description=config.description,
-            )
-        else:
-            return cls(
-                name=config.name,
-                model_client=ChatCompletionClient.load_component(
-                    config.model_client.model_dump()
-                ),
-                tools=[BaseTool.load_component(tool) for tool in config.tools]
-                if config.tools
-                else None,
-                handoffs=config.handoffs,
-                model_context=None,
-                memory=[Memory.load_component(memory) for memory in config.memory]
-                if config.memory
-                else None,
-                description=config.description,
-                system_message=config.system_message,
-                model_client_stream=config.model_client_stream,
-                reflect_on_tool_use=config.reflect_on_tool_use,
-                tool_call_summary_format=config.tool_call_summary_format,
-            )
+        return cls(
+            name=config.name,
+            model_client=ChatCompletionClient.load_component(
+                config.model_client.model_dump()
+            ),
+            tools=[BaseTool.load_component(tool) for tool in config.tools]
+            if config.tools
+            else None,
+            model_context=None,
+            memory=[Memory.load_component(memory) for memory in config.memory]
+            if config.memory
+            else None,
+            description=config.description,
+            system_message=config.system_message,
+            model_client_stream=config.model_client_stream,
+            reflect_on_tool_use=config.reflect_on_tool_use,
+            tool_call_summary_format=config.tool_call_summary_format,
+            handoffs=config.handoffs,
+        )
 
     @classmethod
     async def from_context(cls) -> Self:
@@ -428,4 +411,4 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
     @property
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-        return (TextMessage,)
+        return (TextMessage, HandoffMessage)
