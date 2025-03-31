@@ -16,7 +16,6 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
 )
 from autogen_core.models import ChatCompletionClient
-from model_client.model_client import MtOpenAIChatCompletionClient
 from model_client.utils import get_default_model_client
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -191,8 +190,11 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         )
         return InstagramTeamConfig(
             participants=participants,
+            model_client=self._model_client.dump_component(),
             termination_condition=termination_condition,
             max_turns=self._max_turns,
+            max_stalls=self._max_stalls,
+            final_answer_prompt=self._final_answer_prompt,
         )
 
     @classmethod
@@ -218,9 +220,11 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             ignore_unhandled_exceptions=False,
         )
         if config.model_client:
-            model_client = MtOpenAIChatCompletionClient.load_component(
-                config.model_client
-            )
+            # model_client = MtOpenAIChatCompletionClient.load_component(
+            #     config.model_client
+            # )
+            model_client = ChatCompletionClient.load_component(config.model_client)
+
         else:
             model_client = get_default_model_client()
 

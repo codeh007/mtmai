@@ -540,7 +540,9 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
     instagram_team = InstagramTeam(
         participants=[instagram_agent],
-        # model_client=nvidia_model_llama3,
+        model_client=nvidia_model_llama3,
+        max_turns=20,
+        max_stalls=3,
     )
     builder.add_team(
         instagram_team.dump_component(),
