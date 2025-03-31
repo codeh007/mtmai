@@ -2,17 +2,18 @@ import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
-from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
 from autogen_agentchat.teams import BaseGroupChat
-from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
-    BaseGroupChatManager,
-)
+from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
     RoundRobinGroupChatManager,
 )
 from autogen_agentchat.teams._group_chat._selector_group_chat import (
     SelectorGroupChatManager,
+)
+from autogen_agentchat.teams._group_chat._sequential_routed_agent import (
+    SequentialRoutedAgent,
 )
 from autogen_core import (
     AgentRuntime,
@@ -42,6 +43,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
+        custom_message_types: List[type[AgentEvent] | type[ChatMessage]] | None = None,
     ) -> None:
         self.tenant_client = TenantClient()
         self.manager_name = manager_name
@@ -53,6 +55,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             termination_condition=termination_condition,
             max_turns=max_turns,
             runtime=runtime,
+            custom_message_types=custom_message_types,
         )
 
     def _create_group_chat_manager_factory(
@@ -63,10 +66,13 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         participant_topic_types: List[str],
         participant_names: List[str],
         participant_descriptions: List[str],
-        output_message_queue: asyncio.Queue[AgentEvent | ChatMessage],
+        output_message_queue: asyncio.Queue[
+            AgentEvent | ChatMessage | GroupChatTermination
+        ],
         termination_condition: TerminationCondition | None,
         max_turns: int | None,
-    ) -> Callable[[], BaseGroupChatManager]:
+        message_factory: MessageFactory,
+    ) -> Callable[[], SequentialRoutedAgent]:
         def _factory() -> RoundRobinGroupChatManager:
             if self.manager_name == "RoundRobinGroupChatManager":
                 return RoundRobinGroupChatManager(
@@ -79,6 +85,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
                     output_message_queue,
                     termination_condition,
                     max_turns,
+                    message_factory,
                 )
             elif self.manager_name == "SelectorGroupChatManager":
                 return SelectorGroupChatManager(
@@ -97,6 +104,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
                     self._selector_func,
                     self._max_selector_attempts,
                     self._candidate_func,
+                    message_factory=message_factory,
                 )
             else:
                 raise ValueError(f"Invalid manager name: {self.manager_name}")
@@ -106,6 +114,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
         await super()._init(runtime)
+        self._initialized = True
         runtime.start()
 
     async def run_stream(
@@ -171,14 +180,11 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        # state = RoundRobinManagerState(
-        #     message_thread=list(self._message_thread),
-        #     current_turn=self._current_turn,
-        #     next_speaker_index=self._next_speaker_index,
-        # )
-        # return state.model_dump()
         state = await super().save_state()
-        return state
+        return {
+            "some_state": "some_state",
+            **state,
+        }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await super().load_state(state)
@@ -236,3 +242,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         #     max_turns=config.max_turns,
         #     runtime=runtime,
         # )
+
+    @classmethod
+    def from_empty(cls) -> Self:
+        return cls(participants=[], manager_name="RoundRobinGroupChatManager")
