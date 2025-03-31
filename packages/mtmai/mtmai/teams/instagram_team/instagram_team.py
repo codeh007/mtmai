@@ -53,7 +53,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         max_stalls: int = 3,
         final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
-        self.tenant_client = TenantClient()
         super().__init__(
             participants,
             group_chat_manager_name="InstagramOrchestrator",
@@ -107,6 +106,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self.session_id = get_chat_session_id_ctx()
         await super()._init(runtime)
         self._initialized = True
+        self.tenant_client = TenantClient()
         runtime.start()
 
     async def run_stream(
@@ -126,11 +126,13 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
                 await self.tenant_client.emit(event)
                 yield event
 
+        state = await self.save_state()
         await self.tenant_client.ag.save_team_state(
-            team=self,
+            # team=self,
             componentId=self._team_id,
             tenant_id=self.tenant_client.tenant_id,
             chat_id=self.session_id,
+            state=state,
         )
 
     async def reset(self) -> None:
