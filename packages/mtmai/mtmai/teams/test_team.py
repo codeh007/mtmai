@@ -187,26 +187,30 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         if isinstance(task, str):
             await self._runtime.publish_message(
                 message=AgentUserInput(content=task),
-                topic_id=TopicId(type="default", source=self.session_id),
+                topic_id=TopicId(type="instagram_agent", source=self.session_id),
             )
-        state = await self._runtime.save_state()
-        # await self.tenant_client.ag.save_team_state(
-        #     componentId=self._team_id,
-        #     tenant_id=self.tenant_client.tenant_id,
-        #     chat_id=self.session_id,
-        #     state=state,
-        # )
+        else:
+            await self._runtime.publish_message(
+                message=task,
+                topic_id=TopicId(type=user_topic_type, source=self.session_id),
+            )
+
         await self._runtime.stop_when_idle()
+        state = await self._runtime.save_state()
+        logger.info(f"runtime state: {state}")
+        return state
 
     async def reset(self) -> None:
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        state = await super().save_state()
-        return {
-            "some_state": "some_state",
-            **state,
-        }
+        # state = await super().save_state()
+        # return {
+        #     "some_state": "some_state",
+        #     **state,
+        # }
+        state = await self._runtime.save_state()
+        return state
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await super().load_state(state)

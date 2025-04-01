@@ -33,7 +33,7 @@ class FlowAg:
         last_txt_message = ""
         team = await flowctx.load_team(input.component_id)
 
-        result = await team.run_stream(task=task, cancellation_token=cancellation_token)
+        result = await team.run_stream(task=input, cancellation_token=cancellation_token)
         # output_stream = team.run_stream(
         #     task=task, cancellation_token=cancellation_token
         # )
