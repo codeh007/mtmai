@@ -47,13 +47,13 @@ class FlowAg:
                 for tool_call in message.content:
                     logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
 
-            if isinstance(message, ToolCallExecutionEvent):
+            elif isinstance(message, ToolCallExecutionEvent):
                 for result in message.content:
                     # Compute formatted text separately to avoid backslashes in the f-string expression.
                     formatted_text = result.content[:200].replace("\n", r"\n")
                     logger.info(f"  [observe]> {formatted_text} [/observe]")
 
-            if isinstance(message, Response):
+            elif isinstance(message, Response):
                 if isinstance(message.chat_message, TextMessage):
                     last_txt_message += message.chat_message.content
                 elif isinstance(message.chat_message, ToolCallSummaryMessage):
@@ -64,9 +64,8 @@ class FlowAg:
                 else:
                     raise ValueError(f"Unexpected message type: {message.chat_message}")
                 logger.info(last_txt_message)
-
-        # for result in run_smola_agent():
-        #     logger.info(f"result: {result}")
+            else:
+                logger.info(f"Unexpected message type: {message}")
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}
