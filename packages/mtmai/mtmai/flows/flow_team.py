@@ -27,19 +27,12 @@ class FlowTeam:
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
+
+        team_name = input.name
         team = await tenant_client.ag.get_team_v2(
             tenant_id=tid,
             team_id=team_id,
         )
-
-        # load team state
-        # agState = await tenant_client.ag.load_team_state(
-        #     tenant_id=tid,
-        #     chat_id=session_id,
-        # )
-        # if agState:
-        #     logger.info(f"load team state: {agState}")
-        #     await team.load_state(agState)
 
         task_result = None
         async for event in team.run_stream(

@@ -27,7 +27,8 @@ class TeamRun(BaseModel):
     TeamRun
     """ # noqa: E501
     task: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["task"]
+    name: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["task", "name"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +81,8 @@ class TeamRun(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "task": obj.get("task")
+            "task": obj.get("task"),
+            "name": obj.get("name")
         })
         return _obj
 

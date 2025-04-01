@@ -30,13 +30,13 @@ class AgStateUpsert(BaseModel):
     """ # noqa: E501
     version: Optional[StrictStr] = '1.0.0'
     type: StateType
-    component_id: StrictStr = Field(description="组件id", alias="componentId")
-    chat_id: StrictStr = Field(description="聊天id", alias="chatId")
+    component_id: StrictStr = Field(alias="componentId")
+    chat_id: StrictStr = Field(alias="chatId")
     topic: Optional[StrictStr] = None
     source: Optional[StrictStr] = None
     state: AgStatePropertiesState
-    state_id: Optional[StrictStr] = Field(default=None, description="状态id", alias="stateId")
-    tenant_id: Optional[StrictStr] = Field(default=None, description="租户id", alias="tenantId")
+    state_id: Optional[StrictStr] = Field(default=None, alias="stateId")
+    tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
     __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateId", "tenantId"]
 
     model_config = ConfigDict(
