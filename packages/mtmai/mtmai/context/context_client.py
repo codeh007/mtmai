@@ -1,6 +1,7 @@
 from typing import Any
 
 from autogen_ext.tools.mcp import SseServerParams
+from clients.rest.api.ag_state_api import AgStateApi
 from clients.rest.api.coms_api import ComsApi
 from clients.rest.api.platform_account_api import PlatformAccountApi
 from clients.rest.api.resource_api import ResourceApi
@@ -88,6 +89,13 @@ class TenantClient:
             return self._coms_api
         self._coms_api = ComsApi(self.api_client)
         return self._coms_api
+
+    @property
+    def ag_state_api(self):
+        if hasattr(self, "_ag_state_api"):
+            return self._ag_state_api
+        self._ag_state_api = AgStateApi(self.api_client)
+        return self._ag_state_api
 
     @property
     def platform_account_api(self):

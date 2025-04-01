@@ -9,6 +9,7 @@ from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.worker_app import mtmapp
+from teams.test_team import TestTeam
 
 
 @mtmapp.workflow(
@@ -23,20 +24,23 @@ class FlowTeam:
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()
         metadata = hatctx.additional_metadata()
-        team_id = metadata.get("teamId")
         tid = get_tenant_id()
         if not tid:
             raise ValueError("tenant_id is required")
 
         team_name = input.name
-        team = await tenant_client.ag.get_team_v2(
-            tenant_id=tid,
-            team_id=team_id,
-        )
+        if team_name == "test_team":
+            team = TestTeam.from_new()
+        else:
+            team_id = metadata.get("teamId")
+            team = await tenant_client.ag.get_team_v2(
+                tenant_id=tid,
+                team_id=team_id,
+            )
 
         task_result = None
         async for event in team.run_stream(
-            task=input.content,
+            task=input.task,
             cancellation_token=cancellation_token,
         ):
             if cancellation_token and cancellation_token.is_cancelled():
@@ -78,12 +82,12 @@ class FlowTeam:
                 if hasattr(agent, "close"):
                     await agent.close()
 
-        await tenant_client.ag.save_team_state(
-            componentId=input.component_id,
-            tenant_id=tid,
-            chat_id=session_id,
-            state=await team.save_state(),
-        )
+        # await tenant_client.ag.save_team_state(
+        #     componentId=input.component_id,
+        #     tenant_id=tid,
+        #     chat_id=session_id,
+        #     state=await team.save_state(),
+        # )
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n{task_result}")
         return task_result

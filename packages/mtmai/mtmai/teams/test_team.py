@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
+from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.conditions import HandoffTermination, TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
@@ -15,8 +16,10 @@ from autogen_core import (
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
+    try_get_known_serializers_for_type,
 )
 from autogen_core.models import ChatCompletionClient
+from clients.rest.models.ig_login_event import IgLoginEvent
 from context.context_client import TenantClient
 from model_client.utils import get_default_model_client
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -218,29 +221,25 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
     @classmethod
     def from_new(cls) -> Self:
         session_id = get_chat_session_id_ctx()
-        participants = []
-        # for participant in config.participants:
-        #     # if hasattr(participant, "actual_instance") and participant.actual_instance:
-        #     #     participant = participant.actual_instance
-        #     # participant_config = participant.model_dump()
-        #     participants.append(ChatAgent.load_component(participant))
-        # termination_condition = (
-        #     TerminationCondition.load_component(
-        #         config.termination_condition.model_dump()
-        #     )
-        #     if config.termination_condition
-        #     else None
-        # )
+        model_client = get_default_model_client()
+        instagram_agent2 = InstagramAgent(
+            name="instagram_agent",
+            description="an agent that interacts with instagram",
+            model_client=model_client,
+            handoffs=["user"],
+            system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
+            username="user1",
+            password="password1",
+        )
 
+        participants = [instagram_agent2]
         needs_user_input_handler = NeedsUserInputHandler(session_id)
         runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler],
             ignore_unhandled_exceptions=False,
         )
-        # if config.model_client:
-        #     model_client = ChatCompletionClient.load_component(config.model_client)
+        runtime.add_message_serializer(try_get_known_serializers_for_type(IgLoginEvent))
 
-        model_client = get_default_model_client()
         termination = HandoffTermination(target="user") | TextMentionTermination(
             "TERMINATE"
         )
@@ -251,8 +250,6 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             model_client=model_client,
             max_turns=20,
             max_stalls=3,
-            # final_answer_prompt=config.final_answer_prompt
-            # or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
             username="user1",
             password="password",
         )
