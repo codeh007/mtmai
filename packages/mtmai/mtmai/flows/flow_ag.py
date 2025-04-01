@@ -27,13 +27,6 @@ from tools.instagram_tool import InstagramLoginTool
 class FlowAg:
     @mtmapp.step(timeout="60m")
     async def entry(self, hatctx: Context):
-        """
-        设计概要:
-        1: 入口可以理解为一个团队,Agent,或一个langgraph的flow
-        2: 入口 使用 session_id 来标识团队的状态
-        3: autogen 的内置团队看起来没有达到预期的设计目标, 因此不要过度依赖 autogen 的组件.
-        4: 类似 autogen 中的 team 状态管理,多智能体间对话的实现, 完全可以使用 hatchet 工作流来实现.
-        """
         flowctx = FlowCtx().from_hatctx(hatctx)
         input = AgentRunInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
@@ -43,20 +36,7 @@ class FlowAg:
         if not tid:
             raise ValueError("tenant_id is required")
 
-        # 1: 加载 agent
-        #    原因: 所谓的智能体编排实际是由一个 supervisor agent 通过 消息类型决定调用下一个子流程
-        #    hatchet 的子工作流,本身支持并发.
-
-        # agent = await flowctx.load_agent(input.component_id)
-        # if session_id:
-        #     # TODO: 加载agent state
-        #     pass
-
-        task = """调用工具,获取这个页面: https://docs.postiz.com/providers/instagram, 然后总结这个页面的内容提要"""
-        # output_stream = agent.on_messages_stream(
-        #     [TextMessage(content=task, source="user")],
-        #     cancellation_token=CancellationToken(),
-        # )
+        task = input.content
         last_txt_message = ""
         team = await flowctx.load_team(input.component_id)
         output_stream = team.run_stream(

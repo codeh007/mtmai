@@ -2,13 +2,14 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, Awaitable, Callable, Dict, List, Sequence
+from typing import Any, Awaitable, Callable, Dict, List, Mapping, Sequence
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage, HandoffMessage, TextMessage
+from autogen_agentchat.state import BaseState
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
@@ -32,7 +33,7 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
@@ -47,6 +48,20 @@ class IgAccountMessage(BaseModel):
 class InstagramAgentConfig(AssistantAgentConfig):
     username: str | None = None
     password: str | None = None
+
+
+class InstagramAgentState(BaseState):
+    """State for an instagram agent."""
+
+    llm_context: Mapping[str, Any] = Field(
+        default_factory=lambda: dict([("messages", [])])
+    )
+    type: str = Field(default="InstagramAgentState")
+
+    is_wait_user_input: bool = Field(default=False)
+    username: str | None = Field(default=None)
+    password: str | None = Field(default=None)
+    session_state: Mapping[str, Any] = Field(default_factory=dict)
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
@@ -408,6 +423,19 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
     async def on_reset(self, cancellation_token: CancellationToken) -> None:
         pass
+
+    async def save_state(self) -> Mapping[str, Any]:
+        model_context_state = await self._model_context.save_state()
+        return InstagramAgentState(
+            llm_context=model_context_state,
+            username=self.username,
+            password=self.password,
+            is_wait_user_input=self.is_wait_user_input,
+        ).model_dump()
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        assistant_agent_state = InstagramAgentState.model_validate(state)
+        await self._model_context.load_state(assistant_agent_state.llm_context)
 
     @property
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
