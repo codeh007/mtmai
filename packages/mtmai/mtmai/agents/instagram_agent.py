@@ -88,13 +88,16 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         tool_call_summary_format: str = "{result}",
         memory: Sequence[Memory] | None = None,
         metadata: Dict[str, str] | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None:
         name = name or "InstagramAgent"
 
         model_client = model_client or get_default_model_client()
         # tenant_client = TenantClient()
         # server_params = tenant_client.get_mcp_endpoint()
-
+        self.username = username
+        self.password = password
         self.ig_client = Client()
         # Get all available tools from the server
         super().__init__(
@@ -376,8 +379,6 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
     @classmethod
     def _from_config(cls, config: InstagramAgentConfig) -> Self:
-        """Create an assistant agent from a declarative config."""
-        _config = config
         return cls(
             name=config.name,
             model_client=ChatCompletionClient.load_component(
@@ -396,6 +397,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             reflect_on_tool_use=config.reflect_on_tool_use,
             tool_call_summary_format=config.tool_call_summary_format,
             handoffs=config.handoffs,
+            username=config.username,
+            password=config.password,
         )
 
     @classmethod
@@ -430,7 +433,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             llm_context=model_context_state,
             username=self.username,
             password=self.password,
-            is_wait_user_input=self.is_wait_user_input,
+            # is_wait_user_input=self.is_wait_user_input,
         ).model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:

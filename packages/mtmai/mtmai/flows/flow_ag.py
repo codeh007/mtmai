@@ -67,6 +67,14 @@ class FlowAg:
             else:
                 logger.info(f"Unexpected message type: {message}")
 
+        state = await team.save_state()
+        await tenant_client.ag.save_team_state(
+            componentId=input.component_id,
+            tenant_id=tenant_client.tenant_id,
+            chat_id=session_id,
+            state=state,
+        )
+
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}
 
