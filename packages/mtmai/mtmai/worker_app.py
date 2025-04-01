@@ -19,11 +19,7 @@ async def run_worker():
     if _start_coroutine:
         await _start_coroutine
 
-    from flows.flow_sys import FlowSys
     from flows.flow_tenant import FlowTenant
-
-    worker.register_workflow(FlowSys())
-    logger.info("register sys workflow")
 
     worker.register_workflow(FlowTenant())
     logger.info("register tenant workflow")

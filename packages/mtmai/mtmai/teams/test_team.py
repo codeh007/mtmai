@@ -2,7 +2,8 @@ import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
 from agents.instagram_agent import InstagramAgent
-from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
+from agents.user_agent import UserAgent
+from autogen_agentchat.base import TaskResult, TerminationCondition
 from autogen_agentchat.conditions import HandoffTermination, TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
 from autogen_agentchat.teams import BaseGroupChat
@@ -16,12 +17,17 @@ from autogen_core import (
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
+    TopicId,
+    TypeSubscription,
     try_get_known_serializers_for_type,
 )
 from autogen_core.models import ChatCompletionClient
+from clients.rest.models.agent_user_input import AgentUserInput
 from clients.rest.models.ig_login_event import IgLoginEvent
 from context.context_client import TenantClient
+from loguru import logger
 from model_client.utils import get_default_model_client
+from mtmai.agents._agents import user_topic_type
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
 from pydantic import BaseModel
@@ -32,7 +38,7 @@ from typing_extensions import Self
 class TestTeamConfig(BaseModel):
     """The declarative configuration for a MagenticOneGroupChat."""
 
-    participants: List[ComponentModel]
+    # participants: List[ComponentModel]
     model_client: ComponentModel
     termination_condition: ComponentModel | None = None
     max_turns: int | None = None
@@ -50,7 +56,7 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
 
     def __init__(
         self,
-        participants: List[ChatAgent],
+        # participants: List[ChatAgent],
         model_client: ChatCompletionClient,
         *,
         termination_condition: TerminationCondition | None = None,
@@ -61,25 +67,30 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         username: str | None = None,
         password: str | None = None,
     ) -> None:
-        super().__init__(
-            participants,
-            group_chat_manager_name="InstagramOrchestrator",
-            group_chat_manager_class=InstagramOrchestrator,
-            termination_condition=termination_condition,
-            max_turns=max_turns,
-            runtime=runtime,
-        )
+        # super().__init__(
+        #     participants,
+        #     group_chat_manager_name="InstagramOrchestrator",
+        #     group_chat_manager_class=InstagramOrchestrator,
+        #     termination_condition=termination_condition,
+        #     max_turns=max_turns,
+        #     runtime=runtime,
+        # )
 
         # Validate the participants.
-        if len(participants) == 0:
-            raise ValueError(
-                "At least one participant is required for MagenticOneGroupChat."
-            )
+        # if len(participants) == 0:
+        #     raise ValueError(
+        #         "At least one participant is required for MagenticOneGroupChat."
+        #     )
         self._model_client = model_client
         self._max_stalls = max_stalls
         self._final_answer_prompt = final_answer_prompt
         self._username = username
         self._password = password
+        self._initialized = False
+        self._is_running = False
+        self._runtime = SingleThreadedAgentRuntime(
+            # ignore_unhandled_exceptions=False,
+        )
 
     def _create_group_chat_manager_factory(
         self,
@@ -116,35 +127,76 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
-        await super()._init(runtime)
+        # await super()._init(runtime)
         self._initialized = True
         self.tenant_client = TenantClient()
+        runtime.add_message_serializer(try_get_known_serializers_for_type(IgLoginEvent))
+        user_agent_type = await UserAgent.register(
+            runtime=self._runtime,
+            type=user_topic_type,
+            factory=lambda: UserAgent(
+                description="A user agent.",
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=user_topic_type, agent_type=user_agent_type.type
+            )
+        )
+
+        instagram_agent_type = await InstagramAgent.register(
+            runtime=self._runtime,
+            type="instagram_agent",
+            factory=lambda: InstagramAgent(
+                name="instagram_agent",
+                description="an agent that interacts with instagram",
+                model_client=self._model_client,
+                handoffs=["user"],
+                system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
+                username=self._username,
+                password=self._password,
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=instagram_agent_type, agent_type=instagram_agent_type.type
+            )
+        )
+
         runtime.start()
 
     async def run_stream(
         self,
         *,
-        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+        task: str | ChatMessage | Sequence[ChatMessage] | AgentUserInput | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+        if cancellation_token and cancellation_token.is_cancelled():
+            logger.info("cancellation_token is cancelled")
+            return
         if not self._initialized:
             await self._init(self._runtime)
-        async for event in super().run_stream(
-            task=task, cancellation_token=cancellation_token
-        ):
-            if isinstance(event, TaskResult):
-                yield event
-            else:
-                await self.tenant_client.emit(event)
-                yield event
-
-        state = await self.save_state()
-        await self.tenant_client.ag.save_team_state(
-            componentId=self._team_id,
-            tenant_id=self.tenant_client.tenant_id,
-            chat_id=self.session_id,
-            state=state,
-        )
+        # async for event in super().run_stream(
+        #     task=task, cancellation_token=cancellation_token
+        # ):
+        #     if isinstance(event, TaskResult):
+        #         yield event
+        #     else:
+        #         await self.tenant_client.emit(event)
+        #         yield event
+        if isinstance(task, str):
+            await self._runtime.publish_message(
+                message=AgentUserInput(content=task),
+                topic_id=TopicId(type="default", source=self.session_id),
+            )
+        state = await self._runtime.save_state()
+        # await self.tenant_client.ag.save_team_state(
+        #     componentId=self._team_id,
+        #     tenant_id=self.tenant_client.tenant_id,
+        #     chat_id=self.session_id,
+        #     state=state,
+        # )
+        await self._runtime.stop_when_idle()
 
     async def reset(self) -> None:
         self._is_running = False
@@ -180,12 +232,12 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
     @classmethod
     def _from_config(cls, config: TestTeamConfig) -> Self:
         session_id = get_chat_session_id_ctx()
-        participants = []
-        for participant in config.participants:
-            # if hasattr(participant, "actual_instance") and participant.actual_instance:
-            #     participant = participant.actual_instance
-            # participant_config = participant.model_dump()
-            participants.append(ChatAgent.load_component(participant))
+        # participants = []
+        # for participant in config.participants:
+        #     # if hasattr(participant, "actual_instance") and participant.actual_instance:
+        #     #     participant = participant.actual_instance
+        #     # participant_config = participant.model_dump()
+        #     participants.append(ChatAgent.load_component(participant))
         termination_condition = (
             TerminationCondition.load_component(
                 config.termination_condition.model_dump()
@@ -195,10 +247,10 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         )
 
         needs_user_input_handler = NeedsUserInputHandler(session_id)
-        runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler],
-            ignore_unhandled_exceptions=False,
-        )
+        # runtime = SingleThreadedAgentRuntime(
+        #     intervention_handlers=[needs_user_input_handler],
+        #     ignore_unhandled_exceptions=False,
+        # )
         if config.model_client:
             model_client = ChatCompletionClient.load_component(config.model_client)
 
@@ -206,9 +258,9 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             model_client = get_default_model_client()
 
         return cls(
-            participants=participants,
+            # participants=participants,
             termination_condition=termination_condition,
-            runtime=runtime,
+            # runtime=runtime,
             model_client=model_client,
             max_turns=config.max_turns or 20,
             max_stalls=config.max_stalls or 3,
@@ -238,7 +290,6 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             intervention_handlers=[needs_user_input_handler],
             ignore_unhandled_exceptions=False,
         )
-        runtime.add_message_serializer(try_get_known_serializers_for_type(IgLoginEvent))
 
         termination = HandoffTermination(target="user") | TextMentionTermination(
             "TERMINATE"

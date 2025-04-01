@@ -24,6 +24,7 @@ from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
 from teams.instagram_team.instagram_team import InstagramTeam
+from teams.test_team import TestTeam
 
 
 class GalleryComponents(BaseModel):
@@ -594,6 +595,14 @@ Read the above conversation. Then select the next role from {participants} to pl
         tenant_team.dump_component(),
         label="Tenant Team",
         description="租户管理专用团队",
+    )
+
+    # test_team
+    test_team = TestTeam.from_new()
+    builder.add_team(
+        test_team.dump_component(),
+        label="Test Team",
+        description="测试团队",
     )
 
     builder.set_default_team(tenant_team)

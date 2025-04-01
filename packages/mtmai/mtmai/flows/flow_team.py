@@ -1,5 +1,6 @@
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import TextMessage, ThoughtEvent
+from clients.rest.models.ag_state_upsert import AgStateUpsert
 from clients.rest.models.team_run import TeamRun
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
@@ -82,12 +83,14 @@ class FlowTeam:
                 if hasattr(agent, "close"):
                     await agent.close()
 
-        # await tenant_client.ag.save_team_state(
-        #     componentId=input.component_id,
-        #     tenant_id=tid,
-        #     chat_id=session_id,
-        #     state=await team.save_state(),
-        # )
+        ag_state_upsert = AgStateUpsert()
+        await tenant_client.ag_state_api.ag_state_upsert(
+            tenant=tid,
+            # componentId=input.component_id,
+            # tenant_id=tid,
+            # chat_id=session_id,
+            # state=await team.save_state(),
+        )
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n{task_result}")
         return task_result

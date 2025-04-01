@@ -133,6 +133,10 @@ class UserAgent(RoutedAgent):
         #     topic_id=DefaultTopicId(type="response", source=ctx.topic_id.source),
         # )
 
+    # @message_handler
+    # async def handle_final_copy(self, message: Message, ctx: MessageContext) -> None:
+    #     print(f"\n{'-'*80}\n{self.id.type} received final copy:\n{message.content}")
+
     @message_handler
     async def handle_task_result(
         self, message: AgentResponse, ctx: MessageContext

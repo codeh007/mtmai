@@ -1,11 +1,3 @@
-from autogen_agentchat.base import Response
-from autogen_agentchat.messages import (
-    HandoffMessage,
-    TextMessage,
-    ToolCallExecutionEvent,
-    ToolCallRequestEvent,
-    ToolCallSummaryMessage,
-)
 from flows.flow_ctx import FlowCtx
 from loguru import logger
 from model_client.utils import get_custom_model
@@ -40,43 +32,45 @@ class FlowAg:
         task = input.content
         last_txt_message = ""
         team = await flowctx.load_team(input.component_id)
-        output_stream = team.run_stream(
-            task=task, cancellation_token=cancellation_token
-        )
-        async for message in output_stream:
-            if isinstance(message, ToolCallRequestEvent):
-                for tool_call in message.content:
-                    logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
 
-            elif isinstance(message, ToolCallExecutionEvent):
-                for result in message.content:
-                    # Compute formatted text separately to avoid backslashes in the f-string expression.
-                    formatted_text = result.content[:200].replace("\n", r"\n")
-                    logger.info(f"  [observe]> {formatted_text} [/observe]")
+        result = await team.run_stream(task=task, cancellation_token=cancellation_token)
+        # output_stream = team.run_stream(
+        #     task=task, cancellation_token=cancellation_token
+        # )
+        # async for message in output_stream:
+        #     if isinstance(message, ToolCallRequestEvent):
+        #         for tool_call in message.content:
+        #             logger.info(f"  [acting]! Calling {tool_call.name}... [/acting]")
 
-            elif isinstance(message, Response):
-                if isinstance(message.chat_message, TextMessage):
-                    last_txt_message += message.chat_message.content
-                elif isinstance(message.chat_message, ToolCallSummaryMessage):
-                    content = message.chat_message.content
-                    # only print the first 100 characters
-                    # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
-                    last_txt_message += content
-                else:
-                    raise ValueError(f"Unexpected message type: {message.chat_message}")
-                logger.info(last_txt_message)
-            elif isinstance(message, HandoffMessage):
-                logger.info(f"工作流收到 HandoffMessage: {message}")
-            else:
-                logger.info(f"工作流收到其他消息: {message}")
+        #     elif isinstance(message, ToolCallExecutionEvent):
+        #         for result in message.content:
+        #             # Compute formatted text separately to avoid backslashes in the f-string expression.
+        #             formatted_text = result.content[:200].replace("\n", r"\n")
+        #             logger.info(f"  [observe]> {formatted_text} [/observe]")
 
-        state = await team.save_state()
-        await tenant_client.ag.save_team_state(
-            componentId=input.component_id,
-            tenant_id=tenant_client.tenant_id,
-            chat_id=session_id,
-            state=state,
-        )
+        #     elif isinstance(message, Response):
+        #         if isinstance(message.chat_message, TextMessage):
+        #             last_txt_message += message.chat_message.content
+        #         elif isinstance(message.chat_message, ToolCallSummaryMessage):
+        #             content = message.chat_message.content
+        #             # only print the first 100 characters
+        #             # console.print(Panel(content[:100] + "...", title="Tool(s) Result (showing only 100 chars)"))
+        #             last_txt_message += content
+        #         else:
+        #             raise ValueError(f"Unexpected message type: {message.chat_message}")
+        #         logger.info(last_txt_message)
+        #     elif isinstance(message, HandoffMessage):
+        #         logger.info(f"工作流收到 HandoffMessage: {message}")
+        #     else:
+        #         logger.info(f"工作流收到其他消息: {message}")
+
+        # state = await team.save_state()
+        # await tenant_client.ag.save_team_state(
+        #     componentId=input.component_id,
+        #     tenant_id=tenant_client.tenant_id,
+        #     chat_id=session_id,
+        #     state=state,
+        # )
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
         return {"result": "todo"}

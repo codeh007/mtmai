@@ -39,7 +39,9 @@ from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_properties import AgentProperties
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
+from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_length_options import ArtifactLengthOptions
 from mtmai.clients.rest.models.artifact_list import ArtifactList

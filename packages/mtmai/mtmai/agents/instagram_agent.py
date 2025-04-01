@@ -13,7 +13,6 @@ from typing import (
     Sequence,
 )
 
-from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
@@ -24,12 +23,19 @@ from autogen_agentchat.messages import (
     HandoffMessage,
     TextMessage,
 )
-from autogen_core import CancellationToken, Component, MessageContext, message_handler
+from autogen_core import (
+    CancellationToken,
+    Component,
+    MessageContext,
+    RoutedAgent,
+    message_handler,
+)
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from autogen_ext.tools.mcp import mcp_server_tools
+from clients.rest.models.agent_user_input import AgentUserInput
 from clients.rest.models.ig_login_event import IgLoginEvent
 from clients.rest.models.instagram_agent_state import InstagramAgentState
 from context.context_client import TenantClient
@@ -71,7 +77,7 @@ class InstagramAgentConfig(AssistantAgentConfig):
 #     password: str | None = None
 
 
-class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
+class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
@@ -129,6 +135,14 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     ) -> None:
         """初始化社交账号"""
         logger.info(f"handle_ig_account: {message}")
+        self.ig_client.login(message.username, message.password)
+
+    @message_handler
+    async def handle_user_input(
+        self, message: AgentUserInput, ctx: MessageContext
+    ) -> None:
+        """用户输入信息"""
+        logger.info(f"handle_user_input: {message}")
         self.ig_client.login(message.username, message.password)
 
     async def on_messages(

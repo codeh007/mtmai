@@ -1,6 +1,6 @@
 from typing import List
 
-from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
+from autogen_agentchat.agents import UserProxyAgent
 from autogen_agentchat.agents._user_proxy_agent import UserProxyAgentConfig
 from autogen_agentchat.base import ChatAgent, TerminationCondition
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -22,7 +22,6 @@ browser_topic_type = "Browser"
 router_topic_type = "Router"
 platform_account_topic_type = "PlatformAccount"
 scheduling_assistant_topic_type = "scheduling_assistant_conversation"
-
 
 
 class MtWebUserProxyAgent(UserProxyAgent):
@@ -61,9 +60,5 @@ class MtRoundRobinGroupChat(
         super().__init__(participants, termination_condition, max_turns)
 
 
-class MtAssistantAgent(AssistantAgent):
-    pass
-
-
-# class MtUserProxyAgent(UserProxyAgent):
+# class MtAssistantAgent(AssistantAgent):
 #     pass
