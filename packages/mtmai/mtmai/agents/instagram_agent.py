@@ -2,21 +2,35 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, Awaitable, Callable, Dict, List, Mapping, Sequence
+from typing import (
+    Any,
+    AsyncGenerator,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Sequence,
+)
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
-from autogen_agentchat.messages import ChatMessage, HandoffMessage, TextMessage
-
-# from autogen_agentchat.state import BaseState
+from autogen_agentchat.messages import (
+    BaseAgentEvent,
+    BaseChatMessage,
+    ChatMessage,
+    HandoffMessage,
+    TextMessage,
+)
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from autogen_ext.tools.mcp import mcp_server_tools
+from clients.rest.models.ig_login_event import IgLoginEvent
 from clients.rest.models.instagram_agent_state import InstagramAgentState
 from context.context_client import TenantClient
 from loguru import logger
@@ -52,18 +66,9 @@ class InstagramAgentConfig(AssistantAgentConfig):
     password: str | None = None
 
 
-# class InstagramAgentState(BaseState):
-#     """State for an instagram agent."""
-
-#     llm_context: Mapping[str, Any] = Field(
-#         default_factory=lambda: dict([("messages", [])])
-#     )
-#     type: str = Field(default="InstagramAgentState")
-
-#     is_wait_user_input: bool = Field(default=False)
-#     username: str | None = Field(default=None)
-#     password: str | None = Field(default=None)
-#     session_state: Mapping[str, Any] = Field(default_factory=dict)
+# class IgLoginEvent(BaseModel):
+#     username: str | None = None
+#     password: str | None = None
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
@@ -132,13 +137,24 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
                 return message
         raise AssertionError("The stream should have returned the final result.")
 
+    async def on_messages_stream(
+        self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
+    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+        if not self.username:
+            yield IgLoginEvent(username=self.username, password=self.password)
+            return
+        if self.ig_client.login(self.username, self.password):
+            logger.info("Ig Login success")
+        else:
+            logger.error("Ig Login failed")
+        async for event in super().on_messages_stream(messages, cancellation_token):
+            yield event
+
     async def example(self):
-        IG_USERNAME = ""
-        IG_PASSWORD = ""
         IG_CREDENTIAL_PATH = "./ig_settings.json"
         # SLEEP_TIME = "600"  # in seconds
 
-        self.ig_client.login(IG_USERNAME, IG_PASSWORD)
+        self.ig_client.login(self.username, self.password)
         self.ig_client.dump_settings(IG_CREDENTIAL_PATH)
 
         userid = self.ig_client.user_id_from_username("hello")
@@ -444,4 +460,4 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
     @property
     def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-        return (TextMessage, HandoffMessage)
+        return (TextMessage, HandoffMessage, IgLoginEvent)

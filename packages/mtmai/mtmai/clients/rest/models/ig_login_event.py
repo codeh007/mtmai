@@ -17,33 +17,19 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class InstagramAgentState(BaseModel):
+class IgLoginEvent(BaseModel):
     """
-    InstagramAgentState
+    IgLoginEvent
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    version: Optional[StrictStr] = None
-    llm_context: Optional[Any] = None
     username: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
-    session_state: Optional[Dict[str, Any]] = None
-    is_wait_user_input: Optional[StrictBool] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "session_state", "is_wait_user_input"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['InstagramAgentState']):
-            raise ValueError("must be one of enum values ('InstagramAgentState')")
-        return value
+    two_factor_code: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["username", "password", "two_factor_code"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -63,7 +49,7 @@ class InstagramAgentState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of InstagramAgentState from a JSON string"""
+        """Create an instance of IgLoginEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,16 +70,11 @@ class InstagramAgentState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if llm_context (nullable) is None
-        # and model_fields_set contains the field
-        if self.llm_context is None and "llm_context" in self.model_fields_set:
-            _dict['llm_context'] = None
-
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of InstagramAgentState from a dict"""
+        """Create an instance of IgLoginEvent from a dict"""
         if obj is None:
             return None
 
@@ -101,13 +82,9 @@ class InstagramAgentState(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "version": obj.get("version"),
-            "llm_context": obj.get("llm_context"),
             "username": obj.get("username"),
             "password": obj.get("password"),
-            "session_state": obj.get("session_state"),
-            "is_wait_user_input": obj.get("is_wait_user_input")
+            "two_factor_code": obj.get("two_factor_code")
         })
         return _obj
 
