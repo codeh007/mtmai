@@ -9,13 +9,15 @@ from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
 from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import ChatMessage, HandoffMessage, TextMessage
-from autogen_agentchat.state import BaseState
+
+# from autogen_agentchat.state import BaseState
 from autogen_core import CancellationToken, Component, MessageContext, message_handler
 from autogen_core.memory import Memory
 from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from autogen_ext.tools.mcp import mcp_server_tools
+from clients.rest.models.instagram_agent_state import InstagramAgentState
 from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
@@ -33,7 +35,7 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
@@ -50,18 +52,18 @@ class InstagramAgentConfig(AssistantAgentConfig):
     password: str | None = None
 
 
-class InstagramAgentState(BaseState):
-    """State for an instagram agent."""
+# class InstagramAgentState(BaseState):
+#     """State for an instagram agent."""
 
-    llm_context: Mapping[str, Any] = Field(
-        default_factory=lambda: dict([("messages", [])])
-    )
-    type: str = Field(default="InstagramAgentState")
+#     llm_context: Mapping[str, Any] = Field(
+#         default_factory=lambda: dict([("messages", [])])
+#     )
+#     type: str = Field(default="InstagramAgentState")
 
-    is_wait_user_input: bool = Field(default=False)
-    username: str | None = Field(default=None)
-    password: str | None = Field(default=None)
-    session_state: Mapping[str, Any] = Field(default_factory=dict)
+#     is_wait_user_input: bool = Field(default=False)
+#     username: str | None = Field(default=None)
+#     password: str | None = Field(default=None)
+#     session_state: Mapping[str, Any] = Field(default_factory=dict)
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):

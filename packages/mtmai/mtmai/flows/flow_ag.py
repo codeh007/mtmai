@@ -1,5 +1,6 @@
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import (
+    HandoffMessage,
     TextMessage,
     ToolCallExecutionEvent,
     ToolCallRequestEvent,
@@ -64,8 +65,10 @@ class FlowAg:
                 else:
                     raise ValueError(f"Unexpected message type: {message.chat_message}")
                 logger.info(last_txt_message)
+            elif isinstance(message, HandoffMessage):
+                logger.info(f"工作流收到 HandoffMessage: {message}")
             else:
-                logger.info(f"Unexpected message type: {message}")
+                logger.info(f"工作流收到其他消息: {message}")
 
         state = await team.save_state()
         await tenant_client.ag.save_team_state(

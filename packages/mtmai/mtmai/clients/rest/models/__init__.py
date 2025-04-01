@@ -134,6 +134,7 @@ from mtmai.clients.rest.models.ig_login import IGLogin
 from mtmai.clients.rest.models.ig_login_response import IGLoginResponse
 from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
+from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.job import Job
