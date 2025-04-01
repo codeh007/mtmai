@@ -568,8 +568,15 @@ Read the above conversation. Then select the next role from {participants} to pl
     termination = HandoffTermination(target="user") | TextMentionTermination(
         "TERMINATE"
     )
+    instagram_agent2 = InstagramAgent(
+        name="instagram_agent",
+        description="an agent that interacts with instagram",
+        model_client=nvidia_model_llama3,
+        handoffs=["user"],
+        system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
+    )
     instagram_swarm = Swarm(
-        participants=[instagram_agent],
+        participants=[instagram_agent2],
         max_turns=20,
         termination_condition=termination,
     )
