@@ -106,6 +106,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         self.username = username
         self.password = password
         self.ig_client = Client()
+
+        self.run
         # Get all available tools from the server
         super().__init__(
             name=name,

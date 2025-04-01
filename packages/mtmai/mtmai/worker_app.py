@@ -68,4 +68,9 @@ async def run_worker():
     worker.register_workflow(FlowResource())
     logger.info("register FlowResource")
 
+    from flows.flow_test_team import FlowTestTeam
+
+    worker.register_workflow(FlowTestTeam())
+    logger.info("register test team workflow")
+
     await worker.async_start()
