@@ -185,13 +185,7 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             runtime=self._runtime,
             type=instagram_agent_topic_type,
             factory=lambda: InstagramAgent(
-                # name="instagram_agent",
-                description="an agent that interacts with instagram",
                 model_client=self._model_client,
-                # handoffs=["user"],
-                # system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
-                # username=self._username,
-                # password=self._password,
             ),
         )
         await self._runtime.add_subscription(

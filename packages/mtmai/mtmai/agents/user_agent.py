@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from agents.instagram_agent import IgAccountMessage
+# from agents.instagram_agent import IgAccountMessage
 from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import UserMessage
@@ -17,6 +17,7 @@ from mtmai.agents._types import (
     BrowserOpenTask,
     BrowserTask,
     CodeWritingTask,
+    IgAccountMessage,
     IgLoginRequire,
     TeamRunnerTask,
     TerminationMessage,

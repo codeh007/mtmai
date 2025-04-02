@@ -2,38 +2,12 @@ import email
 import imaplib
 import random
 import re
-from typing import (
-    Any,
-    AsyncGenerator,
-    Awaitable,
-    Callable,
-    Dict,
-    List,
-    Mapping,
-    Sequence,
-)
+from typing import Any, List, Mapping, Sequence
 
-from autogen_agentchat.agents._assistant_agent import AssistantAgentConfig
-from autogen_agentchat.base import Handoff as HandoffBase
-from autogen_agentchat.base import Response
-from autogen_agentchat.messages import (
-    BaseAgentEvent,
-    BaseChatMessage,
-    ChatMessage,
-    HandoffMessage,
-    TextMessage,
-)
-from autogen_core import (
-    CancellationToken,
-    Component,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
-)
-from autogen_core.memory import Memory
-from autogen_core.model_context import ChatCompletionContext
+from agents._types import IgAccountMessage
+from autogen_agentchat.messages import ChatMessage, HandoffMessage, TextMessage
+from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
-from autogen_core.tools import BaseTool
 from autogen_ext.tools.mcp import mcp_server_tools
 from clients.rest.models.agent_user_input import AgentUserInput
 from clients.rest.models.ig_login_event import IgLoginEvent
@@ -55,57 +29,46 @@ from mtmai.mtlibs.instagrapi.exceptions import (
 )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-from pydantic import BaseModel
 from typing_extensions import Self
 
 CHALLENGE_EMAIL = ""
 CHALLENGE_PASSWORD = ""
 
 
-class IgAccountMessage(BaseModel):
-    username: str | None = None
-    password: str | None = None
-
-
-class InstagramAgentConfig(AssistantAgentConfig):
-    username: str | None = None
-    password: str | None = None
-
-
-class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
-    component_config_schema = InstagramAgentConfig
-    component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
+class InstagramAgent(RoutedAgent):
+    # component_config_schema = InstagramAgentConfig
+    # component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
     def __init__(
         self,
         # name: str,
         model_client: ChatCompletionClient,
-        *,
-        tools: List[
-            BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
-        ]
-        | None = None,
-        handoffs: List[HandoffBase | str] | None = None,
-        model_context: ChatCompletionContext | None = None,
-        description: str = "An agent that provides assistance with ability to use tools.",
-        system_message: (
-            str | None
-        ) = "You are a helpful AI assistant. Solve tasks using your tools. Reply with TERMINATE when the task has been completed.",
-        model_client_stream: bool = False,
-        reflect_on_tool_use: bool = False,
-        tool_call_summary_format: str = "{result}",
-        memory: Sequence[Memory] | None = None,
-        metadata: Dict[str, str] | None = None,
-        username: str | None = None,
-        password: str | None = None,
+        # *,
+        # tools: List[
+        #     BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
+        # ]
+        # | None = None,
+        # handoffs: List[HandoffBase | str] | None = None,
+        # model_context: ChatCompletionContext | None = None,
+        # description: str = "An agent that provides assistance with ability to use tools.",
+        # system_message: (
+        #     str | None
+        # ) = "You are a helpful AI assistant. Solve tasks using your tools. Reply with TERMINATE when the task has been completed.",
+        # model_client_stream: bool = False,
+        # reflect_on_tool_use: bool = False,
+        # tool_call_summary_format: str = "{result}",
+        # memory: Sequence[Memory] | None = None,
+        # metadata: Dict[str, str] | None = None,
+        # username: str | None = None,
+        # password: str | None = None,
     ) -> None:
         # name = name or "InstagramAgent"
 
         model_client = model_client or get_default_model_client()
         # tenant_client = TenantClient()
         # server_params = tenant_client.get_mcp_endpoint()
-        self.username = username
-        self.password = password
+        # self.username = username
+        # self.password = password
         self.ig_client = Client()
 
         # self.run
@@ -125,7 +88,7 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
         # )
 
     @message_handler
-    async def handle_ig_account(
+    async def on_ig_account(
         self, message: IgAccountMessage, ctx: MessageContext
     ) -> None:
         """初始化社交账号"""
@@ -140,26 +103,26 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
         logger.info(f"handle_user_input: {message}")
         self.ig_client.login(message.username, message.password)
 
-    async def on_messages(
-        self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
-    ) -> Response:
-        async for message in self.on_messages_stream(messages, cancellation_token):
-            if isinstance(message, Response):
-                return message
-        raise AssertionError("The stream should have returned the final result.")
+    # async def on_messages(
+    #     self, messages: Sequence[ChatMessage], cancellation_token: CancellationToken
+    # ) -> Response:
+    #     async for message in self.on_messages_stream(messages, cancellation_token):
+    #         if isinstance(message, Response):
+    #             return message
+    #     raise AssertionError("The stream should have returned the final result.")
 
-    async def on_messages_stream(
-        self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
-    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
-        if not self.username:
-            yield IgLoginEvent(username=self.username, password=self.password)
-            return
-        if self.ig_client.login(self.username, self.password):
-            logger.info("Ig Login success")
-        else:
-            logger.error("Ig Login failed")
-        async for event in super().on_messages_stream(messages, cancellation_token):
-            yield event
+    # async def on_messages_stream(
+    #     self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
+    # ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+    #     if not self.username:
+    #         yield IgLoginEvent(username=self.username, password=self.password)
+    #         return
+    #     if self.ig_client.login(self.username, self.password):
+    #         logger.info("Ig Login success")
+    #     else:
+    #         logger.error("Ig Login failed")
+    #     async for event in super().on_messages_stream(messages, cancellation_token):
+    #         yield event
 
     async def example(self):
         IG_CREDENTIAL_PATH = "./ig_settings.json"
@@ -406,29 +369,29 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
             ]
         )
 
-    @classmethod
-    def _from_config(cls, config: InstagramAgentConfig) -> Self:
-        return cls(
-            name=config.name,
-            model_client=ChatCompletionClient.load_component(
-                config.model_client.model_dump()
-            ),
-            tools=[BaseTool.load_component(tool) for tool in config.tools]
-            if config.tools
-            else None,
-            model_context=None,
-            memory=[Memory.load_component(memory) for memory in config.memory]
-            if config.memory
-            else None,
-            description=config.description,
-            system_message=config.system_message,
-            model_client_stream=config.model_client_stream,
-            reflect_on_tool_use=config.reflect_on_tool_use,
-            tool_call_summary_format=config.tool_call_summary_format,
-            handoffs=config.handoffs,
-            username=config.username,
-            password=config.password,
-        )
+    # @classmethod
+    # def _from_config(cls, config: InstagramAgentConfig) -> Self:
+    #     return cls(
+    #         name=config.name,
+    #         model_client=ChatCompletionClient.load_component(
+    #             config.model_client.model_dump()
+    #         ),
+    #         tools=[BaseTool.load_component(tool) for tool in config.tools]
+    #         if config.tools
+    #         else None,
+    #         model_context=None,
+    #         memory=[Memory.load_component(memory) for memory in config.memory]
+    #         if config.memory
+    #         else None,
+    #         description=config.description,
+    #         system_message=config.system_message,
+    #         model_client_stream=config.model_client_stream,
+    #         reflect_on_tool_use=config.reflect_on_tool_use,
+    #         tool_call_summary_format=config.tool_call_summary_format,
+    #         handoffs=config.handoffs,
+    #         username=config.username,
+    #         password=config.password,
+    #     )
 
     @classmethod
     async def from_context(cls) -> Self:

@@ -63,6 +63,12 @@ class IgLoginRequire(BaseModel):
     twofa_code: str | None = None
 
 
+class IgAccountMessage(BaseModel):
+    username: str | None = None
+    password: str | None = None
+    twofa_code: str | None = None
+
+
 agent_message_types = [
     TerminationMessage,
     CodeWritingTask,
@@ -79,4 +85,5 @@ agent_message_types = [
     AssistantTextMessage,
     UserTextMessage,
     IgLoginRequire,
+    IgAccountMessage,
 ]
