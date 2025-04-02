@@ -24,7 +24,6 @@ from autogen_core import (
 )
 from autogen_core.models import ChatCompletionClient
 from clients.rest.models.agent_user_input import AgentUserInput
-from clients.rest.models.ig_login_event import IgLoginEvent
 from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
@@ -33,12 +32,12 @@ from mtmai.agents._agents import (
     router_topic_type,
     user_topic_type,
 )
-from mtmai.agents._types import AgentRegistryBase
+from mtmai.agents._types import AgentRegistryBase, agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
+from mtmai.teams.instagram_team.instagram_manager import InstagramOrchestrator
+from mtmai.teams.sys_team import MockIntentClassifier
 from pydantic import BaseModel
-from teams.instagram_team.instagram_manager import InstagramOrchestrator
-from teams.sys_team import MockIntentClassifier
 from typing_extensions import Self
 
 
@@ -143,16 +142,16 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
-        # await super()._init(runtime)
         self._initialized = True
         self.tenant_client = TenantClient()
-        runtime.add_message_serializer(try_get_known_serializers_for_type(IgLoginEvent))
+        for t in agent_message_types:
+            runtime.add_message_serializer(try_get_known_serializers_for_type(t))
 
         # Create the Semantic Router
         agent_registry = MockAgentRegistry()
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
-            runtime=self._runtime,
+            runtime=runtime,
             type=router_topic_type,
             factory=lambda: SemanticRouterAgent(
                 name="router",
@@ -161,7 +160,7 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             ),
         )
 
-        await self._runtime.add_subscription(
+        await runtime.add_subscription(
             TypeSubscription(
                 topic_type=router_topic_type,
                 agent_type=router_agent_type.type,
@@ -169,26 +168,24 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         )
 
         user_agent_type = await UserAgent.register(
-            runtime=self._runtime,
+            runtime=runtime,
             type=user_topic_type,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
-        await self._runtime.add_subscription(
+        await runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=user_topic_type, agent_type=user_agent_type.type
             )
         )
 
         instagram_agent_type = await InstagramAgent.register(
-            runtime=self._runtime,
+            runtime=runtime,
             type=instagram_agent_topic_type,
-            factory=lambda: InstagramAgent(
-                model_client=self._model_client,
-            ),
+            factory=lambda: InstagramAgent(),
         )
-        await self._runtime.add_subscription(
+        await runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=instagram_agent_type, agent_type=instagram_agent_type.type
             )
@@ -207,9 +204,9 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             return
 
         session_id = get_chat_session_id_ctx()
-        self._runtime = SingleThreadedAgentRuntime(
-            # ignore_unhandled_exceptions=False,
-        )
+        # self._runtime = SingleThreadedAgentRuntime(
+        #     # ignore_unhandled_exceptions=False,
+        # )
         needs_user_input_handler = NeedsUserInputHandler(session_id)
         self._runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler],
@@ -228,13 +225,23 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         if isinstance(task, str):
             await self._runtime.publish_message(
                 message=AgentUserInput(content=task),
-                topic_id=TopicId(type="instagram_agent", source=self.session_id),
+                topic_id=TopicId(
+                    type=instagram_agent_topic_type, source=self.session_id
+                ),
             )
         else:
             await self._runtime.publish_message(
                 message=task,
                 topic_id=TopicId(type=user_topic_type, source=self.session_id),
             )
+            # await self._runtime.publish_message(
+            #     message=task,
+            #     topic_id=TopicId(
+            #         type=instagram_agent_topic_type, source=self.session_id
+            #     ),
+            # )
+            # agent_id = AgentId(instagram_agent_topic_type, "default")
+            # await self._runtime.send_message(task, agent_id)
 
         await self._runtime.stop_when_idle()
         state = await self._runtime.save_state()
@@ -245,11 +252,6 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        # state = await super().save_state()
-        # return {
-        #     "some_state": "some_state",
-        #     **state,
-        # }
         state = await self._runtime.save_state()
         return state
 

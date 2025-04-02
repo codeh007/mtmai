@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from typing import Any, Mapping
 
-# from agents.instagram_agent import IgAccountMessage
-from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
+from autogen_core import AgentId, MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import UserMessage
 from loguru import logger
@@ -23,11 +21,6 @@ from mtmai.agents._types import (
     TerminationMessage,
 )
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
-
-
-@dataclass
-class Message:
-    content: str
 
 
 class UserAgent(RoutedAgent):
@@ -55,32 +48,37 @@ class UserAgent(RoutedAgent):
         )
         user_content = message.content
         if user_content.startswith("/test_code"):
-            await self._runtime.publish_message(
+            await self.runtime.publish_message(
                 message=CodeWritingTask(
                     task="Write a function to find the sum of all even numbers in a list."
                 ),
                 topic_id=TopicId(coder_agent_topic_type, source=session_id),
             )
         elif user_content.startswith("/test_open_browser"):
-            await self._runtime.publish_message(
+            await self.runtime.publish_message(
                 message=BrowserOpenTask(url="https://playwright.dev/"),
                 topic_id=TopicId(browser_topic_type, source=session_id),
             )
         elif user_content.startswith("/test_browser_task"):
-            await self._runtime.publish_message(
+            await self.runtime.publish_message(
                 message=BrowserTask(task="Open an online code editor programiz."),
                 topic_id=TopicId(browser_topic_type, source=session_id),
             )
         elif user_content.startswith("/test_team"):
-            await self._runtime.publish_message(
+            await self.runtime.publish_message(
                 message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
                 topic_id=TopicId(team_runner_topic_type, source=session_id),
             )
         elif user_content.startswith("/test_ig_login"):
-            await self._runtime.publish_message(
-                message=IgAccountMessage(username="username1", password="password1"),
-                topic_id=TopicId(instagram_agent_topic_type, source=session_id),
+            # await self.runtime.publish_message(
+            #     message=IgAccountMessage(username="username1", password="password1"),
+            #     topic_id=TopicId(instagram_agent_topic_type, source=session_id),
+            # )
+            agent_id = AgentId(instagram_agent_topic_type, "default")
+            result = await self._runtime.send_message(
+                IgAccountMessage(username="username1", password="password1"), agent_id
             )
+            logger.info(f"result: {result}")
         else:
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
