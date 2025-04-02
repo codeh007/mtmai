@@ -1,9 +1,17 @@
 from typing import Any, Mapping
 
-from autogen_core import AgentId, MessageContext, RoutedAgent, TopicId, message_handler
+from autogen_core import (
+    AgentId,
+    FunctionCall,
+    MessageContext,
+    RoutedAgent,
+    TopicId,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import UserMessage
+from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
 from loguru import logger
+from mtlibs.id import generate_uuid
 from mtmai.agents._agents import (
     browser_topic_type,
     coder_agent_topic_type,
@@ -27,9 +35,10 @@ class UserAgent(RoutedAgent):
     def __init__(self, description: str, agent_topic_type: str = None) -> None:
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
-        self._model_context = BufferedChatCompletionContext(buffer_size=5)
+        self._model_context = BufferedChatCompletionContext(buffer_size=7)
         self.username = None
         self.password = None
+        self.is_waiting_ig_login = False
 
     @message_handler
     async def handle_agent_run_input(
@@ -79,6 +88,31 @@ class UserAgent(RoutedAgent):
                 IgAccountMessage(username="username1", password="password1"), agent_id
             )
             logger.info(f"result: {result}")
+            if isinstance(result, IgLoginRequire):
+                self.is_waiting_ig_login = True
+            await self._model_context.add_message(
+                SystemMessage(
+                    content="hello system message",
+                )
+            )
+            await self._model_context.add_message(
+                UserMessage(
+                    content="hello user message",
+                    source="user",
+                )
+            )
+            await self._model_context.add_message(
+                AssistantMessage(
+                    content=[
+                        FunctionCall(
+                            id=generate_uuid(),
+                            name="ig_login",
+                            arguments=result.model_dump_json(),
+                        )
+                    ],
+                    source="assistant",
+                )
+            )
         else:
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
@@ -128,7 +162,6 @@ class UserAgent(RoutedAgent):
             #         ),
             #     )
 
-    # When a conversation ends
     @message_handler
     async def on_terminate(
         self, message: TerminationMessage, ctx: MessageContext
@@ -142,7 +175,7 @@ class UserAgent(RoutedAgent):
 
     @message_handler
     async def on_ig_login(self, message: IgLoginRequire, ctx: MessageContext) -> None:
-        assert ctx.topic_id is not None
+        # assert ctx.topic_id is not None
         logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
 
     @message_handler
@@ -184,34 +217,12 @@ class UserAgent(RoutedAgent):
         #     topic_id=TopicId(message.reply_to_topic_type, source=self.id.key),
         # )
 
-    # async def get_user_input(self, prompt: str, ctx: MessageContext) -> str:
-    #     """Get user input from the console. Override this method to customize how user input is retrieved."""
-    #     logger.info(f"TODO: need user input, ctx: {ctx}")
-    #     user_input = "TODO: need user input"
-    #     # loop = asyncio.get_event_loop()
-    #     # return await loop.run_in_executor(None, input, prompt)
-    #     return user_input
-
-    # @message_handler
-    # async def handle_code_review_task(
-    #     self, message: CodeReviewTask, ctx: MessageContext
-    # ) -> None:
-    #     logger.info(f"handle_user_message: {message}")
-    #     tenant_client = TenantClient()
-    #     await tenant_client.emit(message)
-
-    # async def handle_code_review_result(
-    #     self, message: CodeReviewResult, ctx: MessageContext
-    # ) -> None:
-    #     logger.info(f"handle_code_review_result: {message}")
-    #     tenant_client = TenantClient()
-    #     await tenant_client.emit(message)
     async def save_state(self) -> Mapping[str, Any]:
-        return {"model_context": self._model_context}
+        return {
+            "model_context": await self._model_context.save_state(),
+            "is_waiting_ig_login": self.is_waiting_ig_login,
+        }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        # round_robin_state = RoundRobinManagerState.model_validate(state)
-        # self._message_thread = [self._message_factory.create(message) for message in round_robin_state.message_thread]
-        # self._current_turn = round_robin_state.current_turn
-        # self._next_speaker_index = round_robin_state.next_speaker_index
-        pass
+        self._model_context.load_state(state["model_context"])
+        self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)
