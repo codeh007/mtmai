@@ -22,6 +22,7 @@ browser_topic_type = "Browser"
 router_topic_type = "Router"
 platform_account_topic_type = "PlatformAccount"
 scheduling_assistant_topic_type = "scheduling_assistant_conversation"
+instagram_agent_topic_type = "InstagramAgent"
 
 
 class MtWebUserProxyAgent(UserProxyAgent):

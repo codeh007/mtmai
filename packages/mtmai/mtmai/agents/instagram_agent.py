@@ -72,18 +72,13 @@ class InstagramAgentConfig(AssistantAgentConfig):
     password: str | None = None
 
 
-# class IgLoginEvent(BaseModel):
-#     username: str | None = None
-#     password: str | None = None
-
-
 class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
     component_config_schema = InstagramAgentConfig
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
 
     def __init__(
         self,
-        name: str,
+        # name: str,
         model_client: ChatCompletionClient,
         *,
         tools: List[
@@ -104,7 +99,7 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
         username: str | None = None,
         password: str | None = None,
     ) -> None:
-        name = name or "InstagramAgent"
+        # name = name or "InstagramAgent"
 
         model_client = model_client or get_default_model_client()
         # tenant_client = TenantClient()
@@ -113,21 +108,21 @@ class InstagramAgent(RoutedAgent, Component[InstagramAgentConfig]):
         self.password = password
         self.ig_client = Client()
 
-        self.run
+        # self.run
         # Get all available tools from the server
-        super().__init__(
-            name=name,
-            model_client=model_client,
-            tools=tools,
-            handoffs=handoffs,
-            model_context=model_context,
-            description=description,
-            system_message=system_message,
-            model_client_stream=model_client_stream,
-            reflect_on_tool_use=reflect_on_tool_use,
-            tool_call_summary_format=tool_call_summary_format,
-            memory=memory,
-        )
+        # super().__init__(
+        #     name=name,
+        #     model_client=model_client,
+        #     tools=tools,
+        #     handoffs=handoffs,
+        #     model_context=model_context,
+        #     description=description,
+        #     system_message=system_message,
+        #     model_client_stream=model_client_stream,
+        #     reflect_on_tool_use=reflect_on_tool_use,
+        #     tool_call_summary_format=tool_call_summary_format,
+        #     memory=memory,
+        # )
 
     @message_handler
     async def handle_ig_account(

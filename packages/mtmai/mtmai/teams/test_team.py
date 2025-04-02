@@ -28,7 +28,11 @@ from clients.rest.models.ig_login_event import IgLoginEvent
 from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
-from mtmai.agents._agents import router_topic_type, user_topic_type
+from mtmai.agents._agents import (
+    instagram_agent_topic_type,
+    router_topic_type,
+    user_topic_type,
+)
 from mtmai.agents._types import AgentRegistryBase
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -179,15 +183,15 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
 
         instagram_agent_type = await InstagramAgent.register(
             runtime=self._runtime,
-            type="instagram_agent",
+            type=instagram_agent_topic_type,
             factory=lambda: InstagramAgent(
-                name="instagram_agent",
+                # name="instagram_agent",
                 description="an agent that interacts with instagram",
                 model_client=self._model_client,
-                handoffs=["user"],
-                system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
-                username=self._username,
-                password=self._password,
+                # handoffs=["user"],
+                # system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
+                # username=self._username,
+                # password=self._password,
             ),
         )
         await self._runtime.add_subscription(
@@ -219,14 +223,7 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         )
         if not self._initialized:
             await self._init(self._runtime)
-        # async for event in super().run_stream(
-        #     task=task, cancellation_token=cancellation_token
-        # ):
-        #     if isinstance(event, TaskResult):
-        #         yield event
-        #     else:
-        #         await self.tenant_client.emit(event)
-        #         yield event
+
         await self._runtime.load_state(
             {
                 "User/b59add05-9f88-4379-a50c-e75f6bffdb90": {

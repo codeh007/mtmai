@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+from agents.instagram_agent import IgAccountMessage
 from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import UserMessage
@@ -8,8 +9,8 @@ from loguru import logger
 from mtmai.agents._agents import (
     browser_topic_type,
     coder_agent_topic_type,
+    instagram_agent_topic_type,
     team_runner_topic_type,
-    user_topic_type,
 )
 from mtmai.agents._types import (
     AgentResponse,
@@ -76,14 +77,13 @@ class UserAgent(RoutedAgent):
             )
         elif user_content.startswith("/test_ig_login"):
             await self._runtime.publish_message(
-                message=IgLoginRequire(username="username1", password="password1"),
-                topic_id=TopicId(user_topic_type, source=session_id),
+                message=IgAccountMessage(username="username1", password="password1"),
+                topic_id=TopicId(instagram_agent_topic_type, source=session_id),
             )
         else:
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
             await self._model_context.add_message(user_message)
-            # return Message(content="content1")
             return IgLoginRequire(username="username", password="password")
             # try:
             #     resource = await tenant_client.ag.resource_api.resource_get(
