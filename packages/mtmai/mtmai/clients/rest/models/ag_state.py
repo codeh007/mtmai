@@ -33,8 +33,8 @@ class AgState(BaseModel):
     type: StateType
     component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
     chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
-    topic: Optional[StrictStr] = None
-    source: Optional[StrictStr] = None
+    topic: StrictStr
+    source: StrictStr
     state: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "chatId", "topic", "source", "state"]
 

@@ -13,16 +13,14 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from loguru import logger
-
-# from mtmai.agents._agents import (
-#     router_topic_type,
-# )
 from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import AgentRegistryBase, agent_message_types
 from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
+from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
@@ -161,6 +159,24 @@ class TestTeam(Team, Component[TestTeamConfig]):
         await self._runtime.stop_when_idle()
         state = await self._runtime.save_state()
         logger.info(f"runtime state: {state}")
+        tenant_client = TenantClient()
+        for k, v in state.items():
+            logger.info(f"key: {k}, value: {v}")
+            parts = k.split("/")
+            topic = parts[0]
+            source = parts[1] if len(parts) > 1 else "default"
+            await tenant_client.ag_state_api.ag_state_upsert(
+                tenant=tenant_client.tenant_id,
+                ag_state_upsert=AgStateUpsert(
+                    tenantId=tenant_client.tenant_id,
+                    topic=topic,
+                    source=source,
+                    type=StateType.RUNTIMESTATE.value,
+                    componentId="test_team",
+                    chatId=session_id,
+                    state=state,
+                ),
+            )
         return state
 
     async def reset(self) -> None:
