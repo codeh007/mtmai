@@ -99,7 +99,6 @@ class AssistantAgentState(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "version": obj.get("version"),
-            "llm_context": obj.get("llm_context")
         })
         return _obj
 

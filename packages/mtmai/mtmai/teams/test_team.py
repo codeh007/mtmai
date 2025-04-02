@@ -1,59 +1,38 @@
-import asyncio
-from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
+from typing import Any, AsyncGenerator, Mapping, Sequence
 
 from agents.user_agent import UserAgent
-from autogen_agentchat.base import TaskResult, TerminationCondition
-from autogen_agentchat.conditions import HandoffTermination, TextMentionTermination
-from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
-from autogen_agentchat.teams import BaseGroupChat
-from autogen_agentchat.teams._group_chat._events import GroupChatTermination
-from autogen_agentchat.teams._group_chat._magentic_one._prompts import (
-    ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-)
+from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
     Component,
-    ComponentModel,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from autogen_core.models import ChatCompletionClient
 from loguru import logger
-from mtmai.agents._agents import (
-    instagram_agent_topic_type,
-    router_topic_type,
-    user_topic_type,
-)
+
+# from mtmai.agents._agents import (
+#     router_topic_type,
+# )
 from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import AgentRegistryBase, agent_message_types
 from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.teams.instagram_team.instagram_manager import InstagramOrchestrator
 from mtmai.teams.sys_team import MockIntentClassifier
 from pydantic import BaseModel
 from typing_extensions import Self
 
 
 class TestTeamConfig(BaseModel):
-    """The declarative configuration for a MagenticOneGroupChat."""
-
-    # participants: List[ComponentModel]
-    model_client: ComponentModel
-    termination_condition: ComponentModel | None = None
     max_turns: int | None = None
-    max_stalls: int
-    final_answer_prompt: str
-
-    # 新增
-    username: str | None = None
-    password: str | None = None
 
 
 class MockAgentRegistry(AgentRegistryBase):
@@ -68,77 +47,15 @@ class MockAgentRegistry(AgentRegistryBase):
         return self.agents[intent]
 
 
-class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
+class TestTeam(Team, Component[TestTeamConfig]):
     component_provider_override = "mtmai.teams.test_team.TestTeam"
     component_config_schema = TestTeamConfig
 
     def __init__(
         self,
-        # participants: List[ChatAgent],
-        model_client: ChatCompletionClient,
-        *,
-        termination_condition: TerminationCondition | None = None,
-        max_turns: int | None = 20,
-        runtime: AgentRuntime | None = None,
-        max_stalls: int = 3,
-        final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-        username: str | None = None,
-        password: str | None = None,
     ) -> None:
-        # super().__init__(
-        #     participants,
-        #     group_chat_manager_name="InstagramOrchestrator",
-        #     group_chat_manager_class=InstagramOrchestrator,
-        #     termination_condition=termination_condition,
-        #     max_turns=max_turns,
-        #     runtime=runtime,
-        # )
-
-        # Validate the participants.
-        # if len(participants) == 0:
-        #     raise ValueError(
-        #         "At least one participant is required for MagenticOneGroupChat."
-        #     )
-        self._model_client = model_client
-        self._max_stalls = max_stalls
-        self._final_answer_prompt = final_answer_prompt
-        self._username = username
-        self._password = password
         self._initialized = False
         self._is_running = False
-
-    def _create_group_chat_manager_factory(
-        self,
-        name: str,
-        group_topic_type: str,
-        output_topic_type: str,
-        participant_topic_types: List[str],
-        participant_names: List[str],
-        participant_descriptions: List[str],
-        output_message_queue: asyncio.Queue[
-            AgentEvent | ChatMessage | GroupChatTermination
-        ],
-        termination_condition: TerminationCondition | None,
-        max_turns: int | None,
-        message_factory: MessageFactory,
-    ) -> Callable[[], InstagramOrchestrator]:
-        return lambda: InstagramOrchestrator(
-            name,
-            group_topic_type,
-            output_topic_type,
-            participant_topic_types,
-            participant_names,
-            participant_descriptions,
-            max_turns,
-            message_factory,
-            self._model_client,
-            self._max_stalls,
-            self._final_answer_prompt,
-            output_message_queue,
-            termination_condition,
-            username=self._username,
-            password=self._password,
-        )
 
     async def _init(self, runtime: AgentRuntime):
         self.session_id = get_chat_session_id_ctx()
@@ -152,7 +69,7 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
             runtime=runtime,
-            type=router_topic_type,
+            type=AgentTopicTypes.ROUTER,
             factory=lambda: SemanticRouterAgent(
                 name="router",
                 agent_registry=agent_registry,
@@ -160,29 +77,31 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             ),
         )
 
+        self.model_client = get_default_model_client()
+
         await runtime.add_subscription(
             TypeSubscription(
-                topic_type=router_topic_type,
+                topic_type=AgentTopicTypes.ROUTER,
                 agent_type=router_agent_type.type,
             )
         )
 
         user_agent_type = await UserAgent.register(
             runtime=runtime,
-            type=user_topic_type,
+            type=AgentTopicTypes.USER,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
         await runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=user_topic_type, agent_type=user_agent_type.type
+                topic_type=AgentTopicTypes.USER, agent_type=user_agent_type.type
             )
         )
 
         instagram_agent_type = await InstagramAgent.register(
             runtime=runtime,
-            type=instagram_agent_topic_type,
+            type=AgentTopicTypes.INSTAGRAM,
             factory=lambda: InstagramAgent(),
         )
         await runtime.add_subscription(
@@ -226,20 +145,15 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
             await self._runtime.publish_message(
                 message=AgentUserInput(content=task),
                 topic_id=TopicId(
-                    type=instagram_agent_topic_type, source=self.session_id
+                    type=AgentTopicTypes.INSTAGRAM, source=self.session_id
                 ),
             )
         else:
             await self._runtime.publish_message(
                 message=task,
-                topic_id=TopicId(type=user_topic_type, source=self.session_id),
+                topic_id=TopicId(type=AgentTopicTypes.USER, source=self.session_id),
             )
-            # await self._runtime.publish_message(
-            #     message=task,
-            #     topic_id=TopicId(
-            #         type=instagram_agent_topic_type, source=self.session_id
-            #     ),
-            # )
+
             # agent_id = AgentId(instagram_agent_topic_type, "default")
             # await self._runtime.send_message(task, agent_id)
 
@@ -256,7 +170,8 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         return state
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        await super().load_state(state)
+        # await super().load_state(state)
+        await self._runtime.load_state(state)
 
     def _to_config(self) -> TestTeamConfig:
         participants = [
@@ -278,76 +193,61 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
 
     @classmethod
     def _from_config(cls, config: TestTeamConfig) -> Self:
-        session_id = get_chat_session_id_ctx()
+        # session_id = get_chat_session_id_ctx()
         # participants = []
         # for participant in config.participants:
         #     # if hasattr(participant, "actual_instance") and participant.actual_instance:
         #     #     participant = participant.actual_instance
         #     # participant_config = participant.model_dump()
         #     participants.append(ChatAgent.load_component(participant))
-        termination_condition = (
-            TerminationCondition.load_component(
-                config.termination_condition.model_dump()
-            )
-            if config.termination_condition
-            else None
-        )
+        # termination_condition = (
+        #     TerminationCondition.load_component(
+        #         config.termination_condition.model_dump()
+        #     )
+        #     if config.termination_condition
+        #     else None
+        # )
 
-        needs_user_input_handler = NeedsUserInputHandler(session_id)
+        # needs_user_input_handler = NeedsUserInputHandler(session_id)
         # runtime = SingleThreadedAgentRuntime(
         #     intervention_handlers=[needs_user_input_handler],
         #     ignore_unhandled_exceptions=False,
         # )
-        if config.model_client:
-            model_client = ChatCompletionClient.load_component(config.model_client)
+        # if config.model_client:
+        #     model_client = ChatCompletionClient.load_component(config.model_client)
 
-        else:
-            model_client = get_default_model_client()
+        # else:
+        #     model_client = get_default_model_client()
 
         return cls(
             # participants=participants,
-            termination_condition=termination_condition,
+            # termination_condition=termination_condition,
             # runtime=runtime,
-            model_client=model_client,
-            max_turns=config.max_turns or 20,
-            max_stalls=config.max_stalls or 3,
-            final_answer_prompt=config.final_answer_prompt
-            or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-            username=config.username,
-            password=config.password,
+            # model_client=model_client,
+            # max_turns=config.max_turns or 20,
+            # max_stalls=config.max_stalls or 3,
+            # final_answer_prompt=config.final_answer_prompt
+            # or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
+            # username=config.username,
+            # password=config.password,
         )
 
     @classmethod
     def from_new(cls) -> Self:
-        session_id = get_chat_session_id_ctx()
-        model_client = get_default_model_client()
-        instagram_agent2 = InstagramAgent(
-            name="instagram_agent",
-            description="an agent that interacts with instagram",
-            model_client=model_client,
-            handoffs=["user"],
-            system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
-            username="user1",
-            password="password1",
-        )
+        return cls()
 
-        participants = [instagram_agent2]
-        needs_user_input_handler = NeedsUserInputHandler(session_id)
-        runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler],
-            ignore_unhandled_exceptions=False,
-        )
+    # async def reset(self) -> None:
+    #     """Reset the team and all its participants to its initial state."""
+    #     ...
 
-        termination = HandoffTermination(target="user") | TextMentionTermination(
-            "TERMINATE"
-        )
-        return cls(
-            participants=participants,
-            termination_condition=termination,
-            runtime=runtime,
-            model_client=model_client,
-            max_turns=20,
-            max_stalls=3,
-            username="user1",
-            password="password",
-        )
+    async def pause(self) -> None:
+        """Pause the team and all its participants. This is useful for
+        pausing the :meth:`autogen_agentchat.base.TaskRunner.run` or
+        :meth:`autogen_agentchat.base.TaskRunner.run_stream` methods from
+        concurrently, while keeping them alive."""
+        ...
+
+    async def resume(self) -> None:
+        """Resume the team and all its participants from a pause after
+        :meth:`pause` was called."""
+        ...

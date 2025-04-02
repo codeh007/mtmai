@@ -108,7 +108,6 @@ class ChatAgentContainerState(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "version": obj.get("version"),
-            "agent_state": obj.get("agent_state"),
             "message_buffer": [ChatMessage.from_dict(_item) for _item in obj["message_buffer"]] if obj.get("message_buffer") is not None else None
         })
         return _obj

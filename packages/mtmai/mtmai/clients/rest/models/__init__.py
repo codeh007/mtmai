@@ -29,7 +29,6 @@ from mtmai.clients.rest.models.ag_event_list import AgEventList
 from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
-from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_config import AgentConfig
@@ -139,7 +138,6 @@ from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.instagram_task import InstagramTask
-from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
 from mtmai.clients.rest.models.job_run_status import JobRunStatus

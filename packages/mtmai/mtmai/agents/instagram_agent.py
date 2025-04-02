@@ -2,9 +2,10 @@ import email
 import imaplib
 import random
 import re
-from typing import List
+from typing import Any, List, Mapping
 
-from autogen_core import MessageContext, RoutedAgent, message_handler
+from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
+from clients.rest.models.instagram_agent_state import InstagramAgentState
 from loguru import logger
 from mtmai.agents._types import IgAccountMessage, IgLoginRequire
 from mtmai.mtlibs.instagrapi import Client
@@ -345,21 +346,21 @@ class InstagramAgent(RoutedAgent):
     #         # tool_call_summary_format=config.tool_call_summary_format,
     #     )
 
-    # async def on_reset(self, cancellation_token: CancellationToken) -> None:
-    #     pass
+    async def on_reset(self, cancellation_token: CancellationToken) -> None:
+        pass
 
-    # async def save_state(self) -> Mapping[str, Any]:
-    #     model_context_state = await self._model_context.save_state()
-    #     return InstagramAgentState(
-    #         llm_context=model_context_state,
-    #         username=self.username,
-    #         password=self.password,
-    #         # is_wait_user_input=self.is_wait_user_input,
-    #     ).model_dump()
+    async def save_state(self) -> Mapping[str, Any]:
+        model_context_state = await self._model_context.save_state()
+        return InstagramAgentState(
+            llm_context=model_context_state,
+            username=self.username,
+            password=self.password,
+            # is_wait_user_input=self.is_wait_user_input,
+        ).model_dump()
 
-    # async def load_state(self, state: Mapping[str, Any]) -> None:
-    #     assistant_agent_state = InstagramAgentState.model_validate(state)
-    #     await self._model_context.load_state(assistant_agent_state.llm_context)
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        assistant_agent_state = InstagramAgentState.model_validate(state)
+        await self._model_context.load_state(assistant_agent_state.llm_context)
 
     # @property
     # def produced_message_types(self) -> Sequence[type[ChatMessage]]:

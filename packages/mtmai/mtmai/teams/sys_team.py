@@ -22,8 +22,9 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from autogen_core.tools import FunctionTool
+from clients.rest.models.agent_topic_types import AgentTopicTypes
 from loguru import logger
-from mtmai.agents._agents import (
+from mtmai.agents._agents import (  # user_topic_type,
     browser_topic_type,
     human_agent_topic_type,
     issues_and_repairs_agent_topic_type,
@@ -31,7 +32,6 @@ from mtmai.agents._agents import (
     router_topic_type,
     sales_agent_topic_type,
     triage_agent_topic_type,
-    user_topic_type,
 )
 from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import (
@@ -327,7 +327,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
             factory=lambda: HumanAgent(
                 description="A human agent.",
                 agent_topic_type=human_agent_topic_type,
-                user_topic_type=user_topic_type,
+                user_topic_type=AgentTopicTypes.USER,
             ),
         )
         await self._runtime.add_subscription(
@@ -338,14 +338,14 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         user_agent_type = await UserAgent.register(
             runtime=self._runtime,
-            type=user_topic_type,
+            type=AgentTopicTypes.USER,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=user_topic_type, agent_type=user_agent_type.type
+                topic_type=AgentTopicTypes.USER, agent_type=user_agent_type.type
             )
         )
 
@@ -458,9 +458,8 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
         session_id = get_chat_session_id_ctx()
 
         await self._runtime.publish_message(
-            # message=AgentRunInput(content=user_content, source=session_id),
             message=task,
-            topic_id=TopicId(type=user_topic_type, source=session_id),
+            topic_id=TopicId(type=AgentTopicTypes.USER, source=session_id),
         )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止

@@ -26,8 +26,9 @@ class StateType(str, Enum):
     """
     allowed enum values
     """
-    ASSISTANTAGENTSTATE = 'AssistantAgentState'
     TEAMSTATE = 'TeamState'
+    RUNTIMESTATE = 'RuntimeState'
+    ASSISTANTAGENTSTATE = 'AssistantAgentState'
     ROUNDROBINMANAGERSTATE = 'RoundRobinManagerState'
     SELECTORMANAGERSTATE = 'SelectorManagerState'
     SWARMMANAGERSTATE = 'SwarmManagerState'

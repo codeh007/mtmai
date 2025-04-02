@@ -2,8 +2,10 @@ from flows.flow_ctx import FlowCtx
 from loguru import logger
 from model_client.utils import get_custom_model
 from mtmai.agents.cancel_token import MtCancelToken
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
@@ -33,7 +35,9 @@ class FlowAg:
         last_txt_message = ""
         team = await flowctx.load_team(input.component_id)
 
-        result = await team.run_stream(task=input, cancellation_token=cancellation_token)
+        result = await team.run_stream(
+            task=input, cancellation_token=cancellation_token
+        )
         # output_stream = team.run_stream(
         #     task=task, cancellation_token=cancellation_token
         # )
@@ -64,16 +68,25 @@ class FlowAg:
         #     else:
         #         logger.info(f"工作流收到其他消息: {message}")
 
-        # state = await team.save_state()
+        state = await team.save_state()
         # await tenant_client.ag.save_team_state(
         #     componentId=input.component_id,
         #     tenant_id=tenant_client.tenant_id,
         #     chat_id=session_id,
         #     state=state,
         # )
+        await tenant_client.ag_state_api.ag_state_upsert(
+            tenant=tenant_client.tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                componentId=input.component_id,
+                chatId=session_id,
+                state=state,
+                type=StateType.RUNTIMESTATE,
+            ),
+        )
 
         logger.info(f"(FlowAg)工作流结束,{hatctx.step_run_id}\n")
-        return {"result": "todo"}
+        return {"state": state}
 
 
 def my_step_callback(memory_step: ActionStep, agent: CodeAgent) -> None:

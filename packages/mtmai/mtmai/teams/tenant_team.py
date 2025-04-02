@@ -28,8 +28,6 @@ from autogen_core import (
     TopicId,
 )
 from autogen_core.models import SystemMessage
-from typing_extensions import Self
-
 from mtmai.agents._agents import platform_account_topic_type
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
@@ -37,6 +35,7 @@ from mtmai.clients.rest.models.component_model import ComponentModel
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
+from typing_extensions import Self
 
 
 class TenantTeamConfig(RoundRobinGroupChatConfig):
@@ -178,7 +177,6 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
                 tools=[],
                 # delegate_tools=[transfer_back_to_triage_tool],
                 # agent_topic_type=sales_agent_topic_type,
-                # user_topic_type=user_topic_type,
             ),
         )
 

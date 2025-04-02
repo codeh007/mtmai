@@ -99,7 +99,6 @@ class SocietyOfMindAgentState(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "version": obj.get("version"),
-            "inner_team_state": obj.get("inner_team_state")
         })
         return _obj
 

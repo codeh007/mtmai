@@ -4,22 +4,16 @@ from autogen_agentchat.teams._group_chat._round_robin_group_chat import (
     RoundRobinGroupChatConfig,
 )
 from autogen_core import ComponentModel
-from clients.rest.api.agent_api import AgentApi
-from clients.rest.api.team_api import TeamApi
 from connecpy.context import ClientContext
-
-from mtmai.clients.rest.api.ag_state_api import AgStateApi
+from mtmai.clients.rest.api.agent_api import AgentApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
-from mtmai.clients.rest.api.model_api import ModelApi
 from mtmai.clients.rest.api.resource_api import ResourceApi
+from mtmai.clients.rest.api.team_api import TeamApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.exceptions import NotFoundException
-from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
-from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.state_type import StateType
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtmpb.ag_connecpy import AsyncAgServiceClient
 
@@ -49,12 +43,12 @@ class AgClient:
         self._api_client = ApiClient(configuration=self.client_config)
         return self._api_client
 
-    @property
-    def ag_state_api(self):
-        if hasattr(self, "_ag_state_api"):
-            return self._ag_state_api
-        self._ag_state_api = AgStateApi(self.api_client)
-        return self._ag_state_api
+    # @property
+    # def ag_state_api(self):
+    #     if hasattr(self, "_ag_state_api"):
+    #         return self._ag_state_api
+    #     self._ag_state_api = AgStateApi(self.api_client)
+    #     return self._ag_state_api
 
     def ag_state_connect(self) -> AsyncAgServiceClient:
         if hasattr(self, "_ag_state_connect"):
@@ -71,12 +65,12 @@ class AgClient:
         self._chat_api = ChatApi(self.api_client)
         return self._chat_api
 
-    @property
-    def model_api(self):
-        if hasattr(self, "_model_api"):
-            return self._model_api
-        self._model_api = ModelApi(self.api_client)
-        return self._model_api
+    # @property
+    # def model_api(self):
+    #     if hasattr(self, "_model_api"):
+    #         return self._model_api
+    #     self._model_api = ModelApi(self.api_client)
+    #     return self._model_api
 
     @property
     def coms_api(self):
@@ -126,18 +120,18 @@ class AgClient:
         except NotFoundException:
             return None
 
-    async def save_team_state(
-        self, componentId: str, tenant_id: str, chat_id: str, state: dict
-    ) -> None:
-        await self.ag_state_api.ag_state_upsert(
-            tenant=tenant_id,
-            ag_state_upsert=AgStateUpsert(
-                componentId=componentId,
-                chatId=chat_id,
-                state=AgStatePropertiesState().from_dict(state),
-                type=StateType.TEAMSTATE,
-            ),
-        )
+    # async def save_team_state(
+    #     self, componentId: str, tenant_id: str, chat_id: str, state: dict
+    # ) -> None:
+    #     await self.ag_state_api.ag_state_upsert(
+    #         tenant=tenant_id,
+    #         ag_state_upsert=AgStateUpsert(
+    #             componentId=componentId,
+    #             chatId=chat_id,
+    #             state=state,
+    #             type=StateType.TEAMSTATE,
+    #         ),
+    #     )
 
     async def upsert_team(
         self, tenant_id: str, team: Team, component_id: str | None = None

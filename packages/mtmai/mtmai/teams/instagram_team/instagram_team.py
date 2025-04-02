@@ -36,8 +36,8 @@ class InstagramTeamConfig(BaseModel):
     final_answer_prompt: str
 
     # 新增
-    username: str | None = None
-    password: str | None = None
+    # username: str | None = None
+    # password: str | None = None
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):

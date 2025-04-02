@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.ag_state_properties_state import AgStatePropertiesState
 from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
@@ -34,7 +33,7 @@ class AgStateUpsert(BaseModel):
     chat_id: StrictStr = Field(alias="chatId")
     topic: Optional[StrictStr] = None
     source: Optional[StrictStr] = None
-    state: AgStatePropertiesState
+    state: Dict[str, Any]
     state_id: Optional[StrictStr] = Field(default=None, alias="stateId")
     tenant_id: Optional[StrictStr] = Field(default=None, alias="tenantId")
     __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateId", "tenantId"]
@@ -78,9 +77,6 @@ class AgStateUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of state
-        if self.state:
-            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
@@ -99,7 +95,7 @@ class AgStateUpsert(BaseModel):
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),
             "source": obj.get("source"),
-            "state": AgStatePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None,
+            "state": obj.get("state"),
             "stateId": obj.get("stateId"),
             "tenantId": obj.get("tenantId")
         })

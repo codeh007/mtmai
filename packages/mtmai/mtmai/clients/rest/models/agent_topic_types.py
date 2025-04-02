@@ -28,7 +28,13 @@ class AgentTopicTypes(str, Enum):
     """
     USER = 'user'
     HUMAN = 'human'
-    SALESAGENT = 'SalesAgent'
+    INSTAGRAM = 'instagram'
+    BROWSER = 'browser'
+    SOCIOETY = 'socioety'
+    CODE = 'code'
+    ROUTER = 'router'
+    RESEARCH = 'research'
+    WRITER = 'writer'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -99,7 +99,6 @@ class TeamState(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "version": obj.get("version"),
-            "agent_states": obj.get("agent_states")
         })
         return _obj
 
