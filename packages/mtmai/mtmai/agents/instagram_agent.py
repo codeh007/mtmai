@@ -34,6 +34,8 @@ class InstagramAgent(RoutedAgent):
         # model_client = model_client or get_default_model_client()
         self.ig_client = Client()
         self._model_context = BufferedChatCompletionContext(buffer_size=7)
+        self.username = "username1"
+        self.password = "password1"
 
     @message_handler
     async def on_ig_account(
@@ -351,6 +353,7 @@ class InstagramAgent(RoutedAgent):
             llm_context=model_context_state,
             username=self.username,
             password=self.password,
+            ig_settings=self.ig_client.get_settings(),
             # is_wait_user_input=self.is_wait_user_input,
         ).model_dump()
 

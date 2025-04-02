@@ -54,17 +54,17 @@ class UserAgent(RoutedAgent):
                 message=CodeWritingTask(
                     task="Write a function to find the sum of all even numbers in a list."
                 ),
-                topic_id=TopicId(AgentTopicTypes.CODER, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.CODER.value, source=session_id),
             )
         elif user_content.startswith("/test_open_browser"):
             await self.runtime.publish_message(
                 message=BrowserOpenTask(url="https://playwright.dev/"),
-                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
             )
         elif user_content.startswith("/test_browser_task"):
             await self.runtime.publish_message(
                 message=BrowserTask(task="Open an online code editor programiz."),
-                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
             )
         # elif user_content.startswith("/test_team"):
         #     await self.runtime.publish_message(
@@ -76,7 +76,7 @@ class UserAgent(RoutedAgent):
             #     message=IgAccountMessage(username="username1", password="password1"),
             #     topic_id=TopicId(instagram_agent_topic_type, source=session_id),
             # )
-            agent_id = AgentId(AgentTopicTypes.INSTAGRAM, "default")
+            agent_id = AgentId(AgentTopicTypes.INSTAGRAM.value, "default")
             result = await self._runtime.send_message(
                 IgAccountMessage(username="username1", password="password1"), agent_id
             )

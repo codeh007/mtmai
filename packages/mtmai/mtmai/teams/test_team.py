@@ -69,7 +69,7 @@ class TestTeam(Team, Component[TestTeamConfig]):
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
             runtime=runtime,
-            type=AgentTopicTypes.ROUTER,
+            type=AgentTopicTypes.ROUTER.value,
             factory=lambda: SemanticRouterAgent(
                 name="router",
                 agent_registry=agent_registry,
@@ -81,27 +81,26 @@ class TestTeam(Team, Component[TestTeamConfig]):
 
         await runtime.add_subscription(
             TypeSubscription(
-                topic_type=AgentTopicTypes.ROUTER,
+                topic_type=AgentTopicTypes.ROUTER.value,
                 agent_type=router_agent_type.type,
             )
         )
 
         user_agent_type = await UserAgent.register(
             runtime=runtime,
-            type=AgentTopicTypes.USER,
+            type=AgentTopicTypes.USER.value,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
         await runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.USER, agent_type=user_agent_type.type
+                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
             )
         )
-
         instagram_agent_type = await InstagramAgent.register(
             runtime=runtime,
-            type=AgentTopicTypes.INSTAGRAM,
+            type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(),
         )
         await runtime.add_subscription(
@@ -145,13 +144,15 @@ class TestTeam(Team, Component[TestTeamConfig]):
             await self._runtime.publish_message(
                 message=AgentUserInput(content=task),
                 topic_id=TopicId(
-                    type=AgentTopicTypes.INSTAGRAM, source=self.session_id
+                    type=AgentTopicTypes.INSTAGRAM.value, source=self.session_id
                 ),
             )
         else:
             await self._runtime.publish_message(
                 message=task,
-                topic_id=TopicId(type=AgentTopicTypes.USER, source=self.session_id),
+                topic_id=TopicId(
+                    type=AgentTopicTypes.USER.value, source=self.session_id
+                ),
             )
 
             # agent_id = AgentId(instagram_agent_topic_type, "default")

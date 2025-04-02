@@ -93,7 +93,7 @@ def transfer_back_to_triage() -> str:
 
 
 def escalate_to_human() -> str:
-    return AgentTopicTypes.HUMAN
+    return AgentTopicTypes.HUMAN.value
 
 
 # Delegate tools for the AI agents
@@ -320,29 +320,29 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         human_agent_type = await HumanAgent.register(
             runtime=self._runtime,
-            type=AgentTopicTypes.HUMAN,  # Using the topic type as the agent type.
+            type=AgentTopicTypes.HUMAN.value,  # Using the topic type as the agent type.
             factory=lambda: HumanAgent(
                 description="A human agent.",
-                agent_topic_type=AgentTopicTypes.HUMAN,
-                user_topic_type=AgentTopicTypes.USER,
+                agent_topic_type=AgentTopicTypes.HUMAN.value,
+                user_topic_type=AgentTopicTypes.USER.value,
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.HUMAN, agent_type=human_agent_type.type
+                topic_type=AgentTopicTypes.HUMAN.value, agent_type=human_agent_type.type
             )
         )
 
         user_agent_type = await UserAgent.register(
             runtime=self._runtime,
-            type=AgentTopicTypes.USER,
+            type=AgentTopicTypes.USER.value,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.USER, agent_type=user_agent_type.type
+                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
             )
         )
 
@@ -387,7 +387,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         browser_agent_type = await BrowserAgent.register(
             runtime=self._runtime,
-            type=AgentTopicTypes.BROWSER,
+            type=AgentTopicTypes.BROWSER.value,
             factory=lambda: BrowserAgent(
                 description="browser agent.",
                 # model_client=model_client
@@ -395,7 +395,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
         )
         await self._runtime.add_subscription(
             TypeSubscription(
-                topic_type=AgentTopicTypes.BROWSER,
+                topic_type=AgentTopicTypes.BROWSER.value,
                 agent_type=browser_agent_type.type,
             )
         )
@@ -405,7 +405,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
             runtime=self._runtime,
-            type=AgentTopicTypes.ROUTER,
+            type=AgentTopicTypes.ROUTER.value,
             factory=lambda: SemanticRouterAgent(
                 name="router",
                 agent_registry=agent_registry,
@@ -415,7 +415,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         await self._runtime.add_subscription(
             TypeSubscription(
-                topic_type=AgentTopicTypes.ROUTER,
+                topic_type=AgentTopicTypes.ROUTER.value,
                 agent_type=router_agent_type.type,
             )
         )
@@ -456,7 +456,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         await self._runtime.publish_message(
             message=task,
-            topic_id=TopicId(type=AgentTopicTypes.USER, source=session_id),
+            topic_id=TopicId(type=AgentTopicTypes.USER.value, source=session_id),
         )
 
         # TODO: 对于系统团队的停止方式,应该在 worker 中实现,这个团队应该跟随worker的停止而停止
