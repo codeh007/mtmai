@@ -1,7 +1,7 @@
-from clients.rest.models.flow_names import FlowNames
 from flows.flow_ctx import FlowCtx
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
+from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.platform_account_flow_input import (
     PlatformAccountFlowInput,
 )

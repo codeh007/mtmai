@@ -1,16 +1,16 @@
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import TextMessage, ThoughtEvent
-from clients.rest.models.ag_state_upsert import AgStateUpsert
-from clients.rest.models.team_run import TeamRun
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.team_run import TeamRun
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.teams.test_team import TestTeam
 from mtmai.worker_app import mtmapp
-from teams.test_team import TestTeam
 
 
 @mtmapp.workflow(

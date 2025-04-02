@@ -1,11 +1,11 @@
 from autogen_agentchat.base import Team
-from clients.rest.models.component_types import ComponentTypes
 from context.context_client import TenantClient
 from context.ctx import get_chat_session_id_ctx
 from loguru import logger
-from mtlibs.id import is_uuid
+from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.context.context import Context
 from mtmai.gallery import builder
+from mtmai.mtlibs.id import is_uuid
 from typing_extensions import Self
 
 

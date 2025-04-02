@@ -11,11 +11,6 @@ from autogen_core import (
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
 from loguru import logger
-from mtmai.agents._agents import (  # instagram_agent_topic_type,
-    browser_topic_type,
-    coder_agent_topic_type,
-    team_runner_topic_type,
-)
 from mtmai.agents._types import (
     AgentResponse,
     BrowserOpenTask,
@@ -23,7 +18,6 @@ from mtmai.agents._types import (
     CodeWritingTask,
     IgAccountMessage,
     IgLoginRequire,
-    TeamRunnerTask,
     TerminationMessage,
 )
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -60,23 +54,23 @@ class UserAgent(RoutedAgent):
                 message=CodeWritingTask(
                     task="Write a function to find the sum of all even numbers in a list."
                 ),
-                topic_id=TopicId(coder_agent_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.CODER, source=session_id),
             )
         elif user_content.startswith("/test_open_browser"):
             await self.runtime.publish_message(
                 message=BrowserOpenTask(url="https://playwright.dev/"),
-                topic_id=TopicId(browser_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
             )
         elif user_content.startswith("/test_browser_task"):
             await self.runtime.publish_message(
                 message=BrowserTask(task="Open an online code editor programiz."),
-                topic_id=TopicId(browser_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
             )
-        elif user_content.startswith("/test_team"):
-            await self.runtime.publish_message(
-                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
-                topic_id=TopicId(team_runner_topic_type, source=session_id),
-            )
+        # elif user_content.startswith("/test_team"):
+        #     await self.runtime.publish_message(
+        #         message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+        #         topic_id=TopicId(team_runner_topic_type, source=session_id),
+        #     )
         elif user_content.startswith("/test_ig_login"):
             # await self.runtime.publish_message(
             #     message=IgAccountMessage(username="username1", password="password1"),

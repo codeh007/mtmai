@@ -1,14 +1,14 @@
 from typing import Any
 
 from autogen_ext.tools.mcp import SseServerParams
-from clients.rest.api.ag_state_api import AgStateApi
-from clients.rest.api.coms_api import ComsApi
-from clients.rest.api.platform_account_api import PlatformAccountApi
-from clients.rest.api.resource_api import ResourceApi
-from clients.rest.api_client import ApiClient
-from clients.rest.configuration import Configuration
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
+from mtmai.clients.rest.api.ag_state_api import AgStateApi
+from mtmai.clients.rest.api.coms_api import ComsApi
+from mtmai.clients.rest.api.platform_account_api import PlatformAccountApi
+from mtmai.clients.rest.api.resource_api import ResourceApi
+from mtmai.clients.rest.api_client import ApiClient
+from mtmai.clients.rest.configuration import Configuration
 from mtmai.context.ctx import (
     META_RUN_BY_TENANT,
     META_RUN_BY_USER_ID,

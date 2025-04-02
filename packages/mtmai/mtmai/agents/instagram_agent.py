@@ -5,9 +5,10 @@ import re
 from typing import Any, List, Mapping
 
 from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
-from clients.rest.models.instagram_agent_state import InstagramAgentState
+from autogen_core.model_context import BufferedChatCompletionContext
 from loguru import logger
 from mtmai.agents._types import IgAccountMessage, IgLoginRequire
+from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.exceptions import BadPassword
 
@@ -32,6 +33,7 @@ class InstagramAgent(RoutedAgent):
         super().__init__("InstagramAgent")
         # model_client = model_client or get_default_model_client()
         self.ig_client = Client()
+        self._model_context = BufferedChatCompletionContext(buffer_size=7)
 
     @message_handler
     async def on_ig_account(
@@ -45,12 +47,6 @@ class InstagramAgent(RoutedAgent):
             return IgLoginRequire(username=message.username, password=message.password)
         except Exception as e:
             raise e
-
-    # @message_handler
-    # async def handle_agent_run_input(
-    #     self, message: AgentRunInput, ctx: MessageContext
-    # ) -> IgLoginRequire | None:
-    #     return None
 
     async def example(self):
         IG_CREDENTIAL_PATH = "./ig_settings.json"

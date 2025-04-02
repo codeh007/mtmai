@@ -22,14 +22,10 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from autogen_core.tools import FunctionTool
-from clients.rest.models.agent_topic_types import AgentTopicTypes
 from loguru import logger
-from mtmai.agents._agents import (  # user_topic_type,
-    browser_topic_type,
-    human_agent_topic_type,
+from mtmai.agents._agents import (
     issues_and_repairs_agent_topic_type,
     platform_account_topic_type,
-    router_topic_type,
     sales_agent_topic_type,
     triage_agent_topic_type,
 )
@@ -44,6 +40,7 @@ from mtmai.agents.human_agent import HumanAgent
 from mtmai.agents.platorm_account_agent import PlatformAccountAgent
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from pydantic import BaseModel
@@ -96,7 +93,7 @@ def transfer_back_to_triage() -> str:
 
 
 def escalate_to_human() -> str:
-    return human_agent_topic_type
+    return AgentTopicTypes.HUMAN
 
 
 # Delegate tools for the AI agents
@@ -323,16 +320,16 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         human_agent_type = await HumanAgent.register(
             runtime=self._runtime,
-            type=human_agent_topic_type,  # Using the topic type as the agent type.
+            type=AgentTopicTypes.HUMAN,  # Using the topic type as the agent type.
             factory=lambda: HumanAgent(
                 description="A human agent.",
-                agent_topic_type=human_agent_topic_type,
+                agent_topic_type=AgentTopicTypes.HUMAN,
                 user_topic_type=AgentTopicTypes.USER,
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=human_agent_topic_type, agent_type=human_agent_type.type
+                topic_type=AgentTopicTypes.HUMAN, agent_type=human_agent_type.type
             )
         )
 
@@ -390,7 +387,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         browser_agent_type = await BrowserAgent.register(
             runtime=self._runtime,
-            type=browser_topic_type,
+            type=AgentTopicTypes.BROWSER,
             factory=lambda: BrowserAgent(
                 description="browser agent.",
                 # model_client=model_client
@@ -398,7 +395,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
         )
         await self._runtime.add_subscription(
             TypeSubscription(
-                topic_type=browser_topic_type,
+                topic_type=AgentTopicTypes.BROWSER,
                 agent_type=browser_agent_type.type,
             )
         )
@@ -408,7 +405,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
             runtime=self._runtime,
-            type=router_topic_type,
+            type=AgentTopicTypes.ROUTER,
             factory=lambda: SemanticRouterAgent(
                 name="router",
                 agent_registry=agent_registry,
@@ -418,7 +415,7 @@ class SysTeam(BaseGroupChat, Component[SysTeamConfig]):
 
         await self._runtime.add_subscription(
             TypeSubscription(
-                topic_type=router_topic_type,
+                topic_type=AgentTopicTypes.ROUTER,
                 agent_type=router_agent_type.type,
             )
         )

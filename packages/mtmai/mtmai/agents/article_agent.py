@@ -1,17 +1,17 @@
 from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
 from autogen_core.models import AssistantMessage
 from loguru import logger
-
 from mtmai.agents._types import AgentResponse, UserTask
 
 
 class ArticleAgent(RoutedAgent):
     def __init__(
-        self, description: str, agent_topic_type: str, user_topic_type: str
+        self,
+        description: str,
+        agent_topic_type: str,
     ) -> None:
         super().__init__(description)
         # self._agent_topic_type = agent_topic_type
-        # self._user_topic_type = user_topic_type
 
     @message_handler
     async def handle_user_task(self, message: UserTask, ctx: MessageContext) -> None:

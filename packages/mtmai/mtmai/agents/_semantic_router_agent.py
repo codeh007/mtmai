@@ -6,21 +6,16 @@ from autogen_core import (
     message_handler,
 )
 from loguru import logger
-from mtmai.agents._agents import (
-    browser_topic_type,
-    coder_agent_topic_type,
-    team_runner_topic_type,
-)
 from mtmai.agents._types import (
     AgentRegistryBase,
     BrowserOpenTask,
     BrowserTask,
     CodeWritingTask,
     IntentClassifierBase,
-    TeamRunnerTask,
     TerminationMessage,
 )
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 
 
 class SemanticRouterAgent(RoutedAgent):
@@ -50,23 +45,23 @@ class SemanticRouterAgent(RoutedAgent):
                 message=CodeWritingTask(
                     task="Write a function to find the sum of all even numbers in a list."
                 ),
-                topic_id=TopicId(coder_agent_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.CODER, source=session_id),
             )
         elif user_content.startswith("/test_open_browser"):
             await self._runtime.publish_message(
                 message=BrowserOpenTask(url="https://playwright.dev/"),
-                topic_id=TopicId(browser_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
             )
         elif user_content.startswith("/test_browser_task"):
             await self._runtime.publish_message(
                 message=BrowserTask(task="Open an online code editor programiz."),
-                topic_id=TopicId(browser_topic_type, source=session_id),
+                topic_id=TopicId(AgentTopicTypes.BROWSER, source=session_id),
             )
-        elif user_content.startswith("/test_team"):
-            await self._runtime.publish_message(
-                message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
-                topic_id=TopicId(team_runner_topic_type, source=session_id),
-            )
+        # elif user_content.startswith("/test_team"):
+        #     await self._runtime.publish_message(
+        #         message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
+        #         topic_id=TopicId(team_runner_topic_type, source=session_id),
+        #     )
         else:
             # 意图识别
             # 意图识别, 通常用于同一个 type 的用户输入,根据路由规则, 找到最合适的agent
