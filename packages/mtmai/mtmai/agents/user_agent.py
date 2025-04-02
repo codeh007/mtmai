@@ -1,4 +1,9 @@
+from dataclasses import dataclass
+from typing import Any, Mapping
+
 from autogen_core import MessageContext, RoutedAgent, TopicId, message_handler
+from autogen_core.model_context import BufferedChatCompletionContext
+from autogen_core.models import UserMessage
 from loguru import logger
 from mtmai.agents._agents import (
     browser_topic_type,
@@ -16,10 +21,16 @@ from mtmai.agents._types import (
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 
 
+@dataclass
+class Message:
+    content: str
+
+
 class UserAgent(RoutedAgent):
     def __init__(self, description: str, agent_topic_type: str = None) -> None:
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
+        self._model_context = BufferedChatCompletionContext(buffer_size=5)
 
     @message_handler
     async def handle_agent_run_input(
@@ -34,7 +45,7 @@ class UserAgent(RoutedAgent):
         # tenant_client = TenantClient()
         # tid = tenant_client.tenant_id
         logger.info(
-            f"{'-'*80}\nUser login, session ID: {session_id}. task: {message.content}"
+            f"{'-'*80}\nhandle_agent_run_input, session ID: {session_id}. task: {message.content}"
         )
         user_input = message.content
 
@@ -76,6 +87,10 @@ class UserAgent(RoutedAgent):
             # )
 
             resource_id = message.resource_id
+            user_message = UserMessage(content=message.content, source="user")
+            # Add message to model context.
+            await self._model_context.add_message(user_message)
+            return Message(content="content1")
 
             # try:
             #     resource = await tenant_client.ag.resource_api.resource_get(
@@ -198,3 +213,12 @@ class UserAgent(RoutedAgent):
     #     logger.info(f"handle_code_review_result: {message}")
     #     tenant_client = TenantClient()
     #     await tenant_client.emit(message)
+    async def save_state(self) -> Mapping[str, Any]:
+        return {"model_context": self._model_context}
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        # round_robin_state = RoundRobinManagerState.model_validate(state)
+        # self._message_thread = [self._message_factory.create(message) for message in round_robin_state.message_thread]
+        # self._current_turn = round_robin_state.current_turn
+        # self._next_speaker_index = round_robin_state.next_speaker_index
+        pass
