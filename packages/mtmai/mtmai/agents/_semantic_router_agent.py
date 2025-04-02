@@ -20,8 +20,6 @@ from mtmai.agents._types import (
     TeamRunnerTask,
     TerminationMessage,
 )
-
-# from mtmai.mtmpb.ag_pb2 import AgentRunInput
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 
 

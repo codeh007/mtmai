@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
+from agents._semantic_router_agent import SemanticRouterAgent
 from agents.instagram_agent import InstagramAgent
 from agents.user_agent import UserAgent
 from autogen_agentchat.base import TaskResult, TerminationCondition
@@ -27,11 +28,13 @@ from clients.rest.models.ig_login_event import IgLoginEvent
 from context.context_client import TenantClient
 from loguru import logger
 from model_client.utils import get_default_model_client
-from mtmai.agents._agents import user_topic_type
+from mtmai.agents._agents import router_topic_type, user_topic_type
+from mtmai.agents._types import AgentRegistryBase
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.ctx import get_chat_session_id_ctx
 from pydantic import BaseModel
 from teams.instagram_team.instagram_manager import InstagramOrchestrator
+from teams.sys_team import MockIntentClassifier
 from typing_extensions import Self
 
 
@@ -48,6 +51,18 @@ class TestTeamConfig(BaseModel):
     # 新增
     username: str | None = None
     password: str | None = None
+
+
+class MockAgentRegistry(AgentRegistryBase):
+    def __init__(self):
+        self.agents = {
+            "finance_intent": "finance",
+            "hr_intent": "hr",
+            # "general": triage_agent_topic_type,
+        }
+
+    async def get_agent(self, intent: str) -> str:
+        return self.agents[intent]
 
 
 class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
@@ -88,9 +103,6 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         self._password = password
         self._initialized = False
         self._is_running = False
-        self._runtime = SingleThreadedAgentRuntime(
-            # ignore_unhandled_exceptions=False,
-        )
 
     def _create_group_chat_manager_factory(
         self,
@@ -131,6 +143,27 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         self._initialized = True
         self.tenant_client = TenantClient()
         runtime.add_message_serializer(try_get_known_serializers_for_type(IgLoginEvent))
+
+        # Create the Semantic Router
+        agent_registry = MockAgentRegistry()
+        intent_classifier = MockIntentClassifier()
+        router_agent_type = await SemanticRouterAgent.register(
+            runtime=self._runtime,
+            type=router_topic_type,
+            factory=lambda: SemanticRouterAgent(
+                name="router",
+                agent_registry=agent_registry,
+                intent_classifier=intent_classifier,
+            ),
+        )
+
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=router_topic_type,
+                agent_type=router_agent_type.type,
+            )
+        )
+
         user_agent_type = await UserAgent.register(
             runtime=self._runtime,
             type=user_topic_type,
@@ -174,6 +207,16 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         if cancellation_token and cancellation_token.is_cancelled():
             logger.info("cancellation_token is cancelled")
             return
+
+        session_id = get_chat_session_id_ctx()
+        self._runtime = SingleThreadedAgentRuntime(
+            # ignore_unhandled_exceptions=False,
+        )
+        needs_user_input_handler = NeedsUserInputHandler(session_id)
+        self._runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[needs_user_input_handler],
+            ignore_unhandled_exceptions=False,
+        )
         if not self._initialized:
             await self._init(self._runtime)
         # async for event in super().run_stream(
@@ -184,6 +227,13 @@ class TestTeam(BaseGroupChat, Component[TestTeamConfig]):
         #     else:
         #         await self.tenant_client.emit(event)
         #         yield event
+        await self._runtime.load_state(
+            {
+                "User/b59add05-9f88-4379-a50c-e75f6bffdb90": {
+                    "model_context": "model_context",
+                },
+            }
+        )
         if isinstance(task, str):
             await self._runtime.publish_message(
                 message=AgentUserInput(content=task),

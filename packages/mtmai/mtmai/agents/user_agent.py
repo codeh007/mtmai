@@ -9,12 +9,14 @@ from mtmai.agents._agents import (
     browser_topic_type,
     coder_agent_topic_type,
     team_runner_topic_type,
+    user_topic_type,
 )
 from mtmai.agents._types import (
     AgentResponse,
     BrowserOpenTask,
     BrowserTask,
     CodeWritingTask,
+    IgLoginRequire,
     TeamRunnerTask,
     TerminationMessage,
 )
@@ -31,11 +33,13 @@ class UserAgent(RoutedAgent):
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
         self._model_context = BufferedChatCompletionContext(buffer_size=5)
+        self.username = None
+        self.password = None
 
     @message_handler
     async def handle_agent_run_input(
         self, message: AgentRunInput, ctx: MessageContext
-    ) -> None:
+    ) -> IgLoginRequire | None:
         """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
         if ctx.cancellation_token.is_cancelled():
             return
@@ -47,8 +51,6 @@ class UserAgent(RoutedAgent):
         logger.info(
             f"{'-'*80}\nhandle_agent_run_input, session ID: {session_id}. task: {message.content}"
         )
-        user_input = message.content
-
         user_content = message.content
         if user_content.startswith("/test_code"):
             await self._runtime.publish_message(
@@ -72,26 +74,17 @@ class UserAgent(RoutedAgent):
                 message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
                 topic_id=TopicId(team_runner_topic_type, source=session_id),
             )
+        elif user_content.startswith("/test_ig_login"):
+            await self._runtime.publish_message(
+                message=IgLoginRequire(username="username1", password="password1"),
+                topic_id=TopicId(user_topic_type, source=session_id),
+            )
         else:
-            # # 意图识别
-            # # 意图识别, 通常用于同一个 type 的用户输入,根据路由规则, 找到最合适的agent
-            # # 关键点在于当有多个 agent 都能处理相同的 输入类型的时候,可以根据意图将用户的输入转发的**单个** agent
-            # intent = await self._identify_intent(message)
-            # # 找到最合适的agent
-            # agent = await self._find_agent(intent)
-            # # 联系agent
-            # await self.contact_agent(agent, message, session_id)
-            # await self.publish_message(
-            #     UserTask(context=[UserMessage(content=user_input, source=session_id)]),
-            #     topic_id=TopicId(self._agent_topic_type, source=self.id.key),
-            # )
-
-            resource_id = message.resource_id
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
             await self._model_context.add_message(user_message)
-            return Message(content="content1")
-
+            # return Message(content="content1")
+            return IgLoginRequire(username="username", password="password")
             # try:
             #     resource = await tenant_client.ag.resource_api.resource_get(
             #         tenant=tid,
@@ -148,9 +141,10 @@ class UserAgent(RoutedAgent):
         #     topic_id=DefaultTopicId(type="response", source=ctx.topic_id.source),
         # )
 
-    # @message_handler
-    # async def handle_final_copy(self, message: Message, ctx: MessageContext) -> None:
-    #     print(f"\n{'-'*80}\n{self.id.type} received final copy:\n{message.content}")
+    @message_handler
+    async def on_ig_login(self, message: IgLoginRequire, ctx: MessageContext) -> None:
+        assert ctx.topic_id is not None
+        logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
 
     @message_handler
     async def handle_task_result(

@@ -57,6 +57,12 @@ class ScheduleMeetingOutput(BaseModel):
     pass
 
 
+class IgLoginRequire(BaseModel):
+    username: str | None = None
+    password: str | None = None
+    twofa_code: str | None = None
+
+
 agent_message_types = [
     TerminationMessage,
     CodeWritingTask,
@@ -72,4 +78,5 @@ agent_message_types = [
     GetSlowUserMessage,
     AssistantTextMessage,
     UserTextMessage,
+    IgLoginRequire,
 ]
