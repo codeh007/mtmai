@@ -174,7 +174,7 @@ class TestTeam(Team, Component[TestTeamConfig]):
                     type=StateType.RUNTIMESTATE.value,
                     componentId="test_team",
                     chatId=session_id,
-                    state=state,
+                    state=v,
                 ),
             )
         return state
