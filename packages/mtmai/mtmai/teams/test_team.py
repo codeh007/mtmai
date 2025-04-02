@@ -1,8 +1,6 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
-from agents._semantic_router_agent import SemanticRouterAgent
-from agents.instagram_agent import InstagramAgent
 from agents.user_agent import UserAgent
 from autogen_agentchat.base import TaskResult, TerminationCondition
 from autogen_agentchat.conditions import HandoffTermination, TextMentionTermination
@@ -23,18 +21,20 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from autogen_core.models import ChatCompletionClient
-from clients.rest.models.agent_user_input import AgentUserInput
-from context.context_client import TenantClient
 from loguru import logger
-from model_client.utils import get_default_model_client
 from mtmai.agents._agents import (
     instagram_agent_topic_type,
     router_topic_type,
     user_topic_type,
 )
+from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import AgentRegistryBase, agent_message_types
+from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.clients.rest.models.agent_user_input import AgentUserInput
+from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
+from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.instagram_team.instagram_manager import InstagramOrchestrator
 from mtmai.teams.sys_team import MockIntentClassifier
 from pydantic import BaseModel
