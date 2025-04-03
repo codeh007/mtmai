@@ -18,7 +18,6 @@ from mtmai.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmai.clients.rest.api.admin_api import AdminApi
 from mtmai.clients.rest.api.ag_events_api import AgEventsApi
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
-from mtmai.clients.rest.api.agent_api import AgentApi
 from mtmai.clients.rest.api.artifact_api import ArtifactApi
 from mtmai.clients.rest.api.blog_api import BlogApi
 from mtmai.clients.rest.api.browser_api import BrowserApi
@@ -42,7 +41,6 @@ from mtmai.clients.rest.api.proxy_api import ProxyApi
 from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
-from mtmai.clients.rest.api.team_api import TeamApi
 from mtmai.clients.rest.api.tenant_settings_api import TenantSettingsApi
 from mtmai.clients.rest.api.ui_agent_api import UiAgentApi
 
