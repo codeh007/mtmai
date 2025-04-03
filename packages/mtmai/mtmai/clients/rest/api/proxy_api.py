@@ -20,6 +20,7 @@ from pydantic import Field
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.proxy import Proxy
 from mtmai.clients.rest.models.proxy_list import ProxyList
+from mtmai.clients.rest.models.proxy_upsert import ProxyUpsert
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -842,10 +843,10 @@ class ProxyApi:
 
 
     @validate_call
-    async def proxy_update(
+    async def proxy_upsert(
         self,
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy2: Annotated[Proxy, Field(description="The proxy properties to update")],
+        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -859,14 +860,14 @@ class ProxyApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> Proxy:
-        """Update proxy
+        """proxy_upsert
 
-        Update an proxy
+        upsert an proxy
 
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy2: The proxy properties to update (required)
-        :type proxy2: Proxy
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -889,9 +890,9 @@ class ProxyApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._proxy_update_serialize(
+        _param = self._proxy_upsert_serialize(
             proxy=proxy,
-            proxy2=proxy2,
+            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -915,10 +916,10 @@ class ProxyApi:
 
 
     @validate_call
-    async def proxy_update_with_http_info(
+    async def proxy_upsert_with_http_info(
         self,
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy2: Annotated[Proxy, Field(description="The proxy properties to update")],
+        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -932,14 +933,14 @@ class ProxyApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[Proxy]:
-        """Update proxy
+        """proxy_upsert
 
-        Update an proxy
+        upsert an proxy
 
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy2: The proxy properties to update (required)
-        :type proxy2: Proxy
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -962,9 +963,9 @@ class ProxyApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._proxy_update_serialize(
+        _param = self._proxy_upsert_serialize(
             proxy=proxy,
-            proxy2=proxy2,
+            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -988,10 +989,10 @@ class ProxyApi:
 
 
     @validate_call
-    async def proxy_update_without_preload_content(
+    async def proxy_upsert_without_preload_content(
         self,
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy2: Annotated[Proxy, Field(description="The proxy properties to update")],
+        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1005,14 +1006,14 @@ class ProxyApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Update proxy
+        """proxy_upsert
 
-        Update an proxy
+        upsert an proxy
 
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy2: The proxy properties to update (required)
-        :type proxy2: Proxy
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1035,9 +1036,9 @@ class ProxyApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._proxy_update_serialize(
+        _param = self._proxy_upsert_serialize(
             proxy=proxy,
-            proxy2=proxy2,
+            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1056,10 +1057,10 @@ class ProxyApi:
         return response_data.response
 
 
-    def _proxy_update_serialize(
+    def _proxy_upsert_serialize(
         self,
         proxy,
-        proxy2,
+        proxy_upsert,
         _request_auth,
         _content_type,
         _headers,
@@ -1087,8 +1088,8 @@ class ProxyApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if proxy2 is not None:
-            _body_params = proxy2
+        if proxy_upsert is not None:
+            _body_params = proxy_upsert
 
 
         # set the HTTP header `Accept`

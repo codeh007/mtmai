@@ -194,7 +194,8 @@ from mtmai.clients.rest.models.prompt_list import PromptList
 from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.proxy import Proxy
 from mtmai.clients.rest.models.proxy_list import ProxyList
-from mtmai.clients.rest.models.proxy_update import ProxyUpdate
+from mtmai.clients.rest.models.proxy_properties import ProxyProperties
+from mtmai.clients.rest.models.proxy_upsert import ProxyUpsert
 from mtmai.clients.rest.models.pull_request import PullRequest
 from mtmai.clients.rest.models.pull_request_state import PullRequestState
 from mtmai.clients.rest.models.queue_metrics import QueueMetrics
