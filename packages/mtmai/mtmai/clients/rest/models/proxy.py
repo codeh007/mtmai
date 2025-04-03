@@ -34,8 +34,8 @@ class Proxy(BaseModel):
     login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
     properties: Optional[Dict[str, Any]] = None
     tags: Optional[List[StrictStr]] = None
-    enabled: StrictBool
-    provider: StrictStr
+    enabled: Optional[StrictBool] = None
+    provider: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["metadata", "name", "description", "url", "loginUrl", "properties", "tags", "enabled", "provider"]
 
     model_config = ConfigDict(

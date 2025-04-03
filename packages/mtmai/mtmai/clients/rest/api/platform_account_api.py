@@ -898,7 +898,7 @@ class PlatformAccountApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> PlatformAccount:
-        """Update platform_account
+        """platform_account_upsert
 
         Update an platform_account
 
@@ -975,7 +975,7 @@ class PlatformAccountApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[PlatformAccount]:
-        """Update platform_account
+        """platform_account_upsert
 
         Update an platform_account
 
@@ -1052,7 +1052,7 @@ class PlatformAccountApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Update platform_account
+        """platform_account_upsert
 
         Update an platform_account
 
