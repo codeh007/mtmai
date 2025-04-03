@@ -35,10 +35,9 @@ class PlatformAccountUpsert(BaseModel):
     type: Optional[StrictStr] = None
     platform: StrictStr
     enabled: Optional[StrictBool] = None
-    comment: Optional[StrictStr] = None
     tags: Optional[List[StrictStr]] = None
-    properties: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
+    state: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -79,10 +78,10 @@ class PlatformAccountUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if properties (nullable) is None
+        # set to None if state (nullable) is None
         # and model_fields_set contains the field
-        if self.properties is None and "properties" in self.model_fields_set:
-            _dict['properties'] = None
+        if self.state is None and "state" in self.model_fields_set:
+            _dict['state'] = None
 
         return _dict
 
@@ -105,9 +104,8 @@ class PlatformAccountUpsert(BaseModel):
             "type": obj.get("type"),
             "platform": obj.get("platform"),
             "enabled": obj.get("enabled"),
-            "comment": obj.get("comment"),
             "tags": obj.get("tags"),
-            "properties": obj.get("properties")
+            "state": obj.get("state")
         })
         return _obj
 

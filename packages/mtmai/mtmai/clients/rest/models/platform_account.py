@@ -37,10 +37,9 @@ class PlatformAccount(BaseModel):
     type: Optional[StrictStr] = None
     platform: StrictStr
     enabled: Optional[StrictBool] = None
-    comment: Optional[StrictStr] = None
     tags: Optional[List[StrictStr]] = None
-    properties: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "comment", "tags", "properties"]
+    state: Optional[Any] = None
+    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,10 +83,10 @@ class PlatformAccount(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # set to None if properties (nullable) is None
+        # set to None if state (nullable) is None
         # and model_fields_set contains the field
-        if self.properties is None and "properties" in self.model_fields_set:
-            _dict['properties'] = None
+        if self.state is None and "state" in self.model_fields_set:
+            _dict['state'] = None
 
         return _dict
 
@@ -111,9 +110,8 @@ class PlatformAccount(BaseModel):
             "type": obj.get("type"),
             "platform": obj.get("platform"),
             "enabled": obj.get("enabled"),
-            "comment": obj.get("comment"),
             "tags": obj.get("tags"),
-            "properties": obj.get("properties")
+            "state": obj.get("state")
         })
         return _obj
 
