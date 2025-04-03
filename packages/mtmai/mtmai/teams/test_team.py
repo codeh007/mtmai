@@ -17,10 +17,8 @@ from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import AgentRegistryBase, agent_message_types
 from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
-from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
@@ -120,9 +118,6 @@ class TestTeam(Team, Component[TestTeamConfig]):
             return
 
         session_id = get_chat_session_id_ctx()
-        # self._runtime = SingleThreadedAgentRuntime(
-        #     # ignore_unhandled_exceptions=False,
-        # )
         needs_user_input_handler = NeedsUserInputHandler(session_id)
         self._runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[needs_user_input_handler],
@@ -158,25 +153,7 @@ class TestTeam(Team, Component[TestTeamConfig]):
 
         await self._runtime.stop_when_idle()
         state = await self._runtime.save_state()
-        logger.info(f"runtime state: {state}")
-        tenant_client = TenantClient()
-        for k, v in state.items():
-            logger.info(f"key: {k}, value: {v}")
-            parts = k.split("/")
-            topic = parts[0]
-            source = parts[1] if len(parts) > 1 else "default"
-            await tenant_client.ag_state_api.ag_state_upsert(
-                tenant=tenant_client.tenant_id,
-                ag_state_upsert=AgStateUpsert(
-                    tenantId=tenant_client.tenant_id,
-                    topic=topic,
-                    source=source,
-                    type=StateType.RUNTIMESTATE.value,
-                    componentId="test_team",
-                    chatId=session_id,
-                    state=v,
-                ),
-            )
+
         return state
 
     async def reset(self) -> None:
@@ -187,7 +164,6 @@ class TestTeam(Team, Component[TestTeamConfig]):
         return state
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        # await super().load_state(state)
         await self._runtime.load_state(state)
 
     def _to_config(self) -> TestTeamConfig:
@@ -210,44 +186,7 @@ class TestTeam(Team, Component[TestTeamConfig]):
 
     @classmethod
     def _from_config(cls, config: TestTeamConfig) -> Self:
-        # session_id = get_chat_session_id_ctx()
-        # participants = []
-        # for participant in config.participants:
-        #     # if hasattr(participant, "actual_instance") and participant.actual_instance:
-        #     #     participant = participant.actual_instance
-        #     # participant_config = participant.model_dump()
-        #     participants.append(ChatAgent.load_component(participant))
-        # termination_condition = (
-        #     TerminationCondition.load_component(
-        #         config.termination_condition.model_dump()
-        #     )
-        #     if config.termination_condition
-        #     else None
-        # )
-
-        # needs_user_input_handler = NeedsUserInputHandler(session_id)
-        # runtime = SingleThreadedAgentRuntime(
-        #     intervention_handlers=[needs_user_input_handler],
-        #     ignore_unhandled_exceptions=False,
-        # )
-        # if config.model_client:
-        #     model_client = ChatCompletionClient.load_component(config.model_client)
-
-        # else:
-        #     model_client = get_default_model_client()
-
-        return cls(
-            # participants=participants,
-            # termination_condition=termination_condition,
-            # runtime=runtime,
-            # model_client=model_client,
-            # max_turns=config.max_turns or 20,
-            # max_stalls=config.max_stalls or 3,
-            # final_answer_prompt=config.final_answer_prompt
-            # or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-            # username=config.username,
-            # password=config.password,
-        )
+        return cls()
 
     @classmethod
     def from_new(cls) -> Self:
