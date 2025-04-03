@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,12 +27,14 @@ class ProxyProperties(BaseModel):
     ProxyProperties
     """ # noqa: E501
     name: StrictStr
-    description: Optional[StrictStr] = None
+    description: StrictStr
     url: StrictStr
     login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
     properties: Optional[Dict[str, Any]] = None
     tags: Optional[List[StrictStr]] = None
-    __properties: ClassVar[List[str]] = ["name", "description", "url", "loginUrl", "properties", "tags"]
+    enabled: StrictBool
+    provider: StrictStr
+    __properties: ClassVar[List[str]] = ["name", "description", "url", "loginUrl", "properties", "tags", "enabled", "provider"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -90,7 +92,9 @@ class ProxyProperties(BaseModel):
             "url": obj.get("url"),
             "loginUrl": obj.get("loginUrl"),
             "properties": obj.get("properties"),
-            "tags": obj.get("tags")
+            "tags": obj.get("tags"),
+            "enabled": obj.get("enabled"),
+            "provider": obj.get("provider")
         })
         return _obj
 
