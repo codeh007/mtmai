@@ -17,28 +17,22 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PlatformAccountUpsert(BaseModel):
+class FlowPlatformAccountInput(BaseModel):
     """
-    PlatformAccountUpsert
+    FlowPlatformAccountInput
     """ # noqa: E501
-    label: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
+    platform_name: StrictStr
     username: StrictStr
-    email: Optional[StrictStr] = None
-    password: Optional[StrictStr] = None
-    token: Optional[StrictStr] = None
-    type: Optional[StrictStr] = None
-    platform: Optional[StrictStr] = None
-    enabled: Optional[StrictBool] = None
-    tags: Optional[List[StrictStr]] = None
-    state: Optional[Any] = None
-    error: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state", "error"]
+    password: StrictStr
+    two_factor_code: Optional[StrictStr] = None
+    two_factor_key: Optional[StrictStr] = None
+    proxy_url: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["platform_name", "username", "password", "two_factor_code", "two_factor_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -58,7 +52,7 @@ class PlatformAccountUpsert(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PlatformAccountUpsert from a JSON string"""
+        """Create an instance of FlowPlatformAccountInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,16 +73,11 @@ class PlatformAccountUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if state (nullable) is None
-        # and model_fields_set contains the field
-        if self.state is None and "state" in self.model_fields_set:
-            _dict['state'] = None
-
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PlatformAccountUpsert from a dict"""
+        """Create an instance of FlowPlatformAccountInput from a dict"""
         if obj is None:
             return None
 
@@ -96,18 +85,12 @@ class PlatformAccountUpsert(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "label": obj.get("label"),
-            "description": obj.get("description"),
+            "platform_name": obj.get("platform_name"),
             "username": obj.get("username"),
-            "email": obj.get("email"),
             "password": obj.get("password"),
-            "token": obj.get("token"),
-            "type": obj.get("type"),
-            "platform": obj.get("platform"),
-            "enabled": obj.get("enabled"),
-            "tags": obj.get("tags"),
-            "state": obj.get("state"),
-            "error": obj.get("error")
+            "two_factor_code": obj.get("two_factor_code"),
+            "two_factor_key": obj.get("two_factor_key"),
+            "proxy_url": obj.get("proxy_url")
         })
         return _obj
 

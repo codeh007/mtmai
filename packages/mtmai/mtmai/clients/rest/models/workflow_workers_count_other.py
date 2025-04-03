@@ -29,7 +29,9 @@ from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
+from mtmai.clients.rest.models.flow_error import FlowError
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_platform_account_input import FlowPlatformAccountInput
 from mtmai.clients.rest.models.ig_login_event import IgLoginEvent
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.instagram_task import InstagramTask
@@ -50,7 +52,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowNames", "IgLoginEvent", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowNames", "FlowPlatformAccountInput", "IgLoginEvent", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -111,11 +113,15 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_26_validator: Optional[AgentTopicTypes] = None
     # data type: AgentUserInput
     anyof_schema_27_validator: Optional[AgentUserInput] = None
+    # data type: FlowPlatformAccountInput
+    anyof_schema_28_validator: Optional[FlowPlatformAccountInput] = None
+    # data type: FlowError
+    anyof_schema_29_validator: Optional[FlowError] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowNames, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]] = None
+        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowNames, FlowPlatformAccountInput, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowNames", "IgLoginEvent", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig" }
+    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowNames", "FlowPlatformAccountInput", "IgLoginEvent", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig" }
 
     model_config = {
         "validate_assignment": True,
@@ -298,9 +304,21 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
+        # validate data type: FlowPlatformAccountInput
+        if not isinstance(v, FlowPlatformAccountInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowPlatformAccountInput`")
+        else:
+            return v
+
+        # validate data type: FlowError
+        if not isinstance(v, FlowError):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowError`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowNames, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowNames, FlowPlatformAccountInput, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -475,10 +493,22 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_28_validator: Optional[FlowPlatformAccountInput] = None
+        try:
+            instance.actual_instance = FlowPlatformAccountInput.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_29_validator: Optional[FlowError] = None
+        try:
+            instance.actual_instance = FlowError.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowNames, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowNames, FlowPlatformAccountInput, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -492,7 +522,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowNames, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowNames, FlowPlatformAccountInput, IgLoginEvent, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

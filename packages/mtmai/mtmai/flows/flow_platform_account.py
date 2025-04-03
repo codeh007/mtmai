@@ -1,16 +1,20 @@
-from clients.rest.models.platform_account_update import PlatformAccountUpdate
-from flows.flow_ctx import FlowCtx
 from loguru import logger
-from mtlibs.instagrapi.exceptions import BadPassword, TwoFactorRequired
 from mtmai.agents._types import IgLoginRequire
 from mtmai.agents.cancel_token import MtCancelToken
+from mtmai.clients.rest.models.flow_error import FlowError
 from mtmai.clients.rest.models.flow_names import FlowNames
-from mtmai.clients.rest.models.platform_account_flow_input import (
-    PlatformAccountFlowInput,
+from mtmai.clients.rest.models.flow_platform_account_input import (
+    FlowPlatformAccountInput,
 )
+
+# from mtmai.clients.rest.models.platform_account_update import PlatformAccountUpdate
+from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.flows.flow_ctx import FlowCtx
+from mtmai.mtlibs.id import generate_uuid
+from mtmai.mtlibs.instagrapi.exceptions import BadPassword, TwoFactorRequired
 from mtmai.worker_app import mtmapp
 
 
@@ -25,7 +29,7 @@ class FlowPlatformAccount:
         社交媒体账号的初始化
         """
         flowctx = FlowCtx().from_hatctx(hatctx)
-        input = PlatformAccountFlowInput.model_validate(hatctx.input)
+        input = FlowPlatformAccountInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()
@@ -33,42 +37,64 @@ class FlowPlatformAccount:
         if not tid:
             raise ValueError("tenant_id is required")
 
-        platform_account_data = (
-            await tenant_client.platform_account_api.platform_account_get(
-                tenant=tid,
-                platform_account=input.platform_account_id,
-            )
-        )
-        logger.info(f"platform_account_data: {platform_account_data}")
+        # platform_account_data = (
+        #     await tenant_client.platform_account_api.platform_account_get(
+        #         tenant=tid,
+        #         platform_account=input.platform_account_id,
+        #     )
+        # )
+        # logger.info(f"platform_account_data: {platform_account_data}")
 
         # STEP1: 登录
         try:
             from mtmai.mtlibs.instagrapi import Client
 
             ig_client = Client()
+            ig_client.proxy = input.proxy_url
             login_result = ig_client.login(
-                platform_account_data.username, platform_account_data.password
+                username=input.username,
+                password=input.password,
+                verification_code=input.two_factor_code,
+                relogin=False,
             )
-            # ig_client.dump_settings(IG_CREDENTIAL_PATH)
-            ig_client.login(
-                platform_account_data.username, platform_account_data.password
-            )
-        except TwoFactorRequired as e:
-            logger.error(f"需要二次验证: {e}")
-            raise e
-        except BadPassword:
-            tenant_client.platform_account_api.platform_account_update(
+            if not login_result:
+                raise Exception("登录失败")
+            platform_account_id = generate_uuid()
+            result = await tenant_client.platform_account_api.platform_account_upsert(
                 tenant=tid,
-                platform_account=input.platform_account_id,
-                platform_account_update=PlatformAccountUpdate(
-                    # status=PlatformAccountStatus.FAILED,
+                platform_account=platform_account_id,
+                platform_account_upsert=PlatformAccountUpsert(
+                    username=input.username,
+                    password=input.password,
+                    state=ig_client.get_settings(),
                 ),
             )
+            return {"result": "todo", "id": result.metadata.id}
+        except TwoFactorRequired as e:
+            logger.error(f"需要二次验证: {e}")
+            # tenant_client.platform_account_api.platform_account_upsert(
+            #     tenant=tid,
+            #     platform_account=input.platform_account_id,
+            #     platform_account_upsert=PlatformAccountUpsert(
+            #         username=input.username,
+            #         password=input.password,
+            #         error=str(e),
+            #     ),
+            # )
+            raise e
+        except BadPassword:
+            # tenant_client.platform_account_api.platform_account_update(
+            #     tenant=tid,
+            #     platform_account=input.platform_account_id,
+            #     platform_account_update=PlatformAccountUpdate(
+            #         # status=PlatformAccountStatus.FAILED,
+            #     ),
+            # )
             return IgLoginRequire(
-                username=platform_account_data.username,
-                password=platform_account_data.password,
+                username=input.username,
+                password=input.password,
             )
         except Exception as e:
-            logger.error(f"登录失败: {e}")
-            raise e
-        return {"result": "todo"}
+            return FlowError(
+                error=str(e),
+            ).model_dump()

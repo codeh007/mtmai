@@ -33,11 +33,12 @@ class PlatformAccountCreate(BaseModel):
     password: Optional[StrictStr] = None
     token: Optional[StrictStr] = None
     type: Optional[StrictStr] = None
-    platform: StrictStr
+    platform: Optional[StrictStr] = None
     enabled: Optional[StrictBool] = None
     tags: Optional[List[StrictStr]] = None
     state: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state"]
+    error: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state", "error"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -105,7 +106,8 @@ class PlatformAccountCreate(BaseModel):
             "platform": obj.get("platform"),
             "enabled": obj.get("enabled"),
             "tags": obj.get("tags"),
-            "state": obj.get("state")
+            "state": obj.get("state"),
+            "error": obj.get("error")
         })
         return _obj
 

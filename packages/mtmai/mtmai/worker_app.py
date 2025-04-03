@@ -19,47 +19,47 @@ async def run_worker():
     if _start_coroutine:
         await _start_coroutine
 
-    from flows.flow_tenant import FlowTenant
+    from mtmai.flows.flow_tenant import FlowTenant
 
     worker.register_workflow(FlowTenant())
     logger.info("register tenant workflow")
 
-    from flows.flow_smolagent import FlowSmolagent
+    from mtmai.flows.flow_smolagent import FlowSmolagent
 
     worker.register_workflow(FlowSmolagent())
     logger.info("register smolagent workflow")
 
-    from flows.flow_team import FlowTeam
+    from mtmai.flows.flow_team import FlowTeam
 
     worker.register_workflow(FlowTeam())
     logger.info("register team workflow")
 
-    from flows.flow_research import FlowResearch
+    from mtmai.flows.flow_research import FlowResearch
 
     worker.register_workflow(FlowResearch())
     logger.info("register research workflow")
 
-    from flows.flow_browser import FlowBrowser
+    from mtmai.flows.flow_browser import FlowBrowser
 
     worker.register_workflow(FlowBrowser())
     logger.info("register browser workflow")
 
-    from flows.flow_ag import FlowAg
+    from mtmai.flows.flow_ag import FlowAg
 
     worker.register_workflow(FlowAg())
     logger.info("register ag workflow")
 
-    from flows.flow_com import FlowCom
+    from mtmai.flows.flow_com import FlowCom
 
     worker.register_workflow(FlowCom())
     logger.info("register com workflow")
 
-    from flows.flow_platform_account import FlowPlatformAccount
+    from mtmai.flows.flow_platform_account import FlowPlatformAccount
 
     worker.register_workflow(FlowPlatformAccount())
     logger.info("register FlowPlatformAccount")
 
-    from flows.flow_resource import FlowResource
+    from mtmai.flows.flow_resource import FlowResource
 
     worker.register_workflow(FlowResource())
     logger.info("register FlowResource")
