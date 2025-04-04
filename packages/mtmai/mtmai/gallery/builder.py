@@ -16,7 +16,6 @@ from autogen_ext.models.anthropic import AnthropicChatCompletionClient
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from mtmai import tools as tools
-from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
@@ -516,14 +515,14 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     # instagram team ==============================================================
-    instagram_agent = InstagramAgent(
-        name="instagram_agent",
-        # description="an agent that interacts with instagram",
-        model_client=nvidia_model_llama3,
-        # handoffs=["user"],
-    )
+    # instagram_agent = InstagramAgent(
+    #     name="instagram_agent",
+    #     # description="an agent that interacts with instagram",
+    #     model_client=nvidia_model_llama3,
+    #     # handoffs=["user"],
+    # )
     instagram_team = InstagramTeam(
-        participants=[instagram_agent],
+        participants=[research_assistant],
         model_client=nvidia_model_llama3,
         max_turns=20,
         max_stalls=3,

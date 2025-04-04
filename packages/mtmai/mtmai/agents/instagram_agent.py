@@ -4,7 +4,6 @@ import random
 import re
 from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
-from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
 from autogen_core import (
@@ -24,19 +23,19 @@ from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
 
 
-class InstagramAgent(AssistantAgent, RoutedAgent):
+class InstagramAgent(RoutedAgent):
     def __init__(
         self,
-        name: str,
         description: str,
         model_client: ChatCompletionClient,
     ) -> None:
         super().__init__(
-            name=name,
+            # name=name,
             description=description or "An agent that interacts with instagram",
-            model_client=model_client,
+            # model_client=model_client,
         )
-        # model_client = model_client or get_default_model_client()
+        # super(RoutedAgent, self).__init__(description=description)
+        self.model_client = model_client
         self.ig_client = Client()
         self._model_context = BufferedChatCompletionContext(buffer_size=7)
 
@@ -65,7 +64,7 @@ class InstagramAgent(AssistantAgent, RoutedAgent):
         self, message: TerminationMessage, ctx: MessageContext
     ) -> None:
         assert ctx.topic_id is not None
-        logger.info(f"对话结束 with {ctx.sender} because {message.reason}")
+        logger.info(f"()对话结束 with {ctx.sender} because {message.reason}")
 
     async def on_messages_stream(
         self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken

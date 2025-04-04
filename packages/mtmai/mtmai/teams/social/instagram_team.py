@@ -162,7 +162,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(
                 description="An agent that interacts with instagram v2",
-                name="instagram_agent",
+                # name="instagram_agent",
                 model_client=self._model_client,
             ),
         )
