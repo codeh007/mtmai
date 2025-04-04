@@ -118,7 +118,6 @@ from mtmai.clients.rest.models.event_update_cancel200_response import EventUpdat
 from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmai.clients.rest.models.flow_error import FlowError
 from mtmai.clients.rest.models.flow_names import FlowNames
-from mtmai.clients.rest.models.flow_platform_account_follow_input import FlowPlatformAccountFollowInput
 from mtmai.clients.rest.models.flow_platform_account_login_input import FlowPlatformAccountLoginInput
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.frontend_config import FrontendConfig

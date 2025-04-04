@@ -32,13 +32,13 @@ class PlatformAccount(BaseModel):
     description: Optional[StrictStr] = None
     username: StrictStr
     email: Optional[StrictStr] = None
-    password: Optional[StrictStr] = None
+    password: StrictStr
     token: Optional[StrictStr] = None
     type: Optional[StrictStr] = None
-    platform: Optional[StrictStr] = None
+    platform: StrictStr
     enabled: Optional[StrictBool] = None
     tags: Optional[List[StrictStr]] = None
-    state: Optional[Any] = None
+    state: Optional[Dict[str, Any]] = None
     error: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["metadata", "label", "description", "username", "email", "password", "token", "type", "platform", "enabled", "tags", "state", "error"]
 
@@ -84,11 +84,6 @@ class PlatformAccount(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # set to None if state (nullable) is None
-        # and model_fields_set contains the field
-        if self.state is None and "state" in self.model_fields_set:
-            _dict['state'] = None
-
         return _dict
 
     @classmethod

@@ -122,6 +122,7 @@ dependencies = [
     "azure-identity>=1.21.0",
     # "pycryptodome>=3.22.0",
     "pycryptodomex>=3.22.0",
+    "pyotp>=2.9.0",
 ]
 
 

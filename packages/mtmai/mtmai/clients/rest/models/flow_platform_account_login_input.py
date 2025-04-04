@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,13 +26,16 @@ class FlowPlatformAccountLoginInput(BaseModel):
     """
     FlowPlatformAccountLoginInput
     """ # noqa: E501
-    platform_name: StrictStr
-    username: StrictStr
-    password: StrictStr
-    two_factor_code: Optional[StrictStr] = None
-    two_factor_key: Optional[StrictStr] = None
-    proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["platform_name", "username", "password", "two_factor_code", "two_factor_key", "proxy_url"]
+    platform_account_id: StrictStr
+    message_type: StrictStr
+    __properties: ClassVar[List[str]] = ["platform_account_id", "message_type"]
+
+    @field_validator('message_type')
+    def message_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['LOGIN', 'LOGOUT']):
+            raise ValueError("must be one of enum values ('LOGIN', 'LOGOUT')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,12 +88,8 @@ class FlowPlatformAccountLoginInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "platform_name": obj.get("platform_name"),
-            "username": obj.get("username"),
-            "password": obj.get("password"),
-            "two_factor_code": obj.get("two_factor_code"),
-            "two_factor_key": obj.get("two_factor_key"),
-            "proxy_url": obj.get("proxy_url")
+            "platform_account_id": obj.get("platform_account_id"),
+            "message_type": obj.get("message_type")
         })
         return _obj
 

@@ -6,6 +6,7 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.gallery import builder
 from mtmai.mtlibs.id import is_uuid
+from mtmai.teams.test_team import TestTeam
 from typing_extensions import Self
 
 
@@ -37,6 +38,13 @@ class FlowCtx:
             else:
                 raise ValueError(f"组件类型错误: {component_data.component_type}")
 
+        elif team_comp_id_or_name == "instagram_team":
+            team = TestTeam.from_new()
+            return team
+            # gallery_builder = builder.create_default_gallery_builder()
+            # tenant_team_component = gallery_builder.get_team("instagram_team")
+            # tenant_team = Team.load_component(tenant_team_component)
+            # return tenant_team
         else:
             gallery_builder = builder.create_default_gallery_builder()
             tenant_team_component = gallery_builder.get_team("Tenant Team")
@@ -44,10 +52,6 @@ class FlowCtx:
             return tenant_team
 
         return team
-
-    # async def load_agent(self, agent_comp_id_or_name: str):
-    #     agent = await InstagramAgent.from_context()
-    #     return agent
 
     @classmethod
     def from_hatctx(cls, hatctx: Context) -> Self:

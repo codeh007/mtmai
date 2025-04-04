@@ -54,15 +54,15 @@ async def run_worker():
     worker.register_workflow(FlowCom())
     logger.info("register com workflow")
 
-    from flows.flow_platform_account_login import FlowPlatformAccountLogin
+    # from flows.flow_platform_account import FlowPlatformAccountLogin
 
-    worker.register_workflow(FlowPlatformAccountLogin())
-    logger.info("register FlowPlatformAccountLogin")
+    # worker.register_workflow(FlowPlatformAccountLogin())
+    # logger.info("register FlowPlatformAccountLogin")
 
-    from mtmai.flows.flow_platform_account_follow import FlowPlatformAccountFollow
+    # from mtmai.flows.flow_platform_account_follow import FlowPlatformAccountFollow
 
-    worker.register_workflow(FlowPlatformAccountFollow())
-    logger.info("register FlowPlatformAccountFollow")
+    # worker.register_workflow(FlowPlatformAccountFollow())
+    # logger.info("register FlowPlatformAccountFollow")
 
     from mtmai.flows.flow_resource import FlowResource
 

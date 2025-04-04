@@ -34,6 +34,24 @@ class FlowAg:
         result = await team.run_stream(
             task=input, cancellation_token=cancellation_token
         )
+        tenant_client = TenantClient()
+        for k, v in result.items():
+            logger.info(f"key: {k}, value: {v}")
+            parts = k.split("/")
+            topic = parts[0]
+            source = parts[1] if len(parts) > 1 else "default"
+            await tenant_client.ag_state_api.ag_state_upsert(
+                tenant=tenant_client.tenant_id,
+                ag_state_upsert=AgStateUpsert(
+                    tenantId=tenant_client.tenant_id,
+                    topic=topic,
+                    source=source,
+                    type=StateType.RUNTIMESTATE.value,
+                    componentId=input.component_id,
+                    chatId=session_id,
+                    state=v,
+                ),
+            )
         # output_stream = team.run_stream(
         #     task=task, cancellation_token=cancellation_token
         # )
@@ -80,24 +98,5 @@ class FlowAg:
         #         type=StateType.RUNTIMESTATE,
         #     ),
         # )
-
-        tenant_client = TenantClient()
-        for k, v in result.items():
-            logger.info(f"key: {k}, value: {v}")
-            parts = k.split("/")
-            topic = parts[0]
-            source = parts[1] if len(parts) > 1 else "default"
-            await tenant_client.ag_state_api.ag_state_upsert(
-                tenant=tenant_client.tenant_id,
-                ag_state_upsert=AgStateUpsert(
-                    tenantId=tenant_client.tenant_id,
-                    topic=topic,
-                    source=source,
-                    type=StateType.RUNTIMESTATE.value,
-                    componentId=input.component_id,
-                    chatId=session_id,
-                    state=v,
-                ),
-            )
 
         return {"state": ""}
