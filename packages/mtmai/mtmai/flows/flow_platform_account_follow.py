@@ -26,6 +26,8 @@ class FlowPlatformAccountFollow:
         """
         Instagram账号的关注
         """
+        from mtmai.mtlibs.instagrapi import Client
+
         flowctx = FlowCtx().from_hatctx(hatctx)
         input = FlowPlatformAccountFollowInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
@@ -35,13 +37,13 @@ class FlowPlatformAccountFollow:
         if not tid:
             raise ValueError("tenant_id is required")
 
-        # STEP1: 获取以登录状态
-        
+        # STEP1: 获取登录状态
+        result = await tenant_client.platform_account_api.platform_account_get(
+            tenant=tid,
+            platform_account=input.platform_account_id,
+        )
+        ig_client = Client(proxy=result.state.get("proxy_url"))
         try:
-            from mtmai.mtlibs.instagrapi import Client
-
-            ig_client = Client()
-            ig_client.proxy = input.proxy_url
             login_result = ig_client.login(
                 username=input.username,
                 password=input.password,

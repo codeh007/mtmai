@@ -58,7 +58,10 @@ class FlowPlatformAccountLogin:
                 platform_account_upsert=PlatformAccountUpsert(
                     username=input.username,
                     password=input.password,
-                    state=ig_client.get_settings(),
+                    state={
+                        "ig_settings": ig_client.get_settings(),
+                        "proxy_url": input.proxy_url,
+                    },
                 ),
             )
             return {"result": "todo", "id": result.metadata.id}
