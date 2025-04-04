@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
+from agents.instagram_agent import InstagramAgentV2
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
 from autogen_agentchat.teams import BaseGroupChat
@@ -14,9 +15,14 @@ from autogen_core import (
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
+    TypeSubscription,
+    try_get_known_serializers_for_type,
 )
 from autogen_core.models import ChatCompletionClient
+from loguru import logger
+from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
@@ -50,8 +56,6 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         runtime: AgentRuntime | None = None,
         max_stalls: int = 3,
         final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-        username: str | None = None,
-        password: str | None = None,
     ) -> None:
         super().__init__(
             participants,
@@ -70,8 +74,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         self._model_client = model_client
         self._max_stalls = max_stalls
         self._final_answer_prompt = final_answer_prompt
-        self._username = username
-        self._password = password
+        self._runtime = runtime
 
     def _create_group_chat_manager_factory(
         self,
@@ -102,15 +105,30 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             self._final_answer_prompt,
             output_message_queue,
             termination_condition,
-            username=self._username,
-            password=self._password,
         )
 
     async def _init(self, runtime: AgentRuntime):
-        self.session_id = get_chat_session_id_ctx()
         await super()._init(runtime)
         self._initialized = True
+        self.session_id = get_chat_session_id_ctx()
         self.tenant_client = TenantClient()
+
+        for t in agent_message_types:
+            runtime.add_message_serializer(try_get_known_serializers_for_type(t))
+
+        instagram_agent_type = await InstagramAgentV2.register(
+            runtime=runtime,
+            type=AgentTopicTypes.INSTAGRAM.value,
+            factory=lambda: InstagramAgentV2(
+                name="instagram_agent",
+                model_client=self._model_client,
+            ),
+        )
+        await runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=instagram_agent_type, agent_type=instagram_agent_type.type
+            )
+        )
         runtime.start()
 
     async def run_stream(
@@ -137,6 +155,9 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             chat_id=self.session_id,
             state=state,
         )
+
+        runtime_state = await self._runtime.save_state()
+        logger.info(f"runtime_state: {runtime_state}")
 
     async def reset(self) -> None:
         self._is_running = False
@@ -206,18 +227,16 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             max_stalls=config.max_stalls or 3,
             final_answer_prompt=config.final_answer_prompt
             or ORCHESTRATOR_FINAL_ANSWER_PROMPT,
-            username=config.username,
-            password=config.password,
         )
 
-    async def pause(self) -> None:
-        """Pause the team and all its participants. This is useful for
-        pausing the :meth:`autogen_agentchat.base.TaskRunner.run` or
-        :meth:`autogen_agentchat.base.TaskRunner.run_stream` methods from
-        concurrently, while keeping them alive."""
-        ...
+    # async def pause(self) -> None:
+    #     """Pause the team and all its participants. This is useful for
+    #     pausing the :meth:`autogen_agentchat.base.TaskRunner.run` or
+    #     :meth:`autogen_agentchat.base.TaskRunner.run_stream` methods from
+    #     concurrently, while keeping them alive."""
+    #     ...
 
-    async def resume(self) -> None:
-        """Resume the team and all its participants from a pause after
-        :meth:`pause` was called."""
-        ...
+    # async def resume(self) -> None:
+    #     """Resume the team and all its participants from a pause after
+    #     :meth:`pause` was called."""
+    #     ...

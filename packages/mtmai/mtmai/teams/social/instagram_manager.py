@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Mapping
 from autogen_agentchat.base import Response, TerminationCondition
 from autogen_agentchat.messages import (
     AgentEvent,
+    BaseAgentEvent,
+    BaseChatMessage,
     ChatMessage,
     HandoffMessage,
     MessageFactory,
@@ -45,6 +47,7 @@ from autogen_core import (
     CancellationToken,
     DefaultTopicId,
     MessageContext,
+    TopicId,
     event,
     rpc,
 )
@@ -54,7 +57,9 @@ from autogen_core.models import (
     LLMMessage,
     UserMessage,
 )
-from mtmai.agents.instagram_agent import IgAccountMessage
+from mtmai.agents._types import InstagramLoginMessage
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.context.ctx import get_chat_session_id_ctx
 from pydantic import Field
 
 trace_logger = logging.getLogger(TRACE_LOGGER_NAME)
@@ -67,15 +72,10 @@ class InstagramOrchestratorState(BaseGroupChatManagerState):
     n_rounds: int = Field(default=0)
     n_stalls: int = Field(default=0)
     type: str = Field(default="InstagramOrchestratorState")
-
-    username: str = Field(default="")
-    password: str = Field(default="")
     ig_settings: Dict[str, Any] = Field(default={})
 
 
 class InstagramOrchestrator(BaseGroupChatManager):
-    """The MagenticOneOrchestrator manages a group chat with ledger based orchestration."""
-
     def __init__(
         self,
         name: str,
@@ -93,8 +93,6 @@ class InstagramOrchestrator(BaseGroupChatManager):
             AgentEvent | ChatMessage | GroupChatTermination
         ],
         termination_condition: TerminationCondition | None,
-        username: str,
-        password: str,
     ):
         super().__init__(
             name,
@@ -117,8 +115,6 @@ class InstagramOrchestrator(BaseGroupChatManager):
         self._plan = ""
         self._n_rounds = 0
         self._n_stalls = 0
-        self._username = username
-        self._password = password
 
         # Produce a team description. Each agent sould appear on a single line.
         self._team_description = ""
@@ -167,6 +163,20 @@ class InstagramOrchestrator(BaseGroupChatManager):
     async def _log_message(self, log_message: str) -> None:
         trace_logger.debug(log_message)
 
+    async def select_speaker(
+        self, thread: List[BaseAgentEvent | BaseChatMessage]
+    ) -> str:
+        """Select a speaker from the participants in a round-robin fashion."""
+        # current_speaker_index = self._next_speaker_index
+        # self._next_speaker_index = (current_speaker_index + 1) % len(
+        #     self._participant_names
+        # )
+        # current_speaker = self._participant_names[current_speaker_index]
+        # return current_speaker
+        return "instagram_agent"
+
+        # 提示: 如果不需要选择发言者, 可以返回 ""
+
     @rpc
     async def handle_start(self, message: GroupChatStart, ctx: MessageContext) -> None:  # type: ignore
         """Handle the start of a task."""
@@ -189,64 +199,91 @@ class InstagramOrchestrator(BaseGroupChatManager):
         await self.validate_group_state(message.messages)
 
         # 新增:
-        await self.publish_message(
-            IgAccountMessage(username=self._username, password=self._password),
-            topic_id=DefaultTopicId(type=self._output_topic_type),
-        )
+        # await self.publish_message(
+        #     IgAccountMessage(username=self._username, password=self._password),
+        #     topic_id=DefaultTopicId(type=self._output_topic_type),
+        # )
+        # await self.publish_message(
+        #     message, topic_id=DefaultTopicId(type=self._output_topic_type)
+        # )
 
         # Log the message to the output topic.
-        await self.publish_message(
-            message, topic_id=DefaultTopicId(type=self._output_topic_type)
+        speaker_topic_type = self._participant_name_to_topic_type["instagram_agent"]
+
+        # await self.publish_message(
+        #     InstagramLoginMessage(
+        #         content="Hello, world!",
+        #         username="test",
+        #         password="test",
+        #         source=self._name,
+        #     ),
+        #     # IgAccountMessage(),
+        #     # topic_id=DefaultTopicId(
+        #     #     type=self._participant_name_to_topic_type.get("instagram_agent")
+        #     # ),
+        #     # topic_id=TopicId(type="instagram_agent", source=self.session_id),
+        #     topic_id=DefaultTopicId(type=speaker_topic_type),
+        #     cancellation_token=ctx.cancellation_token,
+        # )
+        session_id = get_chat_session_id_ctx()
+        await self._runtime.publish_message(
+            message=InstagramLoginMessage(
+                content="Hello, world!",
+                username="test",
+                password="test",
+                source=self._name,
+            ),
+            topic_id=TopicId(type=AgentTopicTypes.INSTAGRAM.value, source="default"),
         )
         # Log the message to the output queue.
         for msg in message.messages:
             await self._output_message_queue.put(msg)
 
-        # Outer Loop for first time
-        # Create the initial task ledger
-        #################################
-        # Combine all message contents for task
-        self._task = " ".join([msg.to_model_text() for msg in message.messages])
-        planning_conversation: List[LLMMessage] = []
+        # # Outer Loop for first time
+        # # Create the initial task ledger
+        # #################################
+        # # Combine all message contents for task
+        # self._task = " ".join([msg.to_model_text() for msg in message.messages])
+        # planning_conversation: List[LLMMessage] = []
 
-        # 1. GATHER FACTS
-        # create a closed book task and generate a response and update the chat history
-        planning_conversation.append(
-            UserMessage(
-                content=self._get_task_ledger_facts_prompt(self._task),
-                source=self._name,
-            )
-        )
-        response = await self._model_client.create(
-            self._get_compatible_context(planning_conversation),
-            cancellation_token=ctx.cancellation_token,
-        )
+        # # 1. GATHER FACTS
+        # # create a closed book task and generate a response and update the chat history
+        # planning_conversation.append(
+        #     UserMessage(
+        #         content=self._get_task_ledger_facts_prompt(self._task),
+        #         source=self._name,
+        #     )
+        # )
+        # response = await self._model_client.create(
+        #     self._get_compatible_context(planning_conversation),
+        #     cancellation_token=ctx.cancellation_token,
+        # )
 
-        assert isinstance(response.content, str)
-        self._facts = response.content
-        planning_conversation.append(
-            AssistantMessage(content=self._facts, source=self._name)
-        )
+        # assert isinstance(response.content, str)
+        # self._facts = response.content
+        # planning_conversation.append(
+        #     AssistantMessage(content=self._facts, source=self._name)
+        # )
 
-        # 2. CREATE A PLAN
-        ## plan based on available information
-        planning_conversation.append(
-            UserMessage(
-                content=self._get_task_ledger_plan_prompt(self._team_description),
-                source=self._name,
-            )
-        )
-        response = await self._model_client.create(
-            self._get_compatible_context(planning_conversation),
-            cancellation_token=ctx.cancellation_token,
-        )
+        # # 2. CREATE A PLAN
+        # ## plan based on available information
+        # planning_conversation.append(
+        #     UserMessage(
+        #         content=self._get_task_ledger_plan_prompt(self._team_description),
+        #         source=self._name,
+        #     )
+        # )
+        # response = await self._model_client.create(
+        #     self._get_compatible_context(planning_conversation),
+        #     cancellation_token=ctx.cancellation_token,
+        # )
 
-        assert isinstance(response.content, str)
-        self._plan = response.content
+        # assert isinstance(response.content, str)
+        # self._plan = response.content
 
-        # Kick things off
-        self._n_stalls = 0
-        await self._reenter_outer_loop(ctx.cancellation_token)
+        # # Kick things off
+        # self._n_stalls = 0
+        # await self._reenter_outer_loop(ctx.cancellation_token)
 
     @event
     async def handle_agent_response(
@@ -297,9 +334,9 @@ class InstagramOrchestrator(BaseGroupChatManager):
         self._n_rounds = orchestrator_state.n_rounds
         self._n_stalls = orchestrator_state.n_stalls
 
-    async def select_speaker(self, thread: List[AgentEvent | ChatMessage]) -> str:
-        """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
-        return ""
+    # async def select_speaker(self, thread: List[AgentEvent | ChatMessage]) -> str:
+    #     """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
+    #     return ""
 
     async def reset(self) -> None:
         """Reset the group chat manager."""

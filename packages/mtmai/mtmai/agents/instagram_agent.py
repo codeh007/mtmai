@@ -2,60 +2,86 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, List, Mapping
+from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
-from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.base import Response
+from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
+from autogen_core import (
+    CancellationToken,
+    MessageContext,
+    RoutedAgent,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
+from autogen_core.models import ChatCompletionClient
 from loguru import logger
-from mtmai.agents._types import IgAccountMessage, IgLoginRequire
+from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.mtlibs.instagrapi import Client
-from mtmai.mtlibs.instagrapi.exceptions import BadPassword
-
-# from mtmai.mtlibs.instagrapi.exceptions import (
-#     BadPassword,
-#     ChallengeRequired,
-#     FeedbackRequired,
-#     LoginRequired,
-#     PleaseWaitFewMinutes,
-#     RecaptchaChallengeForm,
-#     ReloginAttemptExceeded,
-#     SelectContactPointRecoveryForm,
-# )
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
 
 
-class InstagramAgent(RoutedAgent):
+class InstagramAgentV2(RoutedAgent):
+    def __init__(self):
+        super().__init__(description="An agent that interacts with instagram")
+
+    @message_handler
+    async def on_instagram_login(
+        self, message: InstagramLoginMessage, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_instagram_login: {message}")
+        return None
+
+
+class InstagramAgent(AssistantAgent, RoutedAgent):
     def __init__(
         self,
+        name: str,
+        model_client: ChatCompletionClient,
     ) -> None:
-        super().__init__("InstagramAgent")
+        super().__init__(
+            name=name,
+            description="An agent that interacts with instagram",
+            model_client=model_client,
+        )
         # model_client = model_client or get_default_model_client()
         self.ig_client = Client()
         self._model_context = BufferedChatCompletionContext(buffer_size=7)
-        self.username = "username1"
-        self.password = "password1"
+
+    # @event
+    # async def on_ig_account(
+    #     self, message: IgAccountMessage, ctx: MessageContext
+    # ) -> IgLoginRequire | None:
+    #     """初始化社交账号"""
+    #     logger.info(f"handle_ig_account: {message}")
+    #     try:
+    #         self.ig_client.login(message.username, message.password)
+    #     except BadPassword:
+    #         return IgLoginRequire(username=message.username, password=message.password)
+    #     except Exception as e:
+    #         raise e
 
     @message_handler
-    async def on_ig_account(
-        self, message: IgAccountMessage, ctx: MessageContext
-    ) -> IgLoginRequire | None:
-        """初始化社交账号"""
-        logger.info(f"handle_ig_account: {message}")
-        try:
-            self.ig_client.login(message.username, message.password)
-        except BadPassword:
-            return IgLoginRequire(username=message.username, password=message.password)
-        except Exception as e:
-            raise e
+    async def on_instagram_login(
+        self, message: InstagramLoginMessage, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_instagram_login: {message}")
+        return None
+
+    async def on_messages_stream(
+        self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
+    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+        async for message in super().on_messages_stream(messages, cancellation_token):
+            yield message
 
     async def example(self):
-        IG_CREDENTIAL_PATH = "./ig_settings.json"
+        # IG_CREDENTIAL_PATH = "./ig_settings.json"
         # SLEEP_TIME = "600"  # in seconds
 
         self.ig_client.login(self.username, self.password)
-        self.ig_client.dump_settings(IG_CREDENTIAL_PATH)
+        # self.ig_client.dump_settings(IG_CREDENTIAL_PATH)
 
         userid = self.ig_client.user_id_from_username("hello")
         self.ig_client.user_follow(userid)
@@ -321,29 +347,6 @@ class InstagramAgent(RoutedAgent):
     #         password=config.password,
     #     )
 
-    # @classmethod
-    # async def from_context(cls) -> Self:
-    #     tenant_client = TenantClient()
-    #     model_client = get_default_model_client()
-
-    #     server_params = await tenant_client.get_mcp_endpoint()
-    #     tools = await mcp_server_tools(server_params)
-    #     print_mcp_tools(tools)
-
-    #     return cls(
-    #         name="InstagramAgent",
-    #         model_client=model_client,
-    #         tools=tools,
-    #         handoffs=[],
-    #         model_context=None,
-    #         memory=[],
-    #         description="An agent that provides assistance with ability to use tools.",
-    #         # system_message=config.system_message,
-    #         # model_client_stream=config.model_client_stream,
-    #         # reflect_on_tool_use=config.reflect_on_tool_use,
-    #         # tool_call_summary_format=config.tool_call_summary_format,
-    #     )
-
     async def on_reset(self, cancellation_token: CancellationToken) -> None:
         pass
 
@@ -364,3 +367,20 @@ class InstagramAgent(RoutedAgent):
     # @property
     # def produced_message_types(self) -> Sequence[type[ChatMessage]]:
     #     return (TextMessage, HandoffMessage, IgLoginEvent)
+
+    # async def on_messages_stream(
+    #     self,
+    #     messages: Sequence[BaseChatMessage | ExampleInstagramMessage],
+    #     cancellation_token: CancellationToken,
+    # ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+    #     inner_messages: List[BaseAgentEvent | BaseChatMessage] = []
+    #     for i in range(self._count, 0, -1):
+    #         msg = TextMessage(content=f"{i}...", source=self.name)
+    #         inner_messages.append(msg)
+    #         yield msg
+    #     # The response is returned at the end of the stream.
+    #     # It contains the final message and all the inner messages.
+    #     yield Response(
+    #         chat_message=TextMessage(content="Done!", source=self.name),
+    #         inner_messages=inner_messages,
+    #     )

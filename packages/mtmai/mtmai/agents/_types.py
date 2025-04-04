@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from autogen_agentchat.messages import TextMessage
 from autogen_core.models import LLMMessage
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
@@ -77,6 +78,11 @@ class IgAccountMessage(BaseModel):
     twofa_code: str | None = None
 
 
+class InstagramLoginMessage(TextMessage):
+    username: str | None = None
+    password: str | None = None
+
+
 agent_message_types = [
     TerminationMessage,
     CodeWritingTask,
@@ -94,4 +100,5 @@ agent_message_types = [
     UserTextMessage,
     IgLoginRequire,
     IgAccountMessage,
+    InstagramLoginMessage,
 ]
