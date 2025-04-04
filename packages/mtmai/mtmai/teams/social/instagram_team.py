@@ -16,11 +16,11 @@ from autogen_core import (
     SingleThreadedAgentRuntime,
 )
 from autogen_core.models import ChatCompletionClient
-from model_client.utils import get_default_model_client
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
-from mtmai.teams.instagram_team.instagram_manager import InstagramOrchestrator
+from mtmai.model_client.utils import get_default_model_client
+from mtmai.teams.social.instagram_manager import InstagramOrchestrator
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -35,15 +35,9 @@ class InstagramTeamConfig(BaseModel):
     max_stalls: int
     final_answer_prompt: str
 
-    # 新增
-    # username: str | None = None
-    # password: str | None = None
-
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
-    component_provider_override = (
-        "mtmai.teams.instagram_team.instagram_team.InstagramTeam"
-    )
+    component_provider_override = "mtmai.teams.social.instagram_team.InstagramTeam"
     component_config_schema = InstagramTeamConfig
 
     def __init__(
@@ -216,7 +210,14 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             password=config.password,
         )
 
-    # @classmethod
-    # def from_empty(cls) -> Self:
-    #     return cls(participants=[], manager_name="RoundRobinGroupChatManager")
-    #     return cls(participants=[], manager_name="RoundRobinGroupChatManager")
+    async def pause(self) -> None:
+        """Pause the team and all its participants. This is useful for
+        pausing the :meth:`autogen_agentchat.base.TaskRunner.run` or
+        :meth:`autogen_agentchat.base.TaskRunner.run_stream` methods from
+        concurrently, while keeping them alive."""
+        ...
+
+    async def resume(self) -> None:
+        """Resume the team and all its participants from a pause after
+        :meth:`pause` was called."""
+        ...

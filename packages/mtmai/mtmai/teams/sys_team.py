@@ -23,17 +23,15 @@ from autogen_core import (
 )
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._agents import (
-    issues_and_repairs_agent_topic_type,
-    platform_account_topic_type,
-    sales_agent_topic_type,
-    triage_agent_topic_type,
-)
 from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import (
     AgentRegistryBase,
     IntentClassifierBase,
     agent_message_types,
+    issues_and_repairs_agent_topic_type,
+    platform_account_topic_type,
+    sales_agent_topic_type,
+    triage_agent_topic_type,
 )
 from mtmai.agents.browser_agent import BrowserAgent
 from mtmai.agents.human_agent import HumanAgent

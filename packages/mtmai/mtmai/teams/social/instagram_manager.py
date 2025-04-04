@@ -4,7 +4,6 @@ import logging
 import re
 from typing import Any, Dict, List, Mapping
 
-from agents.instagram_agent import IgAccountMessage
 from autogen_agentchat.base import Response, TerminationCondition
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -18,8 +17,6 @@ from autogen_agentchat.messages import (
     ToolCallRequestEvent,
     ToolCallSummaryMessage,
 )
-
-# from autogen_agentchat.state import MagenticOneOrchestratorState
 from autogen_agentchat.state import BaseGroupChatManagerState
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
@@ -57,6 +54,7 @@ from autogen_core.models import (
     LLMMessage,
     UserMessage,
 )
+from mtmai.agents.instagram_agent import IgAccountMessage
 from pydantic import Field
 
 trace_logger = logging.getLogger(TRACE_LOGGER_NAME)
@@ -72,6 +70,7 @@ class InstagramOrchestratorState(BaseGroupChatManagerState):
 
     username: str = Field(default="")
     password: str = Field(default="")
+    ig_settings: Dict[str, Any] = Field(default={})
 
 
 class InstagramOrchestrator(BaseGroupChatManager):

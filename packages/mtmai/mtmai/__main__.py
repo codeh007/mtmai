@@ -50,7 +50,7 @@ async def _run_ag_grpc_host():
 
 @app.command()
 def test_model_client():
-    from model_client.model_client import test_model_client2
+    from mtmai.model_client.model_client import test_model_client2
 
     asyncio.run(test_model_client2(os.environ.get("OPENAI_API_KEY")))
 

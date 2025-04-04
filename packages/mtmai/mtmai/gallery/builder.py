@@ -2,14 +2,13 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
-from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.conditions import (
     HandoffTermination,
     MaxMessageTermination,
     TextMentionTermination,
 )
-from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat, Swarm
+from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import ComponentModel
 from autogen_core.models import ModelFamily, ModelInfo
 from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
@@ -21,10 +20,9 @@ from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.utils import get_default_model_client
+from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
 from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
-from teams.instagram_team.instagram_team import InstagramTeam
-from teams.test_team import TestTeam
 
 
 class GalleryComponents(BaseModel):
@@ -233,14 +231,6 @@ def create_default_gallery_builder() -> GalleryBuilder:
         category="conversation",
     )
 
-    # Create base model client
-    # base_model = OpenAIChatCompletionClient(model="gpt-4o-mini")
-    # builder.add_model(
-    #     base_model.dump_component(),
-    #     label="OpenAI GPT-4o Mini",
-    #     description="OpenAI GPT-4o-mini",
-    # )
-
     nvidia_model = MtOpenAIChatCompletionClient(
         model="deepseek-ai/deepseek-r1",
         api_key=settings.NVIDIA_API_KEY,
@@ -291,20 +281,6 @@ def create_default_gallery_builder() -> GalleryBuilder:
         label="Anthropic Claude-3-7",
         description="Anthropic Claude-3 model client.",
     )
-
-    # create an azure mode
-    # az_model_client = AzureOpenAIChatCompletionClient(
-    #     azure_deployment="{your-azure-deployment}",
-    #     model="gpt-4o-mini",
-    #     api_version="2024-06-01",
-    #     azure_endpoint="https://{your-custom-endpoint}.openai.azure.com/",
-    #     api_key="test",
-    # )
-    # builder.add_model(
-    #     az_model_client.dump_component(),
-    #     label="AzureOpenAI GPT-4o-mini",
-    #     description="GPT-4o Mini Azure OpenAI model client.",
-    # )
 
     builder.add_tool(
         tools.calculator_tool.dump_component(),
@@ -538,23 +514,23 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     # instagram team ==============================================================
-    instagram_agent = InstagramAgent(
-        name="instagram_agent",
-        description="an agent that interacts with instagram",
-        model_client=nvidia_model_llama3,
-        handoffs=["user"],
-    )
-    instagram_team = InstagramTeam(
-        participants=[instagram_agent],
-        model_client=nvidia_model_llama3,
-        max_turns=20,
-        max_stalls=3,
-    )
-    builder.add_team(
-        instagram_team.dump_component(),
-        label="Instagram Team",
-        description="A team with an Instagram agent that interacts with instagram.",
-    )
+    # instagram_agent = InstagramAgent(
+    #     # name="instagram_agent",
+    #     # description="an agent that interacts with instagram",
+    #     # model_client=nvidia_model_llama3,
+    #     # handoffs=["user"],
+    # )
+    # instagram_team = InstagramTeam(
+    #     participants=[instagram_agent],
+    #     model_client=nvidia_model_llama3,
+    #     max_turns=20,
+    #     max_stalls=3,
+    # )
+    # builder.add_team(
+    #     instagram_team.dump_component(),
+    #     label="Instagram Team",
+    #     description="A team with an Instagram agent that interacts with instagram.",
+    # )
 
     tenant_team = TenantTeam(
         participants=[],
@@ -569,23 +545,23 @@ Read the above conversation. Then select the next role from {participants} to pl
     termination = HandoffTermination(target="user") | TextMentionTermination(
         "TERMINATE"
     )
-    instagram_agent2 = InstagramAgent(
-        name="instagram_agent",
-        description="an agent that interacts with instagram",
-        model_client=nvidia_model_llama3,
-        handoffs=["user"],
-        system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
-    )
-    instagram_swarm = Swarm(
-        participants=[instagram_agent2],
-        max_turns=20,
-        termination_condition=termination,
-    )
-    builder.add_team(
-        instagram_swarm.dump_component(),
-        label="Instagram Team(swarm)",
-        description="A team with an Instagram agent that interacts with instagram.",
-    )
+    # instagram_agent2 = InstagramAgent(
+    #     name="instagram_agent",
+    #     description="an agent that interacts with instagram",
+    #     model_client=nvidia_model_llama3,
+    #     handoffs=["user"],
+    #     system_message="""If you cannot complete the task, transfer to user. Otherwise, when finished, respond with 'TERMINATE'.""",
+    # )
+    # instagram_swarm = Swarm(
+    #     participants=[instagram_agent2],
+    #     max_turns=20,
+    #     termination_condition=termination,
+    # )
+    # builder.add_team(
+    #     instagram_swarm.dump_component(),
+    #     label="Instagram Team(swarm)",
+    #     description="A team with an Instagram agent that interacts with instagram.",
+    # )
 
     tenant_team = TenantTeam(
         participants=[],
@@ -597,13 +573,13 @@ Read the above conversation. Then select the next role from {participants} to pl
         description="租户管理专用团队",
     )
 
-    # test_team
-    test_team = TestTeam.from_new()
+    # social team
+    social_team = SocialTeam._from_config(SocialTeamConfig())
     builder.add_team(
-        test_team.dump_component(),
-        label="Test Team",
-        description="测试团队",
+        social_team.dump_component(),
+        label="Social Team",
+        description="社交团队",
     )
 
-    builder.set_default_team(tenant_team)
+    builder.set_default_team(social_team)
     return builder

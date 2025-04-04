@@ -28,7 +28,7 @@ from autogen_core import (
     TopicId,
 )
 from autogen_core.models import SystemMessage
-from mtmai.agents._agents import platform_account_topic_type
+from mtmai.agents._types import platform_account_topic_type
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.component_model import ComponentModel
@@ -176,7 +176,6 @@ class TenantTeam(BaseGroupChat, Component[TenantTeamConfig]):
                 model_client=model_client,
                 tools=[],
                 # delegate_tools=[transfer_back_to_triage_tool],
-                # agent_topic_type=sales_agent_topic_type,
             ),
         )
 

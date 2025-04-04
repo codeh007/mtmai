@@ -9,7 +9,7 @@ from mtmai.clients.rest.models.team_run import TeamRun
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
-from mtmai.teams.test_team import TestTeam
+from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
 from mtmai.worker_app import mtmapp
 
 
@@ -31,7 +31,7 @@ class FlowTeam:
 
         team_name = input.name
         if team_name == "test_team":
-            team = TestTeam.from_new()
+            team = SocialTeam._from_config(SocialTeamConfig())
         else:
             team_id = metadata.get("teamId")
             team = await tenant_client.ag.get_team_v2(

@@ -1,10 +1,10 @@
-from typing import Any, AsyncGenerator, Mapping, Sequence
+import asyncio
+from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
-from agents.user_agent import UserAgent
-from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.base import TaskResult, Team, TerminationCondition
+from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
+from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import (
-    AgentRuntime,
     CancellationToken,
     Component,
     SingleThreadedAgentRuntime,
@@ -17,17 +17,19 @@ from mtmai.agents._semantic_router_agent import SemanticRouterAgent
 from mtmai.agents._types import AgentRegistryBase, agent_message_types
 from mtmai.agents.instagram_agent import InstagramAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
+from mtmai.teams.social.instagram_manager import InstagramOrchestrator
 from mtmai.teams.sys_team import MockIntentClassifier
 from pydantic import BaseModel
 from typing_extensions import Self
 
 
-class TestTeamConfig(BaseModel):
+class SocialTeamConfig(BaseModel):
     max_turns: int | None = None
 
 
@@ -43,9 +45,9 @@ class MockAgentRegistry(AgentRegistryBase):
         return self.agents[intent]
 
 
-class TestTeam(Team, Component[TestTeamConfig]):
-    component_provider_override = "mtmai.teams.test_team.TestTeam"
-    component_config_schema = TestTeamConfig
+class SocialTeam(Team, Component[SocialTeamConfig]):
+    component_provider_override = "mtmai.teams.social.social_team.SocialTeam"
+    component_config_schema = SocialTeamConfig
 
     def __init__(
         self,
@@ -53,18 +55,58 @@ class TestTeam(Team, Component[TestTeamConfig]):
         self._initialized = False
         self._is_running = False
 
-    async def _init(self, runtime: AgentRuntime):
+    def _create_group_chat_manager_factory(
+        self,
+        name: str,
+        group_topic_type: str,
+        output_topic_type: str,
+        participant_topic_types: List[str],
+        participant_names: List[str],
+        participant_descriptions: List[str],
+        output_message_queue: asyncio.Queue[
+            AgentEvent | ChatMessage | GroupChatTermination
+        ],
+        termination_condition: TerminationCondition | None,
+        max_turns: int | None,
+        message_factory: MessageFactory,
+    ) -> Callable[[], InstagramOrchestrator]:
+        return lambda: InstagramOrchestrator(
+            name,
+            group_topic_type,
+            output_topic_type,
+            participant_topic_types,
+            participant_names,
+            participant_descriptions,
+            max_turns,
+            message_factory,
+            self._model_client,
+            self._max_stalls,
+            self._final_answer_prompt,
+            output_message_queue,
+            termination_condition,
+            username=self._username,
+            password=self._password,
+        )
+
+    async def _init(self):
         self.session_id = get_chat_session_id_ctx()
         self._initialized = True
         self.tenant_client = TenantClient()
+        session_id = get_chat_session_id_ctx()
+        needs_user_input_handler = NeedsUserInputHandler(session_id)
+        self._runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[needs_user_input_handler],
+            ignore_unhandled_exceptions=False,
+        )
+
         for t in agent_message_types:
-            runtime.add_message_serializer(try_get_known_serializers_for_type(t))
+            self.runtime.add_message_serializer(try_get_known_serializers_for_type(t))
 
         # Create the Semantic Router
         agent_registry = MockAgentRegistry()
         intent_classifier = MockIntentClassifier()
         router_agent_type = await SemanticRouterAgent.register(
-            runtime=runtime,
+            runtime=self.runtime,
             type=AgentTopicTypes.ROUTER.value,
             factory=lambda: SemanticRouterAgent(
                 name="router",
@@ -75,7 +117,7 @@ class TestTeam(Team, Component[TestTeamConfig]):
 
         self.model_client = get_default_model_client()
 
-        await runtime.add_subscription(
+        await self.runtime.add_subscription(
             TypeSubscription(
                 topic_type=AgentTopicTypes.ROUTER.value,
                 agent_type=router_agent_type.type,
@@ -83,29 +125,29 @@ class TestTeam(Team, Component[TestTeamConfig]):
         )
 
         user_agent_type = await UserAgent.register(
-            runtime=runtime,
+            runtime=self.runtime,
             type=AgentTopicTypes.USER.value,
             factory=lambda: UserAgent(
                 description="A user agent.",
             ),
         )
-        await runtime.add_subscription(
+        await self.runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
             )
         )
         instagram_agent_type = await InstagramAgent.register(
-            runtime=runtime,
+            runtime=self.runtime,
             type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(),
         )
-        await runtime.add_subscription(
+        await self.runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=instagram_agent_type, agent_type=instagram_agent_type.type
             )
         )
 
-        runtime.start()
+        self.runtime.start()
 
     async def run_stream(
         self,
@@ -117,14 +159,8 @@ class TestTeam(Team, Component[TestTeamConfig]):
             logger.info("cancellation_token is cancelled")
             return
 
-        session_id = get_chat_session_id_ctx()
-        needs_user_input_handler = NeedsUserInputHandler(session_id)
-        self._runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler],
-            ignore_unhandled_exceptions=False,
-        )
         if not self._initialized:
-            await self._init(self._runtime)
+            await self._init()
 
         await self._runtime.load_state(
             {
@@ -166,35 +202,12 @@ class TestTeam(Team, Component[TestTeamConfig]):
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._runtime.load_state(state)
 
-    def _to_config(self) -> TestTeamConfig:
-        participants = [
-            participant.dump_component() for participant in self._participants
-        ]
-        termination_condition = (
-            self._termination_condition.dump_component()
-            if self._termination_condition
-            else None
-        )
-        return TestTeamConfig(
-            participants=participants,
-            model_client=self._model_client.dump_component(),
-            termination_condition=termination_condition,
-            max_turns=self._max_turns,
-            max_stalls=self._max_stalls,
-            final_answer_prompt=self._final_answer_prompt,
-        )
+    def _to_config(self) -> SocialTeamConfig:
+        return SocialTeamConfig()
 
     @classmethod
-    def _from_config(cls, config: TestTeamConfig) -> Self:
+    def _from_config(cls, config: SocialTeamConfig) -> Self:
         return cls()
-
-    @classmethod
-    def from_new(cls) -> Self:
-        return cls()
-
-    # async def reset(self) -> None:
-    #     """Reset the team and all its participants to its initial state."""
-    #     ...
 
     async def pause(self) -> None:
         """Pause the team and all its participants. This is useful for

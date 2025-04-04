@@ -13,6 +13,14 @@ from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 from pydantic import BaseModel
 
+sales_agent_topic_type = "SalesAgent"
+issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
+triage_agent_topic_type = "TriageAgent"
+reviewer_agent_topic_type = "ReviewerAgent"
+team_runner_topic_type = "TeamRunner"
+platform_account_topic_type = "PlatformAccount"
+scheduling_assistant_topic_type = "scheduling_assistant_conversation"
+
 
 class UserTask(BaseModel):
     context: List[LLMMessage]

@@ -1,8 +1,9 @@
 from loguru import logger
-from model_client.utils import get_custom_model
 from smolagents import CodeAgent
 from smolagents.agents import ActionStep
-from tools.instagram_tool import InstagramLoginTool
+
+from mtmai.model_client.utils import get_custom_model
+from mtmai.tools.instagram_tool import InstagramLoginTool
 
 
 def my_step_callback(memory_step: ActionStep, agent: CodeAgent) -> None:
