@@ -21,7 +21,6 @@ from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.social.instagram_team import InstagramTeam
-from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
 from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
 
@@ -575,12 +574,12 @@ Read the above conversation. Then select the next role from {participants} to pl
     )
 
     # social team
-    social_team = SocialTeam._from_config(SocialTeamConfig())
-    builder.add_team(
-        social_team.dump_component(),
-        label="Social Team",
-        description="社交团队",
-    )
+    # social_team = SocialTeam._from_config(SocialTeamConfig())
+    # builder.add_team(
+    #     social_team.dump_component(),
+    #     label="Social Team",
+    #     description="社交团队",
+    # )
 
-    builder.set_default_team(social_team)
+    builder.set_default_team(instagram_team)
     return builder

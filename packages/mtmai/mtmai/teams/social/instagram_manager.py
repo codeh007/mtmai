@@ -208,7 +208,7 @@ class InstagramOrchestrator(BaseGroupChatManager):
         # )
 
         # Log the message to the output topic.
-        speaker_topic_type = self._participant_name_to_topic_type["instagram_agent"]
+        # speaker_topic_type = self._participant_name_to_topic_type["instagram_agent"]
 
         # await self.publish_message(
         #     InstagramLoginMessage(
