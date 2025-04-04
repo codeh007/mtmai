@@ -1,7 +1,8 @@
 import asyncio
 from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
-from agents.instagram_agent import InstagramAgentV2
+from agents._semantic_router_agent import SemanticRouterAgent
+from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage, MessageFactory
 from autogen_agentchat.teams import BaseGroupChat
@@ -15,18 +16,25 @@ from autogen_core import (
     Component,
     ComponentModel,
     SingleThreadedAgentRuntime,
+    TopicId,
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents._types import agent_message_types
+
+# from mtmai.agents.instagram_agent import InstagramAgentV2
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
+from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.termination_message import TerminationMessage
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.social.instagram_manager import InstagramOrchestrator
+from mtmai.teams.social.social_team import MockAgentRegistry
+from mtmai.teams.sys_team import MockIntentClassifier
 from pydantic import BaseModel
 from typing_extensions import Self
 
@@ -107,29 +115,64 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
             termination_condition,
         )
 
-    async def _init(self, runtime: AgentRuntime):
-        await super()._init(runtime)
+    async def _init(self):
+        await super()._init(self._runtime)
         self._initialized = True
         self.session_id = get_chat_session_id_ctx()
         self.tenant_client = TenantClient()
 
         for t in agent_message_types:
-            runtime.add_message_serializer(try_get_known_serializers_for_type(t))
+            self._runtime.add_message_serializer(try_get_known_serializers_for_type(t))
 
-        instagram_agent_type = await InstagramAgentV2.register(
-            runtime=runtime,
+        # Create the Semantic Router
+        agent_registry = MockAgentRegistry()
+        intent_classifier = MockIntentClassifier()
+        router_agent_type = await SemanticRouterAgent.register(
+            runtime=self._runtime,
+            type=AgentTopicTypes.ROUTER.value,
+            factory=lambda: SemanticRouterAgent(
+                name="router",
+                agent_registry=agent_registry,
+                intent_classifier=intent_classifier,
+            ),
+        )
+
+        self.model_client = get_default_model_client()
+
+        await self._runtime.add_subscription(
+            TypeSubscription(
+                topic_type=AgentTopicTypes.ROUTER.value,
+                agent_type=router_agent_type.type,
+            )
+        )
+        user_agent_type = await UserAgent.register(
+            runtime=self._runtime,
+            type=AgentTopicTypes.USER.value,
+            factory=lambda: UserAgent(
+                description="A user agent.",
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
+            )
+        )
+        instagram_agent_type = await InstagramAgent.register(
+            runtime=self._runtime,
             type=AgentTopicTypes.INSTAGRAM.value,
-            factory=lambda: InstagramAgentV2(
+            factory=lambda: InstagramAgent(
+                description="An agent that interacts with instagram v2",
                 name="instagram_agent",
                 model_client=self._model_client,
             ),
         )
-        await runtime.add_subscription(
+        await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=instagram_agent_type, agent_type=instagram_agent_type.type
+                topic_type=AgentTopicTypes.INSTAGRAM.value,
+                agent_type=instagram_agent_type.type,
             )
         )
-        runtime.start()
+        self._runtime.start()
 
     async def run_stream(
         self,
@@ -138,7 +181,20 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
-            await self._init(self._runtime)
+            await self._init()
+
+        await self._runtime.publish_message(
+            # message=IgAccountMessage(),
+            message=TerminationMessage(),
+            topic_id=TopicId(type=AgentTopicTypes.INSTAGRAM.value, source="default"),
+        )
+
+        await self._runtime.publish_message(
+            message=TerminationMessage(),
+            topic_id=TopicId(type=AgentTopicTypes.USER.value, source="default"),
+        )
+        #
+
         async for event in super().run_stream(
             task=task, cancellation_token=cancellation_token
         ):
@@ -148,6 +204,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
                 await self.tenant_client.emit(event)
                 yield event
 
+        await self._runtime.stop_when_idle()
         state = await self.save_state()
         await self.tenant_client.ag.save_team_state(
             componentId=self._team_id,
@@ -209,7 +266,7 @@ class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
 
         needs_user_input_handler = NeedsUserInputHandler(session_id)
         runtime = SingleThreadedAgentRuntime(
-            intervention_handlers=[needs_user_input_handler],
+            # intervention_handlers=[needs_user_input_handler],
             ignore_unhandled_exceptions=False,
         )
         if config.model_client:

@@ -159,3 +159,22 @@ class UserAgent(RoutedAgent):
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._model_context.load_state(state["model_context"])
         self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)
+
+
+# class InstagramAgentV2(RoutedAgent):
+#     def __init__(self, description: str) -> None:
+#         super().__init__(description)
+
+#     @message_handler
+#     async def on_instagram_login(
+#         self, message: IgAccountMessage, ctx: MessageContext
+#     ) -> None:
+#         logger.info(f"handle_instagram_login: {message}")
+#         return None
+
+#     @message_handler
+#     async def on_terminate(
+#         self, message: TerminationMessage, ctx: MessageContext
+#     ) -> None:
+#         assert ctx.topic_id is not None
+#         logger.info(f"对话结束 with {ctx.sender} because {message.reason}")

@@ -18,32 +18,22 @@ from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.termination_message import TerminationMessage
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-
-
-class InstagramAgentV2(RoutedAgent):
-    def __init__(self):
-        super().__init__(description="An agent that interacts with instagram")
-
-    @message_handler
-    async def on_instagram_login(
-        self, message: InstagramLoginMessage, ctx: MessageContext
-    ) -> None:
-        logger.info(f"handle_instagram_login: {message}")
-        return None
 
 
 class InstagramAgent(AssistantAgent, RoutedAgent):
     def __init__(
         self,
         name: str,
+        description: str,
         model_client: ChatCompletionClient,
     ) -> None:
         super().__init__(
             name=name,
-            description="An agent that interacts with instagram",
+            description=description or "An agent that interacts with instagram",
             model_client=model_client,
         )
         # model_client = model_client or get_default_model_client()
@@ -69,6 +59,13 @@ class InstagramAgent(AssistantAgent, RoutedAgent):
     ) -> None:
         logger.info(f"handle_instagram_login: {message}")
         return None
+
+    @message_handler
+    async def on_terminate(
+        self, message: TerminationMessage, ctx: MessageContext
+    ) -> None:
+        assert ctx.topic_id is not None
+        logger.info(f"对话结束 with {ctx.sender} because {message.reason}")
 
     async def on_messages_stream(
         self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken

@@ -57,7 +57,7 @@ from autogen_core.models import (
     LLMMessage,
     UserMessage,
 )
-from mtmai.agents._types import InstagramLoginMessage
+from mtmai.agents._types import IgAccountMessage
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.context.ctx import get_chat_session_id_ctx
 from pydantic import Field
@@ -227,11 +227,11 @@ class InstagramOrchestrator(BaseGroupChatManager):
         # )
         session_id = get_chat_session_id_ctx()
         await self._runtime.publish_message(
-            message=InstagramLoginMessage(
-                content="Hello, world!",
-                username="test",
-                password="test",
-                source=self._name,
+            message=IgAccountMessage(
+                # content="Hello, world!",
+                # username="test",
+                # password="test",
+                # source=self._name,
             ),
             topic_id=TopicId(type=AgentTopicTypes.INSTAGRAM.value, source="default"),
         )
