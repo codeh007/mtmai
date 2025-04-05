@@ -31,12 +31,11 @@ class AgState(BaseModel):
     metadata: APIResourceMeta
     version: Optional[StrictStr] = '1.0.0'
     type: StateType
-    component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
     chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
     topic: StrictStr
     source: StrictStr
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "componentId", "chatId", "topic", "source", "state"]
+    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "chatId", "topic", "source", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -95,7 +94,6 @@ class AgState(BaseModel):
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type"),
-            "componentId": obj.get("componentId"),
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),
             "source": obj.get("source"),

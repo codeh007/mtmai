@@ -331,6 +331,7 @@ class AgStateApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
         source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -354,6 +355,8 @@ class AgStateApi:
         :type topic: str
         :param source: The source
         :type source: str
+        :param session: The session id
+        :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -380,6 +383,7 @@ class AgStateApi:
             tenant=tenant,
             topic=topic,
             source=source,
+            session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -406,6 +410,7 @@ class AgStateApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
         source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -429,6 +434,8 @@ class AgStateApi:
         :type topic: str
         :param source: The source
         :type source: str
+        :param session: The session id
+        :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -455,6 +462,7 @@ class AgStateApi:
             tenant=tenant,
             topic=topic,
             source=source,
+            session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -481,6 +489,7 @@ class AgStateApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         topic: Annotated[Optional[StrictStr], Field(description="The topic")] = None,
         source: Annotated[Optional[StrictStr], Field(description="The source")] = None,
+        session: Annotated[Optional[StrictStr], Field(description="The session id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -504,6 +513,8 @@ class AgStateApi:
         :type topic: str
         :param source: The source
         :type source: str
+        :param session: The session id
+        :type session: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -530,6 +541,7 @@ class AgStateApi:
             tenant=tenant,
             topic=topic,
             source=source,
+            session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -551,6 +563,7 @@ class AgStateApi:
         tenant,
         topic,
         source,
+        session,
         _request_auth,
         _content_type,
         _headers,
@@ -582,6 +595,10 @@ class AgStateApi:
         if source is not None:
             
             _query_params.append(('source', source))
+            
+        if session is not None:
+            
+            _query_params.append(('session', session))
             
         # process the header parameters
         # process the form parameters
