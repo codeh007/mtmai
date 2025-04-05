@@ -23,8 +23,6 @@ from autogen_core import (
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.agents._types import agent_message_types
-
-# from mtmai.agents.instagram_agent import InstagramAgentV2
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
@@ -33,8 +31,7 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.teams.social.instagram_manager import InstagramOrchestrator
-from mtmai.teams.social.social_team import MockAgentRegistry
-from mtmai.teams.sys_team import MockIntentClassifier
+from mtmai.teams.sys_team import MockAgentRegistry, MockIntentClassifier
 from pydantic import BaseModel
 from typing_extensions import Self
 

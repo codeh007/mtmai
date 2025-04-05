@@ -3,11 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
-from autogen_agentchat.conditions import (
-    HandoffTermination,
-    MaxMessageTermination,
-    TextMentionTermination,
-)
+from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_core import ComponentModel
 from autogen_core.models import ModelFamily, ModelInfo
@@ -542,9 +538,9 @@ Read the above conversation. Then select the next role from {participants} to pl
         description="租户管理专用团队",
     )
 
-    termination = HandoffTermination(target="user") | TextMentionTermination(
-        "TERMINATE"
-    )
+    # termination = HandoffTermination(target="user") | TextMentionTermination(
+    #     "TERMINATE"
+    # )
     # instagram_agent2 = InstagramAgent(
     #     name="instagram_agent",
     #     description="an agent that interacts with instagram",
@@ -563,15 +559,15 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     description="A team with an Instagram agent that interacts with instagram.",
     # )
 
-    tenant_team = TenantTeam(
-        participants=[],
-        # model_client=nvidia_model_llama3,
-    )
-    builder.add_team(
-        tenant_team.dump_component(),
-        label="Tenant Team",
-        description="租户管理专用团队",
-    )
+    # tenant_team = TenantTeam(
+    #     participants=[],
+    #     # model_client=nvidia_model_llama3,
+    # )
+    # builder.add_team(
+    #     tenant_team.dump_component(),
+    #     label="Tenant Team",
+    #     description="租户管理专用团队",
+    # )
 
     # social team
     # social_team = SocialTeam._from_config(SocialTeamConfig())
@@ -581,5 +577,5 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     description="社交团队",
     # )
 
-    builder.set_default_team(instagram_team)
+    # builder.set_default_team(instagram_team)
     return builder

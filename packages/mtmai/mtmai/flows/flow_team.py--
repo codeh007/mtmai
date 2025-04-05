@@ -9,7 +9,8 @@ from mtmai.clients.rest.models.team_run import TeamRun
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
-from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
+
+# from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
 from mtmai.worker_app import mtmapp
 
 

@@ -29,10 +29,10 @@ async def run_worker():
     worker.register_workflow(FlowSmolagent())
     logger.info("register smolagent workflow")
 
-    from mtmai.flows.flow_team import FlowTeam
+    # from mtmai.flows.flow_team import FlowTeam
 
-    worker.register_workflow(FlowTeam())
-    logger.info("register team workflow")
+    # worker.register_workflow(FlowTeam())
+    # logger.info("register team workflow")
 
     from mtmai.flows.flow_research import FlowResearch
 
