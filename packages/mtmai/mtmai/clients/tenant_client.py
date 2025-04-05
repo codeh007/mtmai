@@ -51,8 +51,6 @@ def parse_ctx_from_action(action: Action):
 
 
 class TenantClient:
-    # from mtmai.context.context import Context
-
     def __init__(self):
         self.tenant_id = get_tenant_id()
         assert self.tenant_id is not None
@@ -65,14 +63,6 @@ class TenantClient:
         self.access_token = get_access_token()
         if self.access_token is None:
             raise ValueError("access_token context is not set")
-
-        # self.server_url = server_url
-        # self.access_token = access_token
-        # self.client_context = ClientContext(
-        #     headers={
-        #         "Authorization": f"Bearer {access_token}",
-        #     }
-        # )
         self.client_config = Configuration(
             host=self.server_url,
             access_token=self.access_token,
@@ -145,7 +135,7 @@ class TenantClient:
 
     # 看起来过时了,原因是, autogen 中的team 的行为本身就可以立即为一个agent,
     # 因此,后续的设计以 agent 自身作为主导,而不是team
-    async def load_team(self, team_comp_id_or_name: str):
+    async def load_team(self, team_comp_id_or_name: str) -> Team:
         if is_uuid(team_comp_id_or_name):
             # 从数据库加载
             try:
@@ -161,21 +151,16 @@ class TenantClient:
             if component_data.component_type == ComponentTypes.TEAM:
                 comp_dict = component_data.model_dump()
                 team = Team.load_component(comp_dict)
-                self.team = team
+                # self.team = team
+                return team
             else:
                 raise ValueError(f"组件类型错误: {component_data.component_type}")
 
-        elif team_comp_id_or_name == "instagram_team":
+        elif (
+            team_comp_id_or_name == "instagram_team" or team_comp_id_or_name == "social"
+        ):
             from mtmai.teams.social.social_team import SocialTeam
 
-            team = SocialTeam._from_config(SocialTeamConfig())
-            return team
+            return SocialTeam._from_config(SocialTeamConfig())
         else:
-            from mtmai.gallery import builder
-
-            gallery_builder = builder.create_default_gallery_builder()
-            tenant_team_component = gallery_builder.get_team("Tenant Team")
-            tenant_team = Team.load_component(tenant_team_component)
-            return tenant_team
-
-        return team
+            raise ValueError(f"不支持的团队: {team_comp_id_or_name}")

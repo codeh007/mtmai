@@ -149,16 +149,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 )
 
         await self._runtime.stop_when_idle()
-        # state = await self.save_state()
-        # await self.tenant_client.ag.save_team_state(
-        #     componentId=self._team_id,
-        #     tenant_id=self.tenant_client.tenant_id,
-        #     chat_id=self.session_id,
-        #     state=state,
-        # )
-
-        # runtime_state = await self._runtime.save_state()
-        # logger.info(f"runtime_state: {runtime_state}")
         await self.save_state_db()
 
     async def reset(self) -> None:
@@ -178,7 +168,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             await self.tenant_client.ag_state_api.ag_state_upsert(
                 tenant=self.tenant_client.tenant_id,
                 ag_state_upsert=AgStateUpsert(
-                    tenantId=self.tenant_client.tenant_id,
                     topic=topic,
                     source=source,
                     type=StateType.RUNTIMESTATE.value,

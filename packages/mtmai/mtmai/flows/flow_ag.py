@@ -95,23 +95,6 @@ class FlowAg:
                 task=input, cancellation_token=cancellation_token
             )
             logger.info(f"team result: {result}")
-            # for k, v in result.items():
-            #     logger.info(f"key: {k}, value: {v}")
-            #     parts = k.split("/")
-            #     topic = parts[0]
-            #     source = parts[1] if len(parts) > 1 else "default"
-            #     await tenant_client.ag_state_api.ag_state_upsert(
-            #         tenant=tenant_client.tenant_id,
-            #         ag_state_upsert=AgStateUpsert(
-            #             tenantId=tenant_client.tenant_id,
-            #             topic=topic,
-            #             source=source,
-            #             type=StateType.RUNTIMESTATE.value,
-            #             componentId=input.component_id,
-            #             chatId=session_id,
-            #             state=v,
-            #         ),
-            #     )
         else:
             raise ValueError(f"Unexpected team type: {type(team)}")
 
