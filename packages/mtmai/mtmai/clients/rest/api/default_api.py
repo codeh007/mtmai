@@ -596,9 +596,9 @@ class DefaultApi:
     @validate_call
     async def tenant_invite_update(
         self,
+        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_invite: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant invite id")],
-        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -616,12 +616,12 @@ class DefaultApi:
 
         Updates a tenant invite
 
+        :param update_tenant_invite_request: The tenant invite to update (required)
+        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param tenant_invite: The tenant invite id (required)
         :type tenant_invite: str
-        :param update_tenant_invite_request: The tenant invite to update (required)
-        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -645,9 +645,9 @@ class DefaultApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_update_serialize(
+            update_tenant_invite_request=update_tenant_invite_request,
             tenant=tenant,
             tenant_invite=tenant_invite,
-            update_tenant_invite_request=update_tenant_invite_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -672,9 +672,9 @@ class DefaultApi:
     @validate_call
     async def tenant_invite_update_with_http_info(
         self,
+        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_invite: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant invite id")],
-        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -692,12 +692,12 @@ class DefaultApi:
 
         Updates a tenant invite
 
+        :param update_tenant_invite_request: The tenant invite to update (required)
+        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param tenant_invite: The tenant invite id (required)
         :type tenant_invite: str
-        :param update_tenant_invite_request: The tenant invite to update (required)
-        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -721,9 +721,9 @@ class DefaultApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_update_serialize(
+            update_tenant_invite_request=update_tenant_invite_request,
             tenant=tenant,
             tenant_invite=tenant_invite,
-            update_tenant_invite_request=update_tenant_invite_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -748,9 +748,9 @@ class DefaultApi:
     @validate_call
     async def tenant_invite_update_without_preload_content(
         self,
+        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         tenant_invite: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant invite id")],
-        update_tenant_invite_request: Annotated[UpdateTenantInviteRequest, Field(description="The tenant invite to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -768,12 +768,12 @@ class DefaultApi:
 
         Updates a tenant invite
 
+        :param update_tenant_invite_request: The tenant invite to update (required)
+        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param tenant_invite: The tenant invite id (required)
         :type tenant_invite: str
-        :param update_tenant_invite_request: The tenant invite to update (required)
-        :type update_tenant_invite_request: UpdateTenantInviteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -797,9 +797,9 @@ class DefaultApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_update_serialize(
+            update_tenant_invite_request=update_tenant_invite_request,
             tenant=tenant,
             tenant_invite=tenant_invite,
-            update_tenant_invite_request=update_tenant_invite_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -819,9 +819,9 @@ class DefaultApi:
 
     def _tenant_invite_update_serialize(
         self,
+        update_tenant_invite_request,
         tenant,
         tenant_invite,
-        update_tenant_invite_request,
         _request_auth,
         _content_type,
         _headers,

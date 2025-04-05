@@ -935,8 +935,8 @@ class ResourceApi:
     @validate_call
     async def resource_upsert(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_resource_upsert: MtResourceUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -954,10 +954,10 @@ class ResourceApi:
 
         保存 资源
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_resource_upsert: (required)
         :type mt_resource_upsert: MtResourceUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -981,8 +981,8 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            tenant=tenant,
             mt_resource_upsert=mt_resource_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1008,8 +1008,8 @@ class ResourceApi:
     @validate_call
     async def resource_upsert_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_resource_upsert: MtResourceUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1027,10 +1027,10 @@ class ResourceApi:
 
         保存 资源
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_resource_upsert: (required)
         :type mt_resource_upsert: MtResourceUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1054,8 +1054,8 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            tenant=tenant,
             mt_resource_upsert=mt_resource_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1081,8 +1081,8 @@ class ResourceApi:
     @validate_call
     async def resource_upsert_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_resource_upsert: MtResourceUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1100,10 +1100,10 @@ class ResourceApi:
 
         保存 资源
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_resource_upsert: (required)
         :type mt_resource_upsert: MtResourceUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1127,8 +1127,8 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            tenant=tenant,
             mt_resource_upsert=mt_resource_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1149,8 +1149,8 @@ class ResourceApi:
 
     def _resource_upsert_serialize(
         self,
-        tenant,
         mt_resource_upsert,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

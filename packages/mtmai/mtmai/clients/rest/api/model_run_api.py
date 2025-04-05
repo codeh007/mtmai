@@ -323,9 +323,9 @@ class ModelRunApi:
     @validate_call
     async def model_run_upsert(
         self,
+        model_run: Annotated[ModelRun, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
+        model_run2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -343,12 +343,12 @@ class ModelRunApi:
 
         Update an model
 
+        :param model_run: The model properties to update (required)
+        :type model_run: ModelRun
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param model_run: The model run id (required)
-        :type model_run: str
-        :param model_run2: The model properties to update (required)
-        :type model_run2: ModelRun
+        :param model_run2: The model run id (required)
+        :type model_run2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -372,8 +372,8 @@ class ModelRunApi:
         """ # noqa: E501
 
         _param = self._model_run_upsert_serialize(
-            tenant=tenant,
             model_run=model_run,
+            tenant=tenant,
             model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -400,9 +400,9 @@ class ModelRunApi:
     @validate_call
     async def model_run_upsert_with_http_info(
         self,
+        model_run: Annotated[ModelRun, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
+        model_run2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -420,12 +420,12 @@ class ModelRunApi:
 
         Update an model
 
+        :param model_run: The model properties to update (required)
+        :type model_run: ModelRun
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param model_run: The model run id (required)
-        :type model_run: str
-        :param model_run2: The model properties to update (required)
-        :type model_run2: ModelRun
+        :param model_run2: The model run id (required)
+        :type model_run2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -449,8 +449,8 @@ class ModelRunApi:
         """ # noqa: E501
 
         _param = self._model_run_upsert_serialize(
-            tenant=tenant,
             model_run=model_run,
+            tenant=tenant,
             model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -477,9 +477,9 @@ class ModelRunApi:
     @validate_call
     async def model_run_upsert_without_preload_content(
         self,
+        model_run: Annotated[ModelRun, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        model_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
-        model_run2: Annotated[ModelRun, Field(description="The model properties to update")],
+        model_run2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The model run id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -497,12 +497,12 @@ class ModelRunApi:
 
         Update an model
 
+        :param model_run: The model properties to update (required)
+        :type model_run: ModelRun
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param model_run: The model run id (required)
-        :type model_run: str
-        :param model_run2: The model properties to update (required)
-        :type model_run2: ModelRun
+        :param model_run2: The model run id (required)
+        :type model_run2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -526,8 +526,8 @@ class ModelRunApi:
         """ # noqa: E501
 
         _param = self._model_run_upsert_serialize(
-            tenant=tenant,
             model_run=model_run,
+            tenant=tenant,
             model_run2=model_run2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -549,8 +549,8 @@ class ModelRunApi:
 
     def _model_run_upsert_serialize(
         self,
-        tenant,
         model_run,
+        tenant,
         model_run2,
         _request_auth,
         _content_type,
@@ -575,14 +575,14 @@ class ModelRunApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if model_run is not None:
-            _path_params['model_run'] = model_run
+        if model_run2 is not None:
+            _path_params['model_run'] = model_run2
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if model_run2 is not None:
-            _body_params = model_run2
+        if model_run is not None:
+            _body_params = model_run
 
 
         # set the HTTP header `Accept`

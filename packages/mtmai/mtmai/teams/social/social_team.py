@@ -26,7 +26,6 @@ from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
@@ -141,16 +140,16 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             await self._init()
 
         team_topic = f"social.{self.session_id}"
-        team_topic_id = TopicId(type=team_topic, source="default")
-        user_topic_id = TopicId(type=AgentTopicTypes.USER.value, source="default")
+        topic_source = "default"
+        team_topic_id = TopicId(type=team_topic, source=topic_source)
+        user_topic_id = TopicId(type=AgentTopicTypes.USER.value, source=topic_source)
         if isinstance(task, AgentRunInput):
-            if AgentEventType.AGENTUSERINPUT.value == task.type:
-                user_input_msg = AgentUserInput.model_validate(task.model_dump())
-                await self._runtime.publish_message(
-                    message=user_input_msg,
-                    topic_id=user_topic_id,
-                    cancellation_token=cancellation_token,
-                )
+            user_input_msg = AgentUserInput.model_validate(task.model_dump())
+            await self._runtime.publish_message(
+                message=task.input.actual_instance,
+                topic_id=user_topic_id,
+                cancellation_token=cancellation_token,
+            )
 
         await self._runtime.stop_when_idle()
         await self.save_state_db()

@@ -44,8 +44,8 @@ class SiteHostApi:
     @validate_call
     async def site_host_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -63,10 +63,10 @@ class SiteHostApi:
 
         create site-host
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_host_request: 创建agentnode (required)
         :type create_site_host_request: CreateSiteHostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,8 +90,8 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            tenant=tenant,
             create_site_host_request=create_site_host_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -117,8 +117,8 @@ class SiteHostApi:
     @validate_call
     async def site_host_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -136,10 +136,10 @@ class SiteHostApi:
 
         create site-host
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_host_request: 创建agentnode (required)
         :type create_site_host_request: CreateSiteHostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -163,8 +163,8 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            tenant=tenant,
             create_site_host_request=create_site_host_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -190,8 +190,8 @@ class SiteHostApi:
     @validate_call
     async def site_host_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -209,10 +209,10 @@ class SiteHostApi:
 
         create site-host
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_host_request: 创建agentnode (required)
         :type create_site_host_request: CreateSiteHostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -236,8 +236,8 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            tenant=tenant,
             create_site_host_request=create_site_host_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -258,8 +258,8 @@ class SiteHostApi:
 
     def _site_host_create_serialize(
         self,
-        tenant,
         create_site_host_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

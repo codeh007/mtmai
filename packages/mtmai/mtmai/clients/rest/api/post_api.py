@@ -42,8 +42,8 @@ class PostApi:
     @validate_call
     async def post_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_post_request: CreatePostRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -61,10 +61,10 @@ class PostApi:
 
         create post
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_post_request: (required)
         :type create_post_request: CreatePostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -88,8 +88,8 @@ class PostApi:
         """ # noqa: E501
 
         _param = self._post_create_serialize(
-            tenant=tenant,
             create_post_request=create_post_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -115,8 +115,8 @@ class PostApi:
     @validate_call
     async def post_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_post_request: CreatePostRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -134,10 +134,10 @@ class PostApi:
 
         create post
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_post_request: (required)
         :type create_post_request: CreatePostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -161,8 +161,8 @@ class PostApi:
         """ # noqa: E501
 
         _param = self._post_create_serialize(
-            tenant=tenant,
             create_post_request=create_post_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -188,8 +188,8 @@ class PostApi:
     @validate_call
     async def post_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_post_request: CreatePostRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -207,10 +207,10 @@ class PostApi:
 
         create post
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_post_request: (required)
         :type create_post_request: CreatePostRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -234,8 +234,8 @@ class PostApi:
         """ # noqa: E501
 
         _param = self._post_create_serialize(
-            tenant=tenant,
             create_post_request=create_post_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -256,8 +256,8 @@ class PostApi:
 
     def _post_create_serialize(
         self,
-        tenant,
         create_post_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

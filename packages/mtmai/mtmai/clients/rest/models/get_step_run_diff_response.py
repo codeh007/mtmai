@@ -87,6 +87,11 @@ class GetStepRunDiffResponse(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in GetStepRunDiffResponse) in the input: " + _key)
+
         _obj = cls.model_validate({
             "diffs": [StepRunDiff.from_dict(_item) for _item in obj["diffs"]] if obj.get("diffs") is not None else None
         })

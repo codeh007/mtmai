@@ -63,8 +63,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_alert_email_group_request: Annotated[CreateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -82,10 +82,10 @@ class TenantApi:
 
         Creates a new tenant alert email group
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_alert_email_group_request: The tenant alert email group to create (required)
         :type create_tenant_alert_email_group_request: CreateTenantAlertEmailGroupRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -109,8 +109,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_create_serialize(
-            tenant=tenant,
             create_tenant_alert_email_group_request=create_tenant_alert_email_group_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -136,8 +136,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_alert_email_group_request: Annotated[CreateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -155,10 +155,10 @@ class TenantApi:
 
         Creates a new tenant alert email group
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_alert_email_group_request: The tenant alert email group to create (required)
         :type create_tenant_alert_email_group_request: CreateTenantAlertEmailGroupRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -182,8 +182,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_create_serialize(
-            tenant=tenant,
             create_tenant_alert_email_group_request=create_tenant_alert_email_group_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -209,8 +209,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_alert_email_group_request: Annotated[CreateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -228,10 +228,10 @@ class TenantApi:
 
         Creates a new tenant alert email group
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_alert_email_group_request: The tenant alert email group to create (required)
         :type create_tenant_alert_email_group_request: CreateTenantAlertEmailGroupRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -255,8 +255,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_create_serialize(
-            tenant=tenant,
             create_tenant_alert_email_group_request=create_tenant_alert_email_group_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -277,8 +277,8 @@ class TenantApi:
 
     def _alert_email_group_create_serialize(
         self,
-        tenant,
         create_tenant_alert_email_group_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -898,8 +898,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_update(
         self,
-        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         update_tenant_alert_email_group_request: Annotated[UpdateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to update")],
+        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -917,10 +917,10 @@ class TenantApi:
 
         Updates a tenant alert email group
 
-        :param alert_email_group: The tenant alert email group id (required)
-        :type alert_email_group: str
         :param update_tenant_alert_email_group_request: The tenant alert email group to update (required)
         :type update_tenant_alert_email_group_request: UpdateTenantAlertEmailGroupRequest
+        :param alert_email_group: The tenant alert email group id (required)
+        :type alert_email_group: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -944,8 +944,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_update_serialize(
-            alert_email_group=alert_email_group,
             update_tenant_alert_email_group_request=update_tenant_alert_email_group_request,
+            alert_email_group=alert_email_group,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -971,8 +971,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_update_with_http_info(
         self,
-        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         update_tenant_alert_email_group_request: Annotated[UpdateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to update")],
+        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -990,10 +990,10 @@ class TenantApi:
 
         Updates a tenant alert email group
 
-        :param alert_email_group: The tenant alert email group id (required)
-        :type alert_email_group: str
         :param update_tenant_alert_email_group_request: The tenant alert email group to update (required)
         :type update_tenant_alert_email_group_request: UpdateTenantAlertEmailGroupRequest
+        :param alert_email_group: The tenant alert email group id (required)
+        :type alert_email_group: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1017,8 +1017,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_update_serialize(
-            alert_email_group=alert_email_group,
             update_tenant_alert_email_group_request=update_tenant_alert_email_group_request,
+            alert_email_group=alert_email_group,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1044,8 +1044,8 @@ class TenantApi:
     @validate_call
     async def alert_email_group_update_without_preload_content(
         self,
-        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         update_tenant_alert_email_group_request: Annotated[UpdateTenantAlertEmailGroupRequest, Field(description="The tenant alert email group to update")],
+        alert_email_group: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant alert email group id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1063,10 +1063,10 @@ class TenantApi:
 
         Updates a tenant alert email group
 
-        :param alert_email_group: The tenant alert email group id (required)
-        :type alert_email_group: str
         :param update_tenant_alert_email_group_request: The tenant alert email group to update (required)
         :type update_tenant_alert_email_group_request: UpdateTenantAlertEmailGroupRequest
+        :param alert_email_group: The tenant alert email group id (required)
+        :type alert_email_group: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1090,8 +1090,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._alert_email_group_update_serialize(
-            alert_email_group=alert_email_group,
             update_tenant_alert_email_group_request=update_tenant_alert_email_group_request,
+            alert_email_group=alert_email_group,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1112,8 +1112,8 @@ class TenantApi:
 
     def _alert_email_group_update_serialize(
         self,
-        alert_email_group,
         update_tenant_alert_email_group_request,
+        alert_email_group,
         _request_auth,
         _content_type,
         _headers,
@@ -1745,9 +1745,9 @@ class TenantApi:
     @validate_call
     async def site_host_update(
         self,
+        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
-        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1765,12 +1765,12 @@ class TenantApi:
 
         Update an existing site-host
 
+        :param site_host: The tenant properties to update (required)
+        :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
         :param host: The site-host id (required)
         :type host: str
-        :param site_host: The tenant properties to update (required)
-        :type site_host: SiteHost
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1794,9 +1794,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_host_update_serialize(
+            site_host=site_host,
             tenant=tenant,
             host=host,
-            site_host=site_host,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1822,9 +1822,9 @@ class TenantApi:
     @validate_call
     async def site_host_update_with_http_info(
         self,
+        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
-        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1842,12 +1842,12 @@ class TenantApi:
 
         Update an existing site-host
 
+        :param site_host: The tenant properties to update (required)
+        :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
         :param host: The site-host id (required)
         :type host: str
-        :param site_host: The tenant properties to update (required)
-        :type site_host: SiteHost
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1871,9 +1871,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_host_update_serialize(
+            site_host=site_host,
             tenant=tenant,
             host=host,
-            site_host=site_host,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1899,9 +1899,9 @@ class TenantApi:
     @validate_call
     async def site_host_update_without_preload_content(
         self,
+        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
-        site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1919,12 +1919,12 @@ class TenantApi:
 
         Update an existing site-host
 
+        :param site_host: The tenant properties to update (required)
+        :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
         :param host: The site-host id (required)
         :type host: str
-        :param site_host: The tenant properties to update (required)
-        :type site_host: SiteHost
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1948,9 +1948,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_host_update_serialize(
+            site_host=site_host,
             tenant=tenant,
             host=host,
-            site_host=site_host,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1971,9 +1971,9 @@ class TenantApi:
 
     def _site_host_update_serialize(
         self,
+        site_host,
         tenant,
         host,
-        site_host,
         _request_auth,
         _content_type,
         _headers,
@@ -2057,9 +2057,9 @@ class TenantApi:
     @validate_call
     async def site_update(
         self,
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
-        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2077,12 +2077,12 @@ class TenantApi:
 
         Update an existing site
 
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param site: The site id (required)
         :type site: str
-        :param update_site_request: The tenant properties to update (required)
-        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2106,9 +2106,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_update_serialize(
+            update_site_request=update_site_request,
             tenant=tenant,
             site=site,
-            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2134,9 +2134,9 @@ class TenantApi:
     @validate_call
     async def site_update_with_http_info(
         self,
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
-        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2154,12 +2154,12 @@ class TenantApi:
 
         Update an existing site
 
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param site: The site id (required)
         :type site: str
-        :param update_site_request: The tenant properties to update (required)
-        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2183,9 +2183,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_update_serialize(
+            update_site_request=update_site_request,
             tenant=tenant,
             site=site,
-            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2211,9 +2211,9 @@ class TenantApi:
     @validate_call
     async def site_update_without_preload_content(
         self,
+        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         site: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site id")],
-        update_site_request: Annotated[UpdateSiteRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2231,12 +2231,12 @@ class TenantApi:
 
         Update an existing site
 
+        :param update_site_request: The tenant properties to update (required)
+        :type update_site_request: UpdateSiteRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param site: The site id (required)
         :type site: str
-        :param update_site_request: The tenant properties to update (required)
-        :type update_site_request: UpdateSiteRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2260,9 +2260,9 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._site_update_serialize(
+            update_site_request=update_site_request,
             tenant=tenant,
             site=site,
-            update_site_request=update_site_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2283,9 +2283,9 @@ class TenantApi:
 
     def _site_update_serialize(
         self,
+        update_site_request,
         tenant,
         site,
-        update_site_request,
         _request_auth,
         _content_type,
         _headers,
@@ -3474,8 +3474,8 @@ class TenantApi:
     @validate_call
     async def tenant_invite_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_invite_request: Annotated[CreateTenantInviteRequest, Field(description="The tenant invite to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -3493,10 +3493,10 @@ class TenantApi:
 
         Creates a new tenant invite
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_invite_request: The tenant invite to create (required)
         :type create_tenant_invite_request: CreateTenantInviteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -3520,8 +3520,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_create_serialize(
-            tenant=tenant,
             create_tenant_invite_request=create_tenant_invite_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -3547,8 +3547,8 @@ class TenantApi:
     @validate_call
     async def tenant_invite_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_invite_request: Annotated[CreateTenantInviteRequest, Field(description="The tenant invite to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -3566,10 +3566,10 @@ class TenantApi:
 
         Creates a new tenant invite
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_invite_request: The tenant invite to create (required)
         :type create_tenant_invite_request: CreateTenantInviteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -3593,8 +3593,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_create_serialize(
-            tenant=tenant,
             create_tenant_invite_request=create_tenant_invite_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -3620,8 +3620,8 @@ class TenantApi:
     @validate_call
     async def tenant_invite_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_tenant_invite_request: Annotated[CreateTenantInviteRequest, Field(description="The tenant invite to create")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -3639,10 +3639,10 @@ class TenantApi:
 
         Creates a new tenant invite
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_tenant_invite_request: The tenant invite to create (required)
         :type create_tenant_invite_request: CreateTenantInviteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -3666,8 +3666,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_invite_create_serialize(
-            tenant=tenant,
             create_tenant_invite_request=create_tenant_invite_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -3688,8 +3688,8 @@ class TenantApi:
 
     def _tenant_invite_create_serialize(
         self,
-        tenant,
         create_tenant_invite_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -5147,8 +5147,8 @@ class TenantApi:
     @validate_call
     async def tenant_update(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5166,10 +5166,10 @@ class TenantApi:
 
         Update an existing tenant
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param update_tenant_request: The tenant properties to update (required)
         :type update_tenant_request: UpdateTenantRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5193,8 +5193,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_update_serialize(
-            tenant=tenant,
             update_tenant_request=update_tenant_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5220,8 +5220,8 @@ class TenantApi:
     @validate_call
     async def tenant_update_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5239,10 +5239,10 @@ class TenantApi:
 
         Update an existing tenant
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param update_tenant_request: The tenant properties to update (required)
         :type update_tenant_request: UpdateTenantRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5266,8 +5266,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_update_serialize(
-            tenant=tenant,
             update_tenant_request=update_tenant_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5293,8 +5293,8 @@ class TenantApi:
     @validate_call
     async def tenant_update_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         update_tenant_request: Annotated[UpdateTenantRequest, Field(description="The tenant properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5312,10 +5312,10 @@ class TenantApi:
 
         Update an existing tenant
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param update_tenant_request: The tenant properties to update (required)
         :type update_tenant_request: UpdateTenantRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5339,8 +5339,8 @@ class TenantApi:
         """ # noqa: E501
 
         _param = self._tenant_update_serialize(
-            tenant=tenant,
             update_tenant_request=update_tenant_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5361,8 +5361,8 @@ class TenantApi:
 
     def _tenant_update_serialize(
         self,
-        tenant,
         update_tenant_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

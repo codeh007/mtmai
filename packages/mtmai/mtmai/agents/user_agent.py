@@ -10,13 +10,13 @@ from autogen_core import (
 )
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
+from clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from loguru import logger
 
 from mtmai.agents._types import (
     BrowserOpenTask,
     BrowserTask,
     CodeWritingTask,
-    IgAccountMessage,
     IgLoginRequire,
     TerminationMessage,
 )
@@ -67,7 +67,13 @@ class UserAgent(RoutedAgent):
         elif user_content.startswith("/test/ig"):
             agent_id = AgentId(self._social_agent_topic_type, "default")
             result = await self._runtime.send_message(
-                IgAccountMessage(username="username1", password="password1"), agent_id
+                # IgAccountMessage(username="username1", password="password1"), agent_id
+                SocialAddFollowersInput(
+                    username="username1",
+                    password="password1",
+                    target_username="target_username1",
+                ),
+                agent_id,
             )
             # logger.info(f"result: {result}")
             if isinstance(result, IgLoginRequire):
@@ -99,6 +105,21 @@ class UserAgent(RoutedAgent):
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
             await self._model_context.add_message(user_message)
+
+    @message_handler
+    async def handle_social_add_followers_input(
+        self, message: SocialAddFollowersInput, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_social_add_followers_input: {message}")
+        await self._model_context.add_message(
+            UserMessage(content=message.model_dump_json(), source="user")
+        )
+        agent_id = AgentId(self._social_agent_topic_type, "default")
+
+        result = await self._runtime.send_message(
+            message,
+            agent_id,
+        )
 
     @message_handler
     async def on_terminate(

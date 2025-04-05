@@ -92,6 +92,11 @@ class RateLimitList(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in RateLimitList) in the input: " + _key)
+
         _obj = cls.model_validate({
             "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
             "rows": [RateLimit.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None

@@ -1,4 +1,5 @@
 from loguru import logger
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.flow_names import FlowNames
@@ -13,7 +14,7 @@ from mtmai.worker_app import mtmapp
 class FlowSmolagent:
     @mtmapp.step(timeout="60m")
     async def smolagent_entry(self, hatctx: Context):
-        input = AgentRunInput.model_validate(hatctx.input)
+        input = AgentRunInput.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
         from smolagents import CodeAgent, DuckDuckGoSearchTool, HfApiModel
 

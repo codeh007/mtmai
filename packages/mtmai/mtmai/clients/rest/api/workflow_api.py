@@ -5017,8 +5017,8 @@ class WorkflowApi:
     @validate_call
     async def workflow_update(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         workflow_update_request: Annotated[WorkflowUpdateRequest, Field(description="The input to update the workflow")],
+        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5036,10 +5036,10 @@ class WorkflowApi:
 
         Update a workflow for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param workflow_update_request: The input to update the workflow (required)
         :type workflow_update_request: WorkflowUpdateRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5063,8 +5063,8 @@ class WorkflowApi:
         """ # noqa: E501
 
         _param = self._workflow_update_serialize(
-            workflow=workflow,
             workflow_update_request=workflow_update_request,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5090,8 +5090,8 @@ class WorkflowApi:
     @validate_call
     async def workflow_update_with_http_info(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         workflow_update_request: Annotated[WorkflowUpdateRequest, Field(description="The input to update the workflow")],
+        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5109,10 +5109,10 @@ class WorkflowApi:
 
         Update a workflow for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param workflow_update_request: The input to update the workflow (required)
         :type workflow_update_request: WorkflowUpdateRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5136,8 +5136,8 @@ class WorkflowApi:
         """ # noqa: E501
 
         _param = self._workflow_update_serialize(
-            workflow=workflow,
             workflow_update_request=workflow_update_request,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5163,8 +5163,8 @@ class WorkflowApi:
     @validate_call
     async def workflow_update_without_preload_content(
         self,
-        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         workflow_update_request: Annotated[WorkflowUpdateRequest, Field(description="The input to update the workflow")],
+        workflow: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5182,10 +5182,10 @@ class WorkflowApi:
 
         Update a workflow for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param workflow_update_request: The input to update the workflow (required)
         :type workflow_update_request: WorkflowUpdateRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5209,8 +5209,8 @@ class WorkflowApi:
         """ # noqa: E501
 
         _param = self._workflow_update_serialize(
-            workflow=workflow,
             workflow_update_request=workflow_update_request,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -5231,8 +5231,8 @@ class WorkflowApi:
 
     def _workflow_update_serialize(
         self,
-        workflow,
         workflow_update_request,
+        workflow,
         _request_auth,
         _content_type,
         _headers,

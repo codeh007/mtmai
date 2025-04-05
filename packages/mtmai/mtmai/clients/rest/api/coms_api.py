@@ -719,8 +719,8 @@ class ComsApi:
     @validate_call
     async def coms_new(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_component_new: Annotated[MtComponentNew, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -737,10 +737,10 @@ class ComsApi:
         """coms_new
 
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_component_new: The model properties to update (required)
         :type mt_component_new: MtComponentNew
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -764,8 +764,8 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_new_serialize(
-            tenant=tenant,
             mt_component_new=mt_component_new,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -791,8 +791,8 @@ class ComsApi:
     @validate_call
     async def coms_new_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_component_new: Annotated[MtComponentNew, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -809,10 +809,10 @@ class ComsApi:
         """coms_new
 
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_component_new: The model properties to update (required)
         :type mt_component_new: MtComponentNew
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -836,8 +836,8 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_new_serialize(
-            tenant=tenant,
             mt_component_new=mt_component_new,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -863,8 +863,8 @@ class ComsApi:
     @validate_call
     async def coms_new_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         mt_component_new: Annotated[MtComponentNew, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -881,10 +881,10 @@ class ComsApi:
         """coms_new
 
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param mt_component_new: The model properties to update (required)
         :type mt_component_new: MtComponentNew
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -908,8 +908,8 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_new_serialize(
-            tenant=tenant,
             mt_component_new=mt_component_new,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -930,8 +930,8 @@ class ComsApi:
 
     def _coms_new_serialize(
         self,
-        tenant,
         mt_component_new,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -1013,9 +1013,9 @@ class ComsApi:
     @validate_call
     async def coms_upsert(
         self,
+        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1033,12 +1033,12 @@ class ComsApi:
 
         Upsert an mtcomponent
 
+        :param mt_component_upsert: The model properties to update (required)
+        :type mt_component_upsert: MtComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
         :type com: str
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1062,9 +1062,9 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
+            mt_component_upsert=mt_component_upsert,
             tenant=tenant,
             com=com,
-            mt_component_upsert=mt_component_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1090,9 +1090,9 @@ class ComsApi:
     @validate_call
     async def coms_upsert_with_http_info(
         self,
+        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1110,12 +1110,12 @@ class ComsApi:
 
         Upsert an mtcomponent
 
+        :param mt_component_upsert: The model properties to update (required)
+        :type mt_component_upsert: MtComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
         :type com: str
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1139,9 +1139,9 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
+            mt_component_upsert=mt_component_upsert,
             tenant=tenant,
             com=com,
-            mt_component_upsert=mt_component_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1167,9 +1167,9 @@ class ComsApi:
     @validate_call
     async def coms_upsert_without_preload_content(
         self,
+        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1187,12 +1187,12 @@ class ComsApi:
 
         Upsert an mtcomponent
 
+        :param mt_component_upsert: The model properties to update (required)
+        :type mt_component_upsert: MtComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
         :type com: str
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1216,9 +1216,9 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
+            mt_component_upsert=mt_component_upsert,
             tenant=tenant,
             com=com,
-            mt_component_upsert=mt_component_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1239,9 +1239,9 @@ class ComsApi:
 
     def _coms_upsert_serialize(
         self,
+        mt_component_upsert,
         tenant,
         com,
-        mt_component_upsert,
         _request_auth,
         _content_type,
         _headers,

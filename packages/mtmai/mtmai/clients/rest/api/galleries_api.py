@@ -42,8 +42,8 @@ class GalleriesApi:
     @validate_call
     async def gallery_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         gallery: Gallery,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -61,10 +61,10 @@ class GalleriesApi:
 
         create gallery
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param gallery: (required)
         :type gallery: Gallery
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -88,8 +88,8 @@ class GalleriesApi:
         """ # noqa: E501
 
         _param = self._gallery_create_serialize(
-            tenant=tenant,
             gallery=gallery,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -115,8 +115,8 @@ class GalleriesApi:
     @validate_call
     async def gallery_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         gallery: Gallery,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -134,10 +134,10 @@ class GalleriesApi:
 
         create gallery
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param gallery: (required)
         :type gallery: Gallery
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -161,8 +161,8 @@ class GalleriesApi:
         """ # noqa: E501
 
         _param = self._gallery_create_serialize(
-            tenant=tenant,
             gallery=gallery,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -188,8 +188,8 @@ class GalleriesApi:
     @validate_call
     async def gallery_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         gallery: Gallery,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -207,10 +207,10 @@ class GalleriesApi:
 
         create gallery
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param gallery: (required)
         :type gallery: Gallery
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -234,8 +234,8 @@ class GalleriesApi:
         """ # noqa: E501
 
         _param = self._gallery_create_serialize(
-            tenant=tenant,
             gallery=gallery,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -256,8 +256,8 @@ class GalleriesApi:
 
     def _gallery_create_serialize(
         self,
-        tenant,
         gallery,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

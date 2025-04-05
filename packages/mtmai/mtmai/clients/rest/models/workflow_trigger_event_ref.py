@@ -80,6 +80,11 @@ class WorkflowTriggerEventRef(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in WorkflowTriggerEventRef) in the input: " + _key)
+
         _obj = cls.model_validate({
             "parent_id": obj.get("parent_id"),
             "event_key": obj.get("event_key")

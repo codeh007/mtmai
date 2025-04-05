@@ -13,12 +13,14 @@ python_client_gen(){
     command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
     mkdir -p $dst_dir
 
-    openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ./tmp --skip-validate-spec \
+    openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ./tmp \
+        --skip-validate-spec \
         --library asyncio \
         --global-property=apiTests=false \
         --global-property=apiDocs=true \
         --global-property=modelTests=false \
         --global-property=modelDocs=true \
+        --config ./openapi-generator-config.yaml \
         --package-name mtmai.clients.rest
 
     echo "阶段1: 复制目标目录 $tmp_dir/mtmai/clients/rest/models/__init__.py => ${dst_dir}"

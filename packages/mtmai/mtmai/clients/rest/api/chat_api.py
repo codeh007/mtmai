@@ -46,8 +46,8 @@ class ChatApi:
     @validate_call
     async def chat_message_upsert(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         chat_message_upsert: ChatMessageUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -65,10 +65,10 @@ class ChatApi:
 
         保存 聊天消息
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param chat_message_upsert: (required)
         :type chat_message_upsert: ChatMessageUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -92,8 +92,8 @@ class ChatApi:
         """ # noqa: E501
 
         _param = self._chat_message_upsert_serialize(
-            tenant=tenant,
             chat_message_upsert=chat_message_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -119,8 +119,8 @@ class ChatApi:
     @validate_call
     async def chat_message_upsert_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         chat_message_upsert: ChatMessageUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -138,10 +138,10 @@ class ChatApi:
 
         保存 聊天消息
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param chat_message_upsert: (required)
         :type chat_message_upsert: ChatMessageUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -165,8 +165,8 @@ class ChatApi:
         """ # noqa: E501
 
         _param = self._chat_message_upsert_serialize(
-            tenant=tenant,
             chat_message_upsert=chat_message_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -192,8 +192,8 @@ class ChatApi:
     @validate_call
     async def chat_message_upsert_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         chat_message_upsert: ChatMessageUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -211,10 +211,10 @@ class ChatApi:
 
         保存 聊天消息
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param chat_message_upsert: (required)
         :type chat_message_upsert: ChatMessageUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -238,8 +238,8 @@ class ChatApi:
         """ # noqa: E501
 
         _param = self._chat_message_upsert_serialize(
-            tenant=tenant,
             chat_message_upsert=chat_message_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -260,8 +260,8 @@ class ChatApi:
 
     def _chat_message_upsert_serialize(
         self,
-        tenant,
         chat_message_upsert,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

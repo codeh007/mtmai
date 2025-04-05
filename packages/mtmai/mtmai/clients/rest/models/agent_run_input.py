@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.agent_run_input_input import AgentRunInputInput
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -36,7 +37,8 @@ class AgentRunInput(BaseModel):
     component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
     topic: Optional[StrictStr] = None
     source: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["sessionId", "type", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source"]
+    input: Optional[AgentRunInputInput] = None
+    __properties: ClassVar[List[str]] = ["sessionId", "type", "content", "tenantId", "runId", "stepRunId", "resourceId", "componentId", "topic", "source", "input"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,6 +79,9 @@ class AgentRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of input
+        if self.input:
+            _dict['input'] = self.input.to_dict()
         return _dict
 
     @classmethod
@@ -88,6 +93,11 @@ class AgentRunInput(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in AgentRunInput) in the input: " + _key)
+
         _obj = cls.model_validate({
             "sessionId": obj.get("sessionId"),
             "type": obj.get("type"),
@@ -98,7 +108,8 @@ class AgentRunInput(BaseModel):
             "resourceId": obj.get("resourceId"),
             "componentId": obj.get("componentId"),
             "topic": obj.get("topic"),
-            "source": obj.get("source")
+            "source": obj.get("source"),
+            "input": AgentRunInputInput.from_dict(obj["input"]) if obj.get("input") is not None else None
         })
         return _obj
 

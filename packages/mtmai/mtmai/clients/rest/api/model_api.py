@@ -593,9 +593,9 @@ class ModelApi:
     @validate_call
     async def model_upsert(
         self,
+        upsert_model: UpsertModel,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[StrictStr, Field(description="The model id")],
-        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -613,12 +613,12 @@ class ModelApi:
 
         upsert an model
 
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param upsert_model: (required)
-        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -642,9 +642,9 @@ class ModelApi:
         """ # noqa: E501
 
         _param = self._model_upsert_serialize(
+            upsert_model=upsert_model,
             tenant=tenant,
             model=model,
-            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -670,9 +670,9 @@ class ModelApi:
     @validate_call
     async def model_upsert_with_http_info(
         self,
+        upsert_model: UpsertModel,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[StrictStr, Field(description="The model id")],
-        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -690,12 +690,12 @@ class ModelApi:
 
         upsert an model
 
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param upsert_model: (required)
-        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -719,9 +719,9 @@ class ModelApi:
         """ # noqa: E501
 
         _param = self._model_upsert_serialize(
+            upsert_model=upsert_model,
             tenant=tenant,
             model=model,
-            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -747,9 +747,9 @@ class ModelApi:
     @validate_call
     async def model_upsert_without_preload_content(
         self,
+        upsert_model: UpsertModel,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         model: Annotated[StrictStr, Field(description="The model id")],
-        upsert_model: UpsertModel,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -767,12 +767,12 @@ class ModelApi:
 
         upsert an model
 
+        :param upsert_model: (required)
+        :type upsert_model: UpsertModel
         :param tenant: The tenant id (required)
         :type tenant: str
         :param model: The model id (required)
         :type model: str
-        :param upsert_model: (required)
-        :type upsert_model: UpsertModel
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -796,9 +796,9 @@ class ModelApi:
         """ # noqa: E501
 
         _param = self._model_upsert_serialize(
+            upsert_model=upsert_model,
             tenant=tenant,
             model=model,
-            upsert_model=upsert_model,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -819,9 +819,9 @@ class ModelApi:
 
     def _model_upsert_serialize(
         self,
+        upsert_model,
         tenant,
         model,
-        upsert_model,
         _request_auth,
         _content_type,
         _headers,

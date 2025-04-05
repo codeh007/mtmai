@@ -38,6 +38,7 @@ from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_properties import AgentProperties
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
+from mtmai.clients.rest.models.agent_run_input_input import AgentRunInputInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
@@ -236,6 +237,7 @@ from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
+from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
 from mtmai.clients.rest.models.state_type import StateType

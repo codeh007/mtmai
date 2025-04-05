@@ -82,6 +82,11 @@ class WorkflowRunsMetrics(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in WorkflowRunsMetrics) in the input: " + _key)
+
         _obj = cls.model_validate({
             "counts": WorkflowRunsMetricsCounts.from_dict(obj["counts"]) if obj.get("counts") is not None else None
         })

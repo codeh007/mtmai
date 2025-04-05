@@ -10,8 +10,10 @@ from autogen_core import CancellationToken, MessageContext, RoutedAgent, message
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+
 from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
@@ -45,9 +47,17 @@ class InstagramAgent(RoutedAgent):
     async def on_terminate(
         self, message: TerminationMessage, ctx: MessageContext
     ) -> None:
-        assert ctx.topic_id is not None
+        """仅作为测试"""
         logger.info(
             f"(instagram agent )对话结束 with {ctx.sender} because {message.reason}"
+        )
+
+    @message_handler
+    async def handle_add_follow(
+        self, message: SocialAddFollowersInput, ctx: MessageContext
+    ) -> None:
+        logger.info(
+            f"(instagram agent )SocialAddFollowersInput  with {ctx.sender} because {message.reason}"
         )
 
     async def on_messages_stream(

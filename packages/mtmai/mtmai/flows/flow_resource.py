@@ -1,4 +1,5 @@
 from loguru import logger
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.flow_names import FlowNames
@@ -17,7 +18,7 @@ from mtmai.worker_app import mtmapp
 class FlowResource:
     @mtmapp.step(timeout="60m")
     async def entry(self, hatctx: Context):
-        input = ResourceFlowInput.model_validate(hatctx.input)
+        input = ResourceFlowInput.from_dict(hatctx.input)
         tenant_client = TenantClient()
         cancellation_token = MtCancelToken()
         session_id = get_chat_session_id_ctx()

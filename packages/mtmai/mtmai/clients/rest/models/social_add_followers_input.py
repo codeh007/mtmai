@@ -17,20 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.blog_post_state_outlines_inner import BlogPostStateOutlinesInner
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BlogPostState(BaseModel):
+class SocialAddFollowersInput(BaseModel):
     """
-    BlogPostState
+    SocialAddFollowersInput
     """ # noqa: E501
-    title: Optional[StrictStr] = Field(default=None, description="post title")
-    topic: Optional[StrictStr] = Field(default=None, description="post topic")
-    outlines: Optional[List[BlogPostStateOutlinesInner]] = Field(default=None, description="post outlines")
-    __properties: ClassVar[List[str]] = ["title", "topic", "outlines"]
+    type: StrictStr
+    platform_account_id: Optional[StrictStr] = None
+    count_to_follow: Union[StrictFloat, StrictInt]
+    __properties: ClassVar[List[str]] = ["type", "platform_account_id", "count_to_follow"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['SocialAddFollowersInput']):
+            raise ValueError("must be one of enum values ('SocialAddFollowersInput')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +56,7 @@ class BlogPostState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BlogPostState from a JSON string"""
+        """Create an instance of SocialAddFollowersInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,18 +77,11 @@ class BlogPostState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in outlines (list)
-        _items = []
-        if self.outlines:
-            for _item_outlines in self.outlines:
-                if _item_outlines:
-                    _items.append(_item_outlines.to_dict())
-            _dict['outlines'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BlogPostState from a dict"""
+        """Create an instance of SocialAddFollowersInput from a dict"""
         if obj is None:
             return None
 
@@ -92,12 +91,12 @@ class BlogPostState(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BlogPostState) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SocialAddFollowersInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "title": obj.get("title"),
-            "topic": obj.get("topic"),
-            "outlines": [BlogPostStateOutlinesInner.from_dict(_item) for _item in obj["outlines"]] if obj.get("outlines") is not None else None
+            "type": obj.get("type"),
+            "platform_account_id": obj.get("platform_account_id"),
+            "count_to_follow": obj.get("count_to_follow") if obj.get("count_to_follow") is not None else 1
         })
         return _obj
 

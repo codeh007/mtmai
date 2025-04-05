@@ -95,6 +95,11 @@ class SelectorGroupChatConfig(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in SelectorGroupChatConfig) in the input: " + _key)
+
         _obj = cls.model_validate({
             "participants": [MtComponent.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": MtComponent.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,

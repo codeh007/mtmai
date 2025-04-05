@@ -79,6 +79,11 @@ class SocialTeamConfig(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in SocialTeamConfig) in the input: " + _key)
+
         _obj = cls.model_validate({
             "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
         })

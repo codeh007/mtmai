@@ -1301,8 +1301,8 @@ class EventApi:
     @validate_call
     async def event_update_cancel(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         cancel_event_request: Annotated[CancelEventRequest, Field(description="The event ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1320,10 +1320,10 @@ class EventApi:
 
         Cancels all runs for a list of events.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param cancel_event_request: The event ids to replay (required)
         :type cancel_event_request: CancelEventRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1347,8 +1347,8 @@ class EventApi:
         """ # noqa: E501
 
         _param = self._event_update_cancel_serialize(
-            tenant=tenant,
             cancel_event_request=cancel_event_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1375,8 +1375,8 @@ class EventApi:
     @validate_call
     async def event_update_cancel_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         cancel_event_request: Annotated[CancelEventRequest, Field(description="The event ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1394,10 +1394,10 @@ class EventApi:
 
         Cancels all runs for a list of events.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param cancel_event_request: The event ids to replay (required)
         :type cancel_event_request: CancelEventRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1421,8 +1421,8 @@ class EventApi:
         """ # noqa: E501
 
         _param = self._event_update_cancel_serialize(
-            tenant=tenant,
             cancel_event_request=cancel_event_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1449,8 +1449,8 @@ class EventApi:
     @validate_call
     async def event_update_cancel_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         cancel_event_request: Annotated[CancelEventRequest, Field(description="The event ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1468,10 +1468,10 @@ class EventApi:
 
         Cancels all runs for a list of events.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param cancel_event_request: The event ids to replay (required)
         :type cancel_event_request: CancelEventRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1495,8 +1495,8 @@ class EventApi:
         """ # noqa: E501
 
         _param = self._event_update_cancel_serialize(
-            tenant=tenant,
             cancel_event_request=cancel_event_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1518,8 +1518,8 @@ class EventApi:
 
     def _event_update_cancel_serialize(
         self,
-        tenant,
         cancel_event_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

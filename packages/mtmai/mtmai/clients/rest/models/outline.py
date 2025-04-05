@@ -88,6 +88,11 @@ class Outline(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in Outline) in the input: " + _key)
+
         _obj = cls.model_validate({
             "pageTitle": obj.get("pageTitle"),
             "sections": [Section.from_dict(_item) for _item in obj["sections"]] if obj.get("sections") is not None else None

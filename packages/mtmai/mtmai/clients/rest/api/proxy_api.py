@@ -593,9 +593,9 @@ class ProxyApi:
     @validate_call
     async def proxy_upsert(
         self,
+        proxy_upsert: ProxyUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -612,12 +612,12 @@ class ProxyApi:
         """proxy_upsert
 
 
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy_upsert: (required)
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -641,9 +641,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_upsert_serialize(
+            proxy_upsert=proxy_upsert,
             tenant=tenant,
             proxy=proxy,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -669,9 +669,9 @@ class ProxyApi:
     @validate_call
     async def proxy_upsert_with_http_info(
         self,
+        proxy_upsert: ProxyUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -688,12 +688,12 @@ class ProxyApi:
         """proxy_upsert
 
 
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy_upsert: (required)
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -717,9 +717,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_upsert_serialize(
+            proxy_upsert=proxy_upsert,
             tenant=tenant,
             proxy=proxy,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -745,9 +745,9 @@ class ProxyApi:
     @validate_call
     async def proxy_upsert_without_preload_content(
         self,
+        proxy_upsert: ProxyUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         proxy: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        proxy_upsert: ProxyUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -764,12 +764,12 @@ class ProxyApi:
         """proxy_upsert
 
 
+        :param proxy_upsert: (required)
+        :type proxy_upsert: ProxyUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param proxy: The platform id (required)
         :type proxy: str
-        :param proxy_upsert: (required)
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -793,9 +793,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_upsert_serialize(
+            proxy_upsert=proxy_upsert,
             tenant=tenant,
             proxy=proxy,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -816,9 +816,9 @@ class ProxyApi:
 
     def _proxy_upsert_serialize(
         self,
+        proxy_upsert,
         tenant,
         proxy,
-        proxy_upsert,
         _request_auth,
         _content_type,
         _headers,

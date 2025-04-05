@@ -29,7 +29,7 @@ class TextMessage(BaseModel):
     type: Optional[StrictStr] = None
     source: Optional[StrictStr] = None
     content: Optional[StrictStr] = None
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Any] = None
     models_usage: Optional[Dict[str, Any]] = None
     __properties: ClassVar[List[str]] = ["type", "source", "content", "metadata", "models_usage"]
 
@@ -82,6 +82,11 @@ class TextMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if metadata (nullable) is None
+        # and model_fields_set contains the field
+        if self.metadata is None and "metadata" in self.model_fields_set:
+            _dict['metadata'] = None
+
         return _dict
 
     @classmethod
@@ -92,6 +97,11 @@ class TextMessage(BaseModel):
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
+
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in TextMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
             "type": obj.get("type"),

@@ -642,8 +642,8 @@ class AgStateApi:
     @validate_call
     async def ag_state_upsert(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         ag_state_upsert: Annotated[AgStateUpsert, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -661,10 +661,10 @@ class AgStateApi:
 
         Upsert an agState
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param ag_state_upsert: The model properties to update (required)
         :type ag_state_upsert: AgStateUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -688,8 +688,8 @@ class AgStateApi:
         """ # noqa: E501
 
         _param = self._ag_state_upsert_serialize(
-            tenant=tenant,
             ag_state_upsert=ag_state_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -715,8 +715,8 @@ class AgStateApi:
     @validate_call
     async def ag_state_upsert_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         ag_state_upsert: Annotated[AgStateUpsert, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -734,10 +734,10 @@ class AgStateApi:
 
         Upsert an agState
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param ag_state_upsert: The model properties to update (required)
         :type ag_state_upsert: AgStateUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -761,8 +761,8 @@ class AgStateApi:
         """ # noqa: E501
 
         _param = self._ag_state_upsert_serialize(
-            tenant=tenant,
             ag_state_upsert=ag_state_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -788,8 +788,8 @@ class AgStateApi:
     @validate_call
     async def ag_state_upsert_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         ag_state_upsert: Annotated[AgStateUpsert, Field(description="The model properties to update")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -807,10 +807,10 @@ class AgStateApi:
 
         Upsert an agState
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param ag_state_upsert: The model properties to update (required)
         :type ag_state_upsert: AgStateUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -834,8 +834,8 @@ class AgStateApi:
         """ # noqa: E501
 
         _param = self._ag_state_upsert_serialize(
-            tenant=tenant,
             ag_state_upsert=ag_state_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -856,8 +856,8 @@ class AgStateApi:
 
     def _ag_state_upsert_serialize(
         self,
-        tenant,
         ag_state_upsert,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

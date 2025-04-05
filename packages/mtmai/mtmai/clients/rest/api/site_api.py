@@ -331,8 +331,8 @@ class SiteApi:
     @validate_call
     async def site_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_request: CreateSiteRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -350,10 +350,10 @@ class SiteApi:
 
         create site
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -377,8 +377,8 @@ class SiteApi:
         """ # noqa: E501
 
         _param = self._site_create_serialize(
-            tenant=tenant,
             create_site_request=create_site_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -404,8 +404,8 @@ class SiteApi:
     @validate_call
     async def site_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_request: CreateSiteRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -423,10 +423,10 @@ class SiteApi:
 
         create site
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -450,8 +450,8 @@ class SiteApi:
         """ # noqa: E501
 
         _param = self._site_create_serialize(
-            tenant=tenant,
             create_site_request=create_site_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -477,8 +477,8 @@ class SiteApi:
     @validate_call
     async def site_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         create_site_request: CreateSiteRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -496,10 +496,10 @@ class SiteApi:
 
         create site
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param create_site_request: (required)
         :type create_site_request: CreateSiteRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -523,8 +523,8 @@ class SiteApi:
         """ # noqa: E501
 
         _param = self._site_create_serialize(
-            tenant=tenant,
             create_site_request=create_site_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -545,8 +545,8 @@ class SiteApi:
 
     def _site_create_serialize(
         self,
-        tenant,
         create_site_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

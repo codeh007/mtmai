@@ -1439,9 +1439,9 @@ class TenantSettingsApi:
     @validate_call
     async def tenant_settings_upsert(
         self,
+        tenant_setting_upsert: TenantSettingUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         setting: Annotated[StrictStr, Field(description="The setting id")],
-        tenant_setting_upsert: TenantSettingUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1458,12 +1458,12 @@ class TenantSettingsApi:
         """tenant_settings_upsert
 
 
+        :param tenant_setting_upsert: (required)
+        :type tenant_setting_upsert: TenantSettingUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param setting: The setting id (required)
         :type setting: str
-        :param tenant_setting_upsert: (required)
-        :type tenant_setting_upsert: TenantSettingUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1487,9 +1487,9 @@ class TenantSettingsApi:
         """ # noqa: E501
 
         _param = self._tenant_settings_upsert_serialize(
+            tenant_setting_upsert=tenant_setting_upsert,
             tenant=tenant,
             setting=setting,
-            tenant_setting_upsert=tenant_setting_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1515,9 +1515,9 @@ class TenantSettingsApi:
     @validate_call
     async def tenant_settings_upsert_with_http_info(
         self,
+        tenant_setting_upsert: TenantSettingUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         setting: Annotated[StrictStr, Field(description="The setting id")],
-        tenant_setting_upsert: TenantSettingUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1534,12 +1534,12 @@ class TenantSettingsApi:
         """tenant_settings_upsert
 
 
+        :param tenant_setting_upsert: (required)
+        :type tenant_setting_upsert: TenantSettingUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param setting: The setting id (required)
         :type setting: str
-        :param tenant_setting_upsert: (required)
-        :type tenant_setting_upsert: TenantSettingUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1563,9 +1563,9 @@ class TenantSettingsApi:
         """ # noqa: E501
 
         _param = self._tenant_settings_upsert_serialize(
+            tenant_setting_upsert=tenant_setting_upsert,
             tenant=tenant,
             setting=setting,
-            tenant_setting_upsert=tenant_setting_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1591,9 +1591,9 @@ class TenantSettingsApi:
     @validate_call
     async def tenant_settings_upsert_without_preload_content(
         self,
+        tenant_setting_upsert: TenantSettingUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         setting: Annotated[StrictStr, Field(description="The setting id")],
-        tenant_setting_upsert: TenantSettingUpsert,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1610,12 +1610,12 @@ class TenantSettingsApi:
         """tenant_settings_upsert
 
 
+        :param tenant_setting_upsert: (required)
+        :type tenant_setting_upsert: TenantSettingUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param setting: The setting id (required)
         :type setting: str
-        :param tenant_setting_upsert: (required)
-        :type tenant_setting_upsert: TenantSettingUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1639,9 +1639,9 @@ class TenantSettingsApi:
         """ # noqa: E501
 
         _param = self._tenant_settings_upsert_serialize(
+            tenant_setting_upsert=tenant_setting_upsert,
             tenant=tenant,
             setting=setting,
-            tenant_setting_upsert=tenant_setting_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1662,9 +1662,9 @@ class TenantSettingsApi:
 
     def _tenant_settings_upsert_serialize(
         self,
+        tenant_setting_upsert,
         tenant,
         setting,
-        tenant_setting_upsert,
         _request_auth,
         _content_type,
         _headers,

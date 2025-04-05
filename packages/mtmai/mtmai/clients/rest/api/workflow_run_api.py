@@ -47,8 +47,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_cancel(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         workflow_runs_cancel_request: Annotated[WorkflowRunsCancelRequest, Field(description="The input to cancel the workflow runs")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -66,10 +66,10 @@ class WorkflowRunApi:
 
         Cancel a batch of workflow runs
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param workflow_runs_cancel_request: The input to cancel the workflow runs (required)
         :type workflow_runs_cancel_request: WorkflowRunsCancelRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -93,8 +93,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_cancel_serialize(
-            tenant=tenant,
             workflow_runs_cancel_request=workflow_runs_cancel_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -120,8 +120,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_cancel_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         workflow_runs_cancel_request: Annotated[WorkflowRunsCancelRequest, Field(description="The input to cancel the workflow runs")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -139,10 +139,10 @@ class WorkflowRunApi:
 
         Cancel a batch of workflow runs
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param workflow_runs_cancel_request: The input to cancel the workflow runs (required)
         :type workflow_runs_cancel_request: WorkflowRunsCancelRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -166,8 +166,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_cancel_serialize(
-            tenant=tenant,
             workflow_runs_cancel_request=workflow_runs_cancel_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -193,8 +193,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_cancel_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         workflow_runs_cancel_request: Annotated[WorkflowRunsCancelRequest, Field(description="The input to cancel the workflow runs")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -212,10 +212,10 @@ class WorkflowRunApi:
 
         Cancel a batch of workflow runs
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param workflow_runs_cancel_request: The input to cancel the workflow runs (required)
         :type workflow_runs_cancel_request: WorkflowRunsCancelRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -239,8 +239,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_cancel_serialize(
-            tenant=tenant,
             workflow_runs_cancel_request=workflow_runs_cancel_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -261,8 +261,8 @@ class WorkflowRunApi:
 
     def _workflow_run_cancel_serialize(
         self,
-        tenant,
         workflow_runs_cancel_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -344,8 +344,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create(
         self,
-        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
@@ -364,10 +364,10 @@ class WorkflowRunApi:
 
         Trigger a new workflow run for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param trigger_workflow_run_request: The input to the workflow run (required)
         :type trigger_workflow_run_request: TriggerWorkflowRunRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param version: The workflow version. If not supplied, the latest version is fetched.
         :type version: str
         :param _request_timeout: timeout setting for this request. If one
@@ -393,8 +393,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_create_serialize(
-            workflow=workflow,
             trigger_workflow_run_request=trigger_workflow_run_request,
+            workflow=workflow,
             version=version,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -423,8 +423,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create_with_http_info(
         self,
-        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
@@ -443,10 +443,10 @@ class WorkflowRunApi:
 
         Trigger a new workflow run for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param trigger_workflow_run_request: The input to the workflow run (required)
         :type trigger_workflow_run_request: TriggerWorkflowRunRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param version: The workflow version. If not supplied, the latest version is fetched.
         :type version: str
         :param _request_timeout: timeout setting for this request. If one
@@ -472,8 +472,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_create_serialize(
-            workflow=workflow,
             trigger_workflow_run_request=trigger_workflow_run_request,
+            workflow=workflow,
             version=version,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -502,8 +502,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_create_without_preload_content(
         self,
-        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         trigger_workflow_run_request: Annotated[TriggerWorkflowRunRequest, Field(description="The input to the workflow run")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         version: Annotated[Optional[StrictStr], Field(description="The workflow version. If not supplied, the latest version is fetched.")] = None,
         _request_timeout: Union[
             None,
@@ -522,10 +522,10 @@ class WorkflowRunApi:
 
         Trigger a new workflow run for a tenant
 
-        :param workflow: The workflow id (required)
-        :type workflow: str
         :param trigger_workflow_run_request: The input to the workflow run (required)
         :type trigger_workflow_run_request: TriggerWorkflowRunRequest
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param version: The workflow version. If not supplied, the latest version is fetched.
         :type version: str
         :param _request_timeout: timeout setting for this request. If one
@@ -551,8 +551,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_create_serialize(
-            workflow=workflow,
             trigger_workflow_run_request=trigger_workflow_run_request,
+            workflow=workflow,
             version=version,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -576,8 +576,8 @@ class WorkflowRunApi:
 
     def _workflow_run_create_serialize(
         self,
-        workflow,
         trigger_workflow_run_request,
+        workflow,
         version,
         _request_auth,
         _content_type,
@@ -951,8 +951,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_update_replay(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         replay_workflow_runs_request: Annotated[ReplayWorkflowRunsRequest, Field(description="The workflow run ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -970,10 +970,10 @@ class WorkflowRunApi:
 
         Replays a list of workflow runs.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param replay_workflow_runs_request: The workflow run ids to replay (required)
         :type replay_workflow_runs_request: ReplayWorkflowRunsRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -997,8 +997,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_update_replay_serialize(
-            tenant=tenant,
             replay_workflow_runs_request=replay_workflow_runs_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1025,8 +1025,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_update_replay_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         replay_workflow_runs_request: Annotated[ReplayWorkflowRunsRequest, Field(description="The workflow run ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1044,10 +1044,10 @@ class WorkflowRunApi:
 
         Replays a list of workflow runs.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param replay_workflow_runs_request: The workflow run ids to replay (required)
         :type replay_workflow_runs_request: ReplayWorkflowRunsRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1071,8 +1071,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_update_replay_serialize(
-            tenant=tenant,
             replay_workflow_runs_request=replay_workflow_runs_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1099,8 +1099,8 @@ class WorkflowRunApi:
     @validate_call
     async def workflow_run_update_replay_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         replay_workflow_runs_request: Annotated[ReplayWorkflowRunsRequest, Field(description="The workflow run ids to replay")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1118,10 +1118,10 @@ class WorkflowRunApi:
 
         Replays a list of workflow runs.
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param replay_workflow_runs_request: The workflow run ids to replay (required)
         :type replay_workflow_runs_request: ReplayWorkflowRunsRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1145,8 +1145,8 @@ class WorkflowRunApi:
         """ # noqa: E501
 
         _param = self._workflow_run_update_replay_serialize(
-            tenant=tenant,
             replay_workflow_runs_request=replay_workflow_runs_request,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1168,8 +1168,8 @@ class WorkflowRunApi:
 
     def _workflow_run_update_replay_serialize(
         self,
-        tenant,
         replay_workflow_runs_request,
+        tenant,
         _request_auth,
         _content_type,
         _headers,

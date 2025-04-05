@@ -42,8 +42,8 @@ class PlatformApi:
     @validate_call
     async def platform_create(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform: Platform,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -61,10 +61,10 @@ class PlatformApi:
 
         create platform
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param platform: (required)
         :type platform: Platform
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -88,8 +88,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_create_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -115,8 +115,8 @@ class PlatformApi:
     @validate_call
     async def platform_create_with_http_info(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform: Platform,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -134,10 +134,10 @@ class PlatformApi:
 
         create platform
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param platform: (required)
         :type platform: Platform
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -161,8 +161,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_create_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -188,8 +188,8 @@ class PlatformApi:
     @validate_call
     async def platform_create_without_preload_content(
         self,
-        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         platform: Platform,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -207,10 +207,10 @@ class PlatformApi:
 
         create platform
 
-        :param tenant: The tenant id (required)
-        :type tenant: str
         :param platform: (required)
         :type platform: Platform
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -234,8 +234,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_create_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -256,8 +256,8 @@ class PlatformApi:
 
     def _platform_create_serialize(
         self,
-        tenant,
         platform,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -883,9 +883,9 @@ class PlatformApi:
     @validate_call
     async def platform_update(
         self,
+        platform: Annotated[Platform, Field(description="The platform properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        platform2: Annotated[Platform, Field(description="The platform properties to update")],
+        platform2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -903,12 +903,12 @@ class PlatformApi:
 
         Update an platform
 
+        :param platform: The platform properties to update (required)
+        :type platform: Platform
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
-        :param platform2: The platform properties to update (required)
-        :type platform2: Platform
+        :param platform2: The platform id (required)
+        :type platform2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -932,8 +932,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_update_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             platform2=platform2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -960,9 +960,9 @@ class PlatformApi:
     @validate_call
     async def platform_update_with_http_info(
         self,
+        platform: Annotated[Platform, Field(description="The platform properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        platform2: Annotated[Platform, Field(description="The platform properties to update")],
+        platform2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -980,12 +980,12 @@ class PlatformApi:
 
         Update an platform
 
+        :param platform: The platform properties to update (required)
+        :type platform: Platform
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
-        :param platform2: The platform properties to update (required)
-        :type platform2: Platform
+        :param platform2: The platform id (required)
+        :type platform2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1009,8 +1009,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_update_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             platform2=platform2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1037,9 +1037,9 @@ class PlatformApi:
     @validate_call
     async def platform_update_without_preload_content(
         self,
+        platform: Annotated[Platform, Field(description="The platform properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
-        platform2: Annotated[Platform, Field(description="The platform properties to update")],
+        platform2: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1057,12 +1057,12 @@ class PlatformApi:
 
         Update an platform
 
+        :param platform: The platform properties to update (required)
+        :type platform: Platform
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
-        :param platform2: The platform properties to update (required)
-        :type platform2: Platform
+        :param platform2: The platform id (required)
+        :type platform2: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1086,8 +1086,8 @@ class PlatformApi:
         """ # noqa: E501
 
         _param = self._platform_update_serialize(
-            tenant=tenant,
             platform=platform,
+            tenant=tenant,
             platform2=platform2,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1109,8 +1109,8 @@ class PlatformApi:
 
     def _platform_update_serialize(
         self,
-        tenant,
         platform,
+        tenant,
         platform2,
         _request_auth,
         _content_type,
@@ -1135,14 +1135,14 @@ class PlatformApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if platform is not None:
-            _path_params['platform'] = platform
+        if platform2 is not None:
+            _path_params['platform'] = platform2
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if platform2 is not None:
-            _body_params = platform2
+        if platform is not None:
+            _body_params = platform
 
 
         # set the HTTP header `Accept`

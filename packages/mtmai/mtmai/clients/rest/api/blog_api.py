@@ -42,9 +42,9 @@ class BlogApi:
     @validate_call
     async def blog_update(
         self,
+        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         blog: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The blog id")],
-        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -62,12 +62,12 @@ class BlogApi:
 
         Update an existing blog
 
+        :param update_blog_request: The tenant properties to update (required)
+        :type update_blog_request: UpdateBlogRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param blog: The blog id (required)
         :type blog: str
-        :param update_blog_request: The tenant properties to update (required)
-        :type update_blog_request: UpdateBlogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -91,9 +91,9 @@ class BlogApi:
         """ # noqa: E501
 
         _param = self._blog_update_serialize(
+            update_blog_request=update_blog_request,
             tenant=tenant,
             blog=blog,
-            update_blog_request=update_blog_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -119,9 +119,9 @@ class BlogApi:
     @validate_call
     async def blog_update_with_http_info(
         self,
+        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         blog: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The blog id")],
-        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -139,12 +139,12 @@ class BlogApi:
 
         Update an existing blog
 
+        :param update_blog_request: The tenant properties to update (required)
+        :type update_blog_request: UpdateBlogRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param blog: The blog id (required)
         :type blog: str
-        :param update_blog_request: The tenant properties to update (required)
-        :type update_blog_request: UpdateBlogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -168,9 +168,9 @@ class BlogApi:
         """ # noqa: E501
 
         _param = self._blog_update_serialize(
+            update_blog_request=update_blog_request,
             tenant=tenant,
             blog=blog,
-            update_blog_request=update_blog_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -196,9 +196,9 @@ class BlogApi:
     @validate_call
     async def blog_update_without_preload_content(
         self,
+        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         blog: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The blog id")],
-        update_blog_request: Annotated[UpdateBlogRequest, Field(description="The tenant properties to update")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -216,12 +216,12 @@ class BlogApi:
 
         Update an existing blog
 
+        :param update_blog_request: The tenant properties to update (required)
+        :type update_blog_request: UpdateBlogRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param blog: The blog id (required)
         :type blog: str
-        :param update_blog_request: The tenant properties to update (required)
-        :type update_blog_request: UpdateBlogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -245,9 +245,9 @@ class BlogApi:
         """ # noqa: E501
 
         _param = self._blog_update_serialize(
+            update_blog_request=update_blog_request,
             tenant=tenant,
             blog=blog,
-            update_blog_request=update_blog_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -268,9 +268,9 @@ class BlogApi:
 
     def _blog_update_serialize(
         self,
+        update_blog_request,
         tenant,
         blog,
-        update_blog_request,
         _request_auth,
         _content_type,
         _headers,

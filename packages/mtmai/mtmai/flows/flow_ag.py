@@ -8,6 +8,7 @@ from autogen_agentchat.messages import (
 )
 from autogen_agentchat.teams import BaseGroupChat
 from loguru import logger
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
@@ -27,7 +28,7 @@ from mtmai.worker_app import mtmapp
 class FlowAg:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
-        input = AgentRunInput.model_validate(hatctx.input)
+        input = AgentRunInput.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
         session_id = get_chat_session_id_ctx()

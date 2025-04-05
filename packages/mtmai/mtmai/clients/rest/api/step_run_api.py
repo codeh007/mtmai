@@ -1515,9 +1515,9 @@ class StepRunApi:
     @validate_call
     async def step_run_update_rerun(
         self,
+        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         step_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The step run id")],
-        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1535,12 +1535,12 @@ class StepRunApi:
 
         Reruns a step run
 
+        :param rerun_step_run_request: The input to the rerun (required)
+        :type rerun_step_run_request: RerunStepRunRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param step_run: The step run id (required)
         :type step_run: str
-        :param rerun_step_run_request: The input to the rerun (required)
-        :type rerun_step_run_request: RerunStepRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1564,9 +1564,9 @@ class StepRunApi:
         """ # noqa: E501
 
         _param = self._step_run_update_rerun_serialize(
+            rerun_step_run_request=rerun_step_run_request,
             tenant=tenant,
             step_run=step_run,
-            rerun_step_run_request=rerun_step_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1592,9 +1592,9 @@ class StepRunApi:
     @validate_call
     async def step_run_update_rerun_with_http_info(
         self,
+        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         step_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The step run id")],
-        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1612,12 +1612,12 @@ class StepRunApi:
 
         Reruns a step run
 
+        :param rerun_step_run_request: The input to the rerun (required)
+        :type rerun_step_run_request: RerunStepRunRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param step_run: The step run id (required)
         :type step_run: str
-        :param rerun_step_run_request: The input to the rerun (required)
-        :type rerun_step_run_request: RerunStepRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1641,9 +1641,9 @@ class StepRunApi:
         """ # noqa: E501
 
         _param = self._step_run_update_rerun_serialize(
+            rerun_step_run_request=rerun_step_run_request,
             tenant=tenant,
             step_run=step_run,
-            rerun_step_run_request=rerun_step_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1669,9 +1669,9 @@ class StepRunApi:
     @validate_call
     async def step_run_update_rerun_without_preload_content(
         self,
+        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         step_run: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The step run id")],
-        rerun_step_run_request: Annotated[RerunStepRunRequest, Field(description="The input to the rerun")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1689,12 +1689,12 @@ class StepRunApi:
 
         Reruns a step run
 
+        :param rerun_step_run_request: The input to the rerun (required)
+        :type rerun_step_run_request: RerunStepRunRequest
         :param tenant: The tenant id (required)
         :type tenant: str
         :param step_run: The step run id (required)
         :type step_run: str
-        :param rerun_step_run_request: The input to the rerun (required)
-        :type rerun_step_run_request: RerunStepRunRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1718,9 +1718,9 @@ class StepRunApi:
         """ # noqa: E501
 
         _param = self._step_run_update_rerun_serialize(
+            rerun_step_run_request=rerun_step_run_request,
             tenant=tenant,
             step_run=step_run,
-            rerun_step_run_request=rerun_step_run_request,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1741,9 +1741,9 @@ class StepRunApi:
 
     def _step_run_update_rerun_serialize(
         self,
+        rerun_step_run_request,
         tenant,
         step_run,
-        rerun_step_run_request,
         _request_auth,
         _content_type,
         _headers,

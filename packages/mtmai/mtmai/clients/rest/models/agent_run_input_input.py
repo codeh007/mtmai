@@ -18,38 +18,32 @@ import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
-from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
-from mtmai.clients.rest.models.text_message import TextMessage
-from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTEVENT_ONE_OF_SCHEMAS = ["AgentUserInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "TextMessage", "ThoughtEvent"]
+AGENTRUNINPUTINPUT_ONE_OF_SCHEMAS = ["AgentUserInput", "SocialAddFollowersInput"]
 
-class AgentEvent(BaseModel):
+class AgentRunInputInput(BaseModel):
     """
-    AgentEvent
+    AgentRunInputInput
     """
-    # data type: ThoughtEvent
-    oneof_schema_1_validator: Optional[ThoughtEvent] = None
-    # data type: TextMessage
-    oneof_schema_2_validator: Optional[TextMessage] = None
-    # data type: PlatformAccountFlowInput
-    oneof_schema_3_validator: Optional[PlatformAccountFlowInput] = None
     # data type: SocialAddFollowersInput
-    oneof_schema_4_validator: Optional[SocialAddFollowersInput] = None
+    oneof_schema_1_validator: Optional[SocialAddFollowersInput] = None
     # data type: AgentUserInput
-    oneof_schema_5_validator: Optional[AgentUserInput] = None
-    actual_instance: Optional[Union[AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent]] = None
-    one_of_schemas: Set[str] = { "AgentUserInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "TextMessage", "ThoughtEvent" }
+    oneof_schema_2_validator: Optional[AgentUserInput] = None
+    actual_instance: Optional[Union[AgentUserInput, SocialAddFollowersInput]] = None
+    one_of_schemas: Set[str] = { "AgentUserInput", "SocialAddFollowersInput" }
 
     model_config = ConfigDict(
         validate_assignment=True,
         protected_namespaces=(),
     )
 
+
+    discriminator_value_class_map: Dict[str, str] = {
+    }
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -63,24 +57,9 @@ class AgentEvent(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = AgentEvent.model_construct()
+        instance = AgentRunInputInput.model_construct()
         error_messages = []
         match = 0
-        # validate data type: ThoughtEvent
-        if not isinstance(v, ThoughtEvent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ThoughtEvent`")
-        else:
-            match += 1
-        # validate data type: TextMessage
-        if not isinstance(v, TextMessage):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `TextMessage`")
-        else:
-            match += 1
-        # validate data type: PlatformAccountFlowInput
-        if not isinstance(v, PlatformAccountFlowInput):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountFlowInput`")
-        else:
-            match += 1
         # validate data type: SocialAddFollowersInput
         if not isinstance(v, SocialAddFollowersInput):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialAddFollowersInput`")
@@ -93,10 +72,10 @@ class AgentEvent(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentEvent with oneOf schemas: AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentEvent with oneOf schemas: AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -111,24 +90,21 @@ class AgentEvent(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into ThoughtEvent
-        try:
-            instance.actual_instance = ThoughtEvent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into TextMessage
-        try:
-            instance.actual_instance = TextMessage.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into PlatformAccountFlowInput
-        try:
-            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
+        # use oneOf discriminator to lookup the data type
+        _data_type = json.loads(json_str).get("type")
+        if not _data_type:
+            raise ValueError("Failed to lookup data type from the field `type` in the input.")
+
+        # check if data type is `AgentUserInput`
+        if _data_type == "AgentUserInput":
+            instance.actual_instance = AgentUserInput.from_json(json_str)
+            return instance
+
+        # check if data type is `SocialAddFollowersInput`
+        if _data_type == "SocialAddFollowersInput":
+            instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
+            return instance
+
         # deserialize data into SocialAddFollowersInput
         try:
             instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
@@ -144,10 +120,10 @@ class AgentEvent(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentEvent with oneOf schemas: AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentEvent with oneOf schemas: AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -161,7 +137,7 @@ class AgentEvent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentUserInput, PlatformAccountFlowInput, SocialAddFollowersInput, TextMessage, ThoughtEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentUserInput, SocialAddFollowersInput]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

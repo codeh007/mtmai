@@ -581,8 +581,8 @@ class WorkerApi:
     @validate_call
     async def worker_update(
         self,
-        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         update_worker_request: Annotated[UpdateWorkerRequest, Field(description="The worker update")],
+        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -600,10 +600,10 @@ class WorkerApi:
 
         Update a worker
 
-        :param worker: The worker id (required)
-        :type worker: str
         :param update_worker_request: The worker update (required)
         :type update_worker_request: UpdateWorkerRequest
+        :param worker: The worker id (required)
+        :type worker: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -627,8 +627,8 @@ class WorkerApi:
         """ # noqa: E501
 
         _param = self._worker_update_serialize(
-            worker=worker,
             update_worker_request=update_worker_request,
+            worker=worker,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -654,8 +654,8 @@ class WorkerApi:
     @validate_call
     async def worker_update_with_http_info(
         self,
-        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         update_worker_request: Annotated[UpdateWorkerRequest, Field(description="The worker update")],
+        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -673,10 +673,10 @@ class WorkerApi:
 
         Update a worker
 
-        :param worker: The worker id (required)
-        :type worker: str
         :param update_worker_request: The worker update (required)
         :type update_worker_request: UpdateWorkerRequest
+        :param worker: The worker id (required)
+        :type worker: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -700,8 +700,8 @@ class WorkerApi:
         """ # noqa: E501
 
         _param = self._worker_update_serialize(
-            worker=worker,
             update_worker_request=update_worker_request,
+            worker=worker,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -727,8 +727,8 @@ class WorkerApi:
     @validate_call
     async def worker_update_without_preload_content(
         self,
-        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         update_worker_request: Annotated[UpdateWorkerRequest, Field(description="The worker update")],
+        worker: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The worker id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -746,10 +746,10 @@ class WorkerApi:
 
         Update a worker
 
-        :param worker: The worker id (required)
-        :type worker: str
         :param update_worker_request: The worker update (required)
         :type update_worker_request: UpdateWorkerRequest
+        :param worker: The worker id (required)
+        :type worker: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -773,8 +773,8 @@ class WorkerApi:
         """ # noqa: E501
 
         _param = self._worker_update_serialize(
-            worker=worker,
             update_worker_request=update_worker_request,
+            worker=worker,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -795,8 +795,8 @@ class WorkerApi:
 
     def _worker_update_serialize(
         self,
-        worker,
         update_worker_request,
+        worker,
         _request_auth,
         _content_type,
         _headers,
