@@ -34,9 +34,7 @@ class AgStateUpsert(BaseModel):
     topic: StrictStr
     source: StrictStr
     state: Dict[str, Any]
-    state_id: Optional[StrictStr] = Field(default=None, alias="stateId")
-    tenant_id: StrictStr = Field(alias="tenantId")
-    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state", "stateId", "tenantId"]
+    __properties: ClassVar[List[str]] = ["version", "type", "componentId", "chatId", "topic", "source", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -95,9 +93,7 @@ class AgStateUpsert(BaseModel):
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),
             "source": obj.get("source"),
-            "state": obj.get("state"),
-            "stateId": obj.get("stateId"),
-            "tenantId": obj.get("tenantId")
+            "state": obj.get("state")
         })
         return _obj
 

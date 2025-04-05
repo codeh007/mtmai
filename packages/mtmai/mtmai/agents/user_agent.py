@@ -12,7 +12,6 @@ from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
 from loguru import logger
 from mtmai.agents._types import (
-    AgentResponse,
     BrowserOpenTask,
     BrowserTask,
     CodeWritingTask,
@@ -120,54 +119,12 @@ class UserAgent(RoutedAgent):
         # assert ctx.topic_id is not None
         logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
 
-    @message_handler
-    async def handle_task_result(
-        self, message: AgentResponse, ctx: MessageContext
-    ) -> None:
-        # tenant_client = TenantClient()
-        # tid = tenant_client.tenant_id
-        # llm_message = message.context[-1]
-        # await tenant_client.emit(llm_message)
-        # await tenant_client.ag.chat_api.chat_message_upsert(
-        #     tenant=tid,
-        #     chat_message_upsert=ChatMessageUpsert(
-        #         tenant_id=tid,
-        #         content=llm_message.content,
-        #         # component_id=self.id.key,
-        #         thread_id=self.id.key,
-        #         role="assistant",
-        #         # source="assistant",
-        #         source=ctx.topic_id.source,
-        #         topic=ctx.topic_id.type,
-        #     ),
-        # )
-        pass
-
     async def save_state(self) -> Mapping[str, Any]:
         return {
             "model_context": await self._model_context.save_state(),
-            "is_waiting_ig_login": self.is_waiting_ig_login,
+            # "is_waiting_ig_login": self.is_waiting_ig_login,
         }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._model_context.load_state(state["model_context"])
         self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)
-
-
-# class InstagramAgentV2(RoutedAgent):
-#     def __init__(self, description: str) -> None:
-#         super().__init__(description)
-
-#     @message_handler
-#     async def on_instagram_login(
-#         self, message: IgAccountMessage, ctx: MessageContext
-#     ) -> None:
-#         logger.info(f"handle_instagram_login: {message}")
-#         return None
-
-#     @message_handler
-#     async def on_terminate(
-#         self, message: TerminationMessage, ctx: MessageContext
-#     ) -> None:
-#         assert ctx.topic_id is not None
-#         logger.info(f"对话结束 with {ctx.sender} because {message.reason}")

@@ -45,8 +45,7 @@ class AgStateApi:
     async def ag_state_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        state: Annotated[Optional[StrictStr], Field(description="The agState id")] = None,
-        chat: Annotated[Optional[StrictStr], Field(description="The chat id")] = None,
+        state: Annotated[StrictStr, Field(description="The agState id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -66,10 +65,8 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param state: The agState id
+        :param state: The agState id (required)
         :type state: str
-        :param chat: The chat id
-        :type chat: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -95,7 +92,6 @@ class AgStateApi:
         _param = self._ag_state_get_serialize(
             tenant=tenant,
             state=state,
-            chat=chat,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -122,8 +118,7 @@ class AgStateApi:
     async def ag_state_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        state: Annotated[Optional[StrictStr], Field(description="The agState id")] = None,
-        chat: Annotated[Optional[StrictStr], Field(description="The chat id")] = None,
+        state: Annotated[StrictStr, Field(description="The agState id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -143,10 +138,8 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param state: The agState id
+        :param state: The agState id (required)
         :type state: str
-        :param chat: The chat id
-        :type chat: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -172,7 +165,6 @@ class AgStateApi:
         _param = self._ag_state_get_serialize(
             tenant=tenant,
             state=state,
-            chat=chat,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -199,8 +191,7 @@ class AgStateApi:
     async def ag_state_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        state: Annotated[Optional[StrictStr], Field(description="The agState id")] = None,
-        chat: Annotated[Optional[StrictStr], Field(description="The chat id")] = None,
+        state: Annotated[StrictStr, Field(description="The agState id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -220,10 +211,8 @@ class AgStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param state: The agState id
+        :param state: The agState id (required)
         :type state: str
-        :param chat: The chat id
-        :type chat: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -249,7 +238,6 @@ class AgStateApi:
         _param = self._ag_state_get_serialize(
             tenant=tenant,
             state=state,
-            chat=chat,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -272,7 +260,6 @@ class AgStateApi:
         self,
         tenant,
         state,
-        chat,
         _request_auth,
         _content_type,
         _headers,
@@ -296,15 +283,9 @@ class AgStateApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        # process the query parameters
         if state is not None:
-            
-            _query_params.append(('state', state))
-            
-        if chat is not None:
-            
-            _query_params.append(('chat', chat))
-            
+            _path_params['state'] = state
+        # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -328,7 +309,7 @@ class AgStateApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/agState',
+            resource_path='/api/v1/tenants/{tenant}/agState/{state}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -922,7 +903,7 @@ class AgStateApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/tenants/{tenant}/agStates',
+            resource_path='/api/v1/tenants/{tenant}/agStateSave',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

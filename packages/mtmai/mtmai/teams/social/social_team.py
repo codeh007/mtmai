@@ -182,7 +182,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                     topic=topic,
                     source=source,
                     type=StateType.RUNTIMESTATE.value,
-                    componentId=input.component_id,
                     chatId=self.session_id,
                     state=v,
                 ),
