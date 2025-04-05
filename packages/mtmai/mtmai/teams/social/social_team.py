@@ -23,12 +23,14 @@ from loguru import logger
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
@@ -134,33 +136,30 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         if not self._initialized:
             await self._init()
 
-        default_topic_id = TopicId(
-            type=AgentTopicTypes.INSTAGRAM.value, source="default"
-        )
+        team_topic = f"social.{self.session_id}"
+        team_topic_id = TopicId(type=team_topic, source="default")
         user_topic_id = TopicId(type=AgentTopicTypes.USER.value, source="default")
         if isinstance(task, AgentRunInput):
             if AgentEventType.AGENTUSERINPUT.value == task.type:
-                # 用户输入
                 user_input_msg = AgentUserInput.model_validate(task.model_dump())
-                logger.info(f"用户输入: {user_input_msg.content}")
                 await self._runtime.publish_message(
                     message=user_input_msg,
                     topic_id=user_topic_id,
                     cancellation_token=cancellation_token,
                 )
-                return
 
         await self._runtime.stop_when_idle()
-        state = await self.save_state()
-        await self.tenant_client.ag.save_team_state(
-            componentId=self._team_id,
-            tenant_id=self.tenant_client.tenant_id,
-            chat_id=self.session_id,
-            state=state,
-        )
+        # state = await self.save_state()
+        # await self.tenant_client.ag.save_team_state(
+        #     componentId=self._team_id,
+        #     tenant_id=self.tenant_client.tenant_id,
+        #     chat_id=self.session_id,
+        #     state=state,
+        # )
 
-        runtime_state = await self._runtime.save_state()
-        logger.info(f"runtime_state: {runtime_state}")
+        # runtime_state = await self._runtime.save_state()
+        # logger.info(f"runtime_state: {runtime_state}")
+        await self.save_state_db()
 
     async def reset(self) -> None:
         self._is_running = False
@@ -168,6 +167,26 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
     async def save_state(self) -> Mapping[str, Any]:
         state = await self._runtime.save_state()
         return state
+
+    async def save_state_db(self):
+        state_data = await self.save_state()
+        for k, v in state_data.items():
+            logger.info(f"key: {k}, value: {v}")
+            parts = k.split("/")
+            topic = parts[0]
+            source = parts[1] if len(parts) > 1 else "default"
+            await self.tenant_client.ag_state_api.ag_state_upsert(
+                tenant=self.tenant_client.tenant_id,
+                ag_state_upsert=AgStateUpsert(
+                    tenantId=self.tenant_client.tenant_id,
+                    topic=topic,
+                    source=source,
+                    type=StateType.RUNTIMESTATE.value,
+                    componentId=input.component_id,
+                    chatId=self.session_id,
+                    state=v,
+                ),
+            )
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._runtime.load_state(state)
@@ -184,13 +203,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         )
 
     async def pause(self) -> None:
-        """Pause the team and all its participants. This is useful for
-        pausing the :meth:`autogen_agentchat.base.TaskRunner.run` or
-        :meth:`autogen_agentchat.base.TaskRunner.run_stream` methods from
-        concurrently, while keeping them alive."""
-        ...
+        logger.info("TODO: pause team")
 
     async def resume(self) -> None:
-        """Resume the team and all its participants from a pause after
-        :meth:`pause` was called."""
-        ...
+        logger.info("TODO: resume team")
