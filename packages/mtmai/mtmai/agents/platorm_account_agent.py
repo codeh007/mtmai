@@ -2,7 +2,7 @@ from autogen_core import MessageContext, RoutedAgent, message_handler
 from loguru import logger
 from mtmai.agents._types import PlatformAccountTask
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
-from mtmai.context.context_client import TenantClient
+from mtmai.clients.tenant_client import TenantClient
 
 
 class PlatformAccountAgent(RoutedAgent):

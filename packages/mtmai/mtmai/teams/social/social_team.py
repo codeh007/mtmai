@@ -1,9 +1,15 @@
+import asyncio
 from typing import Any, AsyncGenerator, Mapping, Sequence
 
 from agents._semantic_router_agent import SemanticRouterAgent
 from agents.instagram_agent import InstagramAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.messages import (
+    AgentEvent,
+    BaseAgentEvent,
+    BaseChatMessage,
+    ChatMessage,
+)
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
@@ -17,14 +23,19 @@ from loguru import logger
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
+from mtmai.clients.rest.models.agent_event_type import AgentEventType
+from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
-from mtmai.clients.rest.models.termination_message import TerminationMessage
-from mtmai.context.context_client import TenantClient
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.teams.sys_team import MockAgentRegistry, MockIntentClassifier
+from mtmai.mtlibs.autogen_utils.autogen_utils import (
+    MockAgentRegistry,
+    MockIntentClassifier,
+)
 from typing_extensions import Self
 
 
@@ -41,6 +52,10 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
+        # The queue for collecting the output messages.
+        self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
+            asyncio.Queue()
+        )
 
     async def _init(self):
         self.session_id = get_chat_session_id_ctx()
@@ -83,6 +98,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             type=AgentTopicTypes.USER.value,
             factory=lambda: UserAgent(
                 description="A user agent.",
+                session_id=self.session_id,
             ),
         )
         await self._runtime.add_subscription(
@@ -95,8 +111,8 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(
                 description="An agent that interacts with instagram v2",
-                # name="instagram_agent",
-                model_client=self._model_client,
+                model_client=self.model_client,
+                user_topic=user_agent_type.type,
             ),
         )
         await self._runtime.add_subscription(
@@ -112,30 +128,27 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
     async def run_stream(
         self,
         *,
-        task: str | ChatMessage | Sequence[ChatMessage] | None = None,
+        task: str | ChatMessage | Sequence[ChatMessage] | AgentRunInput | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
             await self._init()
 
-        await self._runtime.publish_message(
-            message=TerminationMessage(),
-            topic_id=TopicId(type=AgentTopicTypes.INSTAGRAM.value, source="default"),
+        default_topic_id = TopicId(
+            type=AgentTopicTypes.INSTAGRAM.value, source="default"
         )
-
-        await self._runtime.publish_message(
-            message=TerminationMessage(),
-            topic_id=TopicId(type=AgentTopicTypes.USER.value, source="default"),
-        )
-
-        async for event in super().run_stream(
-            task=task, cancellation_token=cancellation_token
-        ):
-            if isinstance(event, TaskResult):
-                yield event
-            else:
-                await self.tenant_client.emit(event)
-                yield event
+        user_topic_id = TopicId(type=AgentTopicTypes.USER.value, source="default")
+        if isinstance(task, AgentRunInput):
+            if AgentEventType.AGENTUSERINPUT.value == task.type:
+                # 用户输入
+                user_input_msg = AgentUserInput.model_validate(task.model_dump())
+                logger.info(f"用户输入: {user_input_msg.content}")
+                await self._runtime.publish_message(
+                    message=user_input_msg,
+                    topic_id=user_topic_id,
+                    cancellation_token=cancellation_token,
+                )
+                return
 
         await self._runtime.stop_when_idle()
         state = await self.save_state()
@@ -160,21 +173,8 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         await self._runtime.load_state(state)
 
     def _to_config(self) -> InstagramTeamConfig:
-        # participants = [
-        #     participant.dump_component() for participant in self._participants
-        # ]
-        # termination_condition = (
-        #     self._termination_condition.dump_component()
-        #     if self._termination_condition
-        #     else None
-        # )
         return SocialTeamConfig(
-            # participants=participants,
-            # model_client=self._model_client.dump_component(),
-            # termination_condition=termination_condition,
             max_turns=self._max_turns,
-            # max_stalls=self._max_stalls,
-            # final_answer_prompt=self._final_answer_prompt,
         )
 
     @classmethod

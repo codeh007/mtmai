@@ -23,7 +23,6 @@ from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtmpb import ag_connecpy
 from mtmai.mtmpb.dispatcher_pb2 import OverridesData
 from mtmai.run_event_listener import RunEventListenerClient
-from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
@@ -88,8 +87,6 @@ class ContextAioImpl(BaseContext):
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
         config: ClientConfig,
-        # ag_runtime: AgentRuntime,
-        sys_team: SysTeam,
         namespace: str = "",
     ):
         self.action = action
@@ -105,8 +102,6 @@ class ContextAioImpl(BaseContext):
         self.ag = ag_client
         self.ag_client2 = ag_client2
         self.config = config
-        # self.ag_runtime = ag_runtime
-        self.sys_team = sys_team
 
     @tenacity_retry
     async def spawn_workflow(
@@ -178,8 +173,6 @@ class Context(BaseContext):
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
         ag_client2: AgClient,
-        # ag_runtime: AgentRuntime,
-        sys_team: SysTeam,
         config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
@@ -199,8 +192,6 @@ class Context(BaseContext):
             namespace=namespace,
             ag_client=ag_client,
             ag_client2=ag_client2,
-            # ag_runtime=ag_runtime,
-            sys_team=sys_team,
             config=config,
         )
         self.ag = ag_client
@@ -209,8 +200,6 @@ class Context(BaseContext):
         self.rest = rest_client
         self.dispatcher = dispatcher_client
         self.ag_client2 = ag_client2
-        # self.ag_runtime = ag_runtime
-        self.sys_team = sys_team
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):

@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,16 @@ class AgentUserInput(BaseModel):
     """
     AgentUserInput
     """ # noqa: E501
-    content: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["content"]
+    type: StrictStr
+    content: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "content"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['AgentUserInput']):
+            raise ValueError("must be one of enum values ('AgentUserInput')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,6 +88,7 @@ class AgentUserInput(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "type": obj.get("type"),
             "content": obj.get("content")
         })
         return _obj

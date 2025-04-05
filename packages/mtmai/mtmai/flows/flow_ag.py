@@ -13,8 +13,8 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.state_type import StateType
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
-from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.teams.social.social_team import SocialTeam
 from mtmai.worker_app import mtmapp
@@ -91,10 +91,10 @@ class FlowAg:
                 ),
             )
         elif isinstance(team, SocialTeam):
-            async for event in team.run_stream(
+            result = await team.run_stream(
                 task=input, cancellation_token=cancellation_token
-            ):
-                logger.info(f"team event: {event}")
+            )
+            logger.info(f"team result: {result}")
             # for k, v in result.items():
             #     logger.info(f"key: {k}, value: {v}")
             #     parts = k.split("/")

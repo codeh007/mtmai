@@ -4,8 +4,8 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.resource_flow_input import ResourceFlowInput
 from mtmai.clients.rest.models.state_type import StateType
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
-from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.worker_app import mtmapp
 

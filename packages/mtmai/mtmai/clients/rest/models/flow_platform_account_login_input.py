@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,12 +27,15 @@ class FlowPlatformAccountLoginInput(BaseModel):
     FlowPlatformAccountLoginInput
     """ # noqa: E501
     platform_account_id: StrictStr
-    message_type: StrictStr
+    message_type: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["platform_account_id", "message_type"]
 
     @field_validator('message_type')
     def message_type_validate_enum(cls, value):
         """Validates the enum"""
+        if value is None:
+            return value
+
         if value not in set(['LOGIN', 'LOGOUT']):
             raise ValueError("must be one of enum values ('LOGIN', 'LOGOUT')")
         return value

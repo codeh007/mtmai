@@ -13,6 +13,7 @@ from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.context.context import Context
 from mtmai.context.ctx import (
     META_RUN_BY_TENANT,
     META_RUN_BY_USER_ID,
@@ -29,10 +30,8 @@ from mtmai.context.ctx import (
     set_step_run_id,
     set_tenant_id,
 )
-from mtmai.gallery import builder
 from mtmai.mtlibs.id import is_uuid
-from mtmai.teams.social.social_team import SocialTeam
-from mtmai.worker.dispatcher.action_listener import Action
+from mtmai.worker.dispatcher.dispatcher import Action
 from typing_extensions import Self
 
 
@@ -52,7 +51,7 @@ def parse_ctx_from_action(action: Action):
 
 
 class TenantClient:
-    from mtmai.context.context import Context
+    # from mtmai.context.context import Context
 
     def __init__(self):
         self.tenant_id = get_tenant_id()
@@ -150,8 +149,8 @@ class TenantClient:
         if is_uuid(team_comp_id_or_name):
             # 从数据库加载
             try:
-                component_data = await self.tenant_client.ag.coms_api.coms_get(
-                    tenant=self.tenant_client.tenant_id,
+                component_data = await self.ag.coms_api.coms_get(
+                    tenant=self.tenant_id,
                     com=team_comp_id_or_name,
                 )
                 logger.info(f"component data: {component_data}")
@@ -167,13 +166,13 @@ class TenantClient:
                 raise ValueError(f"组件类型错误: {component_data.component_type}")
 
         elif team_comp_id_or_name == "instagram_team":
+            from mtmai.teams.social.social_team import SocialTeam
+
             team = SocialTeam._from_config(SocialTeamConfig())
             return team
-            # gallery_builder = builder.create_default_gallery_builder()
-            # tenant_team_component = gallery_builder.get_team("instagram_team")
-            # tenant_team = Team.load_component(tenant_team_component)
-            # return tenant_team
         else:
+            from mtmai.gallery import builder
+
             gallery_builder = builder.create_default_gallery_builder()
             tenant_team_component = gallery_builder.get_team("Tenant Team")
             tenant_team = Team.load_component(tenant_team_component)

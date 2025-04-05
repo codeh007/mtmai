@@ -15,9 +15,6 @@ async def run_worker():
     setup_instrument()
 
     worker = mtmapp.worker(settings.WORKER_NAME)
-    _start_coroutine = worker.agent_runtime.start()
-    if _start_coroutine:
-        await _start_coroutine
 
     from mtmai.flows.flow_tenant import FlowTenant
 
@@ -28,11 +25,6 @@ async def run_worker():
 
     worker.register_workflow(FlowSmolagent())
     logger.info("register smolagent workflow")
-
-    from mtmai.flows.flow_research import FlowResearch
-
-    worker.register_workflow(FlowResearch())
-    logger.info("register research workflow")
 
     from mtmai.flows.flow_ag import FlowAg
 

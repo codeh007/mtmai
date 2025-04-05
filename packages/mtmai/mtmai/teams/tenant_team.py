@@ -32,7 +32,7 @@ from mtmai.agents._types import platform_account_topic_type
 from mtmai.agents.ai_agent import AIAgent
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.clients.rest.models.component_model import ComponentModel
-from mtmai.context.context_client import TenantClient
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from typing_extensions import Self

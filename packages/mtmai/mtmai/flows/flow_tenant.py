@@ -2,8 +2,8 @@ from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.mt_component_upsert import MtComponentUpsert
 from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
-from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.gallery.builder import create_default_gallery_builder
 from mtmai.mtlibs.id import generate_uuid

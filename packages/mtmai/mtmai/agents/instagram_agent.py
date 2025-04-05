@@ -6,12 +6,7 @@ from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
-from autogen_core import (
-    CancellationToken,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
-)
+from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
@@ -28,29 +23,16 @@ class InstagramAgent(RoutedAgent):
         self,
         description: str,
         model_client: ChatCompletionClient,
+        user_topic: str,
     ) -> None:
         super().__init__(
-            # name=name,
             description=description or "An agent that interacts with instagram",
-            # model_client=model_client,
+            user_topic=user_topic,
         )
         # super(RoutedAgent, self).__init__(description=description)
         self.model_client = model_client
         self.ig_client = Client()
         self._model_context = BufferedChatCompletionContext(buffer_size=7)
-
-    # @event
-    # async def on_ig_account(
-    #     self, message: IgAccountMessage, ctx: MessageContext
-    # ) -> IgLoginRequire | None:
-    #     """初始化社交账号"""
-    #     logger.info(f"handle_ig_account: {message}")
-    #     try:
-    #         self.ig_client.login(message.username, message.password)
-    #     except BadPassword:
-    #         return IgLoginRequire(username=message.username, password=message.password)
-    #     except Exception as e:
-    #         raise e
 
     @message_handler
     async def on_instagram_login(
@@ -64,7 +46,9 @@ class InstagramAgent(RoutedAgent):
         self, message: TerminationMessage, ctx: MessageContext
     ) -> None:
         assert ctx.topic_id is not None
-        logger.info(f"()对话结束 with {ctx.sender} because {message.reason}")
+        logger.info(
+            f"(instagram agent )对话结束 with {ctx.sender} because {message.reason}"
+        )
 
     async def on_messages_stream(
         self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
@@ -350,10 +334,9 @@ class InstagramAgent(RoutedAgent):
         model_context_state = await self._model_context.save_state()
         return InstagramAgentState(
             llm_context=model_context_state,
-            username=self.username,
-            password=self.password,
+            # username=self.username,
+            # password=self.password,
             ig_settings=self.ig_client.get_settings(),
-            # is_wait_user_input=self.is_wait_user_input,
         ).model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:

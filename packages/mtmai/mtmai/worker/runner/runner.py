@@ -15,8 +15,8 @@ from loguru import logger
 from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
+from mtmai.clients.tenant_client import parse_ctx_from_action
 from mtmai.context.context import Context
-from mtmai.context.context_client import parse_ctx_from_action
 from mtmai.context.ctx import (
     set_access_token_ctx,
     set_server_url_ctx,
@@ -39,7 +39,6 @@ from mtmai.mtmpb.dispatcher_pb2 import (
     ActionType,
 )
 from mtmai.run_event_listener import new_listener
-from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.action_listener_process import ActionEvent
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
@@ -62,7 +61,7 @@ class Runner:
         name: str,
         # ag_runtime: AgentRuntime,
         event_queue: "Queue[Any]",
-        sys_team: SysTeam,
+        # sys_team: SysTeam,
         max_runs: int | None = None,
         handle_kill: bool = True,
         action_registry: dict[str, Callable[..., Any]] = {},
@@ -110,7 +109,7 @@ class Runner:
             self.ag,
         )
         # self.ag_runtime = ag_runtime
-        self.sys_team = sys_team
+        # self.sys_team = sys_team
 
     def create_workflow_run_url(self, action: Action) -> str:
         return f"{self.config.server_url}/workflow-runs/{action.workflow_run_id}?tenant={action.tenant_id}"
@@ -336,7 +335,7 @@ class Runner:
             validator_registry=self.validator_registry,
             config=self.config,
             # ag_runtime=self.ag_runtime,
-            sys_team=self.sys_team,
+            # sys_team=self.sys_team,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:

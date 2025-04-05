@@ -8,7 +8,6 @@ from mtmai.clients.client import Client
 from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.types import WorkflowValidator
-from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.runner.capture_logs import capture_logs
 from mtmai.worker.runner.runner import Runner
@@ -28,8 +27,6 @@ class WorkerActionRunLoopManager:
     action_queue: Queue
     event_queue: Queue
     loop: asyncio.AbstractEventLoop
-    # ag_runtime: AgentRuntime
-    sys_team: SysTeam
 
     handle_kill: bool = True
     debug: bool = False
@@ -50,8 +47,6 @@ class WorkerActionRunLoopManager:
         k = self.loop.create_task(self.async_start(retry_count))
 
     async def async_start(self, retry_count=1):
-        # await self.sys_team.setup(self.ag_runtime)
-
         await capture_logs(
             self.client.logInterceptor,
             self.client.event,
@@ -84,8 +79,6 @@ class WorkerActionRunLoopManager:
             validator_registry=self.validator_registry,
             config=self.config,
             labels=self.labels,
-            # ag_runtime=self.ag_runtime,
-            sys_team=self.sys_team,
         )
 
         logger.debug(f"'{self.name}' waiting for {list(self.action_registry.keys())}")

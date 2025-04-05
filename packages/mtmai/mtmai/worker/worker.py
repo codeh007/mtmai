@@ -11,7 +11,6 @@ from multiprocessing.process import BaseProcess
 from types import FrameType
 from typing import Any, Callable, TypeVar, get_type_hints
 
-from autogen_core import AgentRuntime, SingleThreadedAgentRuntime
 from loguru import logger
 from mtmai.clients.client import Client
 from mtmai.context.context import Context
@@ -20,7 +19,6 @@ from mtmai.mtlibs.callable import HatchetCallable
 from mtmai.mtlibs.types import WorkflowValidator
 from mtmai.mtlibs.typing import is_basemodel_subclass
 from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
-from mtmai.teams.sys_team import SysTeam
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager
 from mtmai.workflow import WorkflowInterface
@@ -75,19 +73,19 @@ class Worker:
         self.name = self.client.config.namespace + self.name
         self._setup_signal_handlers()
 
-    @property
-    def agent_runtime(self) -> AgentRuntime:
-        if not hasattr(self, "_agent_runtime"):
-            # self._agent_runtime = MtmAgentRuntime(config=self.config)
-            # self._agent_runtime = MtmAgentRuntime(config=self.config)
-            self._agent_runtime = SingleThreadedAgentRuntime()
-        return self._agent_runtime
+    # @property
+    # def agent_runtime(self) -> AgentRuntime:
+    #     if not hasattr(self, "_agent_runtime"):
+    #         # self._agent_runtime = MtmAgentRuntime(config=self.config)
+    #         # self._agent_runtime = MtmAgentRuntime(config=self.config)
+    #         self._agent_runtime = SingleThreadedAgentRuntime()
+    #     return self._agent_runtime
 
-    @property
-    def sys_team(self) -> SysTeam:
-        if not hasattr(self, "_sys_team"):
-            self._sys_team = SysTeam()
-        return self._sys_team
+    # @property
+    # def sys_team(self) -> SysTeam:
+    #     if not hasattr(self, "_sys_team"):
+    #         self._sys_team = SysTeam()
+    #     return self._sys_team
 
     def register_function(self, action: str, func: Callable[[Context], Any]) -> None:
         self.action_registry[action] = func
@@ -199,7 +197,7 @@ class Worker:
             debug=self.client.debug,
             labels=self.labels,
             # ag_runtime=self.agent_runtime,
-            sys_team=self.sys_team,
+            # sys_team=self.sys_team,
         )
 
     def _start_listener(self) -> multiprocessing.context.SpawnProcess:

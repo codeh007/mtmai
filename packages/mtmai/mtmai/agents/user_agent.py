@@ -20,31 +20,29 @@ from mtmai.agents._types import (
     IgLoginRequire,
     TerminationMessage,
 )
-from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.mtlibs.id import generate_uuid
 
 
 class UserAgent(RoutedAgent):
-    def __init__(self, description: str, agent_topic_type: str = None) -> None:
+    def __init__(
+        self, description: str, session_id: str, agent_topic_type: str = None
+    ) -> None:
         super().__init__(description)
         self._agent_topic_type = agent_topic_type
-        self._model_context = BufferedChatCompletionContext(buffer_size=7)
-        self.username = None
-        self.password = None
-        self.is_waiting_ig_login = False
+        self._model_context = BufferedChatCompletionContext(buffer_size=10)
+        self._session_id = session_id
 
     @message_handler
     async def handle_agent_run_input(
-        self, message: AgentRunInput, ctx: MessageContext
-    ) -> IgLoginRequire | None:
-        """可以理解为新对话的入口, 可以从数据库加载相关的上下文数据,包括用户信息,记忆,权限信息,等"""
+        self, message: AgentUserInput, ctx: MessageContext
+    ) -> None:
+        """用户输入"""
         if ctx.cancellation_token.is_cancelled():
             return
 
         session_id = self.id.key
-        # tenant_client = TenantClient()
-        # tid = tenant_client.tenant_id
         logger.info(
             f"{'-'*80}\nhandle_agent_run_input, session ID: {session_id}. task: {message.content}"
         )
@@ -66,11 +64,6 @@ class UserAgent(RoutedAgent):
                 message=BrowserTask(task="Open an online code editor programiz."),
                 topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
             )
-        # elif user_content.startswith("/test_team"):
-        #     await self.runtime.publish_message(
-        #         message=TeamRunnerTask(task=user_content, team=team_runner_topic_type),
-        #         topic_id=TopicId(team_runner_topic_type, source=session_id),
-        #     )
         elif user_content.startswith("/test_ig_login"):
             # await self.runtime.publish_message(
             #     message=IgAccountMessage(username="username1", password="password1"),

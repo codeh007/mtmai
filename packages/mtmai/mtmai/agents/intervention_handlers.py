@@ -16,7 +16,7 @@ from mtmai.agents._types import GetSlowUserMessage
 
 class NeedsUserInputHandler(DefaultInterventionHandler):
     def __init__(self, session_id: str):
-        from mtmai.context.context_client import TenantClient
+        from mtmai.clients.tenant_client import TenantClient
 
         self.question_for_user: GetSlowUserMessage | None = None
         self.tenant_client = TenantClient()
