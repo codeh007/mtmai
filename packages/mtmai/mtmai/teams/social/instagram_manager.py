@@ -6,10 +6,8 @@ from typing import Any, Dict, List, Mapping
 
 from autogen_agentchat.base import Response, TerminationCondition
 from autogen_agentchat.messages import (
-    AgentEvent,
     BaseAgentEvent,
     BaseChatMessage,
-    ChatMessage,
     HandoffMessage,
     MessageFactory,
     MultiModalMessage,
@@ -90,7 +88,7 @@ class InstagramOrchestrator(BaseGroupChatManager):
         max_stalls: int,
         final_answer_prompt: str,
         output_message_queue: asyncio.Queue[
-            AgentEvent | ChatMessage | GroupChatTermination
+            BaseAgentEvent | BaseChatMessage | GroupChatTermination
         ],
         termination_condition: TerminationCondition | None,
     ):
@@ -289,7 +287,7 @@ class InstagramOrchestrator(BaseGroupChatManager):
     async def handle_agent_response(
         self, message: GroupChatAgentResponse, ctx: MessageContext
     ) -> None:  # type: ignore
-        delta: List[AgentEvent | ChatMessage] = []
+        delta: List[BaseAgentEvent | BaseChatMessage] = []
         if message.agent_response.inner_messages is not None:
             for inner_message in message.agent_response.inner_messages:
                 delta.append(inner_message)
@@ -306,7 +304,9 @@ class InstagramOrchestrator(BaseGroupChatManager):
                 return
         await self._orchestrate_step(ctx.cancellation_token)
 
-    async def validate_group_state(self, messages: List[ChatMessage] | None) -> None:
+    async def validate_group_state(
+        self, messages: List[BaseChatMessage] | None
+    ) -> None:
         pass
 
     async def save_state(self) -> Mapping[str, Any]:

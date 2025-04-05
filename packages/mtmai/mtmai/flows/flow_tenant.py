@@ -16,7 +16,7 @@ from mtmai.worker_app import mtmapp
 )
 class FlowTenant:
     @mtmapp.step(timeout="3m")
-    async def entry(self, hatctx: Context):
+    async def step0(self, hatctx: Context):
         input = RunFlowModelInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()

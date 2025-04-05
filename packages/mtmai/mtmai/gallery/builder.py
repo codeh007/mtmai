@@ -16,7 +16,7 @@ from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.teams.social.instagram_team import InstagramTeam
+from mtmai.teams.social.social_team import SocialTeam
 from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
 
@@ -516,11 +516,11 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     model_client=nvidia_model_llama3,
     #     # handoffs=["user"],
     # )
-    instagram_team = InstagramTeam(
-        participants=[research_assistant],
-        model_client=nvidia_model_llama3,
-        max_turns=20,
-        max_stalls=3,
+    instagram_team = SocialTeam(
+        # participants=[research_assistant],
+        # model_client=nvidia_model_llama3,
+        max_turns=25,
+        # max_stalls=3,
     )
     builder.add_team(
         instagram_team.dump_component(),

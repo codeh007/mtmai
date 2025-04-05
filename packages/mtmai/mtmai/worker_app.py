@@ -29,30 +29,15 @@ async def run_worker():
     worker.register_workflow(FlowSmolagent())
     logger.info("register smolagent workflow")
 
-    # from mtmai.flows.flow_team import FlowTeam
-
-    # worker.register_workflow(FlowTeam())
-    # logger.info("register team workflow")
-
     from mtmai.flows.flow_research import FlowResearch
 
     worker.register_workflow(FlowResearch())
     logger.info("register research workflow")
 
-    from mtmai.flows.flow_browser import FlowBrowser
-
-    worker.register_workflow(FlowBrowser())
-    logger.info("register browser workflow")
-
     from mtmai.flows.flow_ag import FlowAg
 
     worker.register_workflow(FlowAg())
     logger.info("register ag workflow")
-
-    from mtmai.flows.flow_com import FlowCom
-
-    worker.register_workflow(FlowCom())
-    logger.info("register com workflow")
 
     from mtmai.flows.flow_resource import FlowResource
 

@@ -22,9 +22,9 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class InstagramTeamConfig(BaseModel):
+class SocialTeamConfig(BaseModel):
     """
-    InstagramTeamConfig
+    SocialTeamConfig
     """ # noqa: E501
     max_turns: Optional[StrictInt] = 25
     __properties: ClassVar[List[str]] = ["max_turns"]
@@ -47,7 +47,7 @@ class InstagramTeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a JSON string"""
+        """Create an instance of SocialTeamConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,7 +72,7 @@ class InstagramTeamConfig(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of InstagramTeamConfig from a dict"""
+        """Create an instance of SocialTeamConfig from a dict"""
         if obj is None:
             return None
 

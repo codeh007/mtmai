@@ -7,7 +7,6 @@ from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
-from mtmai.flows.flow_ctx import FlowCtx
 from mtmai.worker_app import mtmapp
 
 
@@ -18,7 +17,6 @@ from mtmai.worker_app import mtmapp
 class FlowResource:
     @mtmapp.step(timeout="60m")
     async def entry(self, hatctx: Context):
-        flowctx = FlowCtx().from_hatctx(hatctx)
         input = ResourceFlowInput.model_validate(hatctx.input)
         tenant_client = TenantClient()
         cancellation_token = MtCancelToken()
@@ -36,7 +34,7 @@ class FlowResource:
 
         if resource_type == "platform_account":
             # logger.info(f"resource_type: {resource_type}")
-            team = await flowctx.load_team("instagram_team")
+            team = await tenant_client.load_team("instagram_team")
 
             result = await team.run_stream(
                 task=input, cancellation_token=cancellation_token

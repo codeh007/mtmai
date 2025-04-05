@@ -16,8 +16,7 @@ from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
-from mtmai.flows.flow_ctx import FlowCtx
-from mtmai.teams.social.instagram_team import InstagramTeam
+from mtmai.teams.social.social_team import SocialTeam
 from mtmai.worker_app import mtmapp
 
 
@@ -28,7 +27,6 @@ from mtmai.worker_app import mtmapp
 class FlowAg:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
-        flowctx = FlowCtx().from_hatctx(hatctx)
         input = AgentRunInput.model_validate(hatctx.input)
         cancellation_token = MtCancelToken()
         tenant_client = TenantClient()
@@ -39,7 +37,7 @@ class FlowAg:
 
         task = input.content
         last_txt_message = ""
-        team = await flowctx.load_team(input.component_id)
+        team = await tenant_client.load_team(input.component_id)
 
         if isinstance(team, BaseGroupChat):
             output_stream = team.run_stream(
@@ -92,27 +90,28 @@ class FlowAg:
                     type=StateType.RUNTIMESTATE,
                 ),
             )
-        elif isinstance(team, InstagramTeam):
-            result = await team.run_stream(
+        elif isinstance(team, SocialTeam):
+            async for event in team.run_stream(
                 task=input, cancellation_token=cancellation_token
-            )
-            for k, v in result.items():
-                logger.info(f"key: {k}, value: {v}")
-                parts = k.split("/")
-                topic = parts[0]
-                source = parts[1] if len(parts) > 1 else "default"
-                await tenant_client.ag_state_api.ag_state_upsert(
-                    tenant=tenant_client.tenant_id,
-                    ag_state_upsert=AgStateUpsert(
-                        tenantId=tenant_client.tenant_id,
-                        topic=topic,
-                        source=source,
-                        type=StateType.RUNTIMESTATE.value,
-                        componentId=input.component_id,
-                        chatId=session_id,
-                        state=v,
-                    ),
-                )
+            ):
+                logger.info(f"team event: {event}")
+            # for k, v in result.items():
+            #     logger.info(f"key: {k}, value: {v}")
+            #     parts = k.split("/")
+            #     topic = parts[0]
+            #     source = parts[1] if len(parts) > 1 else "default"
+            #     await tenant_client.ag_state_api.ag_state_upsert(
+            #         tenant=tenant_client.tenant_id,
+            #         ag_state_upsert=AgStateUpsert(
+            #             tenantId=tenant_client.tenant_id,
+            #             topic=topic,
+            #             source=source,
+            #             type=StateType.RUNTIMESTATE.value,
+            #             componentId=input.component_id,
+            #             chatId=session_id,
+            #             state=v,
+            #         ),
+            #     )
         else:
             raise ValueError(f"Unexpected team type: {type(team)}")
 

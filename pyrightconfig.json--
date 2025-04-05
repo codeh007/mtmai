@@ -1,7 +1,0 @@
-{
-    "include": ["packages/mtmai"],
-    "extraPaths": ["packages/mtmai"],
-    "venvPath": ".venv",
-    "pythonVersion": "3.12",
-    "typeCheckingMode": "basic"
-} 
