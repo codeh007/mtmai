@@ -11,6 +11,7 @@ from autogen_core import (
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
 from loguru import logger
+
 from mtmai.agents._types import (
     BrowserOpenTask,
     BrowserTask,
@@ -26,10 +27,10 @@ from mtmai.mtlibs.id import generate_uuid
 
 class UserAgent(RoutedAgent):
     def __init__(
-        self, description: str, session_id: str, agent_topic_type: str = None
+        self, description: str, session_id: str, social_agent_topic_type: str = None
     ) -> None:
         super().__init__(description)
-        self._agent_topic_type = agent_topic_type
+        self._social_agent_topic_type = social_agent_topic_type
         self._model_context = BufferedChatCompletionContext(buffer_size=10)
         self._session_id = session_id
 
@@ -63,16 +64,12 @@ class UserAgent(RoutedAgent):
                 message=BrowserTask(task="Open an online code editor programiz."),
                 topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
             )
-        elif user_content.startswith("/test_ig_login"):
-            # await self.runtime.publish_message(
-            #     message=IgAccountMessage(username="username1", password="password1"),
-            #     topic_id=TopicId(instagram_agent_topic_type, source=session_id),
-            # )
-            agent_id = AgentId(AgentTopicTypes.INSTAGRAM.value, "default")
+        elif user_content.startswith("/test/ig"):
+            agent_id = AgentId(self._social_agent_topic_type, "default")
             result = await self._runtime.send_message(
                 IgAccountMessage(username="username1", password="password1"), agent_id
             )
-            logger.info(f"result: {result}")
+            # logger.info(f"result: {result}")
             if isinstance(result, IgLoginRequire):
                 self.is_waiting_ig_login = True
             await self._model_context.add_message(

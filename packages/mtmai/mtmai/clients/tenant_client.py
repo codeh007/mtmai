@@ -3,6 +3,8 @@ from typing import Any
 from autogen_agentchat.base import Team
 from autogen_ext.tools.mcp import SseServerParams
 from loguru import logger
+from typing_extensions import Self
+
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
@@ -32,7 +34,6 @@ from mtmai.context.ctx import (
 )
 from mtmai.mtlibs.id import is_uuid
 from mtmai.worker.dispatcher.dispatcher import Action
-from typing_extensions import Self
 
 
 def parser_ctx_from_metas(meta: dict[str, str]):
@@ -157,7 +158,9 @@ class TenantClient:
                 raise ValueError(f"组件类型错误: {component_data.component_type}")
 
         elif (
-            team_comp_id_or_name == "instagram_team" or team_comp_id_or_name == "social"
+            team_comp_id_or_name is None
+            or team_comp_id_or_name == "instagram_team"
+            or team_comp_id_or_name == "social"
         ):
             from mtmai.teams.social.social_team import SocialTeam
 

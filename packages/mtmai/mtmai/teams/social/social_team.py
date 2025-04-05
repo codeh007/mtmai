@@ -20,6 +20,8 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from loguru import logger
+from typing_extensions import Self
+
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
@@ -38,7 +40,6 @@ from mtmai.mtlibs.autogen_utils.autogen_utils import (
     MockAgentRegistry,
     MockIntentClassifier,
 )
-from typing_extensions import Self
 
 
 class SocialTeam(Team, Component[SocialTeamConfig]):
@@ -95,32 +96,35 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 agent_type=router_agent_type.type,
             )
         )
-        user_agent_type = await UserAgent.register(
-            runtime=self._runtime,
-            type=AgentTopicTypes.USER.value,
-            factory=lambda: UserAgent(
-                description="A user agent.",
-                session_id=self.session_id,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
-            )
-        )
+
         instagram_agent_type = await InstagramAgent.register(
             runtime=self._runtime,
             type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(
                 description="An agent that interacts with instagram v2",
                 model_client=self.model_client,
-                user_topic=user_agent_type.type,
+                user_topic=AgentTopicTypes.USER.value,
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=AgentTopicTypes.INSTAGRAM.value,
                 agent_type=instagram_agent_type.type,
+            )
+        )
+
+        user_agent_type = await UserAgent.register(
+            runtime=self._runtime,
+            type=AgentTopicTypes.USER.value,
+            factory=lambda: UserAgent(
+                description="A user agent.",
+                session_id=self.session_id,
+                social_agent_topic_type=instagram_agent_type.type,
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
             )
         )
 
