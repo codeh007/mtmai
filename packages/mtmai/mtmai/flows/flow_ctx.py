@@ -6,7 +6,7 @@ from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.gallery import builder
 from mtmai.mtlibs.id import is_uuid
-from mtmai.teams.social.social_team import SocialTeam, SocialTeamConfig
+from mtmai.teams.social.instagram_team import InstagramTeam, InstagramTeamConfig
 from typing_extensions import Self
 
 
@@ -39,7 +39,7 @@ class FlowCtx:
                 raise ValueError(f"组件类型错误: {component_data.component_type}")
 
         elif team_comp_id_or_name == "instagram_team":
-            team = SocialTeam._from_config(SocialTeamConfig())
+            team = InstagramTeam._from_config(InstagramTeamConfig())
             return team
             # gallery_builder = builder.create_default_gallery_builder()
             # tenant_team_component = gallery_builder.get_team("instagram_team")

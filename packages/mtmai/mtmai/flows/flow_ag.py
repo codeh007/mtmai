@@ -17,7 +17,7 @@ from mtmai.context.context import Context
 from mtmai.context.context_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
 from mtmai.flows.flow_ctx import FlowCtx
-from mtmai.teams.social.social_team import SocialTeam
+from mtmai.teams.social.instagram_team import InstagramTeam
 from mtmai.worker_app import mtmapp
 
 
@@ -92,7 +92,7 @@ class FlowAg:
                     type=StateType.RUNTIMESTATE,
                 ),
             )
-        elif isinstance(team, SocialTeam):
+        elif isinstance(team, InstagramTeam):
             result = await team.run_stream(
                 task=input, cancellation_token=cancellation_token
             )

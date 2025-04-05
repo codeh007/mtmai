@@ -14,7 +14,6 @@ from autogen_core import (
     AgentRuntime,
     CancellationToken,
     Component,
-    ComponentModel,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
@@ -39,12 +38,12 @@ from typing_extensions import Self
 class InstagramTeamConfig(BaseModel):
     """The declarative configuration for a MagenticOneGroupChat."""
 
-    participants: List[ComponentModel]
-    model_client: ComponentModel
-    termination_condition: ComponentModel | None = None
+    # participants: List[ComponentModel]
+    # model_client: ComponentModel
+    # termination_condition: ComponentModel | None = None
     max_turns: int | None = None
-    max_stalls: int
-    final_answer_prompt: str
+    # max_stalls: int
+    # final_answer_prompt: str
 
 
 class InstagramTeam(BaseGroupChat, Component[InstagramTeamConfig]):
