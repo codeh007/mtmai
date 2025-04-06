@@ -4,18 +4,21 @@ import random
 import re
 from typing import Any, AsyncGenerator, List, Mapping, Sequence
 
+import pyotp
 from autogen_agentchat.base import Response
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
 from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
-from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
+
+default_proxy_url = "http://127.0.0.1:10809"
 
 
 class InstagramAgent(RoutedAgent):
@@ -29,15 +32,33 @@ class InstagramAgent(RoutedAgent):
             description=description or "An agent that interacts with instagram",
         )
         self.model_client = model_client
-        self.ig_client = Client()
         self._model_context = BufferedChatCompletionContext(buffer_size=10)
+        self._state = InstagramAgentState()
+        self._initialized = False
+
+    async def _init(self) -> None:
+        if self._initialized:
+            return
+        self.ig_client = Client(
+            proxy=default_proxy_url,
+        )
+        self._initialized = True
 
     @message_handler
     async def on_instagram_login(
-        self, message: InstagramLoginMessage, ctx: MessageContext
-    ) -> None:
-        logger.info(f"handle_instagram_login: {message}")
-        return None
+        self, message: SocialLoginInput, ctx: MessageContext
+    ) -> bool:
+        await self._init()
+        verification_code = pyotp.TOTP(input.two_factor_key).now()
+        login_result = self.ig_client.login(
+            username=message.username,
+            password=message.password,
+            verification_code=verification_code,
+            relogin=False,
+        )
+        if not login_result:
+            raise Exception("登录失败")
+        return login_result
 
     # @message_handler
     # async def on_terminate(

@@ -19,11 +19,12 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTRUNINPUTINPUT_ONE_OF_SCHEMAS = ["AgentUserInput", "SocialAddFollowersInput"]
+AGENTRUNINPUTINPUT_ONE_OF_SCHEMAS = ["AgentUserInput", "SocialAddFollowersInput", "SocialLoginInput"]
 
 class AgentRunInputInput(BaseModel):
     """
@@ -33,8 +34,10 @@ class AgentRunInputInput(BaseModel):
     oneof_schema_1_validator: Optional[SocialAddFollowersInput] = None
     # data type: AgentUserInput
     oneof_schema_2_validator: Optional[AgentUserInput] = None
-    actual_instance: Optional[Union[AgentUserInput, SocialAddFollowersInput]] = None
-    one_of_schemas: Set[str] = { "AgentUserInput", "SocialAddFollowersInput" }
+    # data type: SocialLoginInput
+    oneof_schema_3_validator: Optional[SocialLoginInput] = None
+    actual_instance: Optional[Union[AgentUserInput, SocialAddFollowersInput, SocialLoginInput]] = None
+    one_of_schemas: Set[str] = { "AgentUserInput", "SocialAddFollowersInput", "SocialLoginInput" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -70,12 +73,17 @@ class AgentRunInputInput(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AgentUserInput`")
         else:
             match += 1
+        # validate data type: SocialLoginInput
+        if not isinstance(v, SocialLoginInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SocialLoginInput`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -105,6 +113,11 @@ class AgentRunInputInput(BaseModel):
             instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
             return instance
 
+        # check if data type is `SocialLoginInput`
+        if _data_type == "SocialLoginInput":
+            instance.actual_instance = SocialLoginInput.from_json(json_str)
+            return instance
+
         # deserialize data into SocialAddFollowersInput
         try:
             instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
@@ -117,13 +130,19 @@ class AgentRunInputInput(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into SocialLoginInput
+        try:
+            instance.actual_instance = SocialLoginInput.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -137,7 +156,7 @@ class AgentRunInputInput(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentUserInput, SocialAddFollowersInput]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentUserInput, SocialAddFollowersInput, SocialLoginInput]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

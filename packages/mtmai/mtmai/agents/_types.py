@@ -1,11 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from autogen_agentchat.messages import TextMessage
 from autogen_core.models import LLMMessage
 from clients.rest.models.social_add_followers_input import SocialAddFollowersInput
-from pydantic import BaseModel
-
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
@@ -13,8 +10,10 @@ from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
 from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.termination_message import TerminationMessage
+from pydantic import BaseModel
 
 sales_agent_topic_type = "SalesAgent"
 issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
@@ -80,9 +79,9 @@ class IgAccountMessage(BaseModel):
     twofa_code: str | None = None
 
 
-class InstagramLoginMessage(TextMessage):
-    username: str | None = None
-    password: str | None = None
+# class InstagramLoginMessage(TextMessage):
+#     username: str | None = None
+#     password: str | None = None
 
 
 agent_message_types = [
@@ -102,6 +101,7 @@ agent_message_types = [
     UserTextMessage,
     IgLoginRequire,
     IgAccountMessage,
-    InstagramLoginMessage,
+    # InstagramLoginMessage,
+    SocialLoginInput,
     SocialAddFollowersInput,
 ]

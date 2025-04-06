@@ -10,6 +10,7 @@ from autogen_core import (
 )
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
+from clients.rest.models.social_login_input import SocialLoginInput
 from loguru import logger
 from mtmai.agents._types import (
     BrowserOpenTask,
@@ -118,6 +119,14 @@ class UserAgent(RoutedAgent):
         result = await self._runtime.send_message(
             message,
             agent_id,
+        )
+
+    @message_handler
+    async def on_ig_login(self, message: SocialLoginInput, ctx: MessageContext) -> None:
+        # assert ctx.topic_id is not None
+        logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
+        await self._model_context.add_message(
+            UserMessage(content=message.model_dump_json(), source="user")
         )
 
     @message_handler

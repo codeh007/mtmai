@@ -136,7 +136,6 @@ from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfi
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.ig_login import IGLogin
 from mtmai.clients.rest.models.ig_login_response import IGLoginResponse
-from mtmai.clients.rest.models.ig_login_event import IgLoginEvent
 from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
@@ -238,6 +237,7 @@ from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.society_of_mind_agent_state import SocietyOfMindAgentState
 from mtmai.clients.rest.models.state_type import StateType
