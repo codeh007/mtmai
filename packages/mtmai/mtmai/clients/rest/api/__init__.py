@@ -26,6 +26,7 @@ from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.default_api import DefaultApi
 from mtmai.clients.rest.api.endpoint_api import EndpointApi
 from mtmai.clients.rest.api.env_api import EnvApi
+from mtmai.clients.rest.api.flow_state_api import FlowStateApi
 from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.galleries_api import GalleriesApi
 from mtmai.clients.rest.api.hf_api import HfApi

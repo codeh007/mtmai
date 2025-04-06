@@ -120,6 +120,10 @@ from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRu
 from mtmai.clients.rest.models.flow_error import FlowError
 from mtmai.clients.rest.models.flow_instagram_input import FlowInstagramInput
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_state import FlowState
+from mtmai.clients.rest.models.flow_state_list import FlowStateList
+from mtmai.clients.rest.models.flow_state_properties import FlowStateProperties
+from mtmai.clients.rest.models.flow_state_upsert import FlowStateUpsert
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.frontend_config import FrontendConfig
 from mtmai.clients.rest.models.function_call import FunctionCall
