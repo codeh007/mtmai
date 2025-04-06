@@ -29,8 +29,8 @@ class SocialLoginInput(BaseModel):
     type: StrictStr
     username: StrictStr
     password: StrictStr
-    two_factor_code: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "username", "password", "two_factor_code"]
+    otp_key: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "username", "password", "otp_key"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -98,7 +98,7 @@ class SocialLoginInput(BaseModel):
             "type": obj.get("type"),
             "username": obj.get("username"),
             "password": obj.get("password"),
-            "two_factor_code": obj.get("two_factor_code")
+            "otp_key": obj.get("otp_key")
         })
         return _obj
 

@@ -49,7 +49,7 @@ class InstagramAgent(RoutedAgent):
         self, message: SocialLoginInput, ctx: MessageContext
     ) -> bool:
         await self._init()
-        verification_code = pyotp.TOTP(input.two_factor_key).now()
+        verification_code = pyotp.TOTP(message.otp_key).now()
         login_result = self.ig_client.login(
             username=message.username,
             password=message.password,
@@ -59,15 +59,6 @@ class InstagramAgent(RoutedAgent):
         if not login_result:
             raise Exception("登录失败")
         return login_result
-
-    # @message_handler
-    # async def on_terminate(
-    #     self, message: TerminationMessage, ctx: MessageContext
-    # ) -> None:
-    #     """仅作为测试"""
-    #     logger.info(
-    #         f"(instagram agent )对话结束 with {ctx.sender} because {message.reason}"
-    #     )
 
     @message_handler
     async def handle_add_follow(
