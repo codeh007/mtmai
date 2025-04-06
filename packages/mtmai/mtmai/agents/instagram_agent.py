@@ -10,7 +10,6 @@ from autogen_core import CancellationToken, MessageContext, RoutedAgent, message
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
-
 from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
@@ -29,12 +28,11 @@ class InstagramAgent(RoutedAgent):
     ) -> None:
         super().__init__(
             description=description or "An agent that interacts with instagram",
-            user_topic=user_topic,
+            # user_topic=user_topic,
         )
-        # super(RoutedAgent, self).__init__(description=description)
         self.model_client = model_client
         self.ig_client = Client()
-        self._model_context = BufferedChatCompletionContext(buffer_size=7)
+        self._model_context = BufferedChatCompletionContext(buffer_size=10)
 
     @message_handler
     async def on_instagram_login(
