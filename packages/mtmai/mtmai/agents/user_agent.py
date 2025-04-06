@@ -140,10 +140,10 @@ class UserAgent(RoutedAgent):
         #     topic_id=DefaultTopicId(type="response", source=ctx.topic_id.source),
         # )
 
-    @message_handler
-    async def on_ig_login(self, message: IgLoginRequire, ctx: MessageContext) -> None:
-        # assert ctx.topic_id is not None
-        logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
+    # @message_handler
+    # async def on_ig_login(self, message: IgLoginRequire, ctx: MessageContext) -> None:
+    #     # assert ctx.topic_id is not None
+    #     logger.info(f"on_ig_login with {ctx.sender} because {message.reason}")
 
     async def save_state(self) -> Mapping[str, Any]:
         return {
