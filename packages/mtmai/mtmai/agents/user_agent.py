@@ -11,12 +11,7 @@ from autogen_core import (
     message_handler,
 )
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import (
-    AssistantMessage,
-    ChatCompletionClient,
-    SystemMessage,
-    UserMessage,
-)
+from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMessage
 from loguru import logger
 from mtmai.agents._types import (
     BrowserOpenTask,
@@ -42,11 +37,11 @@ class UserAgent(RoutedAgent):
     ) -> None:
         super().__init__(description)
         self._social_agent_topic_type = social_agent_topic_type
-        self._model_context = BufferedChatCompletionContext(buffer_size=10)
+        self._model_context = BufferedChatCompletionContext(buffer_size=15)
         self._session_id = session_id
         self.model_client = model_client
         self.instagram_agent_id = AgentId(self._social_agent_topic_type, "default")
-        self._delegate = AssistantAgent("user_agent", model_client=self.model_client)
+
         self._state = UserAgentState()
 
     @message_handler
@@ -91,17 +86,7 @@ class UserAgent(RoutedAgent):
             )
             if isinstance(result, IgLoginRequire):
                 self.is_waiting_ig_login = True
-            await self._model_context.add_message(
-                SystemMessage(
-                    content="hello system message",
-                )
-            )
-            await self._model_context.add_message(
-                UserMessage(
-                    content="hello user message",
-                    source="user",
-                )
-            )
+
             await self._model_context.add_message(
                 AssistantMessage(
                     content=[
@@ -127,7 +112,14 @@ class UserAgent(RoutedAgent):
         await self._model_context.add_message(
             UserMessage(content=message.content, source="user")
         )
-        response = await self._delegate.on_messages(
+
+        assistant = AssistantAgent(
+            "user_agent",
+            model_client=self.model_client,
+            model_context=self._model_context,
+        )
+
+        response = await assistant.on_messages(
             [TextMessage(content=message.content, source="user")],
             ctx.cancellation_token,
         )
@@ -138,21 +130,10 @@ class UserAgent(RoutedAgent):
             )
         )
 
-    # @message_handler
-    # async def on_terminate(
-    #     self, message: TerminationMessage, ctx: MessageContext
-    # ) -> None:
-    #     assert ctx.topic_id is not None
-    #     logger.info(f"对话结束 with {ctx.sender} because {message.reason}")
-
     async def save_state(self) -> Mapping[str, Any]:
         self._state.model_context = await self._model_context.save_state()
         return self._state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = UserAgentState.from_dict(state)
-        self._model_context = BufferedChatCompletionContext(
-            buffer_size=10,
-            messages=self._state.model_context.messages,
-        )
-        # self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)
+        await self._model_context.load_state(self._state.model_context)

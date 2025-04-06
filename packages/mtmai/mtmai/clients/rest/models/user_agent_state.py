@@ -28,9 +28,9 @@ class UserAgentState(BaseModel):
     UserAgentState
     """ # noqa: E501
     type: Optional[StrictStr] = None
-    llm_context: Optional[Any] = None
+    model_context: Optional[Any] = None
     action_form: Optional[SchemaForm] = None
-    __properties: ClassVar[List[str]] = ["type", "llm_context", "action_form"]
+    __properties: ClassVar[List[str]] = ["type", "model_context", "action_form"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -84,10 +84,10 @@ class UserAgentState(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of action_form
         if self.action_form:
             _dict['action_form'] = self.action_form.to_dict()
-        # set to None if llm_context (nullable) is None
+        # set to None if model_context (nullable) is None
         # and model_fields_set contains the field
-        if self.llm_context is None and "llm_context" in self.model_fields_set:
-            _dict['llm_context'] = None
+        if self.model_context is None and "model_context" in self.model_fields_set:
+            _dict['model_context'] = None
 
         return _dict
 
@@ -107,7 +107,7 @@ class UserAgentState(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
-            "llm_context": obj.get("llm_context"),
+            "model_context": obj.get("model_context"),
             "action_form": SchemaForm.from_dict(obj["action_form"]) if obj.get("action_form") is not None else None
         })
         return _obj
