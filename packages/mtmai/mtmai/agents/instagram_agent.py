@@ -13,7 +13,6 @@ from loguru import logger
 from mtmai.agents._types import InstagramLoginMessage
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
-from mtmai.clients.rest.models.termination_message import TerminationMessage
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
@@ -28,7 +27,6 @@ class InstagramAgent(RoutedAgent):
     ) -> None:
         super().__init__(
             description=description or "An agent that interacts with instagram",
-            # user_topic=user_topic,
         )
         self.model_client = model_client
         self.ig_client = Client()
@@ -41,22 +39,20 @@ class InstagramAgent(RoutedAgent):
         logger.info(f"handle_instagram_login: {message}")
         return None
 
-    @message_handler
-    async def on_terminate(
-        self, message: TerminationMessage, ctx: MessageContext
-    ) -> None:
-        """仅作为测试"""
-        logger.info(
-            f"(instagram agent )对话结束 with {ctx.sender} because {message.reason}"
-        )
+    # @message_handler
+    # async def on_terminate(
+    #     self, message: TerminationMessage, ctx: MessageContext
+    # ) -> None:
+    #     """仅作为测试"""
+    #     logger.info(
+    #         f"(instagram agent )对话结束 with {ctx.sender} because {message.reason}"
+    #     )
 
     @message_handler
     async def handle_add_follow(
         self, message: SocialAddFollowersInput, ctx: MessageContext
     ) -> None:
-        logger.info(
-            f"(instagram agent )SocialAddFollowersInput  with {ctx.sender} because {message.reason}"
-        )
+        logger.info(f"(instagram agent )SocialAddFollowersInput  with {ctx.sender}")
 
     async def on_messages_stream(
         self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
