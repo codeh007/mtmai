@@ -23,12 +23,12 @@ from mtmai.agents._types import (
     BrowserTask,
     CodeWritingTask,
     IgLoginRequire,
-    TerminationMessage,
 )
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.mtlibs.id import generate_uuid
 
 
@@ -47,6 +47,7 @@ class UserAgent(RoutedAgent):
         self.model_client = model_client
         self.instagram_agent_id = AgentId(self._social_agent_topic_type, "default")
         self._delegate = AssistantAgent("user_agent", model_client=self.model_client)
+        self._state = UserAgentState()
 
     @message_handler
     async def handle_agent_run_input(
@@ -130,45 +131,28 @@ class UserAgent(RoutedAgent):
             [TextMessage(content=message.content, source="user")],
             ctx.cancellation_token,
         )
-        logger.info(f"response: {response}")
         await self._model_context.add_message(
-            AssistantMessage(content=response.chat_message.content, source="assistant")
+            AssistantMessage(
+                content=response.chat_message.content,
+                source=response.chat_message.source,
+            )
         )
 
     # @message_handler
-    # async def handle_social_add_followers_input(
-    #     self, message: SocialAddFollowersInput, ctx: MessageContext
+    # async def on_terminate(
+    #     self, message: TerminationMessage, ctx: MessageContext
     # ) -> None:
-    #     logger.info(f"handle_social_add_followers_input: {message}")
-    #     await self._model_context.add_message(
-    #         UserMessage(content=message.model_dump_json(), source="user")
-    #     )
-    #     result = await self._runtime.send_message(
-    #         message,
-    #         self.instagram_agent_id,
-    #     )
-    #     return result
-
-    # @message_handler
-    # async def on_ig_login(self, message: SocialLoginInput, ctx: MessageContext) -> None:
-    #     result = await self._runtime.send_message(
-    #         message,
-    #         agent_id=AgentId(self._social_agent_topic_type, "default"),
-    #     )
-    #     return result
-
-    @message_handler
-    async def on_terminate(
-        self, message: TerminationMessage, ctx: MessageContext
-    ) -> None:
-        assert ctx.topic_id is not None
-        logger.info(f"对话结束 with {ctx.sender} because {message.reason}")
+    #     assert ctx.topic_id is not None
+    #     logger.info(f"对话结束 with {ctx.sender} because {message.reason}")
 
     async def save_state(self) -> Mapping[str, Any]:
-        return {
-            "model_context": await self._model_context.save_state(),
-        }
+        self._state.model_context = await self._model_context.save_state()
+        return self._state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        self._model_context.load_state(state["model_context"])
-        self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)
+        self._state = UserAgentState.from_dict(state)
+        self._model_context = BufferedChatCompletionContext(
+            buffer_size=10,
+            messages=self._state.model_context.messages,
+        )
+        # self.is_waiting_ig_login = state.get("is_waiting_ig_login", False)

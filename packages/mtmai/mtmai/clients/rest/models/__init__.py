@@ -309,6 +309,7 @@ from mtmai.clients.rest.models.update_tenant_request import UpdateTenantRequest
 from mtmai.clients.rest.models.update_worker_request import UpdateWorkerRequest
 from mtmai.clients.rest.models.upsert_model import UpsertModel
 from mtmai.clients.rest.models.user import User
+from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
