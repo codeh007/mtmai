@@ -10,9 +10,7 @@ from autogen_core import (
 )
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
-from clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from loguru import logger
-
 from mtmai.agents._types import (
     BrowserOpenTask,
     BrowserTask,
@@ -22,6 +20,7 @@ from mtmai.agents._types import (
 )
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
+from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.mtlibs.id import generate_uuid
 
 
