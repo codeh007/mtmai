@@ -17,7 +17,7 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.agent_user_input import AgentUserInput
+from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.flow_instagram_input import FlowInstagramInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -25,7 +25,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTRUNINPUTINPUT_ONE_OF_SCHEMAS = ["AgentUserInput", "FlowInstagramInput", "SocialAddFollowersInput", "SocialLoginInput"]
+AGENTRUNINPUTINPUT_ONE_OF_SCHEMAS = ["ChatMessageInput", "FlowInstagramInput", "SocialAddFollowersInput", "SocialLoginInput"]
 
 class AgentRunInputInput(BaseModel):
     """
@@ -33,14 +33,14 @@ class AgentRunInputInput(BaseModel):
     """
     # data type: SocialAddFollowersInput
     oneof_schema_1_validator: Optional[SocialAddFollowersInput] = None
-    # data type: AgentUserInput
-    oneof_schema_2_validator: Optional[AgentUserInput] = None
+    # data type: ChatMessageInput
+    oneof_schema_2_validator: Optional[ChatMessageInput] = None
     # data type: SocialLoginInput
     oneof_schema_3_validator: Optional[SocialLoginInput] = None
     # data type: FlowInstagramInput
     oneof_schema_4_validator: Optional[FlowInstagramInput] = None
-    actual_instance: Optional[Union[AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput]] = None
-    one_of_schemas: Set[str] = { "AgentUserInput", "FlowInstagramInput", "SocialAddFollowersInput", "SocialLoginInput" }
+    actual_instance: Optional[Union[ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput]] = None
+    one_of_schemas: Set[str] = { "ChatMessageInput", "FlowInstagramInput", "SocialAddFollowersInput", "SocialLoginInput" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -71,9 +71,9 @@ class AgentRunInputInput(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialAddFollowersInput`")
         else:
             match += 1
-        # validate data type: AgentUserInput
-        if not isinstance(v, AgentUserInput):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentUserInput`")
+        # validate data type: ChatMessageInput
+        if not isinstance(v, ChatMessageInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ChatMessageInput`")
         else:
             match += 1
         # validate data type: SocialLoginInput
@@ -88,10 +88,10 @@ class AgentRunInputInput(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentRunInputInput with oneOf schemas: ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -111,9 +111,9 @@ class AgentRunInputInput(BaseModel):
         if not _data_type:
             raise ValueError("Failed to lookup data type from the field `type` in the input.")
 
-        # check if data type is `AgentUserInput`
-        if _data_type == "AgentUserInput":
-            instance.actual_instance = AgentUserInput.from_json(json_str)
+        # check if data type is `ChatMessageInput`
+        if _data_type == "ChatMessageInput":
+            instance.actual_instance = ChatMessageInput.from_json(json_str)
             return instance
 
         # check if data type is `FlowInstagramInput`
@@ -137,9 +137,9 @@ class AgentRunInputInput(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AgentUserInput
+        # deserialize data into ChatMessageInput
         try:
-            instance.actual_instance = AgentUserInput.from_json(json_str)
+            instance.actual_instance = ChatMessageInput.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -158,10 +158,10 @@ class AgentRunInputInput(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentRunInputInput with oneOf schemas: ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +175,7 @@ class AgentRunInputInput(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentUserInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], ChatMessageInput, FlowInstagramInput, SocialAddFollowersInput, SocialLoginInput]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

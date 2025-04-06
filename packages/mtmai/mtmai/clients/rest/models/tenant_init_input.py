@@ -17,22 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.agent_event import AgentEvent
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentRunInput(BaseModel):
+class TenantInitInput(BaseModel):
     """
-    AgentRunInput
+    TenantInitInput
     """ # noqa: E501
-    session_id: Optional[StrictStr] = Field(default=None, alias="sessionId")
     type: StrictStr
-    topic: Optional[StrictStr] = None
-    source: Optional[StrictStr] = None
-    input: AgentEvent
-    __properties: ClassVar[List[str]] = ["sessionId", "type", "topic", "source", "input"]
+    tenant_id: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "tenant_id"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['TenantInitInput']):
+            raise ValueError("must be one of enum values ('TenantInitInput')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +55,7 @@ class AgentRunInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentRunInput from a JSON string"""
+        """Create an instance of TenantInitInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +76,11 @@ class AgentRunInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of input
-        if self.input:
-            _dict['input'] = self.input.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentRunInput from a dict"""
+        """Create an instance of TenantInitInput from a dict"""
         if obj is None:
             return None
 
@@ -90,14 +90,11 @@ class AgentRunInput(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AgentRunInput) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in TenantInitInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "sessionId": obj.get("sessionId"),
             "type": obj.get("type"),
-            "topic": obj.get("topic"),
-            "source": obj.get("source"),
-            "input": AgentEvent.from_dict(obj["input"]) if obj.get("input") is not None else None
+            "tenant_id": obj.get("tenant_id")
         })
         return _obj
 

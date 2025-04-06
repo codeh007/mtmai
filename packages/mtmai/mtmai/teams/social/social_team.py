@@ -3,6 +3,7 @@ from typing import Any, AsyncGenerator, Mapping, Sequence
 
 from agents._semantic_router_agent import SemanticRouterAgent
 from agents.instagram_agent import InstagramAgent
+from agents.tenant_agent import TenantAgent
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -24,9 +25,9 @@ from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
+from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
@@ -120,6 +121,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             factory=lambda: UserAgent(
                 description="A user agent.",
                 session_id=self.session_id,
+                model_client=self.model_client,
                 social_agent_topic_type=instagram_agent_type.type,
             ),
         )
@@ -130,22 +132,37 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             )
         )
 
+        tenant_agent_type = await TenantAgent.register(
+            runtime=self._runtime,
+            type=AgentTopicTypes.TENANT.value,
+            factory=lambda: TenantAgent(
+                description="A tenant agent.",
+                session_id=self.session_id,
+            ),
+        )
+        await self._runtime.add_subscription(
+            subscription=TypeSubscription(
+                topic_type=self.team_topic_id.type,
+                agent_type=tenant_agent_type.type,
+            )
+        )
+
         self._initialized = True
         await self.load_runtimestate(self.session_id, self._runtime)
         self._runtime.start()
 
-    async def run_stream(
+    async def run(
         self,
         *,
-        task: str | ChatMessage | Sequence[ChatMessage] | AgentRunInput | None = None,
+        task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
             await self._init()
 
-        if isinstance(task, AgentRunInput):
+        if isinstance(task, MtAgEvent):
             await self._runtime.publish_message(
-                message=task.input.actual_instance,
+                message=task.actual_instance,
                 topic_id=self.team_topic_id,
                 cancellation_token=cancellation_token,
             )
@@ -184,11 +201,11 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
     async def load_runtimestate(self, session_id: str, runtime: AgentRuntime) -> None:
         state_list = await self.tenant_client.ag_state_api.ag_state_list(
             tenant=self.tenant_client.tenant_id,
-            chatId=session_id,
+            session=session_id,
         )
 
         state_dict = {}
-        for state in state_list:
+        for state in state_list.rows:
             key = f"{state.topic}/{state.source}"
             state_dict[key] = state.state
         await runtime.load_state(state_dict)

@@ -14,44 +14,39 @@ from loguru import logger
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
+from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.context import Context
+from mtmai.core.config import settings
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
-
-default_proxy_url = "http://127.0.0.1:10809"
 
 
 class InstagramAgent(RoutedAgent):
     def __init__(
         self,
         description: str,
-        model_client: ChatCompletionClient,
         user_topic: str,
+        model_client: ChatCompletionClient | None = None,
     ) -> None:
         super().__init__(
             description=description or "An agent that interacts with instagram",
         )
         self.model_client = model_client
+        self.user_topic = user_topic
         self._model_context = BufferedChatCompletionContext(buffer_size=10)
-
         self._initialized = False
-
-    async def _init(self) -> None:
-        if self._initialized:
-            return
+        self.ig_client = Client()
         self._state = InstagramAgentState(
-            proxy=default_proxy_url,
+            proxy=settings.default_proxy_url,
         )
-        self.ig_client = Client(
-            proxy=default_proxy_url,
-        )
-        self._initialized = True
+        self.tenant_client = TenantClient()
 
     @message_handler
     async def on_instagram_login(
         self, message: SocialLoginInput, ctx: MessageContext
     ) -> bool:
-        await self._init()
+        # await self._init()
         login_result = self.ig_client.login(
             username=message.username,
             password=message.password,
@@ -61,7 +56,10 @@ class InstagramAgent(RoutedAgent):
         if not login_result:
             raise Exception("ig 登录失败")
         self._state.ig_settings = self.ig_client.get_settings()
-        self._state.proxy_url = default_proxy_url
+        self._state.proxy_url = settings.default_proxy_url
+        self._state.username = message.username
+        self._state.password = message.password
+        self._state.otp_key = message.otp_key
         return login_result
 
     @message_handler
@@ -141,12 +139,6 @@ class InstagramAgent(RoutedAgent):
             return self.get_code_from_email(username)
         return False
 
-    # def change_password_handler(username):
-    #     # Simple way to generate a random string
-    #     chars = list("abcdefghijklmnopqrstuvwxyz1234567890!&£@#")
-    #     password = "".join(random.sample(chars, 10))
-    #     return password
-
     def download_all_medias(self, username: str, amount: int = 5) -> dict:
         """
         Download all medias from instagram profile
@@ -182,6 +174,39 @@ class InstagramAgent(RoutedAgent):
             print(f"http://instagram.com/p/{m.code}/", paths)
             i += 1
         return result
+
+    # async def run(self, hatctx: Context, input: SocialAddFollowersInput):
+    #     await self._init()
+    #     try:
+    #         state_from_db = await self.tenant_client.flow_state_api.flow_state_get(
+    #             tenant=self.tenant_client.tenant_id,
+    #             session=self.tenant_client.session_id,
+    #             workflow=hatctx.action.job_id,
+    #         )
+    #     except Exception as e:
+    #         logger.debug(f"Error getting flow state: {e}")
+    #         state_from_db = None
+
+    #     if state_from_db:
+    #         self._state = InstagramAgentState.from_dict(state_from_db.state)
+    #     else:
+    #         self._state = InstagramAgentState(
+    #             proxy=settings.default_proxy_url,
+    #         )
+    #     self.ig_client = Client(
+    #         proxy=self._state.proxy_url or settings.default_proxy_url,
+    #     )
+    #     if self._state.ig_settings:
+    #         self.ig_client.set_settings(
+    #             self._state.ig_settings,
+    #         )
+
+    #     if isinstance(input.actual_instance, SocialLoginInput):
+    #         return await self.on_social_login(hatctx, input.actual_instance)
+    #     elif isinstance(input.actual_instance, SocialAddFollowersInput):
+    #         return await hatctx.aio.spawn_workflow(FlowNames.INSTAGRAM, input)
+    #     else:
+    #         raise ValueError("(FlowInstagram)Invalid input type")
 
     # def get_client(self):
     #     """We return the client class, in which we automatically handle exceptions
@@ -356,32 +381,28 @@ class InstagramAgent(RoutedAgent):
         model_context_state = await self._model_context.save_state()
         return InstagramAgentState(
             llm_context=model_context_state,
-            # username=self.username,
-            # password=self.password,
+            username=self._state.username,
+            password=self._state.password,
+            otp_key=self._state.otp_key,
+            proxy_url=self._state.proxy_url,
             ig_settings=self.ig_client.get_settings(),
         ).model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        self._state = InstagramAgentState.from_dict()(state)
-        # await self._model_context.load_state(assistant_agent_state.llm_context)
+        self._state = InstagramAgentState.from_dict(state)
+        self.ig_client.set_settings(self._state.ig_settings)
+        self.ig_client.set_proxy(self._state.proxy_url)
 
-    # @property
-    # def produced_message_types(self) -> Sequence[type[ChatMessage]]:
-    #     return (TextMessage, HandoffMessage, IgLoginEvent)
+    async def on_social_login(self, hatctx: Context, msg: SocialLoginInput):
+        logger.info(f"input: {msg}")
+        self._state.username = msg.username
+        self._state.password = msg.password
+        self._state.otp_key = msg.otp_key
 
-    # async def on_messages_stream(
-    #     self,
-    #     messages: Sequence[BaseChatMessage | ExampleInstagramMessage],
-    #     cancellation_token: CancellationToken,
-    # ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
-    #     inner_messages: List[BaseAgentEvent | BaseChatMessage] = []
-    #     for i in range(self._count, 0, -1):
-    #         msg = TextMessage(content=f"{i}...", source=self.name)
-    #         inner_messages.append(msg)
-    #         yield msg
-    #     # The response is returned at the end of the stream.
-    #     # It contains the final message and all the inner messages.
-    #     yield Response(
-    #         chat_message=TextMessage(content="Done!", source=self.name),
-    #         inner_messages=inner_messages,
-    #     )
+        return {"state": "social_login"}
+
+    async def on_social_add_followers(
+        self, hatctx: Context, msg: SocialAddFollowersInput
+    ):
+        logger.info(f"input: {msg}")
+        return {"state": "social_add_followers"}

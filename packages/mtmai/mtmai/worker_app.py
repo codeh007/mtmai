@@ -16,34 +16,34 @@ async def run_worker():
 
     worker = mtmapp.worker(settings.WORKER_NAME)
 
-    from mtmai.flows.flow_tenant import FlowTenant
+    # from mtmai.flows.flow_tenant import FlowTenant
 
-    worker.register_workflow(FlowTenant())
-    logger.info("register tenant workflow")
+    # worker.register_workflow(FlowTenant())
+    # logger.info("register tenant workflow")
 
-    from mtmai.flows.flow_smolagent import FlowSmolagent
+    # from mtmai.flows.flow_smolagent import FlowSmolagent
 
-    worker.register_workflow(FlowSmolagent())
-    logger.info("register smolagent workflow")
+    # worker.register_workflow(FlowSmolagent())
+    # logger.info("register smolagent workflow")
 
     from mtmai.flows.flow_ag import FlowAg
 
     worker.register_workflow(FlowAg())
     logger.info("register ag workflow")
 
-    from mtmai.flows.flow_resource import FlowResource
+    # from mtmai.flows.flow_resource import FlowResource
 
-    worker.register_workflow(FlowResource())
-    logger.info("register FlowResource")
+    # worker.register_workflow(FlowResource())
+    # logger.info("register FlowResource")
 
-    from mtmai.flows.flow_instagram import FlowInstagram
+    # from mtmai.flows.flow_instagram import FlowInstagram
 
-    worker.register_workflow(FlowInstagram())
-    logger.info("register FlowInstagram")
+    # worker.register_workflow(FlowInstagram())
+    # logger.info("register FlowInstagram")
 
-    from mtmai.flows.flow_user import FlowUser
+    # from mtmai.flows.flow_user import FlowUser
 
-    worker.register_workflow(FlowUser())
-    logger.info("register FlowUser")
+    # worker.register_workflow(FlowUser())
+    # logger.info("register FlowUser")
 
     await worker.async_start()

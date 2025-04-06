@@ -29,9 +29,10 @@ class AgentEventType(str, Enum):
     THOUGHTEVENT = 'ThoughtEvent'
     TEXTMESSAGE = 'TextMessage'
     PLATFORMACCOUNTFLOWINPUT = 'PlatformAccountFlowInput'
-    AGENTUSERINPUT = 'AgentUserInput'
+    CHATMESSAGEINPUT = 'ChatMessageInput'
     SOCIALADDFOLLOWERSINPUT = 'SocialAddFollowersInput'
     SOCIALLOGININPUT = 'SocialLoginInput'
+    TENANTINITINPUT = 'TenantInitInput'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

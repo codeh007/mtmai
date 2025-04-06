@@ -35,6 +35,7 @@ class AgentTopicTypes(str, Enum):
     ROUTER = 'router'
     RESEARCH = 'research'
     WRITER = 'writer'
+    TENANT = 'tenant'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

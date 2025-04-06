@@ -31,11 +31,12 @@ class InstagramAgentState(BaseModel):
     llm_context: Optional[Any] = None
     username: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
+    otp_key: Optional[StrictStr] = None
     session_state: Optional[Dict[str, Any]] = None
     is_wait_user_input: Optional[StrictBool] = None
     ig_settings: Optional[Dict[str, Any]] = None
     proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "session_state", "is_wait_user_input", "ig_settings", "proxy_url"]
+    __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "otp_key", "session_state", "is_wait_user_input", "ig_settings", "proxy_url"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -113,6 +114,7 @@ class InstagramAgentState(BaseModel):
             "llm_context": obj.get("llm_context"),
             "username": obj.get("username"),
             "password": obj.get("password"),
+            "otp_key": obj.get("otp_key"),
             "session_state": obj.get("session_state"),
             "is_wait_user_input": obj.get("is_wait_user_input"),
             "ig_settings": obj.get("ig_settings"),

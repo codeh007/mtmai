@@ -21,7 +21,6 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Optional
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
-from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
@@ -37,7 +36,6 @@ from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmai.clients.rest.models.model_config import ModelConfig
 from mtmai.clients.rest.models.model_info import ModelInfo
-from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
@@ -53,7 +51,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowInstagramInput", "FlowNames", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "SocialAddFollowersInput", "SocialTeamConfig", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowInstagramInput", "FlowNames", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "SocialAddFollowersInput", "SocialTeamConfig", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -78,53 +76,49 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_8_validator: Optional[BrowserTask] = None
     # data type: BrowserOpenTask
     anyof_schema_9_validator: Optional[BrowserOpenTask] = None
-    # data type: MtTaskResult
-    anyof_schema_10_validator: Optional[MtTaskResult] = None
     # data type: ProviderTypes
-    anyof_schema_11_validator: Optional[ProviderTypes] = None
+    anyof_schema_10_validator: Optional[ProviderTypes] = None
     # data type: RunFlowModelInput
-    anyof_schema_12_validator: Optional[RunFlowModelInput] = None
+    anyof_schema_11_validator: Optional[RunFlowModelInput] = None
     # data type: AssistantAgentConfig
-    anyof_schema_13_validator: Optional[AssistantAgentConfig] = None
+    anyof_schema_12_validator: Optional[AssistantAgentConfig] = None
     # data type: ModelConfig
-    anyof_schema_14_validator: Optional[ModelConfig] = None
+    anyof_schema_13_validator: Optional[ModelConfig] = None
     # data type: TextMentionTerminationConfig
-    anyof_schema_15_validator: Optional[TextMentionTerminationConfig] = None
+    anyof_schema_14_validator: Optional[TextMentionTerminationConfig] = None
     # data type: MaxMessageTerminationConfig
-    anyof_schema_16_validator: Optional[MaxMessageTerminationConfig] = None
+    anyof_schema_15_validator: Optional[MaxMessageTerminationConfig] = None
     # data type: StopMessageTerminationConfig
-    anyof_schema_17_validator: Optional[StopMessageTerminationConfig] = None
+    anyof_schema_16_validator: Optional[StopMessageTerminationConfig] = None
     # data type: OrTerminationConfig
-    anyof_schema_18_validator: Optional[OrTerminationConfig] = None
+    anyof_schema_17_validator: Optional[OrTerminationConfig] = None
     # data type: ModelInfo
-    anyof_schema_19_validator: Optional[ModelInfo] = None
+    anyof_schema_18_validator: Optional[ModelInfo] = None
     # data type: FlowNames
-    anyof_schema_20_validator: Optional[FlowNames] = None
+    anyof_schema_19_validator: Optional[FlowNames] = None
     # data type: PlatformAccountFlowInput
-    anyof_schema_21_validator: Optional[PlatformAccountFlowInput] = None
+    anyof_schema_20_validator: Optional[PlatformAccountFlowInput] = None
     # data type: AgentEventType
-    anyof_schema_22_validator: Optional[AgentEventType] = None
+    anyof_schema_21_validator: Optional[AgentEventType] = None
     # data type: ResourceFlowInput
-    anyof_schema_23_validator: Optional[ResourceFlowInput] = None
+    anyof_schema_22_validator: Optional[ResourceFlowInput] = None
     # data type: InstagramAgentState
-    anyof_schema_24_validator: Optional[InstagramAgentState] = None
+    anyof_schema_23_validator: Optional[InstagramAgentState] = None
     # data type: AgentTopicTypes
-    anyof_schema_25_validator: Optional[AgentTopicTypes] = None
-    # data type: AgentUserInput
-    anyof_schema_26_validator: Optional[AgentUserInput] = None
+    anyof_schema_24_validator: Optional[AgentTopicTypes] = None
     # data type: FlowError
-    anyof_schema_27_validator: Optional[FlowError] = None
+    anyof_schema_25_validator: Optional[FlowError] = None
     # data type: SocialTeamConfig
-    anyof_schema_28_validator: Optional[SocialTeamConfig] = None
+    anyof_schema_26_validator: Optional[SocialTeamConfig] = None
     # data type: SocialAddFollowersInput
-    anyof_schema_29_validator: Optional[SocialAddFollowersInput] = None
+    anyof_schema_27_validator: Optional[SocialAddFollowersInput] = None
     # data type: FlowInstagramInput
-    anyof_schema_30_validator: Optional[FlowInstagramInput] = None
+    anyof_schema_28_validator: Optional[FlowInstagramInput] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]] = None
+        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AgentUserInput", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowInstagramInput", "FlowNames", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "MtTaskResult", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "SocialAddFollowersInput", "SocialTeamConfig", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig" }
+    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AssistantAgentConfig", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "CodeReviewResult", "CodeReviewTask", "FlowError", "FlowInstagramInput", "FlowNames", "InstagramAgentState", "InstagramTask", "MaxMessageTerminationConfig", "ModelConfig", "ModelInfo", "OrTerminationConfig", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "ResourceFlowInput", "RunFlowModelInput", "SocialAddFollowersInput", "SocialTeamConfig", "StopMessageTerminationConfig", "TerminationMessage", "TextMentionTerminationConfig" }
 
     model_config = {
         "validate_assignment": True,
@@ -196,12 +190,6 @@ class WorkflowWorkersCountOther(BaseModel):
         # validate data type: BrowserOpenTask
         if not isinstance(v, BrowserOpenTask):
             error_messages.append(f"Error! Input type `{type(v)}` is not `BrowserOpenTask`")
-        else:
-            return v
-
-        # validate data type: MtTaskResult
-        if not isinstance(v, MtTaskResult):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MtTaskResult`")
         else:
             return v
 
@@ -295,12 +283,6 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
-        # validate data type: AgentUserInput
-        if not isinstance(v, AgentUserInput):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentUserInput`")
-        else:
-            return v
-
         # validate data type: FlowError
         if not isinstance(v, FlowError):
             error_messages.append(f"Error! Input type `{type(v)}` is not `FlowError`")
@@ -327,7 +309,7 @@ class WorkflowWorkersCountOther(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -394,127 +376,115 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_10_validator: Optional[MtTaskResult] = None
-        try:
-            instance.actual_instance = MtTaskResult.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_11_validator: Optional[ProviderTypes] = None
+        # anyof_schema_10_validator: Optional[ProviderTypes] = None
         try:
             instance.actual_instance = ProviderTypes.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_12_validator: Optional[RunFlowModelInput] = None
+        # anyof_schema_11_validator: Optional[RunFlowModelInput] = None
         try:
             instance.actual_instance = RunFlowModelInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_13_validator: Optional[AssistantAgentConfig] = None
+        # anyof_schema_12_validator: Optional[AssistantAgentConfig] = None
         try:
             instance.actual_instance = AssistantAgentConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_14_validator: Optional[ModelConfig] = None
+        # anyof_schema_13_validator: Optional[ModelConfig] = None
         try:
             instance.actual_instance = ModelConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_15_validator: Optional[TextMentionTerminationConfig] = None
+        # anyof_schema_14_validator: Optional[TextMentionTerminationConfig] = None
         try:
             instance.actual_instance = TextMentionTerminationConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_16_validator: Optional[MaxMessageTerminationConfig] = None
+        # anyof_schema_15_validator: Optional[MaxMessageTerminationConfig] = None
         try:
             instance.actual_instance = MaxMessageTerminationConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_17_validator: Optional[StopMessageTerminationConfig] = None
+        # anyof_schema_16_validator: Optional[StopMessageTerminationConfig] = None
         try:
             instance.actual_instance = StopMessageTerminationConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_18_validator: Optional[OrTerminationConfig] = None
+        # anyof_schema_17_validator: Optional[OrTerminationConfig] = None
         try:
             instance.actual_instance = OrTerminationConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_19_validator: Optional[ModelInfo] = None
+        # anyof_schema_18_validator: Optional[ModelInfo] = None
         try:
             instance.actual_instance = ModelInfo.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_20_validator: Optional[FlowNames] = None
+        # anyof_schema_19_validator: Optional[FlowNames] = None
         try:
             instance.actual_instance = FlowNames.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_21_validator: Optional[PlatformAccountFlowInput] = None
+        # anyof_schema_20_validator: Optional[PlatformAccountFlowInput] = None
         try:
             instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_22_validator: Optional[AgentEventType] = None
+        # anyof_schema_21_validator: Optional[AgentEventType] = None
         try:
             instance.actual_instance = AgentEventType.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_23_validator: Optional[ResourceFlowInput] = None
+        # anyof_schema_22_validator: Optional[ResourceFlowInput] = None
         try:
             instance.actual_instance = ResourceFlowInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_24_validator: Optional[InstagramAgentState] = None
+        # anyof_schema_23_validator: Optional[InstagramAgentState] = None
         try:
             instance.actual_instance = InstagramAgentState.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_25_validator: Optional[AgentTopicTypes] = None
+        # anyof_schema_24_validator: Optional[AgentTopicTypes] = None
         try:
             instance.actual_instance = AgentTopicTypes.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_26_validator: Optional[AgentUserInput] = None
-        try:
-            instance.actual_instance = AgentUserInput.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_27_validator: Optional[FlowError] = None
+        # anyof_schema_25_validator: Optional[FlowError] = None
         try:
             instance.actual_instance = FlowError.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_28_validator: Optional[SocialTeamConfig] = None
+        # anyof_schema_26_validator: Optional[SocialTeamConfig] = None
         try:
             instance.actual_instance = SocialTeamConfig.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_29_validator: Optional[SocialAddFollowersInput] = None
+        # anyof_schema_27_validator: Optional[SocialAddFollowersInput] = None
         try:
             instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_30_validator: Optional[FlowInstagramInput] = None
+        # anyof_schema_28_validator: Optional[FlowInstagramInput] = None
         try:
             instance.actual_instance = FlowInstagramInput.from_json(json_str)
             return instance
@@ -523,7 +493,7 @@ class WorkflowWorkersCountOther(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -537,7 +507,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AgentUserInput, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, MtTaskResult, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AssistantAgentConfig, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, CodeReviewResult, CodeReviewTask, FlowError, FlowInstagramInput, FlowNames, InstagramAgentState, InstagramTask, MaxMessageTerminationConfig, ModelConfig, ModelInfo, OrTerminationConfig, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, ResourceFlowInput, RunFlowModelInput, SocialAddFollowersInput, SocialTeamConfig, StopMessageTerminationConfig, TerminationMessage, TextMentionTerminationConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

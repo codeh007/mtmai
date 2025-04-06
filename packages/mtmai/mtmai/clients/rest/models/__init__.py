@@ -32,16 +32,12 @@ from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_config import AgentConfig
-from mtmai.clients.rest.models.agent_event import AgentEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_message_config import AgentMessageConfig
 from mtmai.clients.rest.models.agent_properties import AgentProperties
-from mtmai.clients.rest.models.agent_run_input import AgentRunInput
-from mtmai.clients.rest.models.agent_run_input_input import AgentRunInputInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
-from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_length_options import ArtifactLengthOptions
 from mtmai.clients.rest.models.artifact_list import ArtifactList
@@ -74,6 +70,7 @@ from mtmai.clients.rest.models.chat_agent_container_state import ChatAgentContai
 from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
+from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_list import ChatMessageList
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_session import ChatSession
@@ -169,6 +166,7 @@ from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
+from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_new import MtComponentNew
@@ -178,7 +176,6 @@ from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
 from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
-from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmai.clients.rest.models.or_termination_config import OrTerminationConfig
 from mtmai.clients.rest.models.outline import Outline
@@ -273,6 +270,7 @@ from mtmai.clients.rest.models.tenant_alert_email_group import TenantAlertEmailG
 from mtmai.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
 from mtmai.clients.rest.models.tenant_alerting_settings import TenantAlertingSettings
 from mtmai.clients.rest.models.tenant_component_config import TenantComponentConfig
+from mtmai.clients.rest.models.tenant_init_input import TenantInitInput
 from mtmai.clients.rest.models.tenant_invite import TenantInvite
 from mtmai.clients.rest.models.tenant_invite_list import TenantInviteList
 from mtmai.clients.rest.models.tenant_list import TenantList

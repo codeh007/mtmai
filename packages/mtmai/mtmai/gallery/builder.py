@@ -16,8 +16,8 @@ from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.teams.social.social_team import SocialTeam
-from mtmai.teams.tenant_team import TenantTeam
+
+# from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr
 
 
@@ -31,8 +31,6 @@ class GalleryComponents(BaseModel):
 
 class GalleryMetadata(BaseModel):
     author: str
-    # created_at: datetime = Field(default_factory=datetime.now)
-    # updated_at: datetime = Field(default_factory=datetime.now)
     version: str
     description: Optional[str] = None
     tags: Optional[List[str]] = None
@@ -516,6 +514,8 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     model_client=nvidia_model_llama3,
     #     # handoffs=["user"],
     # )
+    from mtmai.teams.social.social_team import SocialTeam
+
     instagram_team = SocialTeam(
         # participants=[research_assistant],
         # model_client=nvidia_model_llama3,
@@ -528,15 +528,15 @@ Read the above conversation. Then select the next role from {participants} to pl
         description="A team with an Instagram agent that interacts with instagram.",
     )
 
-    tenant_team = TenantTeam(
-        participants=[],
-        # model_client=nvidia_model_llama3,
-    )
-    builder.add_team(
-        tenant_team.dump_component(),
-        label="Tenant Team",
-        description="租户管理专用团队",
-    )
+    # tenant_team = TenantTeam(
+    #     participants=[],
+    #     # model_client=nvidia_model_llama3,
+    # )
+    # builder.add_team(
+    #     tenant_team.dump_component(),
+    #     label="Tenant Team",
+    #     description="租户管理专用团队",
+    # )
 
     # termination = HandoffTermination(target="user") | TextMentionTermination(
     #     "TERMINATE"

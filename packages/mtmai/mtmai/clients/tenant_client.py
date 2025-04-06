@@ -1,8 +1,6 @@
 from typing import Any
 
-from autogen_agentchat.base import Team
 from autogen_ext.tools.mcp import SseServerParams
-from loguru import logger
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
@@ -12,8 +10,6 @@ from mtmai.clients.rest.api.platform_account_api import PlatformAccountApi
 from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
-from mtmai.clients.rest.models.component_types import ComponentTypes
-from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.context.context import Context
 from mtmai.context.ctx import (
     META_RUN_BY_TENANT,
@@ -31,7 +27,6 @@ from mtmai.context.ctx import (
     set_step_run_id,
     set_tenant_id,
 )
-from mtmai.mtlibs.id import is_uuid
 from mtmai.worker.dispatcher.dispatcher import Action
 from typing_extensions import Self
 
@@ -116,6 +111,7 @@ class TenantClient:
             return self._resource_api
         self._resource_api = ResourceApi(self.api_client)
         return self._resource_api
+
     @property
     def flow_state_api(self):
         if hasattr(self, "_flow_state_api"):
@@ -142,34 +138,34 @@ class TenantClient:
 
     # 看起来过时了,原因是, autogen 中的team 的行为本身就可以立即为一个agent,
     # 因此,后续的设计以 agent 自身作为主导,而不是team
-    async def load_team(self, team_comp_id_or_name: str) -> Team:
-        if is_uuid(team_comp_id_or_name):
-            # 从数据库加载
-            try:
-                component_data = await self.ag.coms_api.coms_get(
-                    tenant=self.tenant_id,
-                    com=team_comp_id_or_name,
-                )
-                logger.info(f"component data: {component_data}")
-            except Exception as e:
-                logger.exception(f"获取组件数据失败: {e}")
-                raise e
+    # async def load_team(self, team_comp_id_or_name: str) -> Team:
+    #     if is_uuid(team_comp_id_or_name):
+    #         # 从数据库加载
+    #         try:
+    #             component_data = await self.ag.coms_api.coms_get(
+    #                 tenant=self.tenant_id,
+    #                 com=team_comp_id_or_name,
+    #             )
+    #             logger.info(f"component data: {component_data}")
+    #         except Exception as e:
+    #             logger.exception(f"获取组件数据失败: {e}")
+    #             raise e
 
-            if component_data.component_type == ComponentTypes.TEAM:
-                comp_dict = component_data.model_dump()
-                team = Team.load_component(comp_dict)
-                # self.team = team
-                return team
-            else:
-                raise ValueError(f"组件类型错误: {component_data.component_type}")
+    #         if component_data.component_type == ComponentTypes.TEAM:
+    #             comp_dict = component_data.model_dump()
+    #             team = Team.load_component(comp_dict)
+    #             # self.team = team
+    #             return team
+    #         else:
+    #             raise ValueError(f"组件类型错误: {component_data.component_type}")
 
-        elif (
-            team_comp_id_or_name is None
-            or team_comp_id_or_name == "instagram_team"
-            or team_comp_id_or_name == "social"
-        ):
-            from mtmai.teams.social.social_team import SocialTeam
+    #     elif (
+    #         team_comp_id_or_name is None
+    #         or team_comp_id_or_name == "instagram_team"
+    #         or team_comp_id_or_name == "social"
+    #     ):
+    #         from mtmai.teams.social.social_team import SocialTeam
 
-            return SocialTeam._from_config(SocialTeamConfig())
-        else:
-            raise ValueError(f"不支持的团队: {team_comp_id_or_name}")
+    #         return SocialTeam._from_config(SocialTeamConfig())
+    #     else:
+    #         raise ValueError(f"不支持的团队: {team_comp_id_or_name}")

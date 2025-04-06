@@ -1,5 +1,7 @@
 from typing import Any, Mapping
 
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.messages import TextMessage
 from autogen_core import (
     AgentId,
     FunctionCall,
@@ -9,7 +11,12 @@ from autogen_core import (
     message_handler,
 )
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import AssistantMessage, SystemMessage, UserMessage
+from autogen_core.models import (
+    AssistantMessage,
+    ChatCompletionClient,
+    SystemMessage,
+    UserMessage,
+)
 from loguru import logger
 from mtmai.agents._types import (
     BrowserOpenTask,
@@ -20,19 +27,26 @@ from mtmai.agents._types import (
 )
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_user_input import AgentUserInput
+from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.mtlibs.id import generate_uuid
 
 
 class UserAgent(RoutedAgent):
     def __init__(
-        self, description: str, session_id: str, social_agent_topic_type: str = None
+        self,
+        description: str,
+        session_id: str,
+        model_client: ChatCompletionClient | None = None,
+        social_agent_topic_type: str = None,
     ) -> None:
         super().__init__(description)
         self._social_agent_topic_type = social_agent_topic_type
         self._model_context = BufferedChatCompletionContext(buffer_size=10)
         self._session_id = session_id
+        self.model_client = model_client
         self.instagram_agent_id = AgentId(self._social_agent_topic_type, "default")
+        self._delegate = AssistantAgent("user_agent", model_client=self.model_client)
 
     @message_handler
     async def handle_agent_run_input(
@@ -67,7 +81,6 @@ class UserAgent(RoutedAgent):
         elif user_content.startswith("/test/ig"):
             agent_id = AgentId(self._social_agent_topic_type, "default")
             result = await self._runtime.send_message(
-                # IgAccountMessage(username="username1", password="password1"), agent_id
                 SocialAddFollowersInput(
                     username="username1",
                     password="password1",
@@ -75,7 +88,6 @@ class UserAgent(RoutedAgent):
                 ),
                 agent_id,
             )
-            # logger.info(f"result: {result}")
             if isinstance(result, IgLoginRequire):
                 self.is_waiting_ig_login = True
             await self._model_context.add_message(
@@ -105,6 +117,23 @@ class UserAgent(RoutedAgent):
             user_message = UserMessage(content=message.content, source="user")
             # Add message to model context.
             await self._model_context.add_message(user_message)
+
+    @message_handler
+    async def handle_user_input(
+        self, message: ChatMessageInput, ctx: MessageContext
+    ) -> None:
+        logger.info(f"handle_agent_run_input: {message}")
+        await self._model_context.add_message(
+            UserMessage(content=message.content, source="user")
+        )
+        response = await self._delegate.on_messages(
+            [TextMessage(content=message.content, source="user")],
+            ctx.cancellation_token,
+        )
+        logger.info(f"response: {response}")
+        await self._model_context.add_message(
+            AssistantMessage(content=response.chat_message.content, source="assistant")
+        )
 
     # @message_handler
     # async def handle_social_add_followers_input(
@@ -138,7 +167,6 @@ class UserAgent(RoutedAgent):
     async def save_state(self) -> Mapping[str, Any]:
         return {
             "model_context": await self._model_context.save_state(),
-            # "is_waiting_ig_login": self.is_waiting_ig_login,
         }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:

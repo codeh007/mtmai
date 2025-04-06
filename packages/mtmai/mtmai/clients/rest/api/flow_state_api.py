@@ -105,6 +105,7 @@ class FlowStateApi:
             '200': "FlowState",
             '400': "APIErrors",
             '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -181,6 +182,7 @@ class FlowStateApi:
             '200': "FlowState",
             '400': "APIErrors",
             '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -257,6 +259,7 @@ class FlowStateApi:
             '200': "FlowState",
             '400': "APIErrors",
             '403': "APIErrors",
+            '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,

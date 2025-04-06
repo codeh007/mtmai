@@ -1,0 +1,144 @@
+from autogen_core import AgentId, SingleThreadedAgentRuntime
+from loguru import logger
+from mtmai.agents.cancel_token import MtCancelToken
+from mtmai.agents.instagram_agent import InstagramAgent
+from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.flow_instagram_input import FlowInstagramInput
+from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
+from mtmai.clients.rest.models.state_type import StateType
+from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.context import Context
+from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.core.config import settings
+from mtmai.mtlibs.instagrapi import Client
+from mtmai.worker_app import mtmapp
+
+
+@mtmapp.workflow(
+    name=FlowNames.INSTAGRAM,
+    on_events=[f"{FlowNames.INSTAGRAM}"],
+)
+class FlowInstagram:
+    @mtmapp.step(timeout="60m")
+    async def step0(self, hatctx: Context):
+        input = FlowInstagramInput.from_dict(hatctx.input)
+        cancellation_token = MtCancelToken()
+        tenant_client = TenantClient()
+        session_id = get_chat_session_id_ctx()
+        tid = get_tenant_id()
+        if not tid:
+            raise ValueError("tenant_id is required")
+
+        runtime = SingleThreadedAgentRuntime()
+        instagram_topic = FlowNames.INSTAGRAM
+        instagram_agent_type = await InstagramAgent.register(
+            runtime=runtime,
+            type=instagram_topic,
+            factory=lambda: InstagramAgent(
+                description="An agent that interacts with instagram",
+                # model_client=self.model_client,
+                # user_topic=AgentTopicTypes.USER.value,
+            ),
+        )
+        try:
+            runtime_state_db = await tenant_client.ag_state_api.ag_state_list(
+                tenant=tid,
+                session=session_id,
+                # topic=instagram_topic,
+                # type=StateType.RUNTIMESTATE.value,
+            )
+            if runtime_state_db and len(runtime_state_db.rows) > 0:
+                state_dict = {}
+                for state in runtime_state_db.rows:
+                    key = f"{state.topic}/{state.source}"
+                    state_dict[key] = state.state
+                await runtime.load_state(state_dict)
+        except Exception as e:
+            logger.debug(f"Error getting runtime state: {e}")
+            runtime_state_db = None
+
+
+        runtime.start()
+
+        instagram_agent = AgentId(instagram_topic, session_id)
+        response = await runtime.send_message(
+            input.actual_instance, recipient=instagram_agent
+        )
+
+        runtime_state = await runtime.save_state()
+        state_data = await self.save_state()
+        for k, v in state_data.items():
+            logger.info(f"key: {k}, value: {v}")
+            parts = k.split("/")
+            topic = parts[0]
+            source = parts[1] if len(parts) > 1 else "default"
+            await self.tenant_client.ag_state_api.ag_state_upsert(
+                tenant=self.tenant_client.tenant_id,
+                ag_state_upsert=AgStateUpsert(
+                    topic=topic,
+                    source=source,
+                    type=StateType.RUNTIMESTATE.value,
+                    chatId=self.session_id,
+                    state=v,
+                ),
+            )
+        # await runtime.
+        state2 = await runtime.agent_save_state(instagram_agent)
+        return state2
+        # await runtime.send_message(
+        #     recipient="instagram_agent",
+        #     message=input,
+        # )
+
+        # agent = InstagramAgent(description="instagram agent")
+        # return await agent.run(hatctx, input)
+        try:
+            state_from_db = await tenant_client.flow_state_api.flow_state_get(
+                tenant=tid,
+                session=session_id,
+                workflow=hatctx.action.job_id,
+            )
+        except Exception as e:
+            logger.debug(f"Error getting flow state: {e}")
+            state_from_db = None
+
+        if state_from_db:
+            self._state = InstagramAgentState.from_dict(state_from_db.state)
+        else:
+            self._state = InstagramAgentState(
+                proxy=settings.default_proxy_url,
+            )
+        self.ig_client = Client(
+            proxy=self._state.proxy_url or settings.default_proxy_url,
+        )
+        if self._state.ig_settings:
+            self.ig_client.set_settings(
+                self._state.ig_settings,
+            )
+
+        if isinstance(input.actual_instance, SocialLoginInput):
+            return await self.on_social_login(hatctx, input.actual_instance)
+        elif isinstance(input.actual_instance, SocialAddFollowersInput):
+            return await hatctx.aio.spawn_workflow(FlowNames.INSTAGRAM, input)
+        else:
+            raise ValueError("(FlowInstagram)Invalid input type")
+
+    async def on_social_login(self, hatctx: Context, msg: SocialLoginInput):
+        logger.info(f"input: {msg}")
+        self._state.username = msg.username
+        self._state.password = msg.password
+        self._state.otp_key = msg.otp_key
+
+        return {"state": "social_login"}
+
+    async def on_social_add_followers(
+        self, hatctx: Context, msg: SocialAddFollowersInput
+    ):
+        logger.info(f"input: {msg}")
+        return {"state": "social_add_followers"}
+
+    async def load_state(self, hatctx: Context):
+        return {"state": "load_state"}

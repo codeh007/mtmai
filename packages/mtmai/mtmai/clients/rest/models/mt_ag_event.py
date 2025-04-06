@@ -28,11 +28,11 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTEVENT_ONE_OF_SCHEMAS = ["ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
+MTAGEVENT_ONE_OF_SCHEMAS = ["ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
 
-class AgentEvent(BaseModel):
+class MtAgEvent(BaseModel):
     """
-    AgentEvent
+    MtAgEvent
     """
     # data type: ThoughtEvent
     oneof_schema_1_validator: Optional[ThoughtEvent] = None
@@ -72,7 +72,7 @@ class AgentEvent(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = AgentEvent.model_construct()
+        instance = MtAgEvent.model_construct()
         error_messages = []
         match = 0
         # validate data type: ThoughtEvent
@@ -112,10 +112,10 @@ class AgentEvent(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -215,10 +215,10 @@ class AgentEvent(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
