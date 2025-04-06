@@ -26,7 +26,7 @@ class InstagramAgentState(BaseModel):
     """
     InstagramAgentState
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: Optional[StrictStr] = 'InstagramAgentState'
     version: Optional[StrictStr] = None
     llm_context: Optional[Any] = None
     username: Optional[StrictStr] = None
@@ -108,7 +108,7 @@ class InstagramAgentState(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in InstagramAgentState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'InstagramAgentState',
             "version": obj.get("version"),
             "llm_context": obj.get("llm_context"),
             "username": obj.get("username"),

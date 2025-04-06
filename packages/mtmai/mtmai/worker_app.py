@@ -36,4 +36,14 @@ async def run_worker():
     worker.register_workflow(FlowResource())
     logger.info("register FlowResource")
 
+    from mtmai.flows.flow_instagram import FlowInstagram
+
+    worker.register_workflow(FlowInstagram())
+    logger.info("register FlowInstagram")
+
+    from mtmai.flows.flow_user import FlowUser
+
+    worker.register_workflow(FlowUser())
+    logger.info("register FlowUser")
+
     await worker.async_start()

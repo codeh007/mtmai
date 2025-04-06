@@ -59,13 +59,17 @@ class InstagramAgent(RoutedAgent):
             relogin=False,
         )
         if not login_result:
-            raise Exception("登录失败")
+            raise Exception("ig 登录失败")
+        self._state.ig_settings = self.ig_client.get_settings()
+        self._state.proxy_url = default_proxy_url
         return login_result
 
     @message_handler
     async def handle_add_follow(
         self, message: SocialAddFollowersInput, ctx: MessageContext
     ) -> None:
+        if not self._state.ig_settings:
+            raise Exception("ig 未登录")
         logger.info(f"(instagram agent )SocialAddFollowersInput  with {ctx.sender}")
 
     async def on_messages_stream(
@@ -358,8 +362,8 @@ class InstagramAgent(RoutedAgent):
         ).model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        assistant_agent_state = InstagramAgentState.model_validate(state)
-        await self._model_context.load_state(assistant_agent_state.llm_context)
+        self._state = InstagramAgentState.from_dict()(state)
+        # await self._model_context.load_state(assistant_agent_state.llm_context)
 
     # @property
     # def produced_message_types(self) -> Sequence[type[ChatMessage]]:

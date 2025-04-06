@@ -20,15 +20,12 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from loguru import logger
-from typing_extensions import Self
-
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.intervention_handlers import NeedsUserInputHandler
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_run_input import AgentRunInput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
-from mtmai.clients.rest.models.agent_user_input import AgentUserInput
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
@@ -39,6 +36,7 @@ from mtmai.mtlibs.autogen_utils.autogen_utils import (
     MockAgentRegistry,
     MockIntentClassifier,
 )
+from typing_extensions import Self
 
 
 class SocialTeam(Team, Component[SocialTeamConfig]):
@@ -74,6 +72,10 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         for t in agent_message_types:
             self._runtime.add_message_serializer(try_get_known_serializers_for_type(t))
 
+        team_topic = f"social.{self.session_id}"
+        topic_source = "default"
+        self.team_topic_id = TopicId(type=team_topic, source=topic_source)
+
         # Create the Semantic Router
         agent_registry = MockAgentRegistry()
         intent_classifier = MockIntentClassifier()
@@ -92,7 +94,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         await self._runtime.add_subscription(
             TypeSubscription(
                 topic_type=AgentTopicTypes.ROUTER.value,
-                agent_type=router_agent_type.type,
+                agent_type=self.team_topic_id.type,
             )
         )
 
@@ -107,7 +109,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.INSTAGRAM.value,
+                topic_type=self.team_topic_id.type,
                 agent_type=instagram_agent_type.type,
             )
         )
@@ -123,11 +125,13 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
-                topic_type=AgentTopicTypes.USER.value, agent_type=user_agent_type.type
+                topic_type=self.team_topic_id.type,
+                agent_type=user_agent_type.type,
             )
         )
 
         self._initialized = True
+        await self.load_runtimestate(self.session_id, self._runtime)
         self._runtime.start()
 
     async def run_stream(
@@ -139,15 +143,10 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         if not self._initialized:
             await self._init()
 
-        team_topic = f"social.{self.session_id}"
-        topic_source = "default"
-        team_topic_id = TopicId(type=team_topic, source=topic_source)
-        user_topic_id = TopicId(type=AgentTopicTypes.USER.value, source=topic_source)
         if isinstance(task, AgentRunInput):
-            user_input_msg = AgentUserInput.model_validate(task.model_dump())
             await self._runtime.publish_message(
                 message=task.input.actual_instance,
-                topic_id=user_topic_id,
+                topic_id=self.team_topic_id,
                 cancellation_token=cancellation_token,
             )
 
@@ -181,6 +180,18 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._runtime.load_state(state)
+
+    async def load_runtimestate(self, session_id: str, runtime: AgentRuntime) -> None:
+        state_list = await self.tenant_client.ag_state_api.ag_state_list(
+            tenant=self.tenant_client.tenant_id,
+            chatId=session_id,
+        )
+
+        state_dict = {}
+        for state in state_list:
+            key = f"{state.topic}/{state.source}"
+            state_dict[key] = state.state
+        await runtime.load_state(state_dict)
 
     def _to_config(self) -> InstagramTeamConfig:
         return SocialTeamConfig(

@@ -37,6 +37,8 @@ class FlowNames(str, Enum):
     PLATFORM_ACCOUNT_LOGIN = 'platform_account_login'
     PLATFORM_ACCOUNT_FOLLOW = 'platform_account_follow'
     RESOURCE = 'resource'
+    INSTAGRAM = 'instagram'
+    USER = 'user'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
