@@ -3,12 +3,11 @@ from typing import Any
 from autogen_agentchat.base import Team
 from autogen_ext.tools.mcp import SseServerParams
 from loguru import logger
-from typing_extensions import Self
-
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
 from mtmai.clients.rest.api.coms_api import ComsApi
+from mtmai.clients.rest.api.flow_state_api import FlowStateApi
 from mtmai.clients.rest.api.platform_account_api import PlatformAccountApi
 from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api_client import ApiClient
@@ -34,6 +33,7 @@ from mtmai.context.ctx import (
 )
 from mtmai.mtlibs.id import is_uuid
 from mtmai.worker.dispatcher.dispatcher import Action
+from typing_extensions import Self
 
 
 def parser_ctx_from_metas(meta: dict[str, str]):
@@ -116,6 +116,12 @@ class TenantClient:
             return self._resource_api
         self._resource_api = ResourceApi(self.api_client)
         return self._resource_api
+    @property
+    def flow_state_api(self):
+        if hasattr(self, "_flow_state_api"):
+            return self._flow_state_api
+        self._flow_state_api = FlowStateApi(self.api_client)
+        return self._flow_state_api
 
     @property
     def event(self) -> EventClient:

@@ -18,8 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.state_type import StateType
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,13 +26,9 @@ class FlowStateProperties(BaseModel):
     """
     FlowStateProperties
     """ # noqa: E501
-    version: Optional[StrictStr] = '1.0.0'
-    type: StateType
-    chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
-    topic: StrictStr
-    source: StrictStr
+    session_id: StrictStr = Field(alias="sessionId")
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["version", "type", "chatId", "topic", "source", "state"]
+    __properties: ClassVar[List[str]] = ["sessionId", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,11 +86,7 @@ class FlowStateProperties(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in FlowStateProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type"),
-            "chatId": obj.get("chatId"),
-            "topic": obj.get("topic"),
-            "source": obj.get("source"),
+            "sessionId": obj.get("sessionId"),
             "state": obj.get("state")
         })
         return _obj

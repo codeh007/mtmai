@@ -213,5 +213,7 @@ class Settings(BaseSettings):
     def HF_TOKEN(self) -> str | None:
         return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 
+    default_proxy_url: str = "http://127.0.0.1:10809"
+
 
 settings = Settings()  # type: ignore

@@ -45,7 +45,8 @@ class FlowStateApi:
     async def flow_state_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -64,8 +65,10 @@ class FlowStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,7 +93,8 @@ class FlowStateApi:
 
         _param = self._flow_state_get_serialize(
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -117,7 +121,8 @@ class FlowStateApi:
     async def flow_state_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -136,8 +141,10 @@ class FlowStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -162,7 +169,8 @@ class FlowStateApi:
 
         _param = self._flow_state_get_serialize(
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -189,7 +197,8 @@ class FlowStateApi:
     async def flow_state_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -208,8 +217,10 @@ class FlowStateApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -234,7 +245,8 @@ class FlowStateApi:
 
         _param = self._flow_state_get_serialize(
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -256,7 +268,8 @@ class FlowStateApi:
     def _flow_state_get_serialize(
         self,
         tenant,
-        flowstate,
+        session,
+        workflow,
         _request_auth,
         _content_type,
         _headers,
@@ -280,8 +293,10 @@ class FlowStateApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if flowstate is not None:
-            _path_params['flowstate'] = flowstate
+        if session is not None:
+            _path_params['session'] = session
+        if workflow is not None:
+            _path_params['workflow'] = workflow
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -306,7 +321,7 @@ class FlowStateApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/flow-states/{flowstate}',
+            resource_path='/api/v1/tenants/{tenant}/flow-states/{session}/{workflow}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -641,7 +656,8 @@ class FlowStateApi:
         self,
         flow_state_upsert: Annotated[FlowStateUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -663,8 +679,10 @@ class FlowStateApi:
         :type flow_state_upsert: FlowStateUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -690,7 +708,8 @@ class FlowStateApi:
         _param = self._flow_state_upsert_serialize(
             flow_state_upsert=flow_state_upsert,
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -718,7 +737,8 @@ class FlowStateApi:
         self,
         flow_state_upsert: Annotated[FlowStateUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -740,8 +760,10 @@ class FlowStateApi:
         :type flow_state_upsert: FlowStateUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -767,7 +789,8 @@ class FlowStateApi:
         _param = self._flow_state_upsert_serialize(
             flow_state_upsert=flow_state_upsert,
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -795,7 +818,8 @@ class FlowStateApi:
         self,
         flow_state_upsert: Annotated[FlowStateUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        flowstate: Annotated[StrictStr, Field(description="The flowstate id")],
+        session: Annotated[StrictStr, Field(description="The session id")],
+        workflow: Annotated[StrictStr, Field(description="The workflow id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -817,8 +841,10 @@ class FlowStateApi:
         :type flow_state_upsert: FlowStateUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param flowstate: The flowstate id (required)
-        :type flowstate: str
+        :param session: The session id (required)
+        :type session: str
+        :param workflow: The workflow id (required)
+        :type workflow: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -844,7 +870,8 @@ class FlowStateApi:
         _param = self._flow_state_upsert_serialize(
             flow_state_upsert=flow_state_upsert,
             tenant=tenant,
-            flowstate=flowstate,
+            session=session,
+            workflow=workflow,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -867,7 +894,8 @@ class FlowStateApi:
         self,
         flow_state_upsert,
         tenant,
-        flowstate,
+        session,
+        workflow,
         _request_auth,
         _content_type,
         _headers,
@@ -891,8 +919,10 @@ class FlowStateApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if flowstate is not None:
-            _path_params['flowstate'] = flowstate
+        if session is not None:
+            _path_params['session'] = session
+        if workflow is not None:
+            _path_params['workflow'] = workflow
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -932,7 +962,7 @@ class FlowStateApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/tenants/{tenant}/flow-states/{flowstate}',
+            resource_path='/api/v1/tenants/{tenant}/flow-states/{session}/{workflow}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

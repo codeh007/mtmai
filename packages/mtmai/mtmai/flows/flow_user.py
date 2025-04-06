@@ -31,10 +31,10 @@ class FlowUser:
                 FlowNames.INSTAGRAM, input.input.actual_instance.model_dump()
             )
         elif isinstance(input.input.actual_instance, SocialLoginInput):
-            result = await hatctx.aio.spawn_workflow(
+            workflowRunRef = await hatctx.aio.spawn_workflow(
                 FlowNames.INSTAGRAM, input.input.actual_instance.model_dump()
             )
-            logger.info(f"result: {result}")
+            logger.info(f"workflowRunRef: {workflowRunRef}")
         elif isinstance(input.input.actual_instance, SocialAddFollowersInput):
             result = await hatctx.aio.spawn_workflow(
                 FlowNames.INSTAGRAM, input.input.actual_instance.model_dump()

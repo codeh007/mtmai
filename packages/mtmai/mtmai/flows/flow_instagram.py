@@ -8,10 +8,9 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx, get_tenant_id
+from mtmai.core.config import settings
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.worker_app import mtmapp
-
-default_proxy_url = "http://127.0.0.1:10809"
 
 
 @mtmapp.workflow(
@@ -29,11 +28,19 @@ class FlowInstagram:
         if not tid:
             raise ValueError("tenant_id is required")
 
-        self._state = InstagramAgentState(
-            proxy=default_proxy_url,
+        state_from_db = await tenant_client.flow_state_api.flow_state_get(
+            tenant=tid,
+            flowstate=f"session_{session_id}_flow_{FlowNames.INSTAGRAM}",
         )
+        if state_from_db:
+            self._state = InstagramAgentState.from_dict(state_from_db.state)
+        else:
+            self._state = InstagramAgentState(
+                proxy=settings.default_proxy_url,
+            )
         self.ig_client = Client(
-            proxy=default_proxy_url,
+            # proxy=settings.default_proxy_url,
+            proxy=self._state.proxy_url or settings.default_proxy_url,
         )
 
         if isinstance(input.actual_instance, SocialLoginInput):

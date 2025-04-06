@@ -18,9 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.state_type import StateType
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,13 +28,9 @@ class FlowState(BaseModel):
     FlowState
     """ # noqa: E501
     metadata: APIResourceMeta
-    version: Optional[StrictStr] = '1.0.0'
-    type: StateType
-    chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
-    topic: StrictStr
-    source: StrictStr
+    session_id: StrictStr = Field(alias="sessionId")
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "version", "type", "chatId", "topic", "source", "state"]
+    __properties: ClassVar[List[str]] = ["metadata", "sessionId", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,11 +92,7 @@ class FlowState(BaseModel):
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
-            "type": obj.get("type"),
-            "chatId": obj.get("chatId"),
-            "topic": obj.get("topic"),
-            "source": obj.get("source"),
+            "sessionId": obj.get("sessionId"),
             "state": obj.get("state")
         })
         return _obj
