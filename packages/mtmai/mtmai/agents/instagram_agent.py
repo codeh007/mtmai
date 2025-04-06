@@ -33,12 +33,15 @@ class InstagramAgent(RoutedAgent):
         )
         self.model_client = model_client
         self._model_context = BufferedChatCompletionContext(buffer_size=10)
-        self._state = InstagramAgentState()
+
         self._initialized = False
 
     async def _init(self) -> None:
         if self._initialized:
             return
+        self._state = InstagramAgentState(
+            proxy=default_proxy_url,
+        )
         self.ig_client = Client(
             proxy=default_proxy_url,
         )
@@ -49,11 +52,10 @@ class InstagramAgent(RoutedAgent):
         self, message: SocialLoginInput, ctx: MessageContext
     ) -> bool:
         await self._init()
-        verification_code = pyotp.TOTP(message.otp_key).now()
         login_result = self.ig_client.login(
             username=message.username,
             password=message.password,
-            verification_code=verification_code,
+            verification_code=pyotp.TOTP(message.otp_key).now(),
             relogin=False,
         )
         if not login_result:
