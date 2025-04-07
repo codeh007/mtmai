@@ -16,39 +16,19 @@ async def run_worker():
 
     worker = mtmapp.worker(settings.WORKER_NAME)
 
-    # from mtmai.flows.flow_tenant import FlowTenant
+    from flows.flow_social import FlowSocial
 
-    # worker.register_workflow(FlowTenant())
-    # logger.info("register tenant workflow")
-
-    # from mtmai.flows.flow_smolagent import FlowSmolagent
-
-    # worker.register_workflow(FlowSmolagent())
-    # logger.info("register smolagent workflow")
-
-    from mtmai.flows.flow_ag import FlowAg
-
-    worker.register_workflow(FlowAg())
-    logger.info("register ag workflow")
+    worker.register_workflow(FlowSocial())
+    logger.info("register social workflow")
 
     from mtmai.flows.flow_tooluse import FlowTooluse
 
     worker.register_workflow(FlowTooluse())
     logger.info("register tooluse workflow")
 
-    # from mtmai.flows.flow_resource import FlowResource
+    from mtmai.flows.flow_user import FlowUser
 
-    # worker.register_workflow(FlowResource())
-    # logger.info("register FlowResource")
-
-    # from mtmai.flows.flow_instagram import FlowInstagram
-
-    # worker.register_workflow(FlowInstagram())
-    # logger.info("register FlowInstagram")
-
-    # from mtmai.flows.flow_user import FlowUser
-
-    # worker.register_workflow(FlowUser())
-    # logger.info("register FlowUser")
+    worker.register_workflow(FlowUser())
+    logger.info("register user workflow")
 
     await worker.async_start()

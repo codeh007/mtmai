@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-
 from mtmai.hatchet import Hatchet
 from mtmai.worker.worker import Worker
 
@@ -9,7 +8,7 @@ from mtmai.worker.worker import Worker
 @pytest.mark.asyncio
 async def test_greeter_team(mtmapp: Hatchet, worker: Worker) -> None:
     assert mtmapp is not None
-    from mtmai.flows.flow_ag import FlowAg
+    from flows.flow_social import FlowAg
 
     worker.register_workflow(FlowAg())
     worker_task = asyncio.create_task(worker.async_start())

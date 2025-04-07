@@ -17,28 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AssistantMessage(BaseModel):
+class UserTeamConfig(BaseModel):
     """
-    AssistantMessage
+    UserTeamConfig
     """ # noqa: E501
-    type: StrictStr
-    content: AssistantMessageContent
-    source: Optional[StrictStr] = None
-    thought: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "content", "source", "thought"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['AssistantMessage']):
-            raise ValueError("must be one of enum values ('AssistantMessage')")
-        return value
+    max_turns: Optional[StrictInt] = 25
+    __properties: ClassVar[List[str]] = ["max_turns"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -58,7 +47,7 @@ class AssistantMessage(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AssistantMessage from a JSON string"""
+        """Create an instance of UserTeamConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,14 +68,11 @@ class AssistantMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of content
-        if self.content:
-            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AssistantMessage from a dict"""
+        """Create an instance of UserTeamConfig from a dict"""
         if obj is None:
             return None
 
@@ -96,13 +82,10 @@ class AssistantMessage(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AssistantMessage) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in UserTeamConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "content": AssistantMessageContent.from_dict(obj["content"]) if obj.get("content") is not None else None,
-            "source": obj.get("source"),
-            "thought": obj.get("thought")
+            "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
         })
         return _obj
 

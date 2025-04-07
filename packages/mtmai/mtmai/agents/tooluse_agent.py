@@ -20,7 +20,7 @@ from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 
 
 class ToolUseAgent(RoutedAgent):
-    """An agent that uses tools to perform tasks. It executes the tools
+    """(演示,可以删除)An agent that uses tools to perform tasks. It executes the tools
     by itself by sending the tool execution task to a ToolAgent."""
 
     def __init__(

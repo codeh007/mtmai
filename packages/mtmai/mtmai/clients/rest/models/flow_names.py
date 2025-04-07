@@ -31,13 +31,9 @@ class FlowNames(str, Enum):
     ASSISTANT = 'assistant'
     AG = 'ag'
     BROWSER = 'browser'
-    SMOLA = 'smola'
-    TEAM = 'team'
-    COM = 'com'
-    PLATFORM_ACCOUNT_LOGIN = 'platform_account_login'
-    PLATFORM_ACCOUNT_FOLLOW = 'platform_account_follow'
     RESOURCE = 'resource'
     INSTAGRAM = 'instagram'
+    SOCIAL = 'social'
     USER = 'user'
 
     @classmethod

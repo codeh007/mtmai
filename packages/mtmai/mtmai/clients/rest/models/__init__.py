@@ -311,6 +311,7 @@ from mtmai.clients.rest.models.user_change_password_request import UserChangePas
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
+from mtmai.clients.rest.models.user_team_config import UserTeamConfig
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmai.clients.rest.models.user_tenant_public import UserTenantPublic
 from mtmai.clients.rest.models.webhook_worker import WebhookWorker

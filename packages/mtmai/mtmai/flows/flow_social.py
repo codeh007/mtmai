@@ -2,24 +2,20 @@ from clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
-
-# from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.worker_app import mtmapp
 from teams.team_social import SocialTeam
 
 
 @mtmapp.workflow(
-    name=FlowNames.AG,
-    on_events=[f"{FlowNames.AG}"],
+    name=FlowNames.SOCIAL,
+    on_events=[FlowNames.SOCIAL],
 )
-class FlowAg:
+class FlowSocial:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
-        # tenant_client = TenantClient()
-        # team = await tenant_client.load_team(input.component_id)
         team = SocialTeam._from_config(SocialTeamConfig())
 
         # if isinstance(team, BaseGroupChat):
