@@ -108,6 +108,7 @@ class UserAgent(RoutedAgent):
     async def handle_user_input(
         self, message: ChatMessageInput, ctx: MessageContext
     ) -> None:
+        """用户跟聊天助手的对话"""
         logger.info(f"handle_agent_run_input: {message}")
         await self._model_context.add_message(
             UserMessage(content=message.content, source="user")
