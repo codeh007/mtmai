@@ -1,7 +1,6 @@
 from textwrap import dedent
 from typing import Any, Mapping
 
-import pyotp
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from autogen_core import MessageContext, RoutedAgent, message_handler
@@ -10,12 +9,13 @@ from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMess
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
+from clients.rest.models.flow_names import FlowNames
 from loguru import logger
 
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
-from mtmai.core.config import settings
+from mtmai.context.context import Context
 
 
 class UserAgent(RoutedAgent):
@@ -23,6 +23,7 @@ class UserAgent(RoutedAgent):
         self,
         description: str,
         session_id: str,
+        hatctx: Context,
         model_client: ChatCompletionClient | None = None,
         # social_agent_topic_type: str = None,
     ) -> None:
@@ -31,6 +32,7 @@ class UserAgent(RoutedAgent):
         self._session_id = session_id
         self.model_client = model_client
         self._state = UserAgentState()
+        self._hatctx = hatctx
 
     # @message_handler
     # async def handle_agent_run_input(
@@ -176,20 +178,26 @@ class UserAgent(RoutedAgent):
     async def on_social_login(
         self, message: SocialLoginInput, ctx: MessageContext
     ) -> bool:
-        login_result = self.ig_client.login(
-            username=message.username,
-            password=message.password,
-            verification_code=pyotp.TOTP(message.otp_key).now(),
-            relogin=False,
+        # login_result = self.ig_client.login(
+        #     username=message.username,
+        #     password=message.password,
+        #     verification_code=pyotp.TOTP(message.otp_key).now(),
+        #     relogin=False,
+        # )
+        # if not login_result:
+        #     raise Exception("ig 登录失败")
+        # self._state.ig_settings = self.ig_client.get_settings()
+        # self._state.proxy_url = settings.default_proxy_url
+        # self._state.username = message.username
+        # self._state.password = message.password
+        # self._state.otp_key = message.otp_key
+        # return login_result
+        child_flow_ref = await self._hatctx.aio.spawn_workflow(
+            FlowNames.SOCIAL,
+            input=message.model_dump(),
         )
-        if not login_result:
-            raise Exception("ig 登录失败")
-        self._state.ig_settings = self.ig_client.get_settings()
-        self._state.proxy_url = settings.default_proxy_url
-        self._state.username = message.username
-        self._state.password = message.password
-        self._state.otp_key = message.otp_key
-        return login_result
+        result = await child_flow_ref.result()
+        return result
 
     async def save_state(self) -> Mapping[str, Any]:
         self._state.model_context = await self._model_context.save_state()

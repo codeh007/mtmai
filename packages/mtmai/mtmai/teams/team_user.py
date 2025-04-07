@@ -52,7 +52,9 @@ class FlowUser:
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
         team = UserTeam._from_config(UserTeamConfig())
-        return await team.run(task=input, cancellation_token=cancellation_token)
+        return await team.run(
+            hatctx=hatctx, task=input, cancellation_token=cancellation_token
+        )
 
 
 class UserTeam(Team, Component[UserTeamConfig]):
@@ -72,6 +74,12 @@ class UserTeam(Team, Component[UserTeamConfig]):
         self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
             asyncio.Queue()
         )
+
+    # def weather_tool(self):
+    #     def get_weather(city: str) -> str:
+    #         return "sunny"
+
+    #     return FunctionTool(get_weather, description="Get the weather of a city.")
 
     async def _init(self, hatctx: Context):
         self.session_id = get_chat_session_id_ctx()
@@ -111,6 +119,7 @@ class UserTeam(Team, Component[UserTeamConfig]):
                 description="A user agent.",
                 session_id=self.session_id,
                 model_client=self.model_client,
+                hatctx=hatctx,
             ),
         )
         await self._runtime.add_subscription(

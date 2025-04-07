@@ -4,19 +4,31 @@ from typing import Any, AsyncGenerator, Mapping, Sequence
 from agents.instagram_agent import InstagramAgent
 from agents.tenant_agent import TenantAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import (AgentEvent, BaseAgentEvent,
-                                        BaseChatMessage, ChatMessage)
-from autogen_core import (AgentRuntime, CancellationToken, Component,
-                          SingleThreadedAgentRuntime, TopicId,
-                          TypeSubscription, try_get_known_serializers_for_type)
+from autogen_agentchat.messages import (
+    AgentEvent,
+    BaseAgentEvent,
+    BaseChatMessage,
+    ChatMessage,
+)
+from autogen_core import (
+    AgentRuntime,
+    CancellationToken,
+    Component,
+    SingleThreadedAgentRuntime,
+    TopicId,
+    TypeSubscription,
+    try_get_known_serializers_for_type,
+)
 from clients.rest.models.social_team_config import SocialTeamConfig
 from loguru import logger
 from typing_extensions import Self
 
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.agents.intervention_handlers import (NeedsUserInputHandler,
-                                                ToolInterventionHandler)
+from mtmai.agents.intervention_handlers import (
+    NeedsUserInputHandler,
+    ToolInterventionHandler,
+)
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_names import FlowNames
@@ -40,7 +52,9 @@ class FlowSocial:
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
         team = SocialTeam._from_config(SocialTeamConfig())
-        return await team.run(task=input, cancellation_token=cancellation_token)
+        return await team.run(
+            hatctx=hatctx, task=input, cancellation_token=cancellation_token
+        )
 
 
 class SocialTeam(Team, Component[SocialTeamConfig]):
@@ -96,7 +110,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             runtime=self._runtime,
             type=AgentTopicTypes.INSTAGRAM.value,
             factory=lambda: InstagramAgent(
-                description="An agent that interacts with instagram v2",
+                description="An agent that interacts with instagram",
                 model_client=self.model_client,
                 user_topic=AgentTopicTypes.USER.value,
             ),
@@ -132,7 +146,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         *,
         task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
         cancellation_token: CancellationToken | None = None,
-    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult | dict, None]:
         if not self._initialized:
             await self._init()
 
@@ -145,6 +159,9 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
 
         await self._runtime.stop_when_idle()
         await self.save_state_db()
+        return {
+            "success": True,
+        }
 
     async def reset(self) -> None:
         self._is_running = False
