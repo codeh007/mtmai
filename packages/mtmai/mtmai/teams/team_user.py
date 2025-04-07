@@ -73,7 +73,7 @@ class UserTeam(Team, Component[UserTeamConfig]):
             asyncio.Queue()
         )
 
-    async def _init(self):
+    async def _init(self, hatctx: Context):
         self.session_id = get_chat_session_id_ctx()
         self.tenant_client = TenantClient()
         self.model_client = get_default_model_client()
@@ -126,12 +126,13 @@ class UserTeam(Team, Component[UserTeamConfig]):
 
     async def run(
         self,
+        hatctx: Context,
         *,
         task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
         if not self._initialized:
-            await self._init()
+            await self._init(hatctx)
 
         if isinstance(task, MtAgEvent):
             await self._runtime.publish_message(

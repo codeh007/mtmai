@@ -6,6 +6,8 @@ from typing import Any, TypeVar, cast
 from warnings import warn
 
 from loguru import logger
+from pydantic import BaseModel, StrictStr
+
 from mtmai.clients.admin import (
     AdminClient,
     ChildTriggerWorkflowOptions,
@@ -13,7 +15,6 @@ from mtmai.clients.admin import (
     TriggerWorkflowOptions,
     WorkflowRunDict,
 )
-from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest_client import AsyncRestApi
 from mtmai.context.worker_context import WorkerContext
@@ -26,7 +27,6 @@ from mtmai.run_event_listener import RunEventListenerClient
 from mtmai.worker.dispatcher.dispatcher import Action, DispatcherClient
 from mtmai.workflow_listener import PooledWorkflowRunListener
 from mtmai.workflow_run import WorkflowRunRef
-from pydantic import BaseModel, StrictStr
 
 DEFAULT_WORKFLOW_POLLING_INTERVAL = 5  # Seconds
 
@@ -85,7 +85,7 @@ class ContextAioImpl(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
-        ag_client2: AgClient,
+        # ag_client2: AgClient,
         config: ClientConfig,
         namespace: str = "",
     ):
@@ -100,7 +100,7 @@ class ContextAioImpl(BaseContext):
         self.spawn_index = -1
         self.worker = worker
         self.ag = ag_client
-        self.ag_client2 = ag_client2
+        # self.ag_client2 = ag_client2
         self.config = config
 
     @tenacity_retry
@@ -172,7 +172,7 @@ class Context(BaseContext):
         workflow_run_event_listener: RunEventListenerClient,
         worker: WorkerContext,
         ag_client: ag_connecpy.AsyncAgServiceClient,
-        ag_client2: AgClient,
+        # ag_client2: AgClient,
         config: ClientConfig,
         namespace: str = "",
         validator_registry: dict[str, WorkflowValidator] = {},
@@ -191,7 +191,7 @@ class Context(BaseContext):
             worker=worker,
             namespace=namespace,
             ag_client=ag_client,
-            ag_client2=ag_client2,
+            # ag_client2=ag_client2,
             config=config,
         )
         self.ag = ag_client
@@ -199,7 +199,7 @@ class Context(BaseContext):
         self.event = event_client
         self.rest = rest_client
         self.dispatcher = dispatcher_client
-        self.ag_client2 = ag_client2
+        # self.ag_client2 = ag_client2
         self.config = config
         # Check the type of action.action_payload before attempting to load it as JSON
         if isinstance(action.action_payload, (str, bytes, bytearray)):
@@ -226,7 +226,7 @@ class Context(BaseContext):
         self.admin_client = admin_client
         self.event_client = event_client
         self.rest_client = rest_client
-        self.ag_client2 = ag_client2
+        # self.ag_client2 = ag_client2
         self.workflow_listener = workflow_listener
         self.workflow_run_event_listener = workflow_run_event_listener
         self.namespace = namespace

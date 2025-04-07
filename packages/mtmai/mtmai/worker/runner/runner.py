@@ -12,6 +12,9 @@ from typing import Any, Callable, Dict, cast
 
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
+from opentelemetry.trace import StatusCode
+from pydantic import BaseModel
+
 from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
@@ -44,8 +47,6 @@ from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
 from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
-from opentelemetry.trace import StatusCode
-from pydantic import BaseModel
 
 
 class WorkerStatus(Enum):
@@ -327,15 +328,12 @@ class Runner:
             event_client=self.client.event,
             rest_client=self.client.rest,
             ag_client=self.ag,
-            ag_client2=self.ag_client2,
             workflow_listener=self.client.workflow_listener,
             workflow_run_event_listener=self.workflow_run_event_listener,
             worker=self.worker_context,
             namespace=self.client.config.namespace,
             validator_registry=self.validator_registry,
             config=self.config,
-            # ag_runtime=self.ag_runtime,
-            # sys_team=self.sys_team,
         )
 
     async def handle_start_step_run(self, action: Action) -> None:

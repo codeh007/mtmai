@@ -4,31 +4,19 @@ from typing import Any, AsyncGenerator, Mapping, Sequence
 from agents.instagram_agent import InstagramAgent
 from agents.tenant_agent import TenantAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import (
-    AgentEvent,
-    BaseAgentEvent,
-    BaseChatMessage,
-    ChatMessage,
-)
-from autogen_core import (
-    AgentRuntime,
-    CancellationToken,
-    Component,
-    SingleThreadedAgentRuntime,
-    TopicId,
-    TypeSubscription,
-    try_get_known_serializers_for_type,
-)
+from autogen_agentchat.messages import (AgentEvent, BaseAgentEvent,
+                                        BaseChatMessage, ChatMessage)
+from autogen_core import (AgentRuntime, CancellationToken, Component,
+                          SingleThreadedAgentRuntime, TopicId,
+                          TypeSubscription, try_get_known_serializers_for_type)
 from clients.rest.models.social_team_config import SocialTeamConfig
 from loguru import logger
 from typing_extensions import Self
 
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.agents.intervention_handlers import (
-    NeedsUserInputHandler,
-    ToolInterventionHandler,
-)
+from mtmai.agents.intervention_handlers import (NeedsUserInputHandler,
+                                                ToolInterventionHandler)
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_names import FlowNames
@@ -119,23 +107,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 agent_type=instagram_agent_type.type,
             )
         )
-
-        # user_agent_type = await UserAgent.register(
-        #     runtime=self._runtime,
-        #     type=AgentTopicTypes.USER.value,
-        #     factory=lambda: UserAgent(
-        #         description="A user agent.",
-        #         session_id=self.session_id,
-        #         model_client=self.model_client,
-        #         social_agent_topic_type=instagram_agent_type.type,
-        #     ),
-        # )
-        # await self._runtime.add_subscription(
-        #     subscription=TypeSubscription(
-        #         topic_type=self.team_topic_id.type,
-        #         agent_type=user_agent_type.type,
-        #     )
-        # )
 
         tenant_agent_type = await TenantAgent.register(
             runtime=self._runtime,
