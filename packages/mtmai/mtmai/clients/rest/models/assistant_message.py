@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +28,7 @@ class AssistantMessage(BaseModel):
     AssistantMessage
     """ # noqa: E501
     type: StrictStr
-    content: StrictStr
+    content: AssistantMessageContent
     source: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["type", "content", "source"]
 
@@ -77,6 +78,9 @@ class AssistantMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
@@ -95,7 +99,7 @@ class AssistantMessage(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
-            "content": obj.get("content"),
+            "content": AssistantMessageContent.from_dict(obj["content"]) if obj.get("content") is not None else None,
             "source": obj.get("source")
         })
         return _obj

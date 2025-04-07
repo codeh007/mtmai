@@ -46,6 +46,7 @@ from mtmai.clients.rest.models.assigned_action import AssignedAction
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.assistant_message import AssistantMessage
+from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
