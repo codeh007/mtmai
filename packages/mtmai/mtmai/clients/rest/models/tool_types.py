@@ -26,7 +26,8 @@ class ToolTypes(str, Enum):
     """
     allowed enum values
     """
-    PYTHONFUNCTION = 'PythonFunction'
+    CODE_EXECUTOR = 'code_executor'
+    SOCIAL_LOGIN = 'social_login'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

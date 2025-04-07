@@ -1,3 +1,4 @@
+from textwrap import dedent
 from typing import Any, Mapping
 
 from autogen_agentchat.agents import AssistantAgent
@@ -5,11 +6,12 @@ from autogen_agentchat.messages import TextMessage
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMessage
-from autogen_core.tools import Tool
+from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 
 
@@ -87,15 +89,51 @@ class UserAgent(RoutedAgent):
     #         # Add message to model context.
     #         await self._model_context.add_message(user_message)
 
-    async def get_tools(self, ctx: MessageContext) -> list[Tool]:
-        # Create the tool.
+    def weather_tool(self):
+        def get_weather(city: str) -> str:
+            return "sunny"
+
+        return FunctionTool(get_weather, description="Get the weather of a city.")
+
+    def social_login_tool(self):
+        def social_login() -> str:
+            json1 = SocialLoginInput(
+                type="SocialLoginInput",
+                username="username1",
+                password="password1",
+                otp_key="",
+            ).model_dump_json()
+            # self._model_context.add_message(
+            #     AssistantMessage(
+            #         content=[
+            #             FunctionCall(
+            #                 id=generate_uuid(),
+            #                 name="social_login",
+            #                 arguments=json1,
+            #             )
+            #         ],
+            #         source="assistant",
+            #     )
+            # )
+            return json1
+
+        return FunctionTool(
+            social_login,
+            description="Social login tool. 登录第三方社交媒体, 例如: instagram, twitter, tiktok, etc.",
+        )
+
+    async def code_execution_tool(self):
         code_executor = DockerCommandLineCodeExecutor()
         await code_executor.start()
         code_execution_tool = PythonCodeExecutionTool(code_executor)
-        # Use the tool directly without an agent.
-        # code = "print('Hello, world!')"
-        # result = await code_execution_tool.run_json({"code": code}, ctx.cancellation_token)
-        return [code_execution_tool]
+        return code_execution_tool
+
+    async def get_tools(self, ctx: MessageContext) -> list[Tool]:
+        tools: list[Tool] = []
+        tools.append(await self.code_execution_tool())
+        tools.append(self.weather_tool())
+        tools.append(self.social_login_tool())
+        return tools
 
     @message_handler
     async def handle_user_input(
@@ -112,7 +150,12 @@ class UserAgent(RoutedAgent):
             model_client=self.model_client,
             model_context=self._model_context,
             tools=await self.get_tools(ctx),
-            system_message="你是实用助手,需要使用提供的工具解决用户提出的问题",
+            system_message=dedent(
+                "你是实用助手,需要使用提供的工具解决用户提出的问题"
+                "重要:"
+                "1. 当用户明确调用 登录工具时才调用 登录工具"
+                "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
+            ),
         )
 
         response = await assistant.on_messages(
