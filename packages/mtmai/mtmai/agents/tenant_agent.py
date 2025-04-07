@@ -44,7 +44,7 @@ class TenantAgent(RoutedAgent):
 
         session_id = get_chat_session_id_ctx()
         tid = get_tenant_id()
-        from mtmai.gallery.builder import create_default_gallery_builder
+        from mtlibs.autogen_utils.gallery_builder import create_default_gallery_builder
 
         gallery_builder = create_default_gallery_builder()
         gallery_id = generate_uuid()

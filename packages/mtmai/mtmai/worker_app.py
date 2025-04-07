@@ -31,6 +31,11 @@ async def run_worker():
     worker.register_workflow(FlowAg())
     logger.info("register ag workflow")
 
+    from mtmai.flows.flow_tooluse import FlowTooluse
+
+    worker.register_workflow(FlowTooluse())
+    logger.info("register tooluse workflow")
+
     # from mtmai.flows.flow_resource import FlowResource
 
     # worker.register_workflow(FlowResource())

@@ -12,6 +12,9 @@ from autogen_core import (
 )
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMessage
+from autogen_core.tools import Tool
+from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
+from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.agents._types import (
     BrowserOpenTask,
@@ -104,6 +107,16 @@ class UserAgent(RoutedAgent):
             # Add message to model context.
             await self._model_context.add_message(user_message)
 
+    async def get_tools(self, ctx: MessageContext) -> list[Tool]:
+        # Create the tool.
+        code_executor = DockerCommandLineCodeExecutor()
+        await code_executor.start()
+        code_execution_tool = PythonCodeExecutionTool(code_executor)
+        # Use the tool directly without an agent.
+        # code = "print('Hello, world!')"
+        # result = await code_execution_tool.run_json({"code": code}, ctx.cancellation_token)
+        return [code_execution_tool]
+
     @message_handler
     async def handle_user_input(
         self, message: ChatMessageInput, ctx: MessageContext
@@ -115,9 +128,11 @@ class UserAgent(RoutedAgent):
         )
 
         assistant = AssistantAgent(
-            "user_agent",
+            "assistant",
             model_client=self.model_client,
             model_context=self._model_context,
+            tools=await self.get_tools(ctx),
+            system_message="你是实用助手,需要使用提供的工具解决用户提出的问题",
         )
 
         response = await assistant.on_messages(

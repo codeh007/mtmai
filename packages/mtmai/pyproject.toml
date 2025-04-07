@@ -123,6 +123,8 @@ dependencies = [
     # "pycryptodome>=3.22.0",
     "pycryptodomex>=3.22.0",
     "pyotp>=2.9.0",
+    "docker>=7.1.0",
+    "asyncio-atexit>=1.0.1",
 ]
 
 

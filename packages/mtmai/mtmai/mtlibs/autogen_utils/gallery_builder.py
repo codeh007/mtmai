@@ -514,7 +514,7 @@ Read the above conversation. Then select the next role from {participants} to pl
     #     model_client=nvidia_model_llama3,
     #     # handoffs=["user"],
     # )
-    from mtmai.teams.social.social_team import SocialTeam
+    from teams.team_social import SocialTeam
 
     instagram_team = SocialTeam(
         # participants=[research_assistant],

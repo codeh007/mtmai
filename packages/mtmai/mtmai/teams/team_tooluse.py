@@ -1,9 +1,7 @@
 import asyncio
 from typing import Any, AsyncGenerator, Mapping, Sequence
 
-from agents._semantic_router_agent import SemanticRouterAgent
-from agents.instagram_agent import InstagramAgent
-from agents.tenant_agent import TenantAgent
+from agents.tooluse_agent import ToolUseAgent
 from autogen_agentchat.base import TaskResult, Team
 from autogen_agentchat.messages import (
     AgentEvent,
@@ -20,12 +18,16 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
+from autogen_core.models import SystemMessage
+from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
+from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.agents._types import agent_message_types
-from mtmai.agents.intervention_handlers import NeedsUserInputHandler
-from mtmai.agents.user_agent import UserAgent
+from mtmai.agents.intervention_handlers import (
+    NeedsUserInputHandler,
+    ToolInterventionHandler,
+)
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
@@ -37,18 +39,23 @@ from mtmai.mtlibs.autogen_utils.autogen_utils import (
     MockAgentRegistry,
     MockIntentClassifier,
 )
+from pydantic import BaseModel
 from typing_extensions import Self
 
 
-class SocialTeam(Team, Component[SocialTeamConfig]):
-    component_provider_override = "mtmai.teams.social.social_team.SocialTeam"
-    component_config_schema = SocialTeamConfig
+class TooluseTeamConfig(BaseModel):
+    pass
+
+
+class TooluseTeam(Team, Component[TooluseTeamConfig]):
+    component_provider_override = "mtmai.teams.toolteam.TooluseTeam"
+    component_config_schema = TooluseTeamConfig
 
     def __init__(
         self,
         *,
         runtime: AgentRuntime | None = None,
-        max_turns: int | None = None,
+        max_turns: int | None = 25,
     ) -> None:
         self._runtime = runtime
         self._initialized = False
@@ -65,8 +72,12 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
 
         if not self._runtime:
             needs_user_input_handler = NeedsUserInputHandler(self.session_id)
+            tool_intervention_handler = ToolInterventionHandler(self.session_id)
             self._runtime = SingleThreadedAgentRuntime(
-                intervention_handlers=[needs_user_input_handler],
+                intervention_handlers=[
+                    needs_user_input_handler,
+                    tool_intervention_handler,
+                ],
                 ignore_unhandled_exceptions=False,
             )
 
@@ -80,70 +91,34 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         # Create the Semantic Router
         agent_registry = MockAgentRegistry()
         intent_classifier = MockIntentClassifier()
-        router_agent_type = await SemanticRouterAgent.register(
-            runtime=self._runtime,
-            type=AgentTopicTypes.ROUTER.value,
-            factory=lambda: SemanticRouterAgent(
-                name="router",
-                agent_registry=agent_registry,
-                intent_classifier=intent_classifier,
-            ),
-        )
 
         self.model_client = get_default_model_client()
 
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=AgentTopicTypes.ROUTER.value,
-                agent_type=self.team_topic_id.type,
-            )
-        )
+        # tooluse agent
+        # Create the docker executor for the Python code execution tool.
+        docker_executor = DockerCommandLineCodeExecutor()
 
-        instagram_agent_type = await InstagramAgent.register(
+        # Create the Python code execution tool.
+        python_tool = PythonCodeExecutionTool(executor=docker_executor)
+        tool_agent_type = await ToolUseAgent.register(
             runtime=self._runtime,
-            type=AgentTopicTypes.INSTAGRAM.value,
-            factory=lambda: InstagramAgent(
-                description="An agent that interacts with instagram v2",
+            type="tooluse",
+            factory=lambda: ToolUseAgent(
+                description="Tool Use Agent",
+                system_messages=[
+                    SystemMessage(
+                        content="You are a helpful AI Assistant. Use your tools to solve problems."
+                    )
+                ],
                 model_client=self.model_client,
-                user_topic=AgentTopicTypes.USER.value,
+                tool_schema=[python_tool.schema],
+                tool_agent_type=tool_agent_type,
             ),
         )
         await self._runtime.add_subscription(
             subscription=TypeSubscription(
                 topic_type=self.team_topic_id.type,
-                agent_type=instagram_agent_type.type,
-            )
-        )
-
-        user_agent_type = await UserAgent.register(
-            runtime=self._runtime,
-            type=AgentTopicTypes.USER.value,
-            factory=lambda: UserAgent(
-                description="A user agent.",
-                session_id=self.session_id,
-                model_client=self.model_client,
-                social_agent_topic_type=instagram_agent_type.type,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=self.team_topic_id.type,
-                agent_type=user_agent_type.type,
-            )
-        )
-
-        tenant_agent_type = await TenantAgent.register(
-            runtime=self._runtime,
-            type=AgentTopicTypes.TENANT.value,
-            factory=lambda: TenantAgent(
-                description="A tenant agent.",
-                session_id=self.session_id,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=self.team_topic_id.type,
-                agent_type=tenant_agent_type.type,
+                agent_type=tool_agent_type.type,
             )
         )
 

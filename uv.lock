@@ -365,6 +365,15 @@ wheels = [
 ]
 
 [[package]]
+name = "asyncio-atexit"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/d3/dd2974be3f67c7ec96e0d6ab454429d0372cb7c7bffa3d0ac67a483cb801/asyncio-atexit-1.0.1.tar.gz", hash = "sha256:1d0c71544b8ee2c484d322844ee72c0875dde6f250c0ed5b6993592ab9f7d436", size = 4373 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/65/10/d6abaefa57a52646651fd0383c056280b0853c0106229ece6bb38cd14463/asyncio_atexit-1.0.1-py3-none-any.whl", hash = "sha256:d93d5f7d5633a534abd521ce2896ed0fbe8de170bb1e65ec871d1c20eac9d376", size = 3752 },
+]
+
+[[package]]
 name = "attrs"
 version = "25.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1176,6 +1185,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/263763cb2ba3816dd94b08ad3a33d5fdae34ecb856678773cc40a3605829/dnspython-2.7.0.tar.gz", hash = "sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1", size = 345197 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/68/1b/e0a87d256e40e8c888847551b20a017a6b98139178505dc7ffb96f04e954/dnspython-2.7.0-py3-none-any.whl", hash = "sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86", size = 313632 },
+]
+
+[[package]]
+name = "docker"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774 },
 ]
 
 [[package]]
@@ -2895,6 +2918,7 @@ dependencies = [
     { name = "alembic" },
     { name = "anthropic" },
     { name = "async-timeout" },
+    { name = "asyncio-atexit" },
     { name = "autogen-agentchat" },
     { name = "autogen-core" },
     { name = "autogen-ext" },
@@ -2904,6 +2928,7 @@ dependencies = [
     { name = "browser-use" },
     { name = "cel-python" },
     { name = "connecpy" },
+    { name = "docker" },
     { name = "email-validator" },
     { name = "exa-py" },
     { name = "fastapi" },
@@ -3009,6 +3034,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.14.1" },
     { name = "anthropic", specifier = ">=0.49.0" },
     { name = "async-timeout", specifier = ">=4.0.3" },
+    { name = "asyncio-atexit", specifier = ">=1.0.1" },
     { name = "autogen-agentchat", directory = "../autogen/python/packages/autogen-agentchat" },
     { name = "autogen-core", directory = "../autogen/python/packages/autogen-core" },
     { name = "autogen-ext", directory = "../autogen/python/packages/autogen-ext" },
@@ -3018,6 +3044,7 @@ requires-dist = [
     { name = "browser-use", specifier = ">=0.1.40" },
     { name = "cel-python", specifier = ">=0.1.5" },
     { name = "connecpy", specifier = ">=1.4.2" },
+    { name = "docker", specifier = ">=7.1.0" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "exa-py", specifier = ">=1.7.2" },
     { name = "fastapi", specifier = ">=0.115.7" },

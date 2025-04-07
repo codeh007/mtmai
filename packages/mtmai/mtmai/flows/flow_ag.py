@@ -6,7 +6,7 @@ from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 # from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.worker_app import mtmapp
-from teams.social.social_team import SocialTeam
+from teams.team_social import SocialTeam
 
 
 @mtmapp.workflow(

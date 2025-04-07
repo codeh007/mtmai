@@ -8,8 +8,10 @@ from autogen_core import (
     AgentId,
     DefaultInterventionHandler,
     DropMessage,
+    FunctionCall,
     MessageContext,
 )
+from autogen_core.tool_agent import ToolException
 from loguru import logger
 from mtmai.agents._types import GetSlowUserMessage
 
@@ -65,3 +67,21 @@ class NeedsUserInputHandler(DefaultInterventionHandler):
             pass
         else:
             await self.tenant_client.emit(message)
+
+
+class ToolInterventionHandler(DefaultInterventionHandler):
+    async def on_send(
+        self, message: Any, *, message_context: MessageContext, recipient: AgentId
+    ) -> Any | type[DropMessage]:
+        if isinstance(message, FunctionCall):
+            # Request user prompt for tool execution.
+            user_input = input(
+                f"Function call: {message.name}\nArguments: {message.arguments}\nDo you want to execute the tool? (y/n): "
+            )
+            if user_input.strip().lower() != "y":
+                raise ToolException(
+                    content="User denied tool execution.",
+                    call_id=message.id,
+                    name=message.name,
+                )
+        return message
