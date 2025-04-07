@@ -5,7 +5,13 @@ import re
 from typing import Any, List, Mapping
 
 import pyotp
-from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
+from autogen_core import (
+    CancellationToken,
+    DefaultTopicId,
+    MessageContext,
+    RoutedAgent,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
@@ -59,6 +65,12 @@ class InstagramAgent(RoutedAgent):
         self._state.username = message.username
         self._state.password = message.password
         self._state.otp_key = message.otp_key
+
+        # 发布结果
+        await self._runtime.publish_message(
+            message=login_result,
+            topic_id=DefaultTopicId(type="response", source="instagram"),
+        )
         return login_result
 
     @message_handler
@@ -399,6 +411,12 @@ class InstagramAgent(RoutedAgent):
         self._state.otp_key = msg.otp_key
 
         return {"state": "social_login"}
+
+    async def on_social_add_followers(
+        self, hatctx: Context, msg: SocialAddFollowersInput
+    ):
+        logger.info(f"input: {msg}")
+        return {"state": "social_add_followers"}
 
     async def on_social_add_followers(
         self, hatctx: Context, msg: SocialAddFollowersInput

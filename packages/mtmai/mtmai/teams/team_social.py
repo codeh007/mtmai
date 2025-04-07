@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, AsyncGenerator, Mapping, Sequence
+from typing import Any, AsyncGenerator, Mapping
 
 from agents.instagram_agent import InstagramAgent
 from agents.tenant_agent import TenantAgent
@@ -13,13 +13,16 @@ from autogen_agentchat.messages import (
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
+    ClosureAgent,
+    ClosureContext,
     Component,
+    DefaultSubscription,
+    MessageContext,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from clients.rest.models.social_team_config import SocialTeamConfig
 from loguru import logger
 from typing_extensions import Self
 
@@ -31,9 +34,12 @@ from mtmai.agents.intervention_handlers import (
 )
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
+from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
@@ -74,6 +80,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
             asyncio.Queue()
         )
+        self.result_queue = asyncio.Queue[FlowResult]()
 
     async def _init(self):
         self.session_id = get_chat_session_id_ctx()
@@ -104,6 +111,46 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 topic_type=AgentTopicTypes.ROUTER.value,
                 agent_type=self.team_topic_id.type,
             )
+        )
+
+        async def output_result(
+            closure_ctx: ClosureContext,
+            message: FlowHandoffResult | FlowResult,
+            ctx: MessageContext,
+        ) -> None:
+            logger.info(f"output_result: {message}")
+            if isinstance(message, FlowResult):
+                await self.result_queue.put(message)
+            # if isinstance(message, WorkerAgentMessage):
+            #     print(f"{message.source} Agent: {message.content}")
+            #     new_message = input("User response: ")
+            #     await closure_ctx.publish_message(
+            #         UserProxyMessage(content=new_message, source="user"),
+            #         topic_id=DefaultTopicId(type=message.source, source="user"),
+            #     )
+            # else:
+            #     print(f"{message.source} Agent: {message.content}")
+            #     print("Conversation ended")
+            #     new_message = input("Enter a new conversation start: ")
+            #     await closure_ctx.publish_message(
+            #         UserProxyMessage(content=new_message, source="user"), topic_id=DefaultTopicId(type="default", source="user")
+            #     )
+
+        await ClosureAgent.register_closure(
+            self._runtime,
+            "closure_agent",
+            output_result,
+            subscriptions=lambda: [
+                DefaultSubscription(topic_type="response", agent_type="closure_agent"),
+                # TypeSubscription(
+                #     topic_type=self.team_topic_id.type,
+                #     agent_type=AgentTopicTypes.TENANT.value,
+                # ),
+                # TypeSubscription(
+                #     topic_type=self.team_topic_id.type,
+                #     agent_type=AgentTopicTypes.INSTAGRAM.value,
+                # ),
+            ],
         )
 
         instagram_agent_type = await InstagramAgent.register(
@@ -144,24 +191,25 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self,
         hatctx: Context,
         *,
-        task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
+        task: MtAgEvent | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult | dict, None]:
         if not self._initialized:
             await self._init()
 
-        if isinstance(task, MtAgEvent):
-            await self._runtime.publish_message(
-                message=task.actual_instance,
-                topic_id=self.team_topic_id,
-                cancellation_token=cancellation_token,
-            )
+        # if isinstance(task, MtAgEvent):
+        await self._runtime.publish_message(
+            message=task.actual_instance,
+            topic_id=self.team_topic_id,
+            cancellation_token=cancellation_token,
+        )
 
         await self._runtime.stop_when_idle()
+
         await self.save_state_db()
-        return {
-            "success": True,
-        }
+        final_result = await self.result_queue.get()
+
+        return final_result
 
     async def reset(self) -> None:
         self._is_running = False

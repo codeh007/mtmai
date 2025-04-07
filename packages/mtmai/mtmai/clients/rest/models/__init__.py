@@ -114,7 +114,9 @@ from mtmai.clients.rest.models.event_types import EventTypes
 from mtmai.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
 from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmai.clients.rest.models.flow_error import FlowError
+from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_state import FlowState
 from mtmai.clients.rest.models.flow_state_list import FlowStateList
 from mtmai.clients.rest.models.flow_state_properties import FlowStateProperties
