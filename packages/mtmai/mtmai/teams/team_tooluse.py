@@ -44,7 +44,6 @@ from mtmai.mtlibs.autogen_utils.autogen_utils import (
     MockAgentRegistry,
     MockIntentClassifier,
 )
-from mtmai.teams.team_tooluse import TooluseTeam, TooluseTeamConfig
 from mtmai.worker_app import mtmapp
 
 

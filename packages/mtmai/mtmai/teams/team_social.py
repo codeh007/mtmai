@@ -21,7 +21,6 @@ from autogen_core import (
 )
 from clients.rest.models.social_team_config import SocialTeamConfig
 from loguru import logger
-from teams.team_social import SocialTeam
 from typing_extensions import Self
 
 from mtmai.agents._types import agent_message_types
@@ -35,7 +34,6 @@ from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
-from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context

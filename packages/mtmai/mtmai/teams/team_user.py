@@ -39,7 +39,6 @@ from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.teams.team_user import UserTeam
 from mtmai.worker_app import mtmapp
 
 
