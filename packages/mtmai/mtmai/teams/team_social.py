@@ -19,22 +19,42 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
+from clients.rest.models.social_team_config import SocialTeamConfig
 from loguru import logger
+from teams.team_social import SocialTeam
+from typing_extensions import Self
+
 from mtmai.agents._types import agent_message_types
+from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
     NeedsUserInputHandler,
     ToolInterventionHandler,
 )
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from typing_extensions import Self
+from mtmai.worker_app import mtmapp
+
+
+@mtmapp.workflow(
+    name=FlowNames.SOCIAL,
+    on_events=[FlowNames.SOCIAL],
+)
+class FlowSocial:
+    @mtmapp.step(timeout="60m")
+    async def step0(self, hatctx: Context):
+        input = MtAgEvent.from_dict(hatctx.input)
+        cancellation_token = MtCancelToken()
+        team = SocialTeam._from_config(SocialTeamConfig())
+        return await team.run(task=input, cancellation_token=cancellation_token)
 
 
 class SocialTeam(Team, Component[SocialTeamConfig]):
@@ -139,6 +159,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
 
     async def run(
         self,
+        hatctx: Context,
         *,
         task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
         cancellation_token: CancellationToken | None = None,

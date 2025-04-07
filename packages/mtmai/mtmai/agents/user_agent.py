@@ -10,6 +10,7 @@ from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
+
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
@@ -168,6 +169,25 @@ class UserAgent(RoutedAgent):
                 source=response.chat_message.source,
             )
         )
+
+    @message_handler
+    async def on_social_login(
+        self, message: SocialLoginInput, ctx: MessageContext
+    ) -> bool:
+        login_result = self.ig_client.login(
+            username=message.username,
+            password=message.password,
+            verification_code=pyotp.TOTP(message.otp_key).now(),
+            relogin=False,
+        )
+        if not login_result:
+            raise Exception("ig 登录失败")
+        self._state.ig_settings = self.ig_client.get_settings()
+        self._state.proxy_url = settings.default_proxy_url
+        self._state.username = message.username
+        self._state.password = message.password
+        self._state.otp_key = message.otp_key
+        return login_result
 
     async def save_state(self) -> Mapping[str, Any]:
         self._state.model_context = await self._model_context.save_state()

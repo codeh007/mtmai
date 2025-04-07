@@ -17,8 +17,12 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
+from clients.rest.models.flow_names import FlowNames
 from loguru import logger
+from typing_extensions import Self
+
 from mtmai.agents._types import agent_message_types
+from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
     NeedsUserInputHandler,
     ToolInterventionHandler,
@@ -32,9 +36,24 @@ from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.user_team_config import UserTeamConfig
 from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from typing_extensions import Self
+from mtmai.teams.team_user import UserTeam
+from mtmai.worker_app import mtmapp
+
+
+@mtmapp.workflow(
+    name=FlowNames.USER,
+    on_events=[FlowNames.USER],
+)
+class FlowUser:
+    @mtmapp.step(timeout="60m")
+    async def step0(self, hatctx: Context):
+        input = MtAgEvent.from_dict(hatctx.input)
+        cancellation_token = MtCancelToken()
+        team = UserTeam._from_config(UserTeamConfig())
+        return await team.run(task=input, cancellation_token=cancellation_token)
 
 
 class UserTeam(Team, Component[UserTeamConfig]):

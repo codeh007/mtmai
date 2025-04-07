@@ -2,15 +2,14 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, AsyncGenerator, List, Mapping, Sequence
+from typing import Any, List, Mapping
 
 import pyotp
-from autogen_agentchat.base import Response
-from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
 from autogen_core import CancellationToken, MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -70,11 +69,11 @@ class InstagramAgent(RoutedAgent):
             raise Exception("ig 未登录")
         logger.info(f"(instagram agent )SocialAddFollowersInput  with {ctx.sender}")
 
-    async def on_messages_stream(
-        self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
-    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
-        async for message in super().on_messages_stream(messages, cancellation_token):
-            yield message
+    # async def on_messages_stream(
+    #     self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
+    # ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+    #     async for message in super().on_messages_stream(messages, cancellation_token):
+    #         yield message
 
     async def example(self):
         # IG_CREDENTIAL_PATH = "./ig_settings.json"

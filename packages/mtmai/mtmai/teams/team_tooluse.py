@@ -22,7 +22,11 @@ from autogen_core.models import SystemMessage
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
+from pydantic import BaseModel
+from typing_extensions import Self
+
 from mtmai.agents._types import agent_message_types
+from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
     NeedsUserInputHandler,
     ToolInterventionHandler,
@@ -33,14 +37,28 @@ from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.mtlibs.autogen_utils.autogen_utils import (
     MockAgentRegistry,
     MockIntentClassifier,
 )
-from pydantic import BaseModel
-from typing_extensions import Self
+from mtmai.teams.team_tooluse import TooluseTeam, TooluseTeamConfig
+from mtmai.worker_app import mtmapp
+
+
+@mtmapp.workflow(
+    name="tooluse",
+    on_events=["tooluse"],
+)
+class FlowTooluse:
+    @mtmapp.step(timeout="60m")
+    async def step0(self, hatctx: Context):
+        input = MtAgEvent.from_dict(hatctx.input)
+        cancellation_token = MtCancelToken()
+        team = TooluseTeam._from_config(TooluseTeamConfig())
+        return await team.run(task=input, cancellation_token=cancellation_token)
 
 
 class TooluseTeamConfig(BaseModel):
