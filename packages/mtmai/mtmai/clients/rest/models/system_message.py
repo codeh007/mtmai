@@ -17,20 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class FunctionExecutionResult(BaseModel):
+class SystemMessage(BaseModel):
     """
-    FunctionExecutionResult
+    SystemMessage
     """ # noqa: E501
+    type: StrictStr
     content: StrictStr
-    name: StrictStr
-    call_id: StrictStr
-    is_error: Optional[StrictBool] = None
-    __properties: ClassVar[List[str]] = ["content", "name", "call_id", "is_error"]
+    __properties: ClassVar[List[str]] = ["type", "content"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['SystemMessage']):
+            raise ValueError("must be one of enum values ('SystemMessage')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +55,7 @@ class FunctionExecutionResult(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of FunctionExecutionResult from a JSON string"""
+        """Create an instance of SystemMessage from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,7 +80,7 @@ class FunctionExecutionResult(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of FunctionExecutionResult from a dict"""
+        """Create an instance of SystemMessage from a dict"""
         if obj is None:
             return None
 
@@ -85,13 +90,11 @@ class FunctionExecutionResult(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in FunctionExecutionResult) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SystemMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "content": obj.get("content"),
-            "name": obj.get("name"),
-            "call_id": obj.get("call_id"),
-            "is_error": obj.get("is_error")
+            "type": obj.get("type"),
+            "content": obj.get("content")
         })
         return _obj
 
