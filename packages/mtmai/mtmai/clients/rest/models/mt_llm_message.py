@@ -17,30 +17,30 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
+from mtmai.clients.rest.models.assistant_message import AssistantMessage
 from mtmai.clients.rest.models.function_execution_result_message import FunctionExecutionResultMessage
-from mtmai.clients.rest.models.mt_assistant_message import MtAssistantMessage
-from mtmai.clients.rest.models.mt_system_message import MtSystemMessage
-from mtmai.clients.rest.models.mt_user_message import MtUserMessage
+from mtmai.clients.rest.models.system_message import SystemMessage
+from mtmai.clients.rest.models.user_message import UserMessage
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTLLMMESSAGE_ONE_OF_SCHEMAS = ["FunctionExecutionResultMessage", "MtAssistantMessage", "MtSystemMessage", "MtUserMessage"]
+MTLLMMESSAGE_ONE_OF_SCHEMAS = ["AssistantMessage", "FunctionExecutionResultMessage", "SystemMessage", "UserMessage"]
 
 class MtLlmMessage(BaseModel):
     """
     MtLlmMessage
     """
-    # data type: MtUserMessage
-    oneof_schema_1_validator: Optional[MtUserMessage] = None
-    # data type: MtSystemMessage
-    oneof_schema_2_validator: Optional[MtSystemMessage] = None
-    # data type: MtAssistantMessage
-    oneof_schema_3_validator: Optional[MtAssistantMessage] = None
+    # data type: UserMessage
+    oneof_schema_1_validator: Optional[UserMessage] = None
+    # data type: SystemMessage
+    oneof_schema_2_validator: Optional[SystemMessage] = None
+    # data type: AssistantMessage
+    oneof_schema_3_validator: Optional[AssistantMessage] = None
     # data type: FunctionExecutionResultMessage
     oneof_schema_4_validator: Optional[FunctionExecutionResultMessage] = None
-    actual_instance: Optional[Union[FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage]] = None
-    one_of_schemas: Set[str] = { "FunctionExecutionResultMessage", "MtAssistantMessage", "MtSystemMessage", "MtUserMessage" }
+    actual_instance: Optional[Union[AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage]] = None
+    one_of_schemas: Set[str] = { "AssistantMessage", "FunctionExecutionResultMessage", "SystemMessage", "UserMessage" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -66,19 +66,19 @@ class MtLlmMessage(BaseModel):
         instance = MtLlmMessage.model_construct()
         error_messages = []
         match = 0
-        # validate data type: MtUserMessage
-        if not isinstance(v, MtUserMessage):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MtUserMessage`")
+        # validate data type: UserMessage
+        if not isinstance(v, UserMessage):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `UserMessage`")
         else:
             match += 1
-        # validate data type: MtSystemMessage
-        if not isinstance(v, MtSystemMessage):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MtSystemMessage`")
+        # validate data type: SystemMessage
+        if not isinstance(v, SystemMessage):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SystemMessage`")
         else:
             match += 1
-        # validate data type: MtAssistantMessage
-        if not isinstance(v, MtAssistantMessage):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MtAssistantMessage`")
+        # validate data type: AssistantMessage
+        if not isinstance(v, AssistantMessage):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantMessage`")
         else:
             match += 1
         # validate data type: FunctionExecutionResultMessage
@@ -88,10 +88,10 @@ class MtLlmMessage(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtLlmMessage with oneOf schemas: FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtLlmMessage with oneOf schemas: AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtLlmMessage with oneOf schemas: FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtLlmMessage with oneOf schemas: AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -111,41 +111,41 @@ class MtLlmMessage(BaseModel):
         if not _data_type:
             raise ValueError("Failed to lookup data type from the field `type` in the input.")
 
+        # check if data type is `AssistantMessage`
+        if _data_type == "AssistantMessage":
+            instance.actual_instance = AssistantMessage.from_json(json_str)
+            return instance
+
         # check if data type is `FunctionExecutionResultMessage`
         if _data_type == "FunctionExecutionResultMessage":
             instance.actual_instance = FunctionExecutionResultMessage.from_json(json_str)
             return instance
 
-        # check if data type is `MtAssistantMessage`
-        if _data_type == "MtAssistantMessage":
-            instance.actual_instance = MtAssistantMessage.from_json(json_str)
+        # check if data type is `SystemMessage`
+        if _data_type == "SystemMessage":
+            instance.actual_instance = SystemMessage.from_json(json_str)
             return instance
 
-        # check if data type is `MtSystemMessage`
-        if _data_type == "MtSystemMessage":
-            instance.actual_instance = MtSystemMessage.from_json(json_str)
+        # check if data type is `UserMessage`
+        if _data_type == "UserMessage":
+            instance.actual_instance = UserMessage.from_json(json_str)
             return instance
 
-        # check if data type is `MtUserMessage`
-        if _data_type == "MtUserMessage":
-            instance.actual_instance = MtUserMessage.from_json(json_str)
-            return instance
-
-        # deserialize data into MtUserMessage
+        # deserialize data into UserMessage
         try:
-            instance.actual_instance = MtUserMessage.from_json(json_str)
+            instance.actual_instance = UserMessage.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into MtSystemMessage
+        # deserialize data into SystemMessage
         try:
-            instance.actual_instance = MtSystemMessage.from_json(json_str)
+            instance.actual_instance = SystemMessage.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into MtAssistantMessage
+        # deserialize data into AssistantMessage
         try:
-            instance.actual_instance = MtAssistantMessage.from_json(json_str)
+            instance.actual_instance = AssistantMessage.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -158,10 +158,10 @@ class MtLlmMessage(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtLlmMessage with oneOf schemas: FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtLlmMessage with oneOf schemas: AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtLlmMessage with oneOf schemas: FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtLlmMessage with oneOf schemas: AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +175,7 @@ class MtLlmMessage(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], FunctionExecutionResultMessage, MtAssistantMessage, MtSystemMessage, MtUserMessage]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantMessage, FunctionExecutionResultMessage, SystemMessage, UserMessage]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

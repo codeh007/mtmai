@@ -24,21 +24,23 @@ from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
-from mtlibs.id import generate_uuid
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.assistant_message import (
+    AssistantMessage as MtAssistantMessage,
+)
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
 from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
-from mtmai.clients.rest.models.mt_assistant_message import MtAssistantMessage
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
+from mtmai.mtlibs.id import generate_uuid
 
 
 class UserAgent(RoutedAgent):
