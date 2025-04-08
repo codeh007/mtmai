@@ -82,16 +82,17 @@ class UserTeam(Team, Component[UserTeamConfig]):
         )
         self._output_queue = asyncio.Queue[FlowResult]()
 
-    async def output_result(
+    def output_result(
         self,
         closure_ctx: ClosureContext,
         message: FlowHandoffResult | FlowResult,
         ctx: MessageContext,
     ) -> None:
         if isinstance(message, FlowResult):
-            await self._output_queue.put(message)
+            # self._output_queue.get_nowait()()
+            self._output_queue.put_nowait(message)
         else:
-            await self._output_queue.put(message)
+            self._output_queue.put_nowait(message)
 
     async def _init(self, hatctx: Context):
         self.session_id = get_chat_session_id_ctx()
@@ -142,10 +143,21 @@ class UserTeam(Team, Component[UserTeamConfig]):
         )
 
         # closure agent
+        async def output_result(
+            closure_ctx: ClosureContext,
+            message: FlowHandoffResult | FlowResult,
+            ctx: MessageContext,
+        ) -> None:
+            if isinstance(message, FlowResult):
+                # self._output_queue.get_nowait()()
+                await self._output_queue.put(message)
+            else:
+                await self._output_queue.put(message)
+
         await ClosureAgent.register_closure(
-            self._runtime,
-            AgentTypes.CLOSURE.value,
-            self.output_result,
+            runtime=self._runtime,
+            type=AgentTypes.CLOSURE.value,
+            closure=output_result,
             subscriptions=lambda: [
                 DefaultSubscription(
                     topic_type=AgentTopicTypes.RESPONSE.value,

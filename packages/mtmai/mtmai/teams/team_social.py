@@ -73,17 +73,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self._max_turns = max_turns
         self._output_queue = asyncio.Queue[FlowResult]()
 
-    async def output_result(
-        self,
-        closure_ctx: ClosureContext,
-        message: FlowHandoffResult | FlowResult,
-        ctx: MessageContext,
-    ) -> None:
-        if isinstance(message, FlowResult):
-            await self._output_queue.put(message)
-        else:
-            await self._output_queue.put(message)
-
     async def _init(self):
         self.session_id = get_chat_session_id_ctx()
         self.tenant_client = TenantClient()
@@ -115,16 +104,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             )
         )
 
-        # async def output_result(
-        #     closure_ctx: ClosureContext,
-        #     message: FlowHandoffResult | FlowResult,
-        #     ctx: MessageContext,
-        # ) -> None:
-        #     if isinstance(message, FlowResult):
-        #         await self.result_queue.put(message)
-        #     else:
-        #         await self.result_queue.put(message)
-
         instagram_agent_type = await InstagramAgent.register(
             runtime=self._runtime,
             type=AgentTopicTypes.INSTAGRAM.value,
@@ -155,20 +134,27 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 agent_type=tenant_agent_type.type,
             )
         )
+
         # closure agent
+        async def output_result(
+            closure_ctx: ClosureContext,
+            message: FlowHandoffResult | FlowResult,
+            ctx: MessageContext,
+        ) -> None:
+            if isinstance(message, FlowResult):
+                await self._output_queue.put(message)
+            else:
+                await self._output_queue.put(message)
+
         await ClosureAgent.register_closure(
             self._runtime,
             AgentTypes.CLOSURE.value,
-            self.output_result,
+            output_result,
             subscriptions=lambda: [
                 DefaultSubscription(
                     topic_type=AgentTopicTypes.RESPONSE.value,
                     agent_type=AgentTypes.CLOSURE.value,
                 ),
-                # TypeSubscription(
-                #     topic_type=self.team_topic_id.type,
-                #     agent_type=AgentTopicTypes.TENANT.value,
-                # ),
             ],
         )
         self._initialized = True
