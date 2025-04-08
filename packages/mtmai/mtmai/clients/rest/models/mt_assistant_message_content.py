@@ -17,33 +17,29 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
-from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
+from mtmai.clients.rest.models.function_call import FunctionCall
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-FLOWRESULT_ONE_OF_SCHEMAS = ["FlowHandoffResult", "FlowLoginResult"]
+MTASSISTANTMESSAGECONTENT_ONE_OF_SCHEMAS = ["List[FunctionCall]", "str"]
 
-class FlowResult(BaseModel):
+class MtAssistantMessageContent(BaseModel):
     """
-    FlowResult
+    MtAssistantMessageContent
     """
-    # data type: FlowLoginResult
-    oneof_schema_1_validator: Optional[FlowLoginResult] = None
-    # data type: FlowHandoffResult
-    oneof_schema_2_validator: Optional[FlowHandoffResult] = None
-    actual_instance: Optional[Union[FlowHandoffResult, FlowLoginResult]] = None
-    one_of_schemas: Set[str] = { "FlowHandoffResult", "FlowLoginResult" }
+    # data type: str
+    oneof_schema_1_validator: Optional[StrictStr] = None
+    # data type: List[FunctionCall]
+    oneof_schema_2_validator: Optional[List[FunctionCall]] = None
+    actual_instance: Optional[Union[List[FunctionCall], str]] = None
+    one_of_schemas: Set[str] = { "List[FunctionCall]", "str" }
 
     model_config = ConfigDict(
         validate_assignment=True,
         protected_namespaces=(),
     )
 
-
-    discriminator_value_class_map: Dict[str, str] = {
-    }
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -57,25 +53,27 @@ class FlowResult(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = FlowResult.model_construct()
+        instance = MtAssistantMessageContent.model_construct()
         error_messages = []
         match = 0
-        # validate data type: FlowLoginResult
-        if not isinstance(v, FlowLoginResult):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowLoginResult`")
-        else:
+        # validate data type: str
+        try:
+            instance.oneof_schema_1_validator = v
             match += 1
-        # validate data type: FlowHandoffResult
-        if not isinstance(v, FlowHandoffResult):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `FlowHandoffResult`")
-        else:
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # validate data type: List[FunctionCall]
+        try:
+            instance.oneof_schema_2_validator = v
             match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in FlowResult with oneOf schemas: FlowHandoffResult, FlowLoginResult. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtAssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in FlowResult with oneOf schemas: FlowHandoffResult, FlowLoginResult. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtAssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -90,40 +88,31 @@ class FlowResult(BaseModel):
         error_messages = []
         match = 0
 
-        # use oneOf discriminator to lookup the data type
-        _data_type = json.loads(json_str).get("type")
-        if not _data_type:
-            raise ValueError("Failed to lookup data type from the field `type` in the input.")
-
-        # check if data type is `FlowHandoffResult`
-        if _data_type == "FlowHandoffResult":
-            instance.actual_instance = FlowHandoffResult.from_json(json_str)
-            return instance
-
-        # check if data type is `FlowLoginResult`
-        if _data_type == "FlowLoginResult":
-            instance.actual_instance = FlowLoginResult.from_json(json_str)
-            return instance
-
-        # deserialize data into FlowLoginResult
+        # deserialize data into str
         try:
-            instance.actual_instance = FlowLoginResult.from_json(json_str)
+            # validation
+            instance.oneof_schema_1_validator = json.loads(json_str)
+            # assign value to actual_instance
+            instance.actual_instance = instance.oneof_schema_1_validator
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into FlowHandoffResult
+        # deserialize data into List[FunctionCall]
         try:
-            instance.actual_instance = FlowHandoffResult.from_json(json_str)
+            # validation
+            instance.oneof_schema_2_validator = json.loads(json_str)
+            # assign value to actual_instance
+            instance.actual_instance = instance.oneof_schema_2_validator
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into FlowResult with oneOf schemas: FlowHandoffResult, FlowLoginResult. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtAssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into FlowResult with oneOf schemas: FlowHandoffResult, FlowLoginResult. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtAssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -137,7 +126,7 @@ class FlowResult(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], FlowHandoffResult, FlowLoginResult]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], List[FunctionCall], str]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

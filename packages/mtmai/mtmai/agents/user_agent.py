@@ -9,11 +9,11 @@ from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMess
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.agent_topic_types import AgentTopicTypes
 from loguru import logger
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
-from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.context.context import Context
@@ -178,7 +178,7 @@ class UserAgent(RoutedAgent):
     @message_handler
     async def on_social_login(
         self, message: SocialLoginInput, ctx: MessageContext
-    ) -> FlowResult:
+    ) -> AssistantMessage:
         """
         TODO: 提供两个选项
         1. 登录新账号
@@ -189,14 +189,19 @@ class UserAgent(RoutedAgent):
             input=message.model_dump(),
         )
         result = await child_flow_ref.result()
-        flow_result = FlowResult.from_dict(result.get("step0"))
+        flow_result = FlowLoginResult.from_dict(result.get("step0"))
         await self.publish_message(
             flow_result,
             topic_id=DefaultTopicId(
                 type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
             ),
         )
-        return flow_result
+        response = AssistantMessage(
+            content=f"成功登录 instagram, id: {flow_result.account_id}",
+            source=flow_result.source,
+        )
+        self._model_context.add_message(response)
+        return response
 
     async def save_state(self) -> Mapping[str, Any]:
         self._state.model_context = await self._model_context.save_state()

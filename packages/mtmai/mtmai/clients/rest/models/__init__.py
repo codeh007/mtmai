@@ -44,8 +44,6 @@ from mtmai.clients.rest.models.artifact_list import ArtifactList
 from mtmai.clients.rest.models.assigned_action import AssignedAction
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
-from mtmai.clients.rest.models.assistant_message import AssistantMessage
-from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
 from mtmai.clients.rest.models.azure_open_ai_model_config import AzureOpenAIModelConfig
 from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
@@ -115,6 +113,7 @@ from mtmai.clients.rest.models.event_update_cancel200_response import EventUpdat
 from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmai.clients.rest.models.flow_error import FlowError
 from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_state import FlowState
@@ -165,6 +164,8 @@ from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
+from mtmai.clients.rest.models.mt_assistant_message import MtAssistantMessage
+from mtmai.clients.rest.models.mt_assistant_message_content import MtAssistantMessageContent
 from mtmai.clients.rest.models.mt_component import MtComponent
 from mtmai.clients.rest.models.mt_component_list import MtComponentList
 from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
@@ -174,6 +175,8 @@ from mtmai.clients.rest.models.mt_resource import MtResource
 from mtmai.clients.rest.models.mt_resource_list import MtResourceList
 from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
 from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
+from mtmai.clients.rest.models.mt_system_message import MtSystemMessage
+from mtmai.clients.rest.models.mt_user_message import MtUserMessage
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
@@ -248,7 +251,6 @@ from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeveri
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
-from mtmai.clients.rest.models.system_message import SystemMessage
 from mtmai.clients.rest.models.team import Team
 from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
@@ -297,7 +299,6 @@ from mtmai.clients.rest.models.user import User
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
-from mtmai.clients.rest.models.user_message import UserMessage
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmai.clients.rest.models.user_team_config import UserTeamConfig
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList

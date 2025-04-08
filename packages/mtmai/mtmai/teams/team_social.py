@@ -29,6 +29,7 @@ from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
@@ -71,7 +72,9 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
-        self._output_queue = asyncio.Queue[FlowResult]()
+        self._output_queue = asyncio.Queue[
+            FlowHandoffResult | FlowResult | FlowLoginResult
+        ]()
 
     async def _init(self):
         self.session_id = get_chat_session_id_ctx()
@@ -138,13 +141,10 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         # closure agent
         async def output_result(
             closure_ctx: ClosureContext,
-            message: FlowHandoffResult | FlowResult,
+            message: FlowHandoffResult | FlowResult | FlowLoginResult,
             ctx: MessageContext,
         ) -> None:
-            if isinstance(message, FlowResult):
-                await self._output_queue.put(message)
-            else:
-                await self._output_queue.put(message)
+            await self._output_queue.put(message)
 
         await ClosureAgent.register_closure(
             self._runtime,

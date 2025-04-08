@@ -16,13 +16,15 @@ from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
-from mtmai.clients.rest.models.flow_result import FlowResult
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.core.config import settings
+from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
@@ -67,13 +69,32 @@ class InstagramAgent(RoutedAgent):
         self._state.password = message.password
         self._state.otp_key = message.otp_key
 
+        platform_account = (
+            await self.tenant_client.platform_account_api.platform_account_upsert(
+                tenant=self.tenant_client.tenant_id,
+                platform_account=generate_uuid(),
+                platform_account_upsert=PlatformAccountUpsert(
+                    label="platform_account",
+                    description="platform_account",
+                    platform="instagram",
+                    enable=True,
+                    username=message.username,
+                    password=message.password,
+                    state={
+                        "otp_key": message.otp_key,
+                        "proxy_url": settings.default_proxy_url,
+                    },
+                ),
+            )
+        )
         # 发布结果
         await self.publish_message(
-            FlowResult(
-                type="FlowResult",
+            FlowLoginResult(
+                type="FlowLoginResult",
                 content="登录成功",
                 source=self.id.key,
                 success=True,
+                account_id=platform_account.metadata.id,
             ),
             topic_id=DefaultTopicId(
                 type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
@@ -193,101 +214,6 @@ class InstagramAgent(RoutedAgent):
             print(f"http://instagram.com/p/{m.code}/", paths)
             i += 1
         return result
-
-    # async def run(self, hatctx: Context, input: SocialAddFollowersInput):
-    #     await self._init()
-    #     try:
-    #         state_from_db = await self.tenant_client.flow_state_api.flow_state_get(
-    #             tenant=self.tenant_client.tenant_id,
-    #             session=self.tenant_client.session_id,
-    #             workflow=hatctx.action.job_id,
-    #         )
-    #     except Exception as e:
-    #         logger.debug(f"Error getting flow state: {e}")
-    #         state_from_db = None
-
-    #     if state_from_db:
-    #         self._state = InstagramAgentState.from_dict(state_from_db.state)
-    #     else:
-    #         self._state = InstagramAgentState(
-    #             proxy=settings.default_proxy_url,
-    #         )
-    #     self.ig_client = Client(
-    #         proxy=self._state.proxy_url or settings.default_proxy_url,
-    #     )
-    #     if self._state.ig_settings:
-    #         self.ig_client.set_settings(
-    #             self._state.ig_settings,
-    #         )
-
-    #     if isinstance(input.actual_instance, SocialLoginInput):
-    #         return await self.on_social_login(hatctx, input.actual_instance)
-    #     elif isinstance(input.actual_instance, SocialAddFollowersInput):
-    #         return await hatctx.aio.spawn_workflow(FlowNames.INSTAGRAM, input)
-    #     else:
-    #         raise ValueError("(FlowInstagram)Invalid input type")
-
-    # def get_client(self):
-    #     """We return the client class, in which we automatically handle exceptions
-    #     You can move the "handle_exception" above or into an external module
-    #     """
-
-    #     def handle_exception(client, e):
-    #         if isinstance(e, BadPassword):
-    #             client.logger.exception(e)
-    #             client.set_proxy(self.next_proxy().href)
-    #             if client.relogin_attempt > 0:
-    #                 self.freeze(str(e), days=7)
-    #                 raise ReloginAttemptExceeded(e)
-    #             client.settings = self.rebuild_client_settings()
-    #             return self.update_client_settings(client.get_settings())
-    #         elif isinstance(e, LoginRequired):
-    #             client.logger.exception(e)
-    #             client.relogin()
-    #             return self.update_client_settings(client.get_settings())
-    #         elif isinstance(e, ChallengeRequired):
-    #             api_path = client.last_json.get("challenge", {}).get("api_path")
-    #             if api_path == "/challenge/":
-    #                 client.set_proxy(self.next_proxy().href)
-    #                 client.settings = self.rebuild_client_settings()
-    #             else:
-    #                 try:
-    #                     client.challenge_resolve(client.last_json)
-    #                 except ChallengeRequired as e:
-    #                     self.freeze("Manual Challenge Required", days=2)
-    #                     raise e
-    #                 except (
-    #                     ChallengeRequired,
-    #                     SelectContactPointRecoveryForm,
-    #                     RecaptchaChallengeForm,
-    #                 ) as e:
-    #                     self.freeze(str(e), days=4)
-    #                     raise e
-    #                 self.update_client_settings(client.get_settings())
-    #             return True
-    #         elif isinstance(e, FeedbackRequired):
-    #             message = client.last_json["feedback_message"]
-    #             if "This action was blocked. Please try again later" in message:
-    #                 self.freeze(message, hours=12)
-    #                 # client.settings = self.rebuild_client_settings()
-    #                 # return self.update_client_settings(client.get_settings())
-    #             elif "We restrict certain activity to protect our community" in message:
-    #                 # 6 hours is not enough
-    #                 self.freeze(message, hours=12)
-    #             elif "Your account has been temporarily blocked" in message:
-    #                 """
-    #                 Based on previous use of this feature, your account has been temporarily
-    #                 blocked from taking this action.
-    #                 This block will expire on 2020-03-27.
-    #                 """
-    #                 self.freeze(message)
-    #         elif isinstance(e, PleaseWaitFewMinutes):
-    #             self.freeze(str(e), hours=1)
-    #         raise e
-
-    #     cl = Client()
-    #     cl.handle_exception = handle_exception
-    #     cl.login(self.username, self.password)
 
     async def filter_medias(
         medias: List[Media],

@@ -21,6 +21,7 @@ from autogen_core import (
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
+from autogen_core.models import AssistantMessage
 from loguru import logger
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
@@ -145,14 +146,10 @@ class UserTeam(Team, Component[UserTeamConfig]):
         # closure agent
         async def output_result(
             closure_ctx: ClosureContext,
-            message: FlowHandoffResult | FlowResult,
+            message: FlowHandoffResult | FlowResult | AssistantMessage,
             ctx: MessageContext,
         ) -> None:
-            if isinstance(message, FlowResult):
-                # self._output_queue.get_nowait()()
-                await self._output_queue.put(message)
-            else:
-                await self._output_queue.put(message)
+            await self._output_queue.put(message)
 
         await ClosureAgent.register_closure(
             runtime=self._runtime,

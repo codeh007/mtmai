@@ -2,26 +2,29 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from autogen_core.models import LLMMessage
-from clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.code_review_result import CodeReviewResult
 from mtmai.clients.rest.models.code_review_task import CodeReviewTask
 from mtmai.clients.rest.models.code_writing_result import CodeWritingResult
 from mtmai.clients.rest.models.code_writing_task import CodeWritingTask
+from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.platform_account_task import PlatformAccountTask
+from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 from pydantic import BaseModel
 
-sales_agent_topic_type = "SalesAgent"
-issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
-triage_agent_topic_type = "TriageAgent"
-reviewer_agent_topic_type = "ReviewerAgent"
-team_runner_topic_type = "TeamRunner"
-platform_account_topic_type = "PlatformAccount"
-scheduling_assistant_topic_type = "scheduling_assistant_conversation"
+# sales_agent_topic_type = "SalesAgent"
+# issues_and_repairs_agent_topic_type = "IssuesAndRepairsAgent"
+# triage_agent_topic_type = "TriageAgent"
+# reviewer_agent_topic_type = "ReviewerAgent"
+# team_runner_topic_type = "TeamRunner"
+# platform_account_topic_type = "PlatformAccount"
+# scheduling_assistant_topic_type = "scheduling_assistant_conversation"
 
 
 class UserTask(BaseModel):
@@ -67,16 +70,16 @@ class TerminateMessage(BaseModel):
 #     pass
 
 
-class IgLoginRequire(BaseModel):
-    username: str | None = None
-    password: str | None = None
-    twofa_code: str | None = None
+# class IgLoginRequire(BaseModel):
+#     username: str | None = None
+#     password: str | None = None
+#     twofa_code: str | None = None
 
 
-class IgAccountMessage(BaseModel):
-    username: str | None = None
-    password: str | None = None
-    twofa_code: str | None = None
+# class IgAccountMessage(BaseModel):
+#     username: str | None = None
+#     password: str | None = None
+#     twofa_code: str | None = None
 
 
 # class InstagramLoginMessage(TextMessage):
@@ -94,14 +97,14 @@ agent_message_types = [
     PlatformAccountTask,
     BrowserOpenTask,
     BrowserTask,
-    #
-    # ScheduleMeetingOutput,
     GetSlowUserMessage,
     AssistantTextMessage,
     UserTextMessage,
-    IgLoginRequire,
-    IgAccountMessage,
-    # InstagramLoginMessage,
+    # IgLoginRequire,
+    # IgAccountMessage,
     SocialLoginInput,
     SocialAddFollowersInput,
+    FlowLoginResult,
+    FlowResult,
+    FlowHandoffResult,
 ]

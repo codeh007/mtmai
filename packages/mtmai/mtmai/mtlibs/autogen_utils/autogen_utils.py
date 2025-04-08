@@ -1,11 +1,8 @@
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._types import (
+from mtmai.agents._types import (  # issues_and_repairs_agent_topic_type,; sales_agent_topic_type,; triage_agent_topic_type,
     AgentRegistryBase,
     IntentClassifierBase,
-    issues_and_repairs_agent_topic_type,
-    sales_agent_topic_type,
-    triage_agent_topic_type,
 )
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from pydantic import BaseModel
@@ -46,15 +43,18 @@ execute_refund_tool = FunctionTool(execute_refund, description="")
 
 
 def transfer_to_sales_agent() -> str:
-    return sales_agent_topic_type
+    # return sales_agent_topic_type
+    return "SalesAgent"
 
 
 def transfer_to_issues_and_repairs() -> str:
-    return issues_and_repairs_agent_topic_type
+    # return issues_and_repairs_agent_topic_type
+    return "IssuesAndRepairsAgent"
 
 
 def transfer_back_to_triage() -> str:
-    return triage_agent_topic_type
+    # return triage_agent_topic_type
+    return "TriageAgent"
 
 
 def escalate_to_human() -> str:
@@ -104,7 +104,7 @@ class MockAgentRegistry(AgentRegistryBase):
         self.agents = {
             "finance_intent": "finance",
             "hr_intent": "hr",
-            "general": triage_agent_topic_type,
+            "general": "TriageAgent",
         }
 
     async def get_agent(self, intent: str) -> str:
