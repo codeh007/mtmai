@@ -179,6 +179,11 @@ class UserAgent(RoutedAgent):
     async def on_social_login(
         self, message: SocialLoginInput, ctx: MessageContext
     ) -> FlowResult:
+        """
+        TODO: 提供两个选项
+        1. 登录新账号
+        2. 选择已有账号
+        """
         child_flow_ref = await self._hatctx.aio.spawn_workflow(
             FlowNames.SOCIAL,
             input=message.model_dump(),

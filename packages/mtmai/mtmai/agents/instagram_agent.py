@@ -425,9 +425,3 @@ class InstagramAgent(RoutedAgent):
     ):
         logger.info(f"input: {msg}")
         return {"state": "social_add_followers"}
-
-    async def on_social_add_followers(
-        self, hatctx: Context, msg: SocialAddFollowersInput
-    ):
-        logger.info(f"input: {msg}")
-        return {"state": "social_add_followers"}
