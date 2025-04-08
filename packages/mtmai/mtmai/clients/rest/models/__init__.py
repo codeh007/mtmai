@@ -71,6 +71,7 @@ from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_list import ChatMessageList
 from mtmai.clients.rest.models.chat_message_properties import ChatMessageProperties
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
+from mtmai.clients.rest.models.chat_message_types import ChatMessageTypes
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList

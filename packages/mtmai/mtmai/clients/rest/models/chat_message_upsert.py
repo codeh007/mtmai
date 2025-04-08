@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
+from mtmai.clients.rest.models.chat_message_types import ChatMessageTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,8 +29,8 @@ class ChatMessageUpsert(BaseModel):
     """
     ChatMessageUpsert
     """ # noqa: E501
-    type: StrictStr
-    content: Dict[str, Any]
+    type: ChatMessageTypes
+    content: StrictStr
     content_type: StrictStr
     source: StrictStr
     topic: StrictStr
@@ -39,13 +40,6 @@ class ChatMessageUpsert(BaseModel):
     config: Optional[ChatMessagePropertiesConfig] = None
     model_usage: Optional[ModelUsage] = None
     __properties: ClassVar[List[str]] = ["type", "content", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['user', 'system', 'assistant']):
-            raise ValueError("must be one of enum values ('user', 'system', 'assistant')")
-        return value
 
     @field_validator('content_type')
     def content_type_validate_enum(cls, value):

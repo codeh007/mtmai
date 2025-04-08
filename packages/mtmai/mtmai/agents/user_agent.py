@@ -1,3 +1,4 @@
+import json
 from textwrap import dedent
 from typing import Any, Mapping
 
@@ -8,6 +9,7 @@ from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
     ChatCompletionClient,
+    FunctionExecutionResultMessage,
     SystemMessage,
     UserMessage,
 )
@@ -96,7 +98,9 @@ class UserAgent(RoutedAgent):
         """用户跟聊天助手的对话"""
         logger.info(f"handle_agent_run_input: {message}")
 
-        await self.add_chat_message(UserMessage(content=message.content, source="user"))
+        await self.add_chat_message(
+            ctx, UserMessage(content=message.content, source="user")
+        )
 
         assistant = AssistantAgent(
             "assistant",
@@ -116,10 +120,11 @@ class UserAgent(RoutedAgent):
             ctx.cancellation_token,
         )
         await self.add_chat_message(
+            ctx,
             AssistantMessage(
                 content=response.chat_message.content,
                 source=response.chat_message.source,
-            )
+            ),
         )
         await self.publish_message(
             response,
@@ -186,20 +191,28 @@ class UserAgent(RoutedAgent):
         self._state = UserAgentState.from_dict(state)
 
     async def add_chat_message(
-        self, message: AssistantMessage | UserMessage | SystemMessage
+        self,
+        ctx: MessageContext,
+        message: AssistantMessage
+        | UserMessage
+        | SystemMessage
+        | FunctionExecutionResultMessage,
     ):
         await self._model_context.add_message(
             UserMessage(content=message.content, source="user")
         )
+
+        content_type = "text"
+        content_json = json.dumps(message.content)
         await self.tenant_client.chat_api.chat_message_upsert(
             tenant=self.tenant_client.tenant_id,
             chat_message_upsert=ChatMessageUpsert(
                 type=message.type,
                 thread_id=self._session_id,
-                content=message.content,
-                content_type=message.type,
+                content=content_json,
+                content_type=content_type,
                 source=message.source,
-                topic="default",  # TODO: 需要从ctx中获取
+                topic=ctx.topic_id.type,
                 thought="",  # todo:
-            ),
+            ).model_dump(),
         )
