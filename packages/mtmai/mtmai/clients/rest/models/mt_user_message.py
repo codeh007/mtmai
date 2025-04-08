@@ -34,8 +34,8 @@ class MtUserMessage(BaseModel):
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['MtUserMessage']):
-            raise ValueError("must be one of enum values ('MtUserMessage')")
+        if value not in set(['UserMessage']):
+            raise ValueError("must be one of enum values ('UserMessage')")
         return value
 
     model_config = ConfigDict(

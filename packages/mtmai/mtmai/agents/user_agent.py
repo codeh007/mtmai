@@ -16,6 +16,7 @@ from autogen_core.models import (
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
+from clients.rest.models.mt_llm_message import MtLlmMessage
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
@@ -212,6 +213,7 @@ class UserAgent(RoutedAgent):
 
         content_type = "text"
         content_json = json.dumps(message.content)
+        llm_message = MtLlmMessage.from_dict(message.model_dump())
         await self.tenant_client.chat_api.chat_message_upsert(
             tenant=self.tenant_client.tenant_id,
             chat_message_upsert=ChatMessageUpsert(
@@ -219,7 +221,7 @@ class UserAgent(RoutedAgent):
                 thread_id=self._session_id,
                 content=content_json,
                 content_type=content_type,
-                llm_message=message.model_dump(),
+                llm_message=llm_message.model_dump(),
                 source=message.source,
                 topic=ctx.topic_id.type,
                 thought="",  # todo:
