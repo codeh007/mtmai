@@ -78,22 +78,16 @@ class UserTeam(Team, Component[UserTeamConfig]):
         self._initialized = False
         self._max_turns = max_turns
         # The queue for collecting the output messages.
-        self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
-            asyncio.Queue()
-        )
-        self._output_queue = asyncio.Queue[FlowResult]()
-
-    def output_result(
-        self,
-        closure_ctx: ClosureContext,
-        message: FlowHandoffResult | FlowResult,
-        ctx: MessageContext,
-    ) -> None:
-        if isinstance(message, FlowResult):
-            # self._output_queue.get_nowait()()
-            self._output_queue.put_nowait(message)
-        else:
-            self._output_queue.put_nowait(message)
+        # self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
+        #     asyncio.Queue()
+        # )
+        self._output_queue = asyncio.Queue[
+            FlowHandoffResult
+            | FlowResult
+            | AssistantMessage
+            | BaseChatMessage
+            | BaseAgentEvent
+        ]()
 
     async def _init(self, hatctx: Context):
         self.session_id = get_chat_session_id_ctx()

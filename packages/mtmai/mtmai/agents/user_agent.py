@@ -190,15 +190,16 @@ class UserAgent(RoutedAgent):
         )
         result = await child_flow_ref.result()
         flow_result = FlowLoginResult.from_dict(result.get("step0"))
-        await self.publish_message(
-            flow_result,
-            topic_id=DefaultTopicId(
-                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
-            ),
-        )
+
         response = AssistantMessage(
             content=f"成功登录 instagram, id: {flow_result.account_id}",
             source=flow_result.source,
+        )
+        await self.publish_message(
+            response,
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
         )
         self._model_context.add_message(response)
         return response
