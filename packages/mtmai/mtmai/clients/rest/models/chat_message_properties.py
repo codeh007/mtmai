@@ -19,17 +19,15 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatMessage(BaseModel):
+class ChatMessageProperties(BaseModel):
     """
-    ChatMessage
+    ChatMessageProperties
     """ # noqa: E501
-    metadata: APIResourceMeta
     type: StrictStr
     content: Dict[str, Any]
     content_type: StrictStr
@@ -40,7 +38,7 @@ class ChatMessage(BaseModel):
     msg_meta: Optional[Dict[str, Any]] = None
     config: Optional[ChatMessagePropertiesConfig] = None
     model_usage: Optional[ModelUsage] = None
-    __properties: ClassVar[List[str]] = ["metadata", "type", "content", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
+    __properties: ClassVar[List[str]] = ["type", "content", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -74,7 +72,7 @@ class ChatMessage(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatMessage from a JSON string"""
+        """Create an instance of ChatMessageProperties from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -95,9 +93,6 @@ class ChatMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         # override the default output from pydantic by calling `to_dict()` of config
         if self.config:
             _dict['config'] = self.config.to_dict()
@@ -108,7 +103,7 @@ class ChatMessage(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatMessage from a dict"""
+        """Create an instance of ChatMessageProperties from a dict"""
         if obj is None:
             return None
 
@@ -118,10 +113,9 @@ class ChatMessage(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ChatMessage) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ChatMessageProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "type": obj.get("type"),
             "content": obj.get("content"),
             "content_type": obj.get("content_type"),

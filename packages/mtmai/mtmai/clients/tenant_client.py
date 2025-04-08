@@ -1,6 +1,7 @@
 from typing import Any
 
 from autogen_ext.tools.mcp import SseServerParams
+from clients.rest.api.chat_api import ChatApi
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
@@ -118,6 +119,13 @@ class TenantClient:
             return self._flow_state_api
         self._flow_state_api = FlowStateApi(self.api_client)
         return self._flow_state_api
+
+    @property
+    def chat_api(self):
+        if hasattr(self, "_chat_api"):
+            return self._chat_api
+        self._chat_api = ChatApi(self.api_client)
+        return self._chat_api
 
     @property
     def event(self) -> EventClient:

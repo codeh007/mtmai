@@ -5,10 +5,16 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
-from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMessage
+from autogen_core.models import (
+    AssistantMessage,
+    ChatCompletionClient,
+    SystemMessage,
+    UserMessage,
+)
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
+from clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
@@ -16,6 +22,7 @@ from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
+from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 
 
@@ -34,6 +41,7 @@ class UserAgent(RoutedAgent):
         self.model_client = model_client
         self._state = UserAgentState()
         self._hatctx = hatctx
+        self.tenant_client = TenantClient()
 
     # @message_handler
     # async def handle_agent_run_input(
@@ -147,9 +155,8 @@ class UserAgent(RoutedAgent):
     ) -> None:
         """用户跟聊天助手的对话"""
         logger.info(f"handle_agent_run_input: {message}")
-        await self._model_context.add_message(
-            UserMessage(content=message.content, source="user")
-        )
+
+        await self.add_chat_message(UserMessage(content=message.content, source="user"))
 
         assistant = AssistantAgent(
             "assistant",
@@ -168,7 +175,13 @@ class UserAgent(RoutedAgent):
             [TextMessage(content=message.content, source="user")],
             ctx.cancellation_token,
         )
-        await self._model_context.add_message(
+        # await self._model_context.add_message(
+        #     AssistantMessage(
+        #         content=response.chat_message.content,
+        #         source=response.chat_message.source,
+        #     )
+        # )
+        await self.add_chat_message(
             AssistantMessage(
                 content=response.chat_message.content,
                 source=response.chat_message.source,
@@ -215,5 +228,45 @@ class UserAgent(RoutedAgent):
         return self._state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
+        # 从数据库加载聊天记录
+        chat_messages = await self.tenant_client.chat_api.chat_messages_list(
+            tenant=self.tenant_client.tenant_id,
+            chat=self._session_id,
+            # session_id=self._session_id,
+        )
+        for chat_message in chat_messages.rows:
+            if chat_message.type == "user":
+                self._model_context.add_message(
+                    UserMessage(
+                        content=chat_message.content, source=chat_message.source
+                    )
+                )
+            elif chat_message.type == "assistant":
+                self._model_context.add_message(
+                    AssistantMessage(
+                        content=chat_message.content, source=chat_message.source
+                    )
+                )
+            else:
+                raise ValueError(f"Unknown chat message type: {chat_message.type}")
+
         self._state = UserAgentState.from_dict(state)
-        await self._model_context.load_state(self._state.model_context)
+
+    async def add_chat_message(
+        self, message: AssistantMessage | UserMessage | SystemMessage
+    ):
+        await self._model_context.add_message(
+            UserMessage(content=message.content, source="user")
+        )
+        await self.tenant_client.chat_api.chat_message_upsert(
+            tenant=self.tenant_client.tenant_id,
+            chat_message_upsert=ChatMessageUpsert(
+                type=message.type,
+                thread_id=self._session_id,
+                content=message.content,
+                content_type=message.type,
+                source=message.source,
+                topic="default",  # TODO: 需要从ctx中获取
+                thought="",  # todo:
+            ),
+        )

@@ -17,8 +17,10 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
+from mtmai.clients.rest.models.model_usage import ModelUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,20 +28,31 @@ class ChatMessageUpsert(BaseModel):
     """
     ChatMessageUpsert
     """ # noqa: E501
-    tenant_id: StrictStr = Field(alias="tenantId")
-    content: StrictStr
-    component_id: Optional[StrictStr] = Field(default=None, alias="componentId")
-    thread_id: Optional[StrictStr] = Field(default=None, alias="threadId")
-    run_id: Optional[StrictStr] = Field(default=None, alias="runId")
-    role: Optional[StrictStr] = None
-    topic: Optional[StrictStr] = None
+    type: StrictStr
+    content: Dict[str, Any]
+    content_type: StrictStr
     source: StrictStr
-    message_type: Optional[StrictStr] = Field(default=None, alias="messageType")
-    agent_type: Optional[StrictStr] = Field(default=None, alias="agentType")
-    workflow_run_id: Optional[StrictStr] = Field(default=None, alias="workflowRunId")
-    step_run_id: Optional[StrictStr] = Field(default=None, alias="stepRunId")
-    thought: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["tenantId", "content", "componentId", "threadId", "runId", "role", "topic", "source", "messageType", "agentType", "workflowRunId", "stepRunId", "thought"]
+    topic: StrictStr
+    thought: StrictStr
+    thread_id: StrictStr
+    msg_meta: Optional[Dict[str, Any]] = None
+    config: Optional[ChatMessagePropertiesConfig] = None
+    model_usage: Optional[ModelUsage] = None
+    __properties: ClassVar[List[str]] = ["type", "content", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['user', 'system', 'assistant']):
+            raise ValueError("must be one of enum values ('user', 'system', 'assistant')")
+        return value
+
+    @field_validator('content_type')
+    def content_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['text', 'function_call']):
+            raise ValueError("must be one of enum values ('text', 'function_call')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,6 +93,12 @@ class ChatMessageUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of model_usage
+        if self.model_usage:
+            _dict['model_usage'] = self.model_usage.to_dict()
         return _dict
 
     @classmethod
@@ -97,19 +116,16 @@ class ChatMessageUpsert(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in ChatMessageUpsert) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "tenantId": obj.get("tenantId"),
+            "type": obj.get("type"),
             "content": obj.get("content"),
-            "componentId": obj.get("componentId"),
-            "threadId": obj.get("threadId"),
-            "runId": obj.get("runId"),
-            "role": obj.get("role"),
+            "content_type": obj.get("content_type"),
+            "source": obj.get("source"),
             "topic": obj.get("topic"),
-            "source": obj.get("source") if obj.get("source") is not None else 'user',
-            "messageType": obj.get("messageType"),
-            "agentType": obj.get("agentType"),
-            "workflowRunId": obj.get("workflowRunId"),
-            "stepRunId": obj.get("stepRunId"),
-            "thought": obj.get("thought")
+            "thought": obj.get("thought"),
+            "thread_id": obj.get("thread_id"),
+            "msg_meta": obj.get("msg_meta"),
+            "config": ChatMessagePropertiesConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "model_usage": ModelUsage.from_dict(obj["model_usage"]) if obj.get("model_usage") is not None else None
         })
         return _obj
 

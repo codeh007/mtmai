@@ -18,16 +18,16 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatSession(BaseModel):
+class ChatUpsert(BaseModel):
     """
-    ChatSession
+    ChatUpsert
     """ # noqa: E501
-    metadata: APIResourceMeta
+    metadata: Optional[APIResourceMeta] = None
     title: StrictStr
     name: StrictStr
     state: StrictStr
@@ -52,7 +52,7 @@ class ChatSession(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatSession from a JSON string"""
+        """Create an instance of ChatUpsert from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,7 +80,7 @@ class ChatSession(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatSession from a dict"""
+        """Create an instance of ChatUpsert from a dict"""
         if obj is None:
             return None
 
@@ -90,7 +90,7 @@ class ChatSession(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ChatSession) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ChatUpsert) in the input: " + _key)
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,

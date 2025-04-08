@@ -18,21 +18,17 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ChatSession(BaseModel):
+class ChatMessagePropertiesConfig(BaseModel):
     """
-    ChatSession
+    ChatMessagePropertiesConfig
     """ # noqa: E501
-    metadata: APIResourceMeta
-    title: StrictStr
-    name: StrictStr
-    state: StrictStr
-    state_type: StrictStr
-    __properties: ClassVar[List[str]] = ["metadata", "title", "name", "state", "state_type"]
+    message_type: Optional[StrictStr] = None
+    source: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["message_type", "source"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +48,7 @@ class ChatSession(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ChatSession from a JSON string"""
+        """Create an instance of ChatMessagePropertiesConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +69,11 @@ class ChatSession(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ChatSession from a dict"""
+        """Create an instance of ChatMessagePropertiesConfig from a dict"""
         if obj is None:
             return None
 
@@ -90,14 +83,11 @@ class ChatSession(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ChatSession) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ChatMessagePropertiesConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "name": obj.get("name"),
-            "state": obj.get("state"),
-            "state_type": obj.get("state_type")
+            "message_type": obj.get("message_type"),
+            "source": obj.get("source")
         })
         return _obj
 

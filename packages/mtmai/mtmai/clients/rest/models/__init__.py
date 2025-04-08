@@ -67,13 +67,16 @@ from mtmai.clients.rest.models.bulk_create_event_response import BulkCreateEvent
 from mtmai.clients.rest.models.cancel_event_request import CancelEventRequest
 from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
-from mtmai.clients.rest.models.chat_message_config import ChatMessageConfig
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_list import ChatMessageList
+from mtmai.clients.rest.models.chat_message_properties import ChatMessageProperties
+from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList
+from mtmai.clients.rest.models.chat_session_properties import ChatSessionProperties
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_execution_input import CodeExecutionInput
 from mtmai.clients.rest.models.code_execution_result import CodeExecutionResult
