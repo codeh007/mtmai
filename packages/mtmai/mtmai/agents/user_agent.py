@@ -1,30 +1,38 @@
-import json
 from datetime import datetime
 from textwrap import dedent
 from typing import Any, Mapping, cast
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, message_handler
+from autogen_core import (
+    DefaultTopicId,
+    FunctionCall,
+    MessageContext,
+    RoutedAgent,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
     ChatCompletionClient,
     FunctionExecutionResultMessage,
+    LLMMessage,
     SystemMessage,
     UserMessage,
 )
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.mt_assistant_message import MtAssistantMessage
 from loguru import logger
+from mtlibs.id import generate_uuid
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.chat_start_input import ChatStartInput
 from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.mt_assistant_message import MtAssistantMessage
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -85,10 +93,39 @@ class UserAgent(RoutedAgent):
 
     @message_handler
     async def handle_user_input(
+        self, message: ChatStartInput, ctx: MessageContext
+    ) -> None:
+        """对话开始"""
+        logger.info(f"handle_agent_run_input: {message}")
+
+    @message_handler
+    async def handle_chat_start(
         self, message: ChatMessageInput, ctx: MessageContext
     ) -> None:
         """用户跟聊天助手的对话"""
         logger.info(f"handle_agent_run_input: {message}")
+
+        if not self._state.platform_account_id:
+            # 显示 社交媒体登录框
+            await self.add_chat_message(
+                ctx,
+                AssistantMessage(
+                    source="assistant",
+                    content=[
+                        FunctionCall(
+                            id=generate_uuid(),
+                            name="social_login",
+                            arguments=SocialLoginInput(
+                                type="SocialLoginInput",
+                                username="username1",
+                                password="password1",
+                                otp_key="",
+                            ).model_dump_json(),
+                        )
+                    ],
+                ),
+            )
+            return
 
         await self.add_chat_message(
             ctx, UserMessage(content=message.content, source="user")
@@ -212,28 +249,18 @@ class UserAgent(RoutedAgent):
     async def add_chat_message(
         self,
         ctx: MessageContext,
-        message: AssistantMessage
-        | UserMessage
-        | SystemMessage
-        | FunctionExecutionResultMessage,
+        message: LLMMessage,
     ):
-        await self._state.model_context.add_message(
-            UserMessage(content=message.content, source="user")
-        )
-
-        content_type = "text"
-        content_json = json.dumps(message.content)
-        llm_message = MtLlmMessage.from_dict(message.model_dump())
+        await self._state.model_context.add_message(message)
         await self.tenant_client.chat_api.chat_message_upsert(
             tenant=self.tenant_client.tenant_id,
             chat_message_upsert=ChatMessageUpsert(
                 type=message.type,
                 thread_id=self._session_id,
-                content=content_json,
-                content_type=content_type,
-                llm_message=llm_message.model_dump(),
+                content=message.model_dump_json(),  # 可能过时了
+                content_type="text",
+                llm_message=MtLlmMessage.from_dict(message.model_dump()),
                 source=message.source,
                 topic=ctx.topic_id.type,
-                thought="",  # todo:
             ).model_dump(),
         )

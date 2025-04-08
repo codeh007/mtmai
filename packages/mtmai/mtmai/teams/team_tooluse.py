@@ -22,9 +22,6 @@ from autogen_core.models import SystemMessage
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
-from pydantic import BaseModel
-from typing_extensions import Self
-
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
@@ -40,11 +37,9 @@ from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
-from mtmai.mtlibs.autogen_utils.autogen_utils import (
-    MockAgentRegistry,
-    MockIntentClassifier,
-)
 from mtmai.worker_app import mtmapp
+from pydantic import BaseModel
+from typing_extensions import Self
 
 
 @mtmapp.workflow(
@@ -106,8 +101,8 @@ class TooluseTeam(Team, Component[TooluseTeamConfig]):
         self.team_topic_id = TopicId(type=team_topic, source=topic_source)
 
         # Create the Semantic Router
-        agent_registry = MockAgentRegistry()
-        intent_classifier = MockIntentClassifier()
+        # agent_registry = MockAgentRegistry()
+        # intent_classifier = MockIntentClassifier()
 
         self.model_client = get_default_model_client()
 

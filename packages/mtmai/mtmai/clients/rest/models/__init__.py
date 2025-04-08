@@ -75,6 +75,7 @@ from mtmai.clients.rest.models.chat_session import ChatSession
 from mtmai.clients.rest.models.chat_session_list import ChatSessionList
 from mtmai.clients.rest.models.chat_session_properties import ChatSessionProperties
 from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartEvent
+from mtmai.clients.rest.models.chat_start_input import ChatStartInput
 from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_execution_input import CodeExecutionInput

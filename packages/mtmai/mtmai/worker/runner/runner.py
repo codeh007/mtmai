@@ -12,9 +12,6 @@ from typing import Any, Callable, Dict, cast
 
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
-from opentelemetry.trace import StatusCode
-from pydantic import BaseModel
-
 from mtmai.clients.admin import new_admin
 from mtmai.clients.ag import AgClient
 from mtmai.clients.client import Client
@@ -47,6 +44,8 @@ from mtmai.worker.dispatcher.action_listener import Action
 from mtmai.worker.dispatcher.dispatcher import new_dispatcher
 from mtmai.worker.runner.capture_logs import copy_context_vars, sr, wr
 from mtmai.workflow_listener import PooledWorkflowRunListener
+from opentelemetry.trace import StatusCode
+from pydantic import BaseModel
 
 
 class WorkerStatus(Enum):
@@ -316,7 +315,7 @@ class Runner:
                 workflow_run_event_listener=self.workflow_run_event_listener,
                 worker=self.worker_context,
                 namespace=self.client.config.namespace,
-                ag_client=self.ag,
+                # ag_client=self.ag,
                 agent_runtime=self.agent_runtime,
                 validator_registry=self.validator_registry,
             )
@@ -327,7 +326,7 @@ class Runner:
             admin_client=self.admin_client,
             event_client=self.client.event,
             rest_client=self.client.rest,
-            ag_client=self.ag,
+            # ag_client=self.ag,
             workflow_listener=self.client.workflow_listener,
             workflow_run_event_listener=self.workflow_run_event_listener,
             worker=self.worker_context,
@@ -395,7 +394,7 @@ class Runner:
                 workflow_listener=self.client.workflow_listener,
                 workflow_run_event_listener=self.workflow_run_event_listener,
                 worker=self.worker_context,
-                ag_client=self.ag,
+                # ag_client=self.ag,
                 namespace=self.client.config.namespace,
             )
 

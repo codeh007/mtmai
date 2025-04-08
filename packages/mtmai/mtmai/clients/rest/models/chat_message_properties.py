@@ -36,12 +36,10 @@ class ChatMessageProperties(BaseModel):
     content_type: StrictStr
     source: StrictStr
     topic: StrictStr
-    thought: StrictStr
     thread_id: StrictStr
-    msg_meta: Optional[Dict[str, Any]] = None
     config: Optional[ChatMessagePropertiesConfig] = None
     model_usage: Optional[ModelUsage] = None
-    __properties: ClassVar[List[str]] = ["type", "content", "llm_message", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
+    __properties: ClassVar[List[str]] = ["type", "content", "llm_message", "content_type", "source", "topic", "thread_id", "config", "model_usage"]
 
     @field_validator('content_type')
     def content_type_validate_enum(cls, value):
@@ -121,9 +119,7 @@ class ChatMessageProperties(BaseModel):
             "content_type": obj.get("content_type"),
             "source": obj.get("source"),
             "topic": obj.get("topic"),
-            "thought": obj.get("thought"),
             "thread_id": obj.get("thread_id"),
-            "msg_meta": obj.get("msg_meta"),
             "config": ChatMessagePropertiesConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
             "model_usage": ModelUsage.from_dict(obj["model_usage"]) if obj.get("model_usage") is not None else None
         })
