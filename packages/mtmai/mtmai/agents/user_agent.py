@@ -35,7 +35,6 @@ class UserAgent(RoutedAgent):
         session_id: str,
         hatctx: Context,
         model_client: ChatCompletionClient | None = None,
-        # social_agent_topic_type: str = None,
     ) -> None:
         super().__init__(description)
         self._model_context = BufferedChatCompletionContext(buffer_size=15)
@@ -173,18 +172,27 @@ class UserAgent(RoutedAgent):
             chat=self._session_id,
         )
         for chat_message in chat_messages.rows:
-            if chat_message.type == "user":
+            if chat_message.type.value == "UserMessage":
                 self._model_context.add_message(
                     UserMessage(
                         content=chat_message.content, source=chat_message.source
                     )
                 )
-            elif chat_message.type == "assistant":
+            elif chat_message.type.value == "AssistantMessage":
                 self._model_context.add_message(
                     AssistantMessage(
                         content=chat_message.content, source=chat_message.source
                     )
                 )
+            elif chat_message.type.value == "SystemMessage":
+                self._model_context.add_message(
+                    SystemMessage(
+                        content=chat_message.content, source=chat_message.source
+                    )
+                )
+            elif chat_message.type.value == "FunctionExecutionResultMessage":
+                msg = FunctionExecutionResultMessage.from_dict(chat_message.content)
+                self._model_context.add_message(msg)
             else:
                 raise ValueError(f"Unknown chat message type: {chat_message.type}")
 

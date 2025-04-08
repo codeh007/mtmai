@@ -138,7 +138,32 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 agent_type=tenant_agent_type.type,
             )
         )
+        await self.register_closure_agent()
 
+        # # closure agent
+        # async def output_result(
+        #     closure_ctx: ClosureContext,
+        #     message: FlowHandoffResult | FlowResult | FlowLoginResult,
+        #     ctx: MessageContext,
+        # ) -> None:
+        #     await self._output_queue.put(message)
+
+        # await ClosureAgent.register_closure(
+        #     self._runtime,
+        #     AgentTypes.CLOSURE.value,
+        #     output_result,
+        #     subscriptions=lambda: [
+        #         DefaultSubscription(
+        #             topic_type=AgentTopicTypes.RESPONSE.value,
+        #             agent_type=AgentTypes.CLOSURE.value,
+        #         ),
+        #     ],
+        # )
+        self._initialized = True
+        await self.load_runtimestate(self.session_id, self._runtime)
+        self._runtime.start()
+
+    async def register_closure_agent(self):
         # closure agent
         async def output_result(
             closure_ctx: ClosureContext,
@@ -158,9 +183,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 ),
             ],
         )
-        self._initialized = True
-        await self.load_runtimestate(self.session_id, self._runtime)
-        self._runtime.start()
 
     async def run(
         self,

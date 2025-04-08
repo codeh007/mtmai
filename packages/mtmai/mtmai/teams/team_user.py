@@ -138,6 +138,13 @@ class UserTeam(Team, Component[UserTeamConfig]):
             )
         )
 
+        await self.register_closure_agent()
+
+        self._initialized = True
+        await self.load_runtimestate(self.session_id, self._runtime)
+        self._runtime.start()
+
+    async def register_closure_agent(self):
         # closure agent
         async def output_result(
             closure_ctx: ClosureContext,
@@ -157,10 +164,6 @@ class UserTeam(Team, Component[UserTeamConfig]):
                 ),
             ],
         )
-
-        self._initialized = True
-        await self.load_runtimestate(self.session_id, self._runtime)
-        self._runtime.start()
 
     async def run(
         self,
