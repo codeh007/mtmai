@@ -40,6 +40,7 @@ from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_list import ArtifactList
+from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
 from mtmai.clients.rest.models.assigned_action import AssignedAction
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
