@@ -174,6 +174,12 @@ class UserAgent(RoutedAgent):
                 source=response.chat_message.source,
             )
         )
+        await self.publish_message(
+            response,
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
+        )
 
     @message_handler
     async def on_social_login(

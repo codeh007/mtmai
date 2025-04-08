@@ -40,6 +40,7 @@ from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
+from mtmai.mtlibs.id import generate_uuid
 from mtmai.worker_app import mtmapp
 from typing_extensions import Self
 
@@ -77,7 +78,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         ]()
 
     async def _init(self):
-        self.session_id = get_chat_session_id_ctx()
+        self.session_id = get_chat_session_id_ctx() or generate_uuid()
         self.tenant_client = TenantClient()
         self.model_client = get_default_model_client()
 
