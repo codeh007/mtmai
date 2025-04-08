@@ -26,11 +26,14 @@ class AgentTypes(str, Enum):
     """
     allowed enum values
     """
-    ASSISTANTAGENT = 'AssistantAgent'
-    USERPROXYAGENT = 'UserProxyAgent'
-    MULTIMODALWEBSURFER = 'MultimodalWebSurfer'
-    FILESURFER = 'FileSurfer'
-    MAGENTICONECODERAGENT = 'MagenticOneCoderAgent'
+    CLOSURE = 'closure'
+    ROUTER = 'router'
+    USER_PROXY = 'user_proxy'
+    ASSISTANT = 'assistant'
+    SOCIAL = 'social'
+    BROWSER = 'browser'
+    RESOURCE = 'resource'
+    INSTAGRAM = 'instagram'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

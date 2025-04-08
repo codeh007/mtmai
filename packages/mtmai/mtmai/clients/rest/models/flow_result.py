@@ -27,9 +27,10 @@ class FlowResult(BaseModel):
     FlowResult
     """ # noqa: E501
     type: StrictStr
+    source: Optional[StrictStr] = None
     content: StrictStr
     success: Optional[StrictBool] = None
-    __properties: ClassVar[List[str]] = ["type", "content", "success"]
+    __properties: ClassVar[List[str]] = ["type", "source", "content", "success"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -95,6 +96,7 @@ class FlowResult(BaseModel):
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
+            "source": obj.get("source"),
             "content": obj.get("content"),
             "success": obj.get("success")
         })

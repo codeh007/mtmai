@@ -4,12 +4,7 @@ from typing import Any, AsyncGenerator, Mapping
 from agents.instagram_agent import InstagramAgent
 from agents.tenant_agent import TenantAgent
 from autogen_agentchat.base import TaskResult, Team
-from autogen_agentchat.messages import (
-    AgentEvent,
-    BaseAgentEvent,
-    BaseChatMessage,
-    ChatMessage,
-)
+from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
@@ -24,8 +19,6 @@ from autogen_core import (
     try_get_known_serializers_for_type,
 )
 from loguru import logger
-from typing_extensions import Self
-
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
@@ -34,6 +27,7 @@ from mtmai.agents.intervention_handlers import (
 )
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_result import FlowResult
@@ -46,6 +40,7 @@ from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.worker_app import mtmapp
+from typing_extensions import Self
 
 
 @mtmapp.workflow(
@@ -76,11 +71,18 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
-        # The queue for collecting the output messages.
-        self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
-            asyncio.Queue()
-        )
-        self.result_queue = asyncio.Queue[FlowResult]()
+        self._output_queue = asyncio.Queue[FlowResult]()
+
+    async def output_result(
+        self,
+        closure_ctx: ClosureContext,
+        message: FlowHandoffResult | FlowResult,
+        ctx: MessageContext,
+    ) -> None:
+        if isinstance(message, FlowResult):
+            await self._output_queue.put(message)
+        else:
+            await self._output_queue.put(message)
 
     async def _init(self):
         self.session_id = get_chat_session_id_ctx()
@@ -113,45 +115,15 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
             )
         )
 
-        async def output_result(
-            closure_ctx: ClosureContext,
-            message: FlowHandoffResult | FlowResult,
-            ctx: MessageContext,
-        ) -> None:
-            logger.info(f"output_result: {message}")
-            if isinstance(message, FlowResult):
-                await self.result_queue.put(message)
-            # if isinstance(message, WorkerAgentMessage):
-            #     print(f"{message.source} Agent: {message.content}")
-            #     new_message = input("User response: ")
-            #     await closure_ctx.publish_message(
-            #         UserProxyMessage(content=new_message, source="user"),
-            #         topic_id=DefaultTopicId(type=message.source, source="user"),
-            #     )
-            # else:
-            #     print(f"{message.source} Agent: {message.content}")
-            #     print("Conversation ended")
-            #     new_message = input("Enter a new conversation start: ")
-            #     await closure_ctx.publish_message(
-            #         UserProxyMessage(content=new_message, source="user"), topic_id=DefaultTopicId(type="default", source="user")
-            #     )
-
-        await ClosureAgent.register_closure(
-            self._runtime,
-            "closure_agent",
-            output_result,
-            subscriptions=lambda: [
-                DefaultSubscription(topic_type="response", agent_type="closure_agent"),
-                # TypeSubscription(
-                #     topic_type=self.team_topic_id.type,
-                #     agent_type=AgentTopicTypes.TENANT.value,
-                # ),
-                # TypeSubscription(
-                #     topic_type=self.team_topic_id.type,
-                #     agent_type=AgentTopicTypes.INSTAGRAM.value,
-                # ),
-            ],
-        )
+        # async def output_result(
+        #     closure_ctx: ClosureContext,
+        #     message: FlowHandoffResult | FlowResult,
+        #     ctx: MessageContext,
+        # ) -> None:
+        #     if isinstance(message, FlowResult):
+        #         await self.result_queue.put(message)
+        #     else:
+        #         await self.result_queue.put(message)
 
         instagram_agent_type = await InstagramAgent.register(
             runtime=self._runtime,
@@ -183,6 +155,22 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
                 agent_type=tenant_agent_type.type,
             )
         )
+        # closure agent
+        await ClosureAgent.register_closure(
+            self._runtime,
+            AgentTypes.CLOSURE.value,
+            self.output_result,
+            subscriptions=lambda: [
+                DefaultSubscription(
+                    topic_type=AgentTopicTypes.RESPONSE.value,
+                    agent_type=AgentTypes.CLOSURE.value,
+                ),
+                # TypeSubscription(
+                #     topic_type=self.team_topic_id.type,
+                #     agent_type=AgentTopicTypes.TENANT.value,
+                # ),
+            ],
+        )
         self._initialized = True
         await self.load_runtimestate(self.session_id, self._runtime)
         self._runtime.start()
@@ -196,8 +184,6 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
     ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult | dict, None]:
         if not self._initialized:
             await self._init()
-
-        # if isinstance(task, MtAgEvent):
         await self._runtime.publish_message(
             message=task.actual_instance,
             topic_id=self.team_topic_id,
@@ -207,8 +193,7 @@ class SocialTeam(Team, Component[SocialTeamConfig]):
         await self._runtime.stop_when_idle()
 
         await self.save_state_db()
-        final_result = await self.result_queue.get()
-
+        final_result = await self._output_queue.get()
         return final_result
 
     async def reset(self) -> None:

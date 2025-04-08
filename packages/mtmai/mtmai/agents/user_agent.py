@@ -3,16 +3,17 @@ from typing import Any, Mapping
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-from autogen_core import MessageContext, RoutedAgent, message_handler
+from autogen_core import DefaultTopicId, MessageContext, RoutedAgent, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import AssistantMessage, ChatCompletionClient, UserMessage
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.flow_names import FlowNames
+from clients.rest.models.agent_topic_types import AgentTopicTypes
 from loguru import logger
-
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
+from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.context.context import Context
@@ -177,27 +178,20 @@ class UserAgent(RoutedAgent):
     @message_handler
     async def on_social_login(
         self, message: SocialLoginInput, ctx: MessageContext
-    ) -> bool:
-        # login_result = self.ig_client.login(
-        #     username=message.username,
-        #     password=message.password,
-        #     verification_code=pyotp.TOTP(message.otp_key).now(),
-        #     relogin=False,
-        # )
-        # if not login_result:
-        #     raise Exception("ig 登录失败")
-        # self._state.ig_settings = self.ig_client.get_settings()
-        # self._state.proxy_url = settings.default_proxy_url
-        # self._state.username = message.username
-        # self._state.password = message.password
-        # self._state.otp_key = message.otp_key
-        # return login_result
+    ) -> FlowResult:
         child_flow_ref = await self._hatctx.aio.spawn_workflow(
             FlowNames.SOCIAL,
             input=message.model_dump(),
         )
         result = await child_flow_ref.result()
-        return result
+        flow_result = FlowResult.from_dict(result.get("step0"))
+        await self.publish_message(
+            flow_result,
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
+        )
+        return flow_result
 
     async def save_state(self) -> Mapping[str, Any]:
         self._state.model_context = await self._model_context.save_state()

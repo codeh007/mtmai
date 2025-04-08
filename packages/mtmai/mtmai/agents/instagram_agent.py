@@ -15,7 +15,8 @@ from autogen_core import (
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
-
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -67,9 +68,16 @@ class InstagramAgent(RoutedAgent):
         self._state.otp_key = message.otp_key
 
         # 发布结果
-        await self._runtime.publish_message(
-            message=login_result,
-            topic_id=DefaultTopicId(type="response", source="instagram"),
+        await self.publish_message(
+            FlowResult(
+                type="FlowResult",
+                content="登录成功",
+                source=self.id.key,
+                success=True,
+            ),
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
         )
         return login_result
 

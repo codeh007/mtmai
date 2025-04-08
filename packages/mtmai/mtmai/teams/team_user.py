@@ -11,16 +11,17 @@ from autogen_agentchat.messages import (
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
+    ClosureAgent,
+    ClosureContext,
     Component,
+    DefaultSubscription,
+    MessageContext,
     SingleThreadedAgentRuntime,
     TopicId,
     TypeSubscription,
     try_get_known_serializers_for_type,
 )
-from clients.rest.models.flow_names import FlowNames
 from loguru import logger
-from typing_extensions import Self
-
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import (
@@ -30,6 +31,10 @@ from mtmai.agents.intervention_handlers import (
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.agent_types import AgentTypes
+from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
+from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
@@ -40,6 +45,7 @@ from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
 from mtmai.worker_app import mtmapp
+from typing_extensions import Self
 
 
 @mtmapp.workflow(
@@ -74,12 +80,18 @@ class UserTeam(Team, Component[UserTeamConfig]):
         self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
             asyncio.Queue()
         )
+        self._output_queue = asyncio.Queue[FlowResult]()
 
-    # def weather_tool(self):
-    #     def get_weather(city: str) -> str:
-    #         return "sunny"
-
-    #     return FunctionTool(get_weather, description="Get the weather of a city.")
+    async def output_result(
+        self,
+        closure_ctx: ClosureContext,
+        message: FlowHandoffResult | FlowResult,
+        ctx: MessageContext,
+    ) -> None:
+        if isinstance(message, FlowResult):
+            await self._output_queue.put(message)
+        else:
+            await self._output_queue.put(message)
 
     async def _init(self, hatctx: Context):
         self.session_id = get_chat_session_id_ctx()
@@ -129,6 +141,19 @@ class UserTeam(Team, Component[UserTeamConfig]):
             )
         )
 
+        # closure agent
+        await ClosureAgent.register_closure(
+            self._runtime,
+            AgentTypes.CLOSURE.value,
+            self.output_result,
+            subscriptions=lambda: [
+                DefaultSubscription(
+                    topic_type=AgentTopicTypes.RESPONSE.value,
+                    agent_type=AgentTypes.CLOSURE.value,
+                ),
+            ],
+        )
+
         self._initialized = True
         await self.load_runtimestate(self.session_id, self._runtime)
         self._runtime.start()
@@ -152,6 +177,9 @@ class UserTeam(Team, Component[UserTeamConfig]):
 
         await self._runtime.stop_when_idle()
         await self.save_state_db()
+        final_result = await self._output_queue.get()
+
+        return final_result
 
     async def reset(self) -> None:
         self._is_running = False
