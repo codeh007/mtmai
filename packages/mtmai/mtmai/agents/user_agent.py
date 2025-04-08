@@ -14,10 +14,10 @@ from autogen_core.models import (
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -42,66 +42,6 @@ class UserAgent(RoutedAgent):
         self._state = UserAgentState()
         self._hatctx = hatctx
         self.tenant_client = TenantClient()
-
-    # @message_handler
-    # async def handle_agent_run_input(
-    #     self, message: AgentUserInput, ctx: MessageContext
-    # ) -> None:
-    #     """用户输入"""
-    #     if ctx.cancellation_token.is_cancelled():
-    #         return
-
-    #     session_id = self.id.key
-    #     logger.info(
-    #         f"{'-'*80}\nhandle_agent_run_input, session ID: {session_id}. task: {message.content}"
-    #     )
-    #     user_content = message.content
-    #     if user_content.startswith("/test_code"):
-    #         await self.runtime.publish_message(
-    #             message=CodeWritingTask(
-    #                 task="Write a function to find the sum of all even numbers in a list."
-    #             ),
-    #             topic_id=TopicId(AgentTopicTypes.CODER.value, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test_open_browser"):
-    #         await self.runtime.publish_message(
-    #             message=BrowserOpenTask(url="https://playwright.dev/"),
-    #             topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test_browser_task"):
-    #         await self.runtime.publish_message(
-    #             message=BrowserTask(task="Open an online code editor programiz."),
-    #             topic_id=TopicId(AgentTopicTypes.BROWSER.value, source=session_id),
-    #         )
-    #     elif user_content.startswith("/test/ig"):
-    #         agent_id = AgentId(self._social_agent_topic_type, "default")
-    #         result = await self._runtime.send_message(
-    #             SocialAddFollowersInput(
-    #                 username="username1",
-    #                 password="password1",
-    #                 target_username="target_username1",
-    #             ),
-    #             agent_id,
-    #         )
-    #         if isinstance(result, IgLoginRequire):
-    #             self.is_waiting_ig_login = True
-
-    #         await self._model_context.add_message(
-    #             AssistantMessage(
-    #                 content=[
-    #                     FunctionCall(
-    #                         id=generate_uuid(),
-    #                         name="ig_login",
-    #                         arguments=result.model_dump_json(),
-    #                     )
-    #                 ],
-    #                 source="assistant",
-    #             )
-    #         )
-    #     else:
-    #         user_message = UserMessage(content=message.content, source="user")
-    #         # Add message to model context.
-    #         await self._model_context.add_message(user_message)
 
     def weather_tool(self):
         def get_weather(city: str) -> str:
@@ -175,12 +115,6 @@ class UserAgent(RoutedAgent):
             [TextMessage(content=message.content, source="user")],
             ctx.cancellation_token,
         )
-        # await self._model_context.add_message(
-        #     AssistantMessage(
-        #         content=response.chat_message.content,
-        #         source=response.chat_message.source,
-        #     )
-        # )
         await self.add_chat_message(
             AssistantMessage(
                 content=response.chat_message.content,
@@ -232,7 +166,6 @@ class UserAgent(RoutedAgent):
         chat_messages = await self.tenant_client.chat_api.chat_messages_list(
             tenant=self.tenant_client.tenant_id,
             chat=self._session_id,
-            # session_id=self._session_id,
         )
         for chat_message in chat_messages.rows:
             if chat_message.type == "user":
