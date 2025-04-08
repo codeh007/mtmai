@@ -21,9 +21,9 @@ from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
-from mtmai.clients.rest.models.chat_message_types import ChatMessageTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
+from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,7 +32,7 @@ class ChatMessage(BaseModel):
     ChatMessage
     """ # noqa: E501
     metadata: APIResourceMeta
-    type: ChatMessageTypes
+    type: MtLlmMessageTypes
     content: StrictStr
     llm_message: MtLlmMessage
     content_type: StrictStr

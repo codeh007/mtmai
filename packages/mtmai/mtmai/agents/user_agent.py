@@ -1,6 +1,7 @@
 import json
+from datetime import datetime
 from textwrap import dedent
-from typing import Any, Mapping
+from typing import Any, Mapping, cast
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
@@ -16,13 +17,16 @@ from autogen_core.models import (
 from autogen_core.tools import FunctionTool, Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.mt_llm_message import MtLlmMessage
+from clients.rest.models.mt_assistant_message import MtAssistantMessage
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
+from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.tenant_client import TenantClient
@@ -38,10 +42,10 @@ class UserAgent(RoutedAgent):
         model_client: ChatCompletionClient | None = None,
     ) -> None:
         super().__init__(description)
-        self._model_context = BufferedChatCompletionContext(buffer_size=15)
         self._session_id = session_id
         self.model_client = model_client
         self._state = UserAgentState()
+        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
         self._hatctx = hatctx
         self.tenant_client = TenantClient()
 
@@ -59,18 +63,6 @@ class UserAgent(RoutedAgent):
                 password="password1",
                 otp_key="",
             ).model_dump_json()
-            # self._model_context.add_message(
-            #     AssistantMessage(
-            #         content=[
-            #             FunctionCall(
-            #                 id=generate_uuid(),
-            #                 name="social_login",
-            #                 arguments=json1,
-            #             )
-            #         ],
-            #         source="assistant",
-            #     )
-            # )
             return json1
 
         return FunctionTool(
@@ -105,7 +97,7 @@ class UserAgent(RoutedAgent):
         assistant = AssistantAgent(
             "assistant",
             model_client=self.model_client,
-            model_context=self._model_context,
+            model_context=self._state.model_context,
             tools=await self.get_tools(ctx),
             system_message=dedent(
                 "你是实用助手,需要使用提供的工具解决用户提出的问题"
@@ -159,45 +151,63 @@ class UserAgent(RoutedAgent):
                 type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
             ),
         )
-        self._model_context.add_message(response)
+        self._state.model_context.add_message(response)
         return response
 
     async def save_state(self) -> Mapping[str, Any]:
-        self._state.model_context = await self._model_context.save_state()
+        upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
+            tenant=self.tenant_client.tenant_id,
+            session=self._session_id,
+            chat_upsert=ChatUpsert(
+                title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
+                name="userAgent",
+                state=self._state.model_dump(),
+                state_type="UserAgentState",
+            ).model_dump(),
+        )
         return self._state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
+        self._state = UserAgentState.from_dict(state)
+        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
         # 从数据库加载聊天记录
         chat_messages = await self.tenant_client.chat_api.chat_messages_list(
             tenant=self.tenant_client.tenant_id,
             chat=self._session_id,
         )
         for chat_message in chat_messages.rows:
-            if chat_message.type.value == "UserMessage":
-                self._model_context.add_message(
-                    UserMessage(
-                        content=chat_message.content, source=chat_message.source
-                    )
+            if chat_message.type.value == MtLlmMessageTypes.USERMESSAGE.value:
+                msg = UserMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
                 )
-            elif chat_message.type.value == "AssistantMessage":
-                self._model_context.add_message(
-                    AssistantMessage(
-                        content=chat_message.content, source=chat_message.source
-                    )
+                await self._state.model_context.add_message(msg)
+            elif chat_message.type.value == MtLlmMessageTypes.ASSISTANTMESSAGE.value:
+                mt_assistant_message = cast(
+                    MtAssistantMessage, chat_message.llm_message.actual_instance
                 )
-            elif chat_message.type.value == "SystemMessage":
-                self._model_context.add_message(
-                    SystemMessage(
-                        content=chat_message.content, source=chat_message.source
-                    )
+                msg = AssistantMessage(
+                    content=mt_assistant_message.content.actual_instance,
+                    source=mt_assistant_message.source,
+                    thought=mt_assistant_message.thought,
                 )
-            elif chat_message.type.value == "FunctionExecutionResultMessage":
-                msg = FunctionExecutionResultMessage.from_dict(chat_message.content)
-                self._model_context.add_message(msg)
+                await self._state.model_context.add_message(msg)
+            elif chat_message.type.value == MtLlmMessageTypes.SYSTEMMESSAGE.value:
+                msg = SystemMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
+                )
+                await self._state.model_context.add_message(msg)
+            elif (
+                chat_message.type.value
+                == MtLlmMessageTypes.FUNCTIONEXECUTIONRESULTMESSAGE.value
+            ):
+                msg = FunctionExecutionResultMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
+                )
+                await self._state.model_context.add_message(msg)
             else:
-                raise ValueError(f"Unknown chat message type: {chat_message.type}")
-
-        self._state = UserAgentState.from_dict(state)
+                raise ValueError(
+                    f"load_state error, Unknown llm message type: {chat_message.type}"
+                )
 
     async def add_chat_message(
         self,
@@ -207,7 +217,7 @@ class UserAgent(RoutedAgent):
         | SystemMessage
         | FunctionExecutionResultMessage,
     ):
-        await self._model_context.add_message(
+        await self._state.model_context.add_message(
             UserMessage(content=message.content, source="user")
         )
 

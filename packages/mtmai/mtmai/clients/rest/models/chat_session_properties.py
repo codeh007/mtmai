@@ -30,7 +30,7 @@ class ChatSessionProperties(BaseModel):
     metadata: Optional[APIResourceMeta] = None
     title: StrictStr
     name: StrictStr
-    state: StrictStr
+    state: Dict[str, Any]
     state_type: StrictStr
     __properties: ClassVar[List[str]] = ["metadata", "title", "name", "state", "state_type"]
 
