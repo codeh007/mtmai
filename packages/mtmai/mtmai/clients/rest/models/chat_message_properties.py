@@ -22,6 +22,7 @@ from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
 from mtmai.clients.rest.models.chat_message_types import ChatMessageTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
+from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,6 +32,7 @@ class ChatMessageProperties(BaseModel):
     """ # noqa: E501
     type: ChatMessageTypes
     content: StrictStr
+    llm_message: MtLlmMessage
     content_type: StrictStr
     source: StrictStr
     topic: StrictStr
@@ -39,7 +41,7 @@ class ChatMessageProperties(BaseModel):
     msg_meta: Optional[Dict[str, Any]] = None
     config: Optional[ChatMessagePropertiesConfig] = None
     model_usage: Optional[ModelUsage] = None
-    __properties: ClassVar[List[str]] = ["type", "content", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
+    __properties: ClassVar[List[str]] = ["type", "content", "llm_message", "content_type", "source", "topic", "thought", "thread_id", "msg_meta", "config", "model_usage"]
 
     @field_validator('content_type')
     def content_type_validate_enum(cls, value):
@@ -87,6 +89,9 @@ class ChatMessageProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of llm_message
+        if self.llm_message:
+            _dict['llm_message'] = self.llm_message.to_dict()
         # override the default output from pydantic by calling `to_dict()` of config
         if self.config:
             _dict['config'] = self.config.to_dict()
@@ -112,6 +117,7 @@ class ChatMessageProperties(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "content": obj.get("content"),
+            "llm_message": MtLlmMessage.from_dict(obj["llm_message"]) if obj.get("llm_message") is not None else None,
             "content_type": obj.get("content_type"),
             "source": obj.get("source"),
             "topic": obj.get("topic"),

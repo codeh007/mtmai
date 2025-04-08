@@ -219,6 +219,7 @@ class UserAgent(RoutedAgent):
                 thread_id=self._session_id,
                 content=content_json,
                 content_type=content_type,
+                llm_message=message.model_dump(),
                 source=message.source,
                 topic=ctx.topic_id.type,
                 thought="",  # todo:
