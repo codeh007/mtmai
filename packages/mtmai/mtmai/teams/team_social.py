@@ -180,12 +180,6 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
                 model_client=model_client,
             )
         ]
-
-        # termination_condition = (
-        #     TerminationCondition.load_component(config.termination_condition)
-        #     if config.termination_condition
-        #     else None
-        # )
         return cls(
             participants,
             # termination_condition=termination_condition,

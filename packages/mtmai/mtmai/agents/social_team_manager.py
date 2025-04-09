@@ -96,10 +96,12 @@ class SocialTeamManager(BaseGroupChatManager):
         self, thread: List[BaseAgentEvent | BaseChatMessage]
     ) -> str:
         """Select a speaker from the participants in a round-robin fashion."""
-        # current_speaker_index = self._next_speaker_index
-        # self._next_speaker_index = (current_speaker_index + 1) % len(self._participant_names)
-        # current_speaker = self._participant_names[current_speaker_index]
-        return "assistant"
+        current_speaker_index = self._next_speaker_index
+        self._next_speaker_index = (current_speaker_index + 1) % len(
+            self._participant_names
+        )
+        current_speaker = self._participant_names[current_speaker_index]
+        return current_speaker
 
     def social_login_tool(self):
         def social_login() -> str:
