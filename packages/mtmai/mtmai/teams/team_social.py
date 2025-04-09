@@ -22,7 +22,7 @@ from autogen_core import (
     MessageContext,
     SingleThreadedAgentRuntime,
 )
-from autogen_core.models import AssistantMessage, ChatCompletionClient
+from autogen_core.models import AssistantMessage
 from clients.rest.models.start_new_chat_input import StartNewChatInput
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
@@ -31,7 +31,6 @@ from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
-from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_result import FlowResult
@@ -62,13 +61,17 @@ class FlowSocial:
             team = SocialTeam._from_config(
                 SocialTeamConfig.from_dict(input.config.actual_instance.model_dump())
             )
+        else:
+            raise ValueError(
+                f"Invalid team config type: {type(input.config.actual_instance)}"
+            )
 
-        if isinstance(input.actual_instance, ChatMessageInput):
-            task = TextMessage(content=input.actual_instance.content, source="user")
-            async for event in team.run_stream(
-                task=task, cancellation_token=cancellation_token
-            ):
-                logger.info(f"stream event: {event}")
+        # if isinstance(input.actual_instance, ChatMessageInput):
+        task = TextMessage(content=input.task, source="user")
+        async for event in team.run_stream(
+            task=task, cancellation_token=cancellation_token
+        ):
+            logger.info(f"stream event: {event}")
 
 
 class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
@@ -78,20 +81,15 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     def __init__(
         self,
         participants: List[ChatAgent],
-        model_client: ChatCompletionClient,
         *,
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = 20,
         runtime: AgentRuntime | None = None,
-        max_stalls: int = 3,
-        # final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
         self.session_id = get_chat_session_id_ctx() or generate_uuid()
-        # needs_user_input_handler = NeedsUserInputHandler(self.session_id)
         tool_intervention_handler = ToolInterventionHandler()
         self._runtime = SingleThreadedAgentRuntime(
             intervention_handlers=[
-                # needs_user_input_handler,
                 tool_intervention_handler,
             ],
             ignore_unhandled_exceptions=False,
@@ -105,7 +103,7 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
             max_turns=max_turns,
             runtime=self._runtime,
         )
-        self._runtime = runtime
+        # self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
         self._output_queue = asyncio.Queue[
@@ -324,7 +322,7 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         return cls(
             max_turns=config.max_turns or 25,
             participants=participants,
-            model_client=model_client,
+            # model_client=model_client,
         )
 
     async def pause(self) -> None:
