@@ -34,10 +34,10 @@ class InstagramAgentConfig(BaseModel):
     model_client_stream: Optional[StrictBool] = False
     system_message: Optional[StrictStr] = None
     model_client: MtOpenAIChatCompletionClientComponent
-    tools: Optional[List[Dict[str, Dict[str, Any]]]] = None
+    tools: List[Dict[str, Dict[str, Any]]]
     handoffs: Optional[List[StrictStr]] = None
-    reflect_on_tool_use: Optional[StrictBool] = False
-    tool_call_summary_format: Optional[StrictStr] = '{result}'
+    reflect_on_tool_use: StrictBool
+    tool_call_summary_format: StrictStr
     username: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
     otp_key: Optional[StrictStr] = None

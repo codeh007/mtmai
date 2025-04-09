@@ -34,10 +34,10 @@ class AssistantAgentConfig(BaseModel):
     model_client_stream: Optional[StrictBool] = False
     system_message: Optional[StrictStr] = None
     model_client: MtOpenAIChatCompletionClientComponent
-    tools: Optional[List[Dict[str, Dict[str, Any]]]] = None
+    tools: List[Dict[str, Dict[str, Any]]]
     handoffs: Optional[List[StrictStr]] = None
-    reflect_on_tool_use: Optional[StrictBool] = False
-    tool_call_summary_format: Optional[StrictStr] = '{result}'
+    reflect_on_tool_use: StrictBool
+    tool_call_summary_format: StrictStr
     __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
 
     model_config = ConfigDict(

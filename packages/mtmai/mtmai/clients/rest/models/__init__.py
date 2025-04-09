@@ -268,6 +268,8 @@ from mtmai.clients.rest.models.step_run_event_reason import StepRunEventReason
 from mtmai.clients.rest.models.step_run_event_severity import StepRunEventSeverity
 from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
+from mtmai.clients.rest.models.stop_message_termination import StopMessageTermination
+from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.system_message import SystemMessage
 from mtmai.clients.rest.models.team import Team

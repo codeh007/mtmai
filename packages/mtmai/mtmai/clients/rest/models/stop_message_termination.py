@@ -19,23 +19,23 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
+from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TextMentionTermination(BaseModel):
+class StopMessageTermination(BaseModel):
     """
-    TextMentionTermination
+    StopMessageTermination
     """ # noqa: E501
     provider: StrictStr
-    config: TextMentionTerminationConfig
+    config: StopMessageTerminationConfig
     __properties: ClassVar[List[str]] = ["provider", "config"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['TextMentionTermination']):
-            raise ValueError("must be one of enum values ('TextMentionTermination')")
+        if value not in set(['StopMessageTermination']):
+            raise ValueError("must be one of enum values ('StopMessageTermination')")
         return value
 
     model_config = ConfigDict(
@@ -56,7 +56,7 @@ class TextMentionTermination(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TextMentionTermination from a JSON string"""
+        """Create an instance of StopMessageTermination from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +84,7 @@ class TextMentionTermination(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TextMentionTermination from a dict"""
+        """Create an instance of StopMessageTermination from a dict"""
         if obj is None:
             return None
 
@@ -94,11 +94,11 @@ class TextMentionTermination(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in TextMentionTermination) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in StopMessageTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'TextMentionTermination',
-            "config": TextMentionTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'StopMessageTermination',
+            "config": StopMessageTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

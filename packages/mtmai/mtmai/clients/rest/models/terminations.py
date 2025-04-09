@@ -19,7 +19,9 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.function_call_termination import FunctionCallTermination
 from mtmai.clients.rest.models.handoff_termination import HandoffTermination
+from mtmai.clients.rest.models.max_message_termination import MaxMessageTermination
 from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
+from mtmai.clients.rest.models.stop_message_termination import StopMessageTermination
 from mtmai.clients.rest.models.text_mention_termination import TextMentionTermination
 from mtmai.clients.rest.models.timeout_termination import TimeoutTermination
 from mtmai.clients.rest.models.token_usage_termination import TokenUsageTermination
@@ -27,7 +29,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-TERMINATIONS_ONE_OF_SCHEMAS = ["FunctionCallTermination", "HandoffTermination", "SourceMatchTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination"]
+TERMINATIONS_ONE_OF_SCHEMAS = ["FunctionCallTermination", "HandoffTermination", "MaxMessageTermination", "SourceMatchTermination", "StopMessageTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination"]
 
 class Terminations(BaseModel):
     """
@@ -45,8 +47,12 @@ class Terminations(BaseModel):
     oneof_schema_5_validator: Optional[FunctionCallTermination] = None
     # data type: TokenUsageTermination
     oneof_schema_6_validator: Optional[TokenUsageTermination] = None
-    actual_instance: Optional[Union[FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination]] = None
-    one_of_schemas: Set[str] = { "FunctionCallTermination", "HandoffTermination", "SourceMatchTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination" }
+    # data type: MaxMessageTermination
+    oneof_schema_7_validator: Optional[MaxMessageTermination] = None
+    # data type: StopMessageTermination
+    oneof_schema_8_validator: Optional[StopMessageTermination] = None
+    actual_instance: Optional[Union[FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination]] = None
+    one_of_schemas: Set[str] = { "FunctionCallTermination", "HandoffTermination", "MaxMessageTermination", "SourceMatchTermination", "StopMessageTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -102,12 +108,22 @@ class Terminations(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TokenUsageTermination`")
         else:
             match += 1
+        # validate data type: MaxMessageTermination
+        if not isinstance(v, MaxMessageTermination):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MaxMessageTermination`")
+        else:
+            match += 1
+        # validate data type: StopMessageTermination
+        if not isinstance(v, StopMessageTermination):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `StopMessageTermination`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -137,9 +153,19 @@ class Terminations(BaseModel):
             instance.actual_instance = HandoffTermination.from_json(json_str)
             return instance
 
+        # check if data type is `MaxMessageTermination`
+        if _data_type == "MaxMessageTermination":
+            instance.actual_instance = MaxMessageTermination.from_json(json_str)
+            return instance
+
         # check if data type is `SourceMatchTermination`
         if _data_type == "SourceMatchTermination":
             instance.actual_instance = SourceMatchTermination.from_json(json_str)
+            return instance
+
+        # check if data type is `StopMessageTermination`
+        if _data_type == "StopMessageTermination":
+            instance.actual_instance = StopMessageTermination.from_json(json_str)
             return instance
 
         # check if data type is `TextMentionTermination`
@@ -193,13 +219,25 @@ class Terminations(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into MaxMessageTermination
+        try:
+            instance.actual_instance = MaxMessageTermination.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into StopMessageTermination
+        try:
+            instance.actual_instance = StopMessageTermination.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into Terminations with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -213,7 +251,7 @@ class Terminations(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], FunctionCallTermination, HandoffTermination, SourceMatchTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

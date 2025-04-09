@@ -1,8 +1,6 @@
 import asyncio
-from textwrap import dedent
 from typing import Any, Callable, List, Mapping
 
-from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import ChatAgent, TerminationCondition
 from autogen_agentchat.messages import (
     BaseAgentEvent,
@@ -14,6 +12,9 @@ from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import AgentRuntime, Component, ComponentModel
 from loguru import logger
+from pydantic import BaseModel
+from typing_extensions import Self
+
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.social_team_manager import SocialTeamManager
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
@@ -22,10 +23,7 @@ from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
-from mtmai.model_client.utils import get_default_model_client
 from mtmai.worker_app import mtmapp
-from pydantic import BaseModel
-from typing_extensions import Self
 
 
 @mtmapp.workflow(
@@ -166,23 +164,40 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
 
     @classmethod
     def _from_config(cls, config: SocialTeamConfig) -> Self:
-        model_client = get_default_model_client()
+        # model_client = get_default_model_client()
+        # participants = [
+        #     AssistantAgent(
+        #         name="assisant",
+        #         description="an useful assistant.",
+        #         system_message=dedent(
+        #             "你是实用助手,需要使用提供的工具解决用户提出的问题"
+        #             "重要:"
+        #             "1. 当用户明确调用 登录工具时才调用 登录工具"
+        #             "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
+        #         ),
+        #         model_client=model_client,
+        #     )
+        # ]
+        # return cls(
+        #     participants,
+        #     # termination_condition=termination_condition,
+        #     max_turns=config.max_turns,
+        # )
         participants = [
-            AssistantAgent(
-                name="assisant",
-                description="an useful assistant.",
-                system_message=dedent(
-                    "你是实用助手,需要使用提供的工具解决用户提出的问题"
-                    "重要:"
-                    "1. 当用户明确调用 登录工具时才调用 登录工具"
-                    "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
-                ),
-                model_client=model_client,
-            )
+            ChatAgent.load_component(participant) for participant in config.participants
         ]
+
+        a = config.termination_condition.actual_instance
+        if not a.provider.startswith("autogen_agentchat.conditions."):
+            a.provider = "autogen_agentchat.conditions." + a.provider
+        termination_condition = (
+            TerminationCondition.load_component(a.to_dict())
+            if config.termination_condition
+            else None
+        )
         return cls(
             participants,
-            # termination_condition=termination_condition,
+            termination_condition=termination_condition,
             max_turns=config.max_turns,
         )
 

@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,8 @@ class StopMessageTerminationConfig(BaseModel):
     """
     StopMessageTerminationConfig
     """ # noqa: E501
-    text: StrictStr
-    __properties: ClassVar[List[str]] = ["text"]
+    some_thing: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["some_thing"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,7 +85,7 @@ class StopMessageTerminationConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in StopMessageTerminationConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "text": obj.get("text")
+            "some_thing": obj.get("some_thing")
         })
         return _obj
 
