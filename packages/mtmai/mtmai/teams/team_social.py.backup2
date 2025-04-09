@@ -88,6 +88,60 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
             custom_message_types=custom_message_types,
         )
 
+    # async def _init(self):
+    #     self.session_id = get_chat_session_id_ctx() or generate_uuid()
+    #     self.tenant_client = TenantClient()
+    #     self.model_client = get_default_model_client()
+
+    #     # if not self._runtime:
+    #     #     needs_user_input_handler = NeedsUserInputHandler(self.session_id)
+    #     #     tool_intervention_handler = ToolInterventionHandler()
+    #     #     self._runtime = SingleThreadedAgentRuntime(
+    #     #         intervention_handlers=[
+    #     #             needs_user_input_handler,
+    #     #             tool_intervention_handler,
+    #     #         ],
+    #     #         ignore_unhandled_exceptions=False,
+    #     #     )
+
+    #     for t in agent_message_types:
+    #         self._runtime.add_message_serializer(try_get_known_serializers_for_type(t))
+
+    #     team_topic = f"social.{self.session_id}"
+    #     topic_source = "default"
+    #     self.team_topic_id = TopicId(type=team_topic, source=topic_source)
+    #     self.model_client = get_default_model_client()
+
+    #     # await self._runtime.add_subscription(
+    #     #     TypeSubscription(
+    #     #         topic_type=AgentTopicTypes.ROUTER.value,
+    #     #         agent_type=self.team_topic_id.type,
+    #     #     )
+    #     # )
+
+    #     # user_agent_type = await UserAgent.register(
+    #     #     runtime=self._runtime,
+    #     #     type=AgentTopicTypes.USER.value,
+    #     #     factory=lambda: UserAgent(
+    #     #         description="A user agent.",
+    #     #         session_id=self.session_id,
+    #     #         model_client=self.model_client,
+    #     #         hatctx=hatctx,
+    #     #     ),
+    #     # )
+    #     # await self._runtime.add_subscription(
+    #     #     subscription=TypeSubscription(
+    #     #         topic_type=self.team_topic_id.type,
+    #     #         agent_type=user_agent_type.type,
+    #     #     )
+    #     # )
+
+    #     await self.register_closure_agent()
+
+    #     self._initialized = True
+    #     await self.load_runtimestate(self.session_id, self._runtime)
+    #     self._runtime.start()
+
     def _create_group_chat_manager_factory(
         self,
         name: str,
@@ -118,6 +172,65 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
             )
 
         return _factory
+
+    # async def register_closure_agent(self):
+    #     # closure agent
+    #     async def output_result(
+    #         closure_ctx: ClosureContext,
+    #         message: FlowHandoffResult | FlowResult | AssistantMessage,
+    #         ctx: MessageContext,
+    #     ) -> None:
+    #         await self._output_queue.put(message)
+
+    #     await ClosureAgent.register_closure(
+    #         runtime=self._runtime,
+    #         type=AgentTypes.CLOSURE.value,
+    #         closure=output_result,
+    #         subscriptions=lambda: [
+    #             DefaultSubscription(
+    #                 topic_type=AgentTopicTypes.RESPONSE.value,
+    #                 agent_type=AgentTypes.CLOSURE.value,
+    #             ),
+    #         ],
+    #     )
+
+    # async def run(
+    #     self,
+    #     hatctx: Context,
+    #     *,
+    #     task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    #     if not self._initialized:
+    #         await self._init(hatctx)
+
+    #     if isinstance(task, MtAgEvent):
+    #         await self._runtime.publish_message(
+    #             message=task.actual_instance,
+    #             topic_id=self.team_topic_id,
+    #             cancellation_token=cancellation_token,
+    #         )
+
+    #     await self._runtime.stop_when_idle()
+    #     await self.save_state_db()
+    #     final_result = await self._output_queue.get()
+
+    #     return final_result
+
+    # async def run_stream(
+    #     self,
+    #     *,
+    #     task: str
+    #     | BaseChatMessage
+    #     | Sequence[BaseChatMessage]
+    #     | MtAgEvent
+    #     | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | TaskResult, None]:
+    #     async for e in super().run_stream(
+    #         task=task, cancellation_token=cancellation_token
+    #     ):
+    #         yield e
 
     async def reset(self) -> None:
         self._is_running = False
@@ -165,7 +278,7 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
         )
 
     @classmethod
-    def _from_config(cls, config: SocialTeamConfig) -> Self:
+    def _from_config(cls, config: SocialGroupChatConfig) -> Self:
         model_client = get_default_model_client()
         participants = [
             AssistantAgent(
@@ -180,15 +293,27 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
                 model_client=model_client,
             )
         ]
-
-        # termination_condition = (
-        #     TerminationCondition.load_component(config.termination_condition)
-        #     if config.termination_condition
-        #     else None
+        # # tool_intervention_handler = ToolInterventionHandler()
+        # runtime = SingleThreadedAgentRuntime(
+        #     # intervention_handlers=[
+        #     #     tool_intervention_handler,
+        #     # ],
+        #     ignore_unhandled_exceptions=False,
         # )
+        # return cls(
+        #     participants=participants,
+        #     max_turns=config.max_turns or 25,
+        #     runtime=runtime,
+        # )
+        # participants = [ChatAgent.load_component(participant) for participant in config.participants]
+        termination_condition = (
+            TerminationCondition.load_component(config.termination_condition)
+            if config.termination_condition
+            else None
+        )
         return cls(
             participants,
-            # termination_condition=termination_condition,
+            termination_condition=termination_condition,
             max_turns=config.max_turns,
         )
 

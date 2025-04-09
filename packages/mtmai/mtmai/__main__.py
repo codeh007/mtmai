@@ -19,7 +19,7 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    from worker_app import run_worker
+    from mtmai.worker_app import run_worker
 
     logger.info("running worker")
     asyncio.run(run_worker())

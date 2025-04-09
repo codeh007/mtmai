@@ -17,13 +17,12 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-STARTNEWCHATINPUTCONFIG_ONE_OF_SCHEMAS = ["InstagramAgentConfig", "SocialTeamConfig"]
+STARTNEWCHATINPUTCONFIG_ONE_OF_SCHEMAS = ["SocialTeamConfig"]
 
 class StartNewChatInputConfig(BaseModel):
     """
@@ -31,10 +30,8 @@ class StartNewChatInputConfig(BaseModel):
     """
     # data type: SocialTeamConfig
     oneof_schema_1_validator: Optional[SocialTeamConfig] = None
-    # data type: InstagramAgentConfig
-    oneof_schema_2_validator: Optional[InstagramAgentConfig] = None
-    actual_instance: Optional[Union[InstagramAgentConfig, SocialTeamConfig]] = None
-    one_of_schemas: Set[str] = { "InstagramAgentConfig", "SocialTeamConfig" }
+    actual_instance: Optional[Union[SocialTeamConfig]] = None
+    one_of_schemas: Set[str] = { "SocialTeamConfig" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -62,17 +59,12 @@ class StartNewChatInputConfig(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeamConfig`")
         else:
             match += 1
-        # validate data type: InstagramAgentConfig
-        if not isinstance(v, InstagramAgentConfig):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramAgentConfig`")
-        else:
-            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in StartNewChatInputConfig with oneOf schemas: InstagramAgentConfig, SocialTeamConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in StartNewChatInputConfig with oneOf schemas: SocialTeamConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in StartNewChatInputConfig with oneOf schemas: InstagramAgentConfig, SocialTeamConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in StartNewChatInputConfig with oneOf schemas: SocialTeamConfig. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -93,19 +85,13 @@ class StartNewChatInputConfig(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into InstagramAgentConfig
-        try:
-            instance.actual_instance = InstagramAgentConfig.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into StartNewChatInputConfig with oneOf schemas: InstagramAgentConfig, SocialTeamConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into StartNewChatInputConfig with oneOf schemas: SocialTeamConfig. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into StartNewChatInputConfig with oneOf schemas: InstagramAgentConfig, SocialTeamConfig. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into StartNewChatInputConfig with oneOf schemas: SocialTeamConfig. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -119,7 +105,7 @@ class StartNewChatInputConfig(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], InstagramAgentConfig, SocialTeamConfig]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], SocialTeamConfig]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

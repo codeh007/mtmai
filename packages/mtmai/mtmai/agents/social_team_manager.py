@@ -19,7 +19,6 @@ from autogen_core import DefaultTopicId, FunctionCall, MessageContext, message_h
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
-    ChatCompletionClient,
     FunctionExecutionResultMessage,
     LLMMessage,
     SystemMessage,
@@ -46,7 +45,6 @@ from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.tenant_client import TenantClient
-from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 
 
@@ -63,9 +61,6 @@ class SocialTeamManager(BaseGroupChatManager):
             BaseAgentEvent | BaseChatMessage | GroupChatTermination
         ],
         message_factory: MessageFactory,
-        session_id: str,
-        hatctx: Context,
-        model_client: ChatCompletionClient | None = None,
         max_turns: int | None = None,
         termination_condition: TerminationCondition | None = None,
     ) -> None:
@@ -82,12 +77,14 @@ class SocialTeamManager(BaseGroupChatManager):
             message_factory,
         )
         self._next_speaker_index = 0
-        self._session_id = session_id
-        self.model_client = model_client
         self._state = UserAgentState()
         self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
-        self._hatctx = hatctx
         self.tenant_client = TenantClient()
+
+    async def validate_group_state(
+        self, messages: List[BaseChatMessage] | None
+    ) -> None:
+        pass
 
     def weather_tool(self):
         def get_weather(city: str) -> str:
@@ -335,11 +332,11 @@ class SocialTeamManager(BaseGroupChatManager):
             ).model_dump(),
         )
 
-    async def select_speaker(
-        self, thread: List[BaseAgentEvent | BaseChatMessage]
-    ) -> str:
-        """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
-        return ""
+    # async def select_speaker(
+    #     self, thread: List[BaseAgentEvent | BaseChatMessage]
+    # ) -> str:
+    #     """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
+    #     return ""
 
     async def reset(self) -> None:
         """Reset the group chat manager."""

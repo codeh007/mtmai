@@ -20,6 +20,7 @@ from autogen_core import (
 from autogen_core.models import SystemMessage
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
+from clients.rest.models.flow_names import FlowNames
 from loguru import logger
 from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
@@ -42,26 +43,26 @@ from pydantic import BaseModel
 from typing_extensions import Self
 
 
+class TenantTeamConfig(BaseModel):
+    pass
+
+
 @mtmapp.workflow(
-    name="tooluse",
-    on_events=["tooluse"],
+    name=FlowNames.TENANT.value,
+    on_events=[FlowNames.TENANT.value],
 )
-class FlowTooluse:
+class FlowTenant:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
-        team = TooluseTeam._from_config(TooluseTeamConfig())
+        team = TenantTeam._from_config(TenantTeamConfig())
         return await team.run(task=input, cancellation_token=cancellation_token)
 
 
-class TooluseTeamConfig(BaseModel):
-    pass
-
-
-class TooluseTeam(Team, Component[TooluseTeamConfig]):
-    component_provider_override = "mtmai.teams.toolteam.TooluseTeam"
-    component_config_schema = TooluseTeamConfig
+class TenantTeam(Team, Component[TenantTeamConfig]):
+    component_provider_override = "mtmai.teams.team_tenant.TenantTeam"
+    component_config_schema = TenantTeamConfig
 
     def __init__(
         self,

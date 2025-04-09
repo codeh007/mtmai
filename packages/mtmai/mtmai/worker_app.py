@@ -26,9 +26,9 @@ async def run_worker():
     worker.register_workflow(FlowTooluse())
     logger.info("register tooluse workflow")
 
-    # from teams.team_social import FlowUser
+    from mtmai.teams.team_tenant import FlowTenant
 
-    # worker.register_workflow(FlowUser())
-    # logger.info("register user workflow")
+    worker.register_workflow(FlowTenant())
+    logger.info("register tenant workflow")
 
     await worker.async_start()
