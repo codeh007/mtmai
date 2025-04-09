@@ -17,29 +17,30 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.function_call import FunctionCall
+from mtmai.clients.rest.models.text_mention_termination import TextMentionTermination
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-ASSISTANTMESSAGECONTENT_ONE_OF_SCHEMAS = ["List[FunctionCall]", "str"]
+SOCIALTEAMCOMPONENTALLOFTERMINATIONCONDITION_ONE_OF_SCHEMAS = ["TextMentionTermination"]
 
-class AssistantMessageContent(BaseModel):
+class SocialTeamComponentAllOfTerminationCondition(BaseModel):
     """
-    AssistantMessageContent
+    SocialTeamComponentAllOfTerminationCondition
     """
-    # data type: str
-    oneof_schema_1_validator: Optional[StrictStr] = None
-    # data type: List[FunctionCall]
-    oneof_schema_2_validator: Optional[List[FunctionCall]] = None
-    actual_instance: Optional[Union[List[FunctionCall], str]] = None
-    one_of_schemas: Set[str] = { "List[FunctionCall]", "str" }
+    # data type: TextMentionTermination
+    oneof_schema_1_validator: Optional[TextMentionTermination] = None
+    actual_instance: Optional[Union[TextMentionTermination]] = None
+    one_of_schemas: Set[str] = { "TextMentionTermination" }
 
     model_config = ConfigDict(
         validate_assignment=True,
         protected_namespaces=(),
     )
 
+
+    discriminator_value_class_map: Dict[str, str] = {
+    }
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -53,27 +54,20 @@ class AssistantMessageContent(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = AssistantMessageContent.model_construct()
+        instance = SocialTeamComponentAllOfTerminationCondition.model_construct()
         error_messages = []
         match = 0
-        # validate data type: str
-        try:
-            instance.oneof_schema_1_validator = v
+        # validate data type: TextMentionTermination
+        if not isinstance(v, TextMentionTermination):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `TextMentionTermination`")
+        else:
             match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # validate data type: List[FunctionCall]
-        try:
-            instance.oneof_schema_2_validator = v
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in SocialTeamComponentAllOfTerminationCondition with oneOf schemas: TextMentionTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in SocialTeamComponentAllOfTerminationCondition with oneOf schemas: TextMentionTermination. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -88,31 +82,29 @@ class AssistantMessageContent(BaseModel):
         error_messages = []
         match = 0
 
-        # deserialize data into str
+        # use oneOf discriminator to lookup the data type
+        _data_type = json.loads(json_str).get("provider")
+        if not _data_type:
+            raise ValueError("Failed to lookup data type from the field `provider` in the input.")
+
+        # check if data type is `TextMentionTermination`
+        if _data_type == "TextMentionTermination":
+            instance.actual_instance = TextMentionTermination.from_json(json_str)
+            return instance
+
+        # deserialize data into TextMentionTermination
         try:
-            # validation
-            instance.oneof_schema_1_validator = json.loads(json_str)
-            # assign value to actual_instance
-            instance.actual_instance = instance.oneof_schema_1_validator
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into List[FunctionCall]
-        try:
-            # validation
-            instance.oneof_schema_2_validator = json.loads(json_str)
-            # assign value to actual_instance
-            instance.actual_instance = instance.oneof_schema_2_validator
+            instance.actual_instance = TextMentionTermination.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into SocialTeamComponentAllOfTerminationCondition with oneOf schemas: TextMentionTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AssistantMessageContent with oneOf schemas: List[FunctionCall], str. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into SocialTeamComponentAllOfTerminationCondition with oneOf schemas: TextMentionTermination. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -126,7 +118,7 @@ class AssistantMessageContent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], List[FunctionCall], str]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], TextMentionTermination]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

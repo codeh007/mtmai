@@ -27,7 +27,7 @@ class AssistantAgentComponent(BaseModel):
     """
     AssistantAgentComponent
     """ # noqa: E501
-    provider: Optional[StrictStr] = None
+    provider: StrictStr
     component_type: StrictStr
     version: Optional[StrictInt] = None
     component_version: Optional[StrictInt] = None
@@ -35,6 +35,13 @@ class AssistantAgentComponent(BaseModel):
     label: Optional[StrictStr] = None
     config: Optional[AssistantAgentConfig] = None
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['autogen_agentchat.agents.AssistantAgent']):
+            raise ValueError("must be one of enum values ('autogen_agentchat.agents.AssistantAgent')")
+        return value
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):

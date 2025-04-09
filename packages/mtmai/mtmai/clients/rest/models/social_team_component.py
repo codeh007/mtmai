@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.social_team_component_all_of_termination_condition import SocialTeamComponentAllOfTerminationCondition
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,14 +28,22 @@ class SocialTeamComponent(BaseModel):
     """
     SocialTeamComponent
     """ # noqa: E501
-    provider: Optional[StrictStr] = None
+    provider: StrictStr
     component_type: StrictStr
     version: Optional[StrictInt] = None
     component_version: Optional[StrictInt] = None
     description: Optional[StrictStr] = None
     label: Optional[StrictStr] = None
     config: SocialTeamConfig
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+    termination_condition: SocialTeamComponentAllOfTerminationCondition
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config", "termination_condition"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['mtmai.teams.team_social.SocialTeam']):
+            raise ValueError("must be one of enum values ('mtmai.teams.team_social.SocialTeam')")
+        return value
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):
@@ -85,6 +94,9 @@ class SocialTeamComponent(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of config
         if self.config:
             _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
@@ -108,7 +120,8 @@ class SocialTeamComponent(BaseModel):
             "component_version": obj.get("component_version"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": SocialTeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": SocialTeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None,
+            "termination_condition": SocialTeamComponentAllOfTerminationCondition.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None
         })
         return _obj
 
