@@ -287,7 +287,10 @@ from mtmai.clients.rest.models.tenant_setting_list import TenantSettingList
 from mtmai.clients.rest.models.tenant_setting_properties import TenantSettingProperties
 from mtmai.clients.rest.models.tenant_setting_upsert import TenantSettingUpsert
 from mtmai.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
+from mtmai.clients.rest.models.terminations import Terminations
 from mtmai.clients.rest.models.text_highlight import TextHighlight
+from mtmai.clients.rest.models.text_mention_termination import TextMentionTermination
+from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from mtmai.clients.rest.models.text_message import TextMessage
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
