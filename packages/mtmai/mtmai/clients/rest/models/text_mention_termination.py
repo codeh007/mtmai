@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,13 +28,8 @@ class TextMentionTermination(BaseModel):
     TextMentionTermination
     """ # noqa: E501
     provider: StrictStr
-    component_type: Optional[StrictStr] = None
-    version: Optional[StrictInt] = None
-    component_version: Optional[StrictInt] = None
-    description: Optional[StrictStr] = None
-    label: Optional[StrictStr] = None
     config: TextMentionTerminationConfig
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+    __properties: ClassVar[List[str]] = ["provider", "config"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
@@ -102,12 +97,7 @@ class TextMentionTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TextMentionTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.TextMentionTermination',
             "config": TextMentionTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

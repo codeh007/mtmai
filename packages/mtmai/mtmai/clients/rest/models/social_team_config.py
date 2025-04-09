@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.terminations import Terminations
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,13 +27,14 @@ class SocialTeamConfig(BaseModel):
     """
     SocialTeamConfig
     """ # noqa: E501
-    participants: Optional[List[Dict[str, Any]]] = None
-    max_turns: Optional[StrictInt] = 25
+    participants: List[Dict[str, Any]]
+    termination_condition: Terminations
+    max_turns: StrictInt
     username: StrictStr
     password: StrictStr
     otp_key: StrictStr
     proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["participants", "max_turns", "username", "password", "otp_key", "proxy_url"]
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns", "username", "password", "otp_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,6 +75,9 @@ class SocialTeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of termination_condition
+        if self.termination_condition:
+            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
@@ -91,6 +96,7 @@ class SocialTeamConfig(BaseModel):
 
         _obj = cls.model_validate({
             "participants": obj.get("participants"),
+            "termination_condition": Terminations.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
             "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25,
             "username": obj.get("username"),
             "password": obj.get("password"),

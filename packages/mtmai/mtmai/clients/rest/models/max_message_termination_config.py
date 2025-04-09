@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,16 +26,9 @@ class MaxMessageTerminationConfig(BaseModel):
     """
     MaxMessageTerminationConfig
     """ # noqa: E501
-    termination_type: StrictStr
     max_messages: StrictInt
-    __properties: ClassVar[List[str]] = ["termination_type", "max_messages"]
-
-    @field_validator('termination_type')
-    def termination_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MaxMessageTermination']):
-            raise ValueError("must be one of enum values ('MaxMessageTermination')")
-        return value
+    include_agent_event: Optional[StrictBool] = False
+    __properties: ClassVar[List[str]] = ["max_messages", "include_agent_event"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,8 +86,8 @@ class MaxMessageTerminationConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in MaxMessageTerminationConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "termination_type": obj.get("termination_type"),
-            "max_messages": obj.get("max_messages")
+            "max_messages": obj.get("max_messages"),
+            "include_agent_event": obj.get("include_agent_event") if obj.get("include_agent_event") is not None else False
         })
         return _obj
 

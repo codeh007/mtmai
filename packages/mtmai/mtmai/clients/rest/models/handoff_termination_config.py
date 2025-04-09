@@ -17,20 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.terminations import Terminations
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamConfig(BaseModel):
+class HandoffTerminationConfig(BaseModel):
     """
-    TeamConfig
+    HandoffTerminationConfig
     """ # noqa: E501
-    participants: List[Dict[str, Any]]
-    termination_condition: Terminations
-    max_turns: StrictInt
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns"]
+    target: StrictStr
+    __properties: ClassVar[List[str]] = ["target"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +47,7 @@ class TeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamConfig from a JSON string"""
+        """Create an instance of HandoffTerminationConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,14 +68,11 @@ class TeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamConfig from a dict"""
+        """Create an instance of HandoffTerminationConfig from a dict"""
         if obj is None:
             return None
 
@@ -88,12 +82,10 @@ class TeamConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in TeamConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in HandoffTerminationConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "participants": obj.get("participants"),
-            "termination_condition": Terminations.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
+            "target": obj.get("target")
         })
         return _obj
 

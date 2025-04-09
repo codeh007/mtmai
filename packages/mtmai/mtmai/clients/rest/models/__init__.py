@@ -136,6 +136,8 @@ from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.frontend_config import FrontendConfig
 from mtmai.clients.rest.models.function_call import FunctionCall
+from mtmai.clients.rest.models.function_call_termination import FunctionCallTermination
+from mtmai.clients.rest.models.function_call_termination_config import FunctionCallTerminationConfig
 from mtmai.clients.rest.models.function_execution_result import FunctionExecutionResult
 from mtmai.clients.rest.models.function_execution_result_message import FunctionExecutionResultMessage
 from mtmai.clients.rest.models.gallery import Gallery
@@ -146,6 +148,8 @@ from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from mtmai.clients.rest.models.gallery_update import GalleryUpdate
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
+from mtmai.clients.rest.models.handoff_termination import HandoffTermination
+from mtmai.clients.rest.models.handoff_termination_config import HandoffTerminationConfig
 from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.ig_login import IGLogin
 from mtmai.clients.rest.models.ig_login_response import IGLoginResponse
@@ -165,6 +169,8 @@ from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
 from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmai.clients.rest.models.max_message_termination import MaxMessageTermination
+from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_config import ModelConfig
 from mtmai.clients.rest.models.model_family import ModelFamily
@@ -245,8 +251,9 @@ from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollow
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team_component import SocialTeamComponent
-from mtmai.clients.rest.models.social_team_component_all_of_termination_condition import SocialTeamComponentAllOfTerminationCondition
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
+from mtmai.clients.rest.models.source_match_termination_config import SourceMatchTerminationConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
 from mtmai.clients.rest.models.state_type import StateType
@@ -265,6 +272,7 @@ from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.system_message import SystemMessage
 from mtmai.clients.rest.models.team import Team
 from mtmai.clients.rest.models.team_component import TeamComponent
+from mtmai.clients.rest.models.team_config import TeamConfig
 from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
 from mtmai.clients.rest.models.team_run import TeamRun
@@ -295,7 +303,13 @@ from mtmai.clients.rest.models.text_highlight import TextHighlight
 from mtmai.clients.rest.models.text_mention_termination import TextMentionTermination
 from mtmai.clients.rest.models.text_mention_termination_config import TextMentionTerminationConfig
 from mtmai.clients.rest.models.text_message import TextMessage
+from mtmai.clients.rest.models.text_message_termination import TextMessageTermination
+from mtmai.clients.rest.models.text_message_termination_config import TextMessageTerminationConfig
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
+from mtmai.clients.rest.models.timeout_termination import TimeoutTermination
+from mtmai.clients.rest.models.timeout_termination_config import TimeoutTerminationConfig
+from mtmai.clients.rest.models.token_usage_termination import TokenUsageTermination
+from mtmai.clients.rest.models.token_usage_termination_config import TokenUsageTerminationConfig
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
 from mtmai.clients.rest.models.tool_call_request_event import ToolCallRequestEvent
 from mtmai.clients.rest.models.tool_config import ToolConfig

@@ -17,20 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.terminations import Terminations
+from mtmai.clients.rest.models.text_message_termination_config import TextMessageTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class TeamConfig(BaseModel):
+class TextMessageTermination(BaseModel):
     """
-    TeamConfig
+    TextMessageTermination
     """ # noqa: E501
-    participants: List[Dict[str, Any]]
-    termination_condition: Terminations
-    max_turns: StrictInt
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns"]
+    provider: StrictStr
+    config: TextMessageTerminationConfig
+    __properties: ClassVar[List[str]] = ["provider", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['TextMessageTermination']):
+            raise ValueError("must be one of enum values ('TextMessageTermination')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +56,7 @@ class TeamConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamConfig from a JSON string"""
+        """Create an instance of TextMessageTermination from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,14 +77,14 @@ class TeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of termination_condition
-        if self.termination_condition:
-            _dict['termination_condition'] = self.termination_condition.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamConfig from a dict"""
+        """Create an instance of TextMessageTermination from a dict"""
         if obj is None:
             return None
 
@@ -88,12 +94,11 @@ class TeamConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in TeamConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in TextMessageTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "participants": obj.get("participants"),
-            "termination_condition": Terminations.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
-            "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'TextMessageTermination',
+            "config": TextMessageTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 
