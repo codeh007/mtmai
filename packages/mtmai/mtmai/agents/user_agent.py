@@ -1,13 +1,20 @@
+import asyncio
 from datetime import datetime
 from textwrap import dedent
 from typing import Any, List, Mapping, cast
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import TerminationCondition
-from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, TextMessage
+from autogen_agentchat.messages import (
+    BaseAgentEvent,
+    BaseChatMessage,
+    MessageFactory,
+    TextMessage,
+)
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
 )
+from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import DefaultTopicId, FunctionCall, MessageContext, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
@@ -43,8 +50,7 @@ from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 
 
-# class UserAgent(RoutedAgent):
-class UserAgent(BaseGroupChatManager):
+class SocialTeamManager(BaseGroupChatManager):
     def __init__(
         self,
         name: str,
@@ -53,14 +59,29 @@ class UserAgent(BaseGroupChatManager):
         participant_topic_types: List[str],
         participant_names: List[str],
         participant_descriptions: List[str],
-        description: str,
+        output_message_queue: asyncio.Queue[
+            BaseAgentEvent | BaseChatMessage | GroupChatTermination
+        ],
+        message_factory: MessageFactory,
         session_id: str,
         hatctx: Context,
         model_client: ChatCompletionClient | None = None,
         max_turns: int | None = None,
         termination_condition: TerminationCondition | None = None,
     ) -> None:
-        super().__init__(description)
+        super().__init__(
+            name,
+            group_topic_type,
+            output_topic_type,
+            participant_topic_types,
+            participant_names,
+            participant_descriptions,
+            output_message_queue,
+            termination_condition,
+            max_turns,
+            message_factory,
+        )
+        self._next_speaker_index = 0
         self._session_id = session_id
         self.model_client = model_client
         self._state = UserAgentState()
@@ -73,6 +94,15 @@ class UserAgent(BaseGroupChatManager):
             return "sunny"
 
         return FunctionTool(get_weather, description="Get the weather of a city.")
+
+    async def select_speaker(
+        self, thread: List[BaseAgentEvent | BaseChatMessage]
+    ) -> str:
+        """Select a speaker from the participants in a round-robin fashion."""
+        # current_speaker_index = self._next_speaker_index
+        # self._next_speaker_index = (current_speaker_index + 1) % len(self._participant_names)
+        # current_speaker = self._participant_names[current_speaker_index]
+        return "assistant"
 
     def social_login_tool(self):
         def social_login() -> str:

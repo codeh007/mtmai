@@ -15,28 +15,19 @@ from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
-    ClosureAgent,
-    ClosureContext,
     Component,
-    DefaultSubscription,
-    MessageContext,
     SingleThreadedAgentRuntime,
 )
-from autogen_core.models import AssistantMessage
-from clients.rest.models.start_new_chat_input import StartNewChatInput
 from loguru import logger
 from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.intervention_handlers import ToolInterventionHandler
-from mtmai.agents.user_agent import UserAgent
+from mtmai.agents.user_agent import SocialTeamManager
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
-from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
-from mtmai.clients.rest.models.agent_types import AgentTypes
-from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
-from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
@@ -68,10 +59,13 @@ class FlowSocial:
 
         # if isinstance(input.actual_instance, ChatMessageInput):
         task = TextMessage(content=input.task, source="user")
-        async for event in team.run_stream(
-            task=task, cancellation_token=cancellation_token
-        ):
-            logger.info(f"stream event: {event}")
+        # async for event in team.run_stream(
+        #     task=task, cancellation_token=cancellation_token
+        # ):
+        #     logger.info(f"stream event: {event}")
+        result = await team.run(task=task, cancellation_token=cancellation_token)
+        logger.info(f"result: {result}")
+        return result
 
 
 class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
@@ -85,6 +79,8 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = 20,
         runtime: AgentRuntime | None = None,
+        custom_message_types: List[type[BaseAgentEvent | BaseChatMessage]]
+        | None = None,
     ) -> None:
         self.session_id = get_chat_session_id_ctx() or generate_uuid()
         tool_intervention_handler = ToolInterventionHandler()
@@ -97,22 +93,22 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
 
         super().__init__(
             participants,
-            group_chat_manager_name="UserAgentOrchestrator",
-            group_chat_manager_class=UserAgent,
+            group_chat_manager_name="SocialTeamManager",
+            group_chat_manager_class=SocialTeamManager,
             termination_condition=termination_condition,
             max_turns=max_turns,
             runtime=self._runtime,
+            custom_message_types=custom_message_types,
         )
-        # self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
-        self._output_queue = asyncio.Queue[
-            FlowHandoffResult
-            | FlowResult
-            | AssistantMessage
-            | BaseChatMessage
-            | BaseAgentEvent
-        ]()
+        # self._output_queue = asyncio.Queue[
+        #     FlowHandoffResult
+        #     | FlowResult
+        #     | AssistantMessage
+        #     | BaseChatMessage
+        #     | BaseAgentEvent
+        # ]()
 
     # async def _init(self):
     #     self.session_id = get_chat_session_id_ctx() or generate_uuid()
@@ -182,8 +178,8 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         termination_condition: TerminationCondition | None,
         max_turns: int | None,
         message_factory: MessageFactory,
-    ) -> Callable[[], UserAgent]:
-        return lambda: UserAgent(
+    ) -> Callable[[], SocialTeamManager]:
+        return lambda: SocialTeamManager(
             name=name,
             group_topic_type=group_topic_type,
             output_topic_type=output_topic_type,
@@ -193,32 +189,30 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
             max_turns=max_turns,
             message_factory=message_factory,
             model_client=self._model_client,
-            # self._max_stalls,
-            # self._final_answer_prompt,
             output_message_queue=output_message_queue,
             termination_condition=termination_condition,
         )
 
-    async def register_closure_agent(self):
-        # closure agent
-        async def output_result(
-            closure_ctx: ClosureContext,
-            message: FlowHandoffResult | FlowResult | AssistantMessage,
-            ctx: MessageContext,
-        ) -> None:
-            await self._output_queue.put(message)
+    # async def register_closure_agent(self):
+    #     # closure agent
+    #     async def output_result(
+    #         closure_ctx: ClosureContext,
+    #         message: FlowHandoffResult | FlowResult | AssistantMessage,
+    #         ctx: MessageContext,
+    #     ) -> None:
+    #         await self._output_queue.put(message)
 
-        await ClosureAgent.register_closure(
-            runtime=self._runtime,
-            type=AgentTypes.CLOSURE.value,
-            closure=output_result,
-            subscriptions=lambda: [
-                DefaultSubscription(
-                    topic_type=AgentTopicTypes.RESPONSE.value,
-                    agent_type=AgentTypes.CLOSURE.value,
-                ),
-            ],
-        )
+    #     await ClosureAgent.register_closure(
+    #         runtime=self._runtime,
+    #         type=AgentTypes.CLOSURE.value,
+    #         closure=output_result,
+    #         subscriptions=lambda: [
+    #             DefaultSubscription(
+    #                 topic_type=AgentTopicTypes.RESPONSE.value,
+    #                 agent_type=AgentTypes.CLOSURE.value,
+    #             ),
+    #         ],
+    #     )
 
     # async def run(
     #     self,
