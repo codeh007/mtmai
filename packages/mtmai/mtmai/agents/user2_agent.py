@@ -2,12 +2,9 @@ from datetime import datetime
 from textwrap import dedent
 from typing import Any, List, Mapping, cast
 
-from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.base import TerminationCondition
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, TextMessage
-from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
-    BaseGroupChatManager,
-)
 from autogen_core import DefaultTopicId, FunctionCall, MessageContext, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
@@ -43,8 +40,7 @@ from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 
 
-# class UserAgent(RoutedAgent):
-class UserAgent(BaseGroupChatManager):
+class UserAgent(UserProxyAgent):
     def __init__(
         self,
         name: str,

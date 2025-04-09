@@ -1,13 +1,17 @@
 import asyncio
-from typing import Any, AsyncGenerator, Mapping, Sequence
+from textwrap import dedent
+from typing import Any, AsyncGenerator, Callable, List, Mapping, Sequence
 
-from autogen_agentchat.base import TaskResult, Team
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import (
-    AgentEvent,
     BaseAgentEvent,
     BaseChatMessage,
-    ChatMessage,
+    MessageFactory,
+    TextMessage,
 )
+from autogen_agentchat.teams import BaseGroupChat
+from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import (
     AgentRuntime,
     CancellationToken,
@@ -17,22 +21,16 @@ from autogen_core import (
     DefaultSubscription,
     MessageContext,
     SingleThreadedAgentRuntime,
-    TopicId,
-    TypeSubscription,
-    try_get_known_serializers_for_type,
 )
-from autogen_core.models import AssistantMessage
+from autogen_core.models import AssistantMessage, ChatCompletionClient
 from loguru import logger
-from mtmai.agents._types import agent_message_types
 from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.agents.intervention_handlers import (
-    NeedsUserInputHandler,
-    ToolInterventionHandler,
-)
+from mtmai.agents.intervention_handlers import ToolInterventionHandler
 from mtmai.agents.user_agent import UserAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
+from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.flow_handoff_result import FlowHandoffResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_result import FlowResult
@@ -41,7 +39,6 @@ from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.user_team_config import UserTeamConfig
-from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.model_client.utils import get_default_model_client
@@ -60,28 +57,54 @@ class FlowUser:
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
         team = UserTeam._from_config(UserTeamConfig())
-        return await team.run(
-            hatctx=hatctx, task=input, cancellation_token=cancellation_token
-        )
+        # return await team.run(
+        #     hatctx=hatctx, task=input, cancellation_token=cancellation_token
+        # )
+        if isinstance(input.actual_instance, ChatMessageInput):
+            task = TextMessage(content=input.actual_instance.content, source="user")
+            async for event in team.run_stream(
+                task=task, cancellation_token=cancellation_token
+            ):
+                logger.info(f"stream event: {event}")
 
 
-class UserTeam(Team, Component[UserTeamConfig]):
+class UserTeam(BaseGroupChat, Component[UserTeamConfig]):
     component_provider_override = "mtmai.teams.user_team.UserTeam"
     component_config_schema = UserTeamConfig
 
     def __init__(
         self,
+        participants: List[ChatAgent],
+        model_client: ChatCompletionClient,
         *,
+        termination_condition: TerminationCondition | None = None,
+        max_turns: int | None = 20,
         runtime: AgentRuntime | None = None,
-        max_turns: int | None = None,
+        max_stalls: int = 3,
+        # final_answer_prompt: str = ORCHESTRATOR_FINAL_ANSWER_PROMPT,
     ) -> None:
+        self.session_id = get_chat_session_id_ctx() or generate_uuid()
+        # needs_user_input_handler = NeedsUserInputHandler(self.session_id)
+        tool_intervention_handler = ToolInterventionHandler()
+        self._runtime = SingleThreadedAgentRuntime(
+            intervention_handlers=[
+                # needs_user_input_handler,
+                tool_intervention_handler,
+            ],
+            ignore_unhandled_exceptions=False,
+        )
+
+        super().__init__(
+            participants,
+            group_chat_manager_name="UserAgentOrchestrator",
+            group_chat_manager_class=UserAgent,
+            termination_condition=termination_condition,
+            max_turns=max_turns,
+            runtime=self._runtime,
+        )
         self._runtime = runtime
         self._initialized = False
         self._max_turns = max_turns
-        # The queue for collecting the output messages.
-        # self._output_message_queue: asyncio.Queue[BaseAgentEvent | BaseChatMessage] = (
-        #     asyncio.Queue()
-        # )
         self._output_queue = asyncio.Queue[
             FlowHandoffResult
             | FlowResult
@@ -90,59 +113,90 @@ class UserTeam(Team, Component[UserTeamConfig]):
             | BaseAgentEvent
         ]()
 
-    async def _init(self, hatctx: Context):
-        self.session_id = get_chat_session_id_ctx() or generate_uuid()
-        self.tenant_client = TenantClient()
-        self.model_client = get_default_model_client()
+    # async def _init(self):
+    #     self.session_id = get_chat_session_id_ctx() or generate_uuid()
+    #     self.tenant_client = TenantClient()
+    #     self.model_client = get_default_model_client()
 
-        if not self._runtime:
-            needs_user_input_handler = NeedsUserInputHandler(self.session_id)
-            tool_intervention_handler = ToolInterventionHandler()
-            self._runtime = SingleThreadedAgentRuntime(
-                intervention_handlers=[
-                    needs_user_input_handler,
-                    tool_intervention_handler,
-                ],
-                ignore_unhandled_exceptions=False,
-            )
+    #     # if not self._runtime:
+    #     #     needs_user_input_handler = NeedsUserInputHandler(self.session_id)
+    #     #     tool_intervention_handler = ToolInterventionHandler()
+    #     #     self._runtime = SingleThreadedAgentRuntime(
+    #     #         intervention_handlers=[
+    #     #             needs_user_input_handler,
+    #     #             tool_intervention_handler,
+    #     #         ],
+    #     #         ignore_unhandled_exceptions=False,
+    #     #     )
 
-        for t in agent_message_types:
-            self._runtime.add_message_serializer(try_get_known_serializers_for_type(t))
+    #     for t in agent_message_types:
+    #         self._runtime.add_message_serializer(try_get_known_serializers_for_type(t))
 
-        team_topic = f"social.{self.session_id}"
-        topic_source = "default"
-        self.team_topic_id = TopicId(type=team_topic, source=topic_source)
-        self.model_client = get_default_model_client()
+    #     team_topic = f"social.{self.session_id}"
+    #     topic_source = "default"
+    #     self.team_topic_id = TopicId(type=team_topic, source=topic_source)
+    #     self.model_client = get_default_model_client()
 
-        await self._runtime.add_subscription(
-            TypeSubscription(
-                topic_type=AgentTopicTypes.ROUTER.value,
-                agent_type=self.team_topic_id.type,
-            )
+    #     # await self._runtime.add_subscription(
+    #     #     TypeSubscription(
+    #     #         topic_type=AgentTopicTypes.ROUTER.value,
+    #     #         agent_type=self.team_topic_id.type,
+    #     #     )
+    #     # )
+
+    #     # user_agent_type = await UserAgent.register(
+    #     #     runtime=self._runtime,
+    #     #     type=AgentTopicTypes.USER.value,
+    #     #     factory=lambda: UserAgent(
+    #     #         description="A user agent.",
+    #     #         session_id=self.session_id,
+    #     #         model_client=self.model_client,
+    #     #         hatctx=hatctx,
+    #     #     ),
+    #     # )
+    #     # await self._runtime.add_subscription(
+    #     #     subscription=TypeSubscription(
+    #     #         topic_type=self.team_topic_id.type,
+    #     #         agent_type=user_agent_type.type,
+    #     #     )
+    #     # )
+
+    #     await self.register_closure_agent()
+
+    #     self._initialized = True
+    #     await self.load_runtimestate(self.session_id, self._runtime)
+    #     self._runtime.start()
+
+    def _create_group_chat_manager_factory(
+        self,
+        name: str,
+        group_topic_type: str,
+        output_topic_type: str,
+        participant_topic_types: List[str],
+        participant_names: List[str],
+        participant_descriptions: List[str],
+        output_message_queue: asyncio.Queue[
+            BaseAgentEvent | BaseChatMessage | GroupChatTermination
+        ],
+        termination_condition: TerminationCondition | None,
+        max_turns: int | None,
+        message_factory: MessageFactory,
+    ) -> Callable[[], UserAgent]:
+        return lambda: UserAgent(
+            name=name,
+            group_topic_type=group_topic_type,
+            output_topic_type=output_topic_type,
+            participant_topic_types=participant_topic_types,
+            participant_names=participant_names,
+            participant_descriptions=participant_descriptions,
+            max_turns=max_turns,
+            message_factory=message_factory,
+            model_client=self._model_client,
+            # self._max_stalls,
+            # self._final_answer_prompt,
+            output_message_queue=output_message_queue,
+            termination_condition=termination_condition,
         )
-
-        user_agent_type = await UserAgent.register(
-            runtime=self._runtime,
-            type=AgentTopicTypes.USER.value,
-            factory=lambda: UserAgent(
-                description="A user agent.",
-                session_id=self.session_id,
-                model_client=self.model_client,
-                hatctx=hatctx,
-            ),
-        )
-        await self._runtime.add_subscription(
-            subscription=TypeSubscription(
-                topic_type=self.team_topic_id.type,
-                agent_type=user_agent_type.type,
-            )
-        )
-
-        await self.register_closure_agent()
-
-        self._initialized = True
-        await self.load_runtimestate(self.session_id, self._runtime)
-        self._runtime.start()
 
     async def register_closure_agent(self):
         # closure agent
@@ -165,28 +219,43 @@ class UserTeam(Team, Component[UserTeamConfig]):
             ],
         )
 
-    async def run(
+    # async def run(
+    #     self,
+    #     hatctx: Context,
+    #     *,
+    #     task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
+    #     if not self._initialized:
+    #         await self._init(hatctx)
+
+    #     if isinstance(task, MtAgEvent):
+    #         await self._runtime.publish_message(
+    #             message=task.actual_instance,
+    #             topic_id=self.team_topic_id,
+    #             cancellation_token=cancellation_token,
+    #         )
+
+    #     await self._runtime.stop_when_idle()
+    #     await self.save_state_db()
+    #     final_result = await self._output_queue.get()
+
+    #     return final_result
+
+    async def run_stream(
         self,
-        hatctx: Context,
         *,
-        task: str | ChatMessage | Sequence[ChatMessage] | MtAgEvent | None = None,
+        task: str
+        | BaseChatMessage
+        | Sequence[BaseChatMessage]
+        | MtAgEvent
+        | None = None,
         cancellation_token: CancellationToken | None = None,
-    ) -> AsyncGenerator[AgentEvent | ChatMessage | TaskResult, None]:
-        if not self._initialized:
-            await self._init(hatctx)
-
-        if isinstance(task, MtAgEvent):
-            await self._runtime.publish_message(
-                message=task.actual_instance,
-                topic_id=self.team_topic_id,
-                cancellation_token=cancellation_token,
-            )
-
-        await self._runtime.stop_when_idle()
-        await self.save_state_db()
-        final_result = await self._output_queue.get()
-
-        return final_result
+    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | TaskResult, None]:
+        async for e in super().run_stream(
+            task=task, cancellation_token=cancellation_token
+        ):
+            yield e
 
     async def reset(self) -> None:
         self._is_running = False
@@ -235,8 +304,24 @@ class UserTeam(Team, Component[UserTeamConfig]):
 
     @classmethod
     def _from_config(cls, config: InstagramTeamConfig) -> Self:
+        model_client = get_default_model_client()
+        participants = [
+            AssistantAgent(
+                name="assisant",
+                description="an useful assistant.",
+                system_message=dedent(
+                    "你是实用助手,需要使用提供的工具解决用户提出的问题"
+                    "重要:"
+                    "1. 当用户明确调用 登录工具时才调用 登录工具"
+                    "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
+                ),
+                model_client=model_client,
+            )
+        ]
         return cls(
             max_turns=config.max_turns or 25,
+            participants=participants,
+            model_client=model_client,
         )
 
     async def pause(self) -> None:
