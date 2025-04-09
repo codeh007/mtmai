@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.mt_open_ai_chat_completion_client_component import MtOpenAIChatCompletionClientComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,13 +31,13 @@ class AssistantAgentConfig(BaseModel):
     description: StrictStr
     model_context: Optional[Dict[str, Dict[str, Any]]] = None
     memory: Optional[Dict[str, Dict[str, Any]]] = None
-    model_client_stream: StrictBool
+    model_client_stream: Optional[StrictBool] = False
     system_message: Optional[StrictStr] = None
-    model_client: Component
-    tools: List[Component]
-    handoffs: List[StrictStr]
-    reflect_on_tool_use: StrictBool
-    tool_call_summary_format: StrictStr
+    model_client: MtOpenAIChatCompletionClientComponent
+    tools: Optional[List[Dict[str, Dict[str, Any]]]] = None
+    handoffs: Optional[List[StrictStr]] = None
+    reflect_on_tool_use: Optional[StrictBool] = False
+    tool_call_summary_format: Optional[StrictStr] = '{result}'
     __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
 
     model_config = ConfigDict(
@@ -82,13 +82,6 @@ class AssistantAgentConfig(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of each item in tools (list)
-        _items = []
-        if self.tools:
-            for _item_tools in self.tools:
-                if _item_tools:
-                    _items.append(_item_tools.to_dict())
-            _dict['tools'] = _items
         return _dict
 
     @classmethod
@@ -112,8 +105,8 @@ class AssistantAgentConfig(BaseModel):
             "memory": obj.get("memory"),
             "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
-            "model_client": Component.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
-            "tools": [Component.from_dict(_item) for _item in obj["tools"]] if obj.get("tools") is not None else None,
+            "model_client": MtOpenAIChatCompletionClientComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "tools": obj.get("tools"),
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
             "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'

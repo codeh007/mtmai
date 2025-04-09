@@ -17,31 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.team_component import TeamComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AssistantAgentComponent(BaseModel):
+class FlowTeamInput(BaseModel):
     """
-    AssistantAgentComponent
+    FlowTeamInput
     """ # noqa: E501
-    provider: Optional[StrictStr] = None
-    component_type: StrictStr
-    version: Optional[StrictInt] = None
-    component_version: Optional[StrictInt] = None
-    description: Optional[StrictStr] = None
-    label: Optional[StrictStr] = None
-    config: Optional[AssistantAgentConfig] = None
-    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
-
-    @field_validator('component_type')
-    def component_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['agent']):
-            raise ValueError("must be one of enum values ('agent')")
-        return value
+    session_id: StrictStr
+    component: TeamComponent
+    task: StrictStr
+    init_state: Dict[str, Any]
+    __properties: ClassVar[List[str]] = ["session_id", "component", "task", "init_state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -61,7 +51,7 @@ class AssistantAgentComponent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AssistantAgentComponent from a JSON string"""
+        """Create an instance of FlowTeamInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -82,14 +72,14 @@ class AssistantAgentComponent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of component
+        if self.component:
+            _dict['component'] = self.component.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AssistantAgentComponent from a dict"""
+        """Create an instance of FlowTeamInput from a dict"""
         if obj is None:
             return None
 
@@ -99,16 +89,13 @@ class AssistantAgentComponent(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AssistantAgentComponent) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in FlowTeamInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "component_type": obj.get("component_type") if obj.get("component_type") is not None else 'agent',
-            "version": obj.get("version"),
-            "component_version": obj.get("component_version"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "config": AssistantAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "session_id": obj.get("session_id"),
+            "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None,
+            "task": obj.get("task"),
+            "init_state": obj.get("init_state")
         })
         return _obj
 

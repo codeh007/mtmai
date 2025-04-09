@@ -31,4 +31,9 @@ async def run_worker():
     worker.register_workflow(FlowTenant())
     logger.info("register tenant workflow")
 
+    from mtmai.flows.flow_team import FlowTeam
+
+    worker.register_workflow(FlowTeam())
+    logger.info("register team workflow")
+
     await worker.async_start()

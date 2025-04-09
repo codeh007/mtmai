@@ -5,21 +5,20 @@ import re
 from typing import Any, List, Mapping
 
 import pyotp
-from autogen_core import (
-    CancellationToken,
-    DefaultTopicId,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
-)
+from autogen_agentchat.agents import AssistantAgent
+from autogen_core import (CancellationToken, DefaultTopicId, MessageContext,
+                          message_handler)
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
-from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
-from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
+from mtmai.clients.rest.models.platform_account_upsert import \
+    PlatformAccountUpsert
+from mtmai.clients.rest.models.social_add_followers_input import \
+    SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
@@ -30,7 +29,8 @@ from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
 
 
-class InstagramAgent(RoutedAgent):
+# class InstagramAgent(RoutedAgent):
+class InstagramAgent(AssistantAgent):
     def __init__(
         self,
         description: str,

@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.mt_open_ai_chat_completion_client_component import MtOpenAIChatCompletionClientComponent
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,13 +31,13 @@ class InstagramAgentConfig(BaseModel):
     description: StrictStr
     model_context: Optional[Dict[str, Dict[str, Any]]] = None
     memory: Optional[Dict[str, Dict[str, Any]]] = None
-    model_client_stream: StrictBool
+    model_client_stream: Optional[StrictBool] = False
     system_message: Optional[StrictStr] = None
-    model_client: Component
-    tools: List[Dict[str, Dict[str, Any]]]
-    handoffs: List[StrictStr]
-    reflect_on_tool_use: StrictBool
-    tool_call_summary_format: StrictStr
+    model_client: MtOpenAIChatCompletionClientComponent
+    tools: Optional[List[Dict[str, Dict[str, Any]]]] = None
+    handoffs: Optional[List[StrictStr]] = None
+    reflect_on_tool_use: Optional[StrictBool] = False
+    tool_call_summary_format: Optional[StrictStr] = '{result}'
     username: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
     otp_key: Optional[StrictStr] = None
@@ -109,7 +109,7 @@ class InstagramAgentConfig(BaseModel):
             "memory": obj.get("memory"),
             "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
-            "model_client": Component.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "model_client": MtOpenAIChatCompletionClientComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
             "tools": obj.get("tools"),
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,

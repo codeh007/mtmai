@@ -18,8 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,21 +27,20 @@ class SocialTeamComponent(BaseModel):
     """
     SocialTeamComponent
     """ # noqa: E501
-    metadata: APIResourceMeta
-    label: StrictStr
-    description: StrictStr
-    provider: StrictStr
+    provider: Optional[StrictStr] = None
     component_type: StrictStr
-    version: StrictInt
-    component_version: StrictInt
+    version: Optional[StrictInt] = None
+    component_version: Optional[StrictInt] = None
+    description: Optional[StrictStr] = None
+    label: Optional[StrictStr] = None
     config: SocialTeamConfig
-    __properties: ClassVar[List[str]] = ["metadata", "label", "description", "provider", "component_type", "version", "component_version", "config"]
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     @field_validator('component_type')
     def component_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['social']):
-            raise ValueError("must be one of enum values ('social')")
+        if value not in set(['team']):
+            raise ValueError("must be one of enum values ('team')")
         return value
 
     model_config = ConfigDict(
@@ -84,9 +82,6 @@ class SocialTeamComponent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         # override the default output from pydantic by calling `to_dict()` of config
         if self.config:
             _dict['config'] = self.config.to_dict()
@@ -107,13 +102,12 @@ class SocialTeamComponent(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SocialTeamComponent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "label": obj.get("label"),
-            "description": obj.get("description"),
             "provider": obj.get("provider"),
-            "component_type": obj.get("component_type"),
+            "component_type": obj.get("component_type") if obj.get("component_type") is not None else 'team',
             "version": obj.get("version"),
             "component_version": obj.get("component_version"),
+            "description": obj.get("description"),
+            "label": obj.get("label"),
             "config": SocialTeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

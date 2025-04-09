@@ -26,11 +26,8 @@ class ComponentTypes(str, Enum):
     """
     allowed enum values
     """
-    TEAM = 'team'
     AGENT = 'agent'
-    MODEL = 'model'
-    TOOL = 'tool'
-    TERMINATION = 'termination'
+    TEAM = 'team'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

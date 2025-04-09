@@ -26,12 +26,13 @@ class SocialTeamConfig(BaseModel):
     """
     SocialTeamConfig
     """ # noqa: E501
+    participants: Optional[List[Dict[str, Any]]] = None
     max_turns: Optional[StrictInt] = 25
     username: StrictStr
     password: StrictStr
     otp_key: StrictStr
     proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["max_turns", "username", "password", "otp_key", "proxy_url"]
+    __properties: ClassVar[List[str]] = ["participants", "max_turns", "username", "password", "otp_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,6 +90,7 @@ class SocialTeamConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SocialTeamConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
+            "participants": obj.get("participants"),
             "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25,
             "username": obj.get("username"),
             "password": obj.get("password"),
