@@ -17,32 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.form_field import FormField
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AskUserFunctionCall(BaseModel):
+class AskUserFunctionCallInputFieldValue(BaseModel):
     """
-    AskUserFunctionCall
+    AskUserFunctionCallInputFieldValue
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    id: Optional[StrictStr] = None
-    title: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    fields: Optional[List[FormField]] = None
-    __properties: ClassVar[List[str]] = ["type", "id", "title", "description", "fields"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['AskUserFunctionCall']):
-            raise ValueError("must be one of enum values ('AskUserFunctionCall')")
-        return value
+    name: Optional[StrictStr] = None
+    value: StrictStr
+    __properties: ClassVar[List[str]] = ["name", "value"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -62,7 +48,7 @@ class AskUserFunctionCall(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AskUserFunctionCall from a JSON string"""
+        """Create an instance of AskUserFunctionCallInputFieldValue from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -83,18 +69,11 @@ class AskUserFunctionCall(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in fields (list)
-        _items = []
-        if self.fields:
-            for _item_fields in self.fields:
-                if _item_fields:
-                    _items.append(_item_fields.to_dict())
-            _dict['fields'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AskUserFunctionCall from a dict"""
+        """Create an instance of AskUserFunctionCallInputFieldValue from a dict"""
         if obj is None:
             return None
 
@@ -104,14 +83,11 @@ class AskUserFunctionCall(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AskUserFunctionCall) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in AskUserFunctionCallInputFieldValue) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "id": obj.get("id"),
-            "title": obj.get("title"),
-            "description": obj.get("description"),
-            "fields": [FormField.from_dict(_item) for _item in obj["fields"]] if obj.get("fields") is not None else None
+            "name": obj.get("name"),
+            "value": obj.get("value")
         })
         return _obj
 

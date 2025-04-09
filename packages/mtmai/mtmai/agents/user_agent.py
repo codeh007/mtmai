@@ -1,16 +1,13 @@
 from datetime import datetime
 from textwrap import dedent
-from typing import Any, Mapping, cast
+from typing import Any, List, Mapping, cast
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.messages import TextMessage
-from autogen_core import (
-    DefaultTopicId,
-    FunctionCall,
-    MessageContext,
-    RoutedAgent,
-    message_handler,
+from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, TextMessage
+from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
+    BaseGroupChatManager,
 )
+from autogen_core import DefaultTopicId, FunctionCall, MessageContext, message_handler
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
@@ -45,7 +42,8 @@ from mtmai.context.context import Context
 from mtmai.mtlibs.id import generate_uuid
 
 
-class UserAgent(RoutedAgent):
+# class UserAgent(RoutedAgent):
+class UserAgent(BaseGroupChatManager):
     def __init__(
         self,
         description: str,
@@ -121,16 +119,17 @@ class UserAgent(RoutedAgent):
                             name="ask_user",
                             arguments=AskUserFunctionCall(
                                 type="AskUserFunctionCall",
+                                id=generate_uuid(),
                                 title="请选择一个社交媒体账号登录",
+                                description="请选择一个社交媒体账号登录",
                                 fields=[
                                     FormField(
-                                        type="FormField",
+                                        type="text",
                                         name="username",
                                         label="用户名",
                                         placeholder="请输入用户名",
                                     )
                                 ],
-                                question="请选择一个社交媒体账号登录",
                             ).model_dump_json(),
                         )
                     ],
@@ -172,6 +171,13 @@ class UserAgent(RoutedAgent):
                 type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
             ),
         )
+
+    @message_handler
+    async def on_AskUserFunctionCallInput(
+        self, message: AskUserFunctionCall, ctx: MessageContext
+    ) -> None:
+        logger.info(f"on_AskUserFunctionCallInput: {message}")
+        pass
 
     @message_handler
     async def on_social_login(
@@ -233,8 +239,22 @@ class UserAgent(RoutedAgent):
                 mt_assistant_message = cast(
                     MtAssistantMessage, chat_message.llm_message.actual_instance
                 )
+
+                content = mt_assistant_message.content.actual_instance
+                if isinstance(content, str):
+                    content = content
+                else:
+                    fc_list = []
+                    for item in content:
+                        fc = FunctionCall(
+                            id=item.id,
+                            name=item.name,
+                            arguments=item.arguments,
+                        )
+                        fc_list.append(fc)
+                    content = fc_list
                 msg = AssistantMessage(
-                    content=mt_assistant_message.content.actual_instance,
+                    content=content,
                     source=mt_assistant_message.source,
                     thought=mt_assistant_message.thought,
                 )
@@ -275,3 +295,25 @@ class UserAgent(RoutedAgent):
                 topic=ctx.topic_id.type,
             ).model_dump(),
         )
+
+    async def select_speaker(
+        self, thread: List[BaseAgentEvent | BaseChatMessage]
+    ) -> str:
+        """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
+        return ""
+
+    async def reset(self) -> None:
+        """Reset the group chat manager."""
+        # self._message_thread.clear()
+        # if self._termination_condition is not None:
+        #     await self._termination_condition.reset()
+        # self._n_rounds = 0
+        # self._n_stalls = 0
+        # self._task = ""
+        # self._facts = ""
+        # self._plan = ""
+        ...
+
+    async def validate_group_state(
+        self, messages: List[BaseChatMessage] | None
+    ) -> None: ...

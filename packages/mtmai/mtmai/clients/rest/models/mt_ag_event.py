@@ -17,6 +17,7 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
+from mtmai.clients.rest.models.ask_user_function_call_input import AskUserFunctionCallInput
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
@@ -28,7 +29,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-MTAGEVENT_ONE_OF_SCHEMAS = ["ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
+MTAGEVENT_ONE_OF_SCHEMAS = ["AskUserFunctionCallInput", "ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
 
 class MtAgEvent(BaseModel):
     """
@@ -48,8 +49,10 @@ class MtAgEvent(BaseModel):
     oneof_schema_6_validator: Optional[TenantInitInput] = None
     # data type: ChatMessageInput
     oneof_schema_7_validator: Optional[ChatMessageInput] = None
-    actual_instance: Optional[Union[ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent]] = None
-    one_of_schemas: Set[str] = { "ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent" }
+    # data type: AskUserFunctionCallInput
+    oneof_schema_8_validator: Optional[AskUserFunctionCallInput] = None
+    actual_instance: Optional[Union[AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent]] = None
+    one_of_schemas: Set[str] = { "AskUserFunctionCallInput", "ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "TenantInitInput", "TextMessage", "ThoughtEvent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -110,12 +113,17 @@ class MtAgEvent(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ChatMessageInput`")
         else:
             match += 1
+        # validate data type: AskUserFunctionCallInput
+        if not isinstance(v, AskUserFunctionCallInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AskUserFunctionCallInput`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in MtAgEvent with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in MtAgEvent with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -134,6 +142,11 @@ class MtAgEvent(BaseModel):
         _data_type = json.loads(json_str).get("type")
         if not _data_type:
             raise ValueError("Failed to lookup data type from the field `type` in the input.")
+
+        # check if data type is `AskUserFunctionCallInput`
+        if _data_type == "AskUserFunctionCallInput":
+            instance.actual_instance = AskUserFunctionCallInput.from_json(json_str)
+            return instance
 
         # check if data type is `ChatMessageInput`
         if _data_type == "ChatMessageInput":
@@ -212,13 +225,19 @@ class MtAgEvent(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into AskUserFunctionCallInput
+        try:
+            instance.actual_instance = AskUserFunctionCallInput.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into MtAgEvent with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into MtAgEvent with oneOf schemas: ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into MtAgEvent with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -232,7 +251,7 @@ class MtAgEvent(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, TenantInitInput, TextMessage, ThoughtEvent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,9 +26,23 @@ class FormField(BaseModel):
     """
     FormField
     """ # noqa: E501
-    name: StrictStr
     type: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "type"]
+    name: StrictStr
+    default_value: Optional[StrictStr] = None
+    label: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
+    required: Optional[StrictBool] = None
+    min: Optional[Union[StrictFloat, StrictInt]] = None
+    max: Optional[Union[StrictFloat, StrictInt]] = None
+    placeholder: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "name", "default_value", "label", "description", "required", "min", "max", "placeholder"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['text', 'number', 'boolean', 'array', 'object']):
+            raise ValueError("must be one of enum values ('text', 'number', 'boolean', 'array', 'object')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -86,8 +100,15 @@ class FormField(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in FormField) in the input: " + _key)
 
         _obj = cls.model_validate({
+            "type": obj.get("type") if obj.get("type") is not None else 'text',
             "name": obj.get("name"),
-            "type": obj.get("type")
+            "default_value": obj.get("default_value"),
+            "label": obj.get("label"),
+            "description": obj.get("description"),
+            "required": obj.get("required"),
+            "min": obj.get("min"),
+            "max": obj.get("max"),
+            "placeholder": obj.get("placeholder")
         })
         return _obj
 

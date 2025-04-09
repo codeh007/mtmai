@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.form_field import FormField
 from typing import Optional, Set
@@ -27,10 +27,33 @@ class SchemaForm(BaseModel):
     """
     SchemaForm
     """ # noqa: E501
+    form_type: Optional[StrictStr] = 'schema'
+    form_name: Optional[StrictStr] = None
     title: StrictStr
     description: Optional[StrictStr] = None
+    layout: Optional[StrictStr] = 'vertical'
     fields: List[FormField]
-    __properties: ClassVar[List[str]] = ["title", "description", "fields"]
+    __properties: ClassVar[List[str]] = ["form_type", "form_name", "title", "description", "layout", "fields"]
+
+    @field_validator('form_type')
+    def form_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['schema', 'custom']):
+            raise ValueError("must be one of enum values ('schema', 'custom')")
+        return value
+
+    @field_validator('layout')
+    def layout_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['vertical', 'horizontal']):
+            raise ValueError("must be one of enum values ('vertical', 'horizontal')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -95,8 +118,11 @@ class SchemaForm(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SchemaForm) in the input: " + _key)
 
         _obj = cls.model_validate({
+            "form_type": obj.get("form_type") if obj.get("form_type") is not None else 'schema',
+            "form_name": obj.get("form_name"),
             "title": obj.get("title"),
             "description": obj.get("description"),
+            "layout": obj.get("layout") if obj.get("layout") is not None else 'vertical',
             "fields": [FormField.from_dict(_item) for _item in obj["fields"]] if obj.get("fields") is not None else None
         })
         return _obj
