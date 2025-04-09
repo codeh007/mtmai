@@ -17,18 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.component import Component
 from typing import Optional, Set
 from typing_extensions import Self
 
-class RoundRobinGroupChatConfig(BaseModel):
+class MyDemoAgentEvent(BaseModel):
     """
-    RoundRobinGroupChatConfig
+    MyDemoAgentEvent
     """ # noqa: E501
-    participants: List[Component]
-    __properties: ClassVar[List[str]] = ["participants"]
+    type: StrictStr
+    content: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "content"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MyDemoAgentEvent']):
+            raise ValueError("must be one of enum values ('MyDemoAgentEvent')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +55,7 @@ class RoundRobinGroupChatConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of RoundRobinGroupChatConfig from a JSON string"""
+        """Create an instance of MyDemoAgentEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,18 +76,11 @@ class RoundRobinGroupChatConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
-        _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of RoundRobinGroupChatConfig from a dict"""
+        """Create an instance of MyDemoAgentEvent from a dict"""
         if obj is None:
             return None
 
@@ -90,10 +90,11 @@ class RoundRobinGroupChatConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in RoundRobinGroupChatConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in MyDemoAgentEvent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "participants": [Component.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
+            "type": obj.get("type") if obj.get("type") is not None else 'MyDemoAgentEvent',
+            "content": obj.get("content")
         })
         return _obj
 

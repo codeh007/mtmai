@@ -17,18 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.function_call import FunctionCall
 from typing import Optional, Set
 from typing_extensions import Self
 
-class RoundRobinGroupChatConfig(BaseModel):
+class ToolCallRequestEvent(BaseModel):
     """
-    RoundRobinGroupChatConfig
+    ToolCallRequestEvent
     """ # noqa: E501
-    participants: List[Component]
-    __properties: ClassVar[List[str]] = ["participants"]
+    type: StrictStr
+    content: List[FunctionCall]
+    __properties: ClassVar[List[str]] = ["type", "content"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['ToolCallRequestEvent']):
+            raise ValueError("must be one of enum values ('ToolCallRequestEvent')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +56,7 @@ class RoundRobinGroupChatConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of RoundRobinGroupChatConfig from a JSON string"""
+        """Create an instance of ToolCallRequestEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,18 +77,18 @@ class RoundRobinGroupChatConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in content (list)
         _items = []
-        if self.participants:
-            for _item_participants in self.participants:
-                if _item_participants:
-                    _items.append(_item_participants.to_dict())
-            _dict['participants'] = _items
+        if self.content:
+            for _item_content in self.content:
+                if _item_content:
+                    _items.append(_item_content.to_dict())
+            _dict['content'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of RoundRobinGroupChatConfig from a dict"""
+        """Create an instance of ToolCallRequestEvent from a dict"""
         if obj is None:
             return None
 
@@ -90,10 +98,11 @@ class RoundRobinGroupChatConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in RoundRobinGroupChatConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ToolCallRequestEvent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "participants": [Component.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None
+            "type": obj.get("type") if obj.get("type") is not None else 'ToolCallRequestEvent',
+            "content": [FunctionCall.from_dict(_item) for _item in obj["content"]] if obj.get("content") is not None else None
         })
         return _obj
 

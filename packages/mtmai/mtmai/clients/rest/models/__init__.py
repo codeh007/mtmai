@@ -86,6 +86,10 @@ from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_execution_input import CodeExecutionInput
 from mtmai.clients.rest.models.code_execution_result import CodeExecutionResult
 from mtmai.clients.rest.models.common_result import CommonResult
+from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.component_list import ComponentList
+from mtmai.clients.rest.models.component_properties import ComponentProperties
+from mtmai.clients.rest.models.component_upsert import ComponentUpsert
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmai.clients.rest.models.create_api_token_response import CreateAPITokenResponse
 from mtmai.clients.rest.models.create_blog_post_request import CreateBlogPostRequest
@@ -143,6 +147,7 @@ from mtmai.clients.rest.models.hf_account import HfAccount
 from mtmai.clients.rest.models.ig_login import IGLogin
 from mtmai.clients.rest.models.ig_login_response import IGLoginResponse
 from mtmai.clients.rest.models.image_content import ImageContent
+from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.job import Job
@@ -169,16 +174,9 @@ from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
-from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_list import MtComponentList
-from mtmai.clients.rest.models.mt_component_properties import MtComponentProperties
-from mtmai.clients.rest.models.mt_component_upsert import MtComponentUpsert
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
-from mtmai.clients.rest.models.mt_resource import MtResource
-from mtmai.clients.rest.models.mt_resource_list import MtResourceList
-from mtmai.clients.rest.models.mt_resource_properties import MtResourceProperties
-from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
+from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
@@ -215,7 +213,11 @@ from mtmai.clients.rest.models.replay_workflow_runs_request import ReplayWorkflo
 from mtmai.clients.rest.models.replay_workflow_runs_response import ReplayWorkflowRunsResponse
 from mtmai.clients.rest.models.request_usage import RequestUsage
 from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
+from mtmai.clients.rest.models.resource import Resource
 from mtmai.clients.rest.models.resource_flow_input import ResourceFlowInput
+from mtmai.clients.rest.models.resource_list import ResourceList
+from mtmai.clients.rest.models.resource_properties import ResourceProperties
+from mtmai.clients.rest.models.resource_upsert import ResourceUpsert
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.run_flow_model_input import RunFlowModelInput
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
@@ -235,6 +237,7 @@ from mtmai.clients.rest.models.slack_webhook import SlackWebhook
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
+from mtmai.clients.rest.models.social_team_component import SocialTeamComponent
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
@@ -253,6 +256,7 @@ from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.system_message import SystemMessage
 from mtmai.clients.rest.models.team import Team
+from mtmai.clients.rest.models.team_component import TeamComponent
 from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
 from mtmai.clients.rest.models.team_run import TeamRun
@@ -282,6 +286,7 @@ from mtmai.clients.rest.models.text_highlight import TextHighlight
 from mtmai.clients.rest.models.text_message import TextMessage
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
+from mtmai.clients.rest.models.tool_call_request_event import ToolCallRequestEvent
 from mtmai.clients.rest.models.tool_call_result_message_config import ToolCallResultMessageConfig
 from mtmai.clients.rest.models.tool_config import ToolConfig
 from mtmai.clients.rest.models.tool_types import ToolTypes
@@ -299,6 +304,7 @@ from mtmai.clients.rest.models.upsert_model import UpsertModel
 from mtmai.clients.rest.models.user import User
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
+from mtmai.clients.rest.models.user_input_requested_event import UserInputRequestedEvent
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest

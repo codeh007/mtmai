@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_component import MtComponent
+from mtmai.clients.rest.models.component import Component
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -33,12 +33,16 @@ class InstagramAgentConfig(BaseModel):
     memory: Optional[Dict[str, Dict[str, Any]]] = None
     model_client_stream: StrictBool
     system_message: Optional[StrictStr] = None
-    model_client: MtComponent
+    model_client: Component
     tools: List[Dict[str, Dict[str, Any]]]
     handoffs: List[StrictStr]
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
+    username: Optional[StrictStr] = None
+    password: Optional[StrictStr] = None
+    otp_key: Optional[StrictStr] = None
+    proxy_url: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "username", "password", "otp_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -105,11 +109,15 @@ class InstagramAgentConfig(BaseModel):
             "memory": obj.get("memory"),
             "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
-            "model_client": MtComponent.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "model_client": Component.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
             "tools": obj.get("tools"),
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
-            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'
+            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}',
+            "username": obj.get("username"),
+            "password": obj.get("password"),
+            "otp_key": obj.get("otp_key"),
+            "proxy_url": obj.get("proxy_url")
         })
         return _obj
 

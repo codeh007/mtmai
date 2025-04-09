@@ -13,98 +13,124 @@
 
 
 from __future__ import annotations
-import pprint
-import re  # noqa: F401
 import json
+import pprint
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
+from typing import Any, List, Optional
+from mtmai.clients.rest.models.social_team_component import SocialTeamComponent
+from pydantic import StrictStr, Field
+from typing import Union, List, Set, Optional, Dict
+from typing_extensions import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.team_config import TeamConfig
-from typing import Optional, Set
-from typing_extensions import Self
+TEAMCOMPONENT_ONE_OF_SCHEMAS = ["SocialTeamComponent"]
 
 class TeamComponent(BaseModel):
     """
     TeamComponent
-    """ # noqa: E501
-    provider: StrictStr = Field(description="Describes how the component can be instantiated.")
-    version: Optional[StrictInt] = Field(default=None, description="Version of the component specification. If missing, the component assumes whatever is the current version of the library used to load it. This is obviously dangerous and should be used for user authored ephmeral config. For all other configs version should be specified.")
-    component_version: Optional[StrictInt] = Field(default=None, description="Version of the component. If missing, the component assumes the default version of the provider.", alias="componentVersion")
-    description: StrictStr = Field(description="Description of the component.")
-    label: StrictStr = Field(description="Human readable label for the component. If missing the component assumes the class name of the provider.")
-    component_type: StrictStr = Field(alias="componentType")
-    config: TeamConfig
-    __properties: ClassVar[List[str]] = ["provider", "version", "componentVersion", "description", "label", "componentType", "config"]
-
-    @field_validator('component_type')
-    def component_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['team']):
-            raise ValueError("must be one of enum values ('team')")
-        return value
+    """
+    # data type: SocialTeamComponent
+    oneof_schema_1_validator: Optional[SocialTeamComponent] = None
+    actual_instance: Optional[Union[SocialTeamComponent]] = None
+    one_of_schemas: Set[str] = { "SocialTeamComponent" }
 
     model_config = ConfigDict(
-        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    def to_str(self) -> str:
-        """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+    discriminator_value_class_map: Dict[str, str] = {
+    }
+
+    def __init__(self, *args, **kwargs) -> None:
+        if args:
+            if len(args) > 1:
+                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
+            if kwargs:
+                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
+            super().__init__(actual_instance=args[0])
+        else:
+            super().__init__(**kwargs)
+
+    @field_validator('actual_instance')
+    def actual_instance_must_validate_oneof(cls, v):
+        instance = TeamComponent.model_construct()
+        error_messages = []
+        match = 0
+        # validate data type: SocialTeamComponent
+        if not isinstance(v, SocialTeamComponent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeamComponent`")
+        else:
+            match += 1
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when setting `actual_instance` in TeamComponent with oneOf schemas: SocialTeamComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when setting `actual_instance` in TeamComponent with oneOf schemas: SocialTeamComponent. Details: " + ", ".join(error_messages))
+        else:
+            return v
+
+    @classmethod
+    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
+        return cls.from_json(json.dumps(obj))
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Self:
+        """Returns the object represented by the json string"""
+        instance = cls.model_construct()
+        error_messages = []
+        match = 0
+
+        # use oneOf discriminator to lookup the data type
+        _data_type = json.loads(json_str).get("component_type")
+        if not _data_type:
+            raise ValueError("Failed to lookup data type from the field `component_type` in the input.")
+
+        # check if data type is `SocialTeamComponent`
+        if _data_type == "SocialTeamComponent":
+            instance.actual_instance = SocialTeamComponent.from_json(json_str)
+            return instance
+
+        # deserialize data into SocialTeamComponent
+        try:
+            instance.actual_instance = SocialTeamComponent.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+
+        if match > 1:
+            # more than 1 match
+            raise ValueError("Multiple matches found when deserializing the JSON string into TeamComponent with oneOf schemas: SocialTeamComponent. Details: " + ", ".join(error_messages))
+        elif match == 0:
+            # no match
+            raise ValueError("No match found when deserializing the JSON string into TeamComponent with oneOf schemas: SocialTeamComponent. Details: " + ", ".join(error_messages))
+        else:
+            return instance
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        """Returns the JSON representation of the actual instance"""
+        if self.actual_instance is None:
+            return "null"
 
-    @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of TeamComponent from a JSON string"""
-        return cls.from_dict(json.loads(json_str))
+        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
+            return self.actual_instance.to_json()
+        else:
+            return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([
-        ])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
-        return _dict
-
-    @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of TeamComponent from a dict"""
-        if obj is None:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], SocialTeamComponent]]:
+        """Returns the dict representation of the actual instance"""
+        if self.actual_instance is None:
             return None
 
-        if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
+            return self.actual_instance.to_dict()
+        else:
+            # primitive type
+            return self.actual_instance
 
-        _obj = cls.model_validate({
-            "provider": obj.get("provider"),
-            "version": obj.get("version"),
-            "componentVersion": obj.get("componentVersion"),
-            "description": obj.get("description"),
-            "label": obj.get("label"),
-            "componentType": obj.get("componentType"),
-            "config": TeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
-        })
-        return _obj
+    def to_str(self) -> str:
+        """Returns the string representation of the actual instance"""
+        return pprint.pformat(self.model_dump())
 
 

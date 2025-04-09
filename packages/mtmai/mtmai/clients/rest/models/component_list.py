@@ -17,28 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentConfig(BaseModel):
+class ComponentList(BaseModel):
     """
-    AgentConfig
+    ComponentList
     """ # noqa: E501
-    name: StrictStr
-    description: StrictStr
-    model_context: Optional[Dict[str, Dict[str, Any]]] = None
-    memory: Optional[Dict[str, Dict[str, Any]]] = None
-    model_client_stream: StrictBool
-    system_message: Optional[StrictStr] = None
-    model_client: Component
-    tools: List[Dict[str, Dict[str, Any]]]
-    handoffs: List[StrictStr]
-    reflect_on_tool_use: StrictBool
-    tool_call_summary_format: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
+    pagination: Optional[PaginationResponse] = None
+    rows: Optional[List[Component]] = None
+    __properties: ClassVar[List[str]] = ["pagination", "rows"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -58,7 +50,7 @@ class AgentConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentConfig from a JSON string"""
+        """Create an instance of ComponentList from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,14 +71,21 @@ class AgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of model_client
-        if self.model_client:
-            _dict['model_client'] = self.model_client.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of pagination
+        if self.pagination:
+            _dict['pagination'] = self.pagination.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in rows (list)
+        _items = []
+        if self.rows:
+            for _item_rows in self.rows:
+                if _item_rows:
+                    _items.append(_item_rows.to_dict())
+            _dict['rows'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentConfig from a dict"""
+        """Create an instance of ComponentList from a dict"""
         if obj is None:
             return None
 
@@ -96,20 +95,11 @@ class AgentConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AgentConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ComponentList) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "name": obj.get("name"),
-            "description": obj.get("description"),
-            "model_context": obj.get("model_context"),
-            "memory": obj.get("memory"),
-            "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
-            "system_message": obj.get("system_message"),
-            "model_client": Component.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
-            "tools": obj.get("tools"),
-            "handoffs": obj.get("handoffs"),
-            "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
-            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'
+            "pagination": PaginationResponse.from_dict(obj["pagination"]) if obj.get("pagination") is not None else None,
+            "rows": [Component.from_dict(_item) for _item in obj["rows"]] if obj.get("rows") is not None else None
         })
         return _obj
 

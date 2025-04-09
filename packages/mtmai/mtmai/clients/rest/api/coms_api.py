@@ -19,9 +19,9 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.mt_component import MtComponent
-from mtmai.clients.rest.models.mt_component_list import MtComponentList
-from mtmai.clients.rest.models.mt_component_upsert import MtComponentUpsert
+from mtmai.clients.rest.models.component import Component
+from mtmai.clients.rest.models.component_list import ComponentList
+from mtmai.clients.rest.models.component_upsert import ComponentUpsert
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -59,7 +59,7 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponent:
+    ) -> Component:
         """coms_get
 
 
@@ -102,7 +102,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -135,7 +135,7 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponent]:
+    ) -> ApiResponse[Component]:
         """coms_get
 
 
@@ -178,7 +178,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -254,7 +254,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -363,7 +363,7 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponentList:
+    ) -> ComponentList:
         """coms_list
 
         获取团队列表
@@ -419,7 +419,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "ComponentList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -457,7 +457,7 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponentList]:
+    ) -> ApiResponse[ComponentList]:
         """coms_list
 
         获取团队列表
@@ -513,7 +513,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "ComponentList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -607,7 +607,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponentList",
+            '200': "ComponentList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -718,7 +718,7 @@ class ComsApi:
     @validate_call
     async def coms_upsert(
         self,
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
+        component_upsert: Annotated[ComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
         _request_timeout: Union[
@@ -733,13 +733,13 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtComponent:
+    ) -> Component:
         """coms_upsert
 
-        Upsert an mtcomponent
+        Upsert an component
 
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
+        :param component_upsert: The model properties to update (required)
+        :type component_upsert: ComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
@@ -767,7 +767,7 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
-            mt_component_upsert=mt_component_upsert,
+            component_upsert=component_upsert,
             tenant=tenant,
             com=com,
             _request_auth=_request_auth,
@@ -777,7 +777,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -795,7 +795,7 @@ class ComsApi:
     @validate_call
     async def coms_upsert_with_http_info(
         self,
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
+        component_upsert: Annotated[ComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
         _request_timeout: Union[
@@ -810,13 +810,13 @@ class ComsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtComponent]:
+    ) -> ApiResponse[Component]:
         """coms_upsert
 
-        Upsert an mtcomponent
+        Upsert an component
 
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
+        :param component_upsert: The model properties to update (required)
+        :type component_upsert: ComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
@@ -844,7 +844,7 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
-            mt_component_upsert=mt_component_upsert,
+            component_upsert=component_upsert,
             tenant=tenant,
             com=com,
             _request_auth=_request_auth,
@@ -854,7 +854,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -872,7 +872,7 @@ class ComsApi:
     @validate_call
     async def coms_upsert_without_preload_content(
         self,
-        mt_component_upsert: Annotated[MtComponentUpsert, Field(description="The model properties to update")],
+        component_upsert: Annotated[ComponentUpsert, Field(description="The model properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         com: Annotated[StrictStr, Field(description="The mt component id")],
         _request_timeout: Union[
@@ -890,10 +890,10 @@ class ComsApi:
     ) -> RESTResponseType:
         """coms_upsert
 
-        Upsert an mtcomponent
+        Upsert an component
 
-        :param mt_component_upsert: The model properties to update (required)
-        :type mt_component_upsert: MtComponentUpsert
+        :param component_upsert: The model properties to update (required)
+        :type component_upsert: ComponentUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param com: The mt component id (required)
@@ -921,7 +921,7 @@ class ComsApi:
         """ # noqa: E501
 
         _param = self._coms_upsert_serialize(
-            mt_component_upsert=mt_component_upsert,
+            component_upsert=component_upsert,
             tenant=tenant,
             com=com,
             _request_auth=_request_auth,
@@ -931,7 +931,7 @@ class ComsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtComponent",
+            '200': "Component",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -944,7 +944,7 @@ class ComsApi:
 
     def _coms_upsert_serialize(
         self,
-        mt_component_upsert,
+        component_upsert,
         tenant,
         com,
         _request_auth,
@@ -976,8 +976,8 @@ class ComsApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if mt_component_upsert is not None:
-            _body_params = mt_component_upsert
+        if component_upsert is not None:
+            _body_params = component_upsert
 
 
         # set the HTTP header `Accept`

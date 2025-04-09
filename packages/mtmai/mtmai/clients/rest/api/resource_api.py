@@ -19,9 +19,9 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictBool, StrictInt, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.mt_resource import MtResource
-from mtmai.clients.rest.models.mt_resource_list import MtResourceList
-from mtmai.clients.rest.models.mt_resource_upsert import MtResourceUpsert
+from mtmai.clients.rest.models.resource import Resource
+from mtmai.clients.rest.models.resource_list import ResourceList
+from mtmai.clients.rest.models.resource_upsert import ResourceUpsert
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -342,7 +342,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtResource:
+    ) -> Resource:
         """获取租户下的资源
 
         获取资源
@@ -383,7 +383,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -416,7 +416,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtResource]:
+    ) -> ApiResponse[Resource]:
         """获取租户下的资源
 
         获取资源
@@ -457,7 +457,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -531,7 +531,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -631,7 +631,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtResourceList:
+    ) -> ResourceList:
         """resource_list
 
 
@@ -677,7 +677,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResourceList",
+            '200': "ResourceList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -712,7 +712,7 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtResourceList]:
+    ) -> ApiResponse[ResourceList]:
         """resource_list
 
 
@@ -758,7 +758,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResourceList",
+            '200': "ResourceList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -839,7 +839,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResourceList",
+            '200': "ResourceList",
             '400': "APIErrors",
             '403': "APIErrors",
             '404': "APIErrors",
@@ -935,7 +935,7 @@ class ResourceApi:
     @validate_call
     async def resource_upsert(
         self,
-        mt_resource_upsert: MtResourceUpsert,
+        resource_upsert: ResourceUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
@@ -949,13 +949,13 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> MtResource:
+    ) -> Resource:
         """resource_upsert
 
         保存 资源
 
-        :param mt_resource_upsert: (required)
-        :type mt_resource_upsert: MtResourceUpsert
+        :param resource_upsert: (required)
+        :type resource_upsert: ResourceUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
@@ -981,7 +981,7 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            mt_resource_upsert=mt_resource_upsert,
+            resource_upsert=resource_upsert,
             tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -990,7 +990,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1008,7 +1008,7 @@ class ResourceApi:
     @validate_call
     async def resource_upsert_with_http_info(
         self,
-        mt_resource_upsert: MtResourceUpsert,
+        resource_upsert: ResourceUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
@@ -1022,13 +1022,13 @@ class ResourceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[MtResource]:
+    ) -> ApiResponse[Resource]:
         """resource_upsert
 
         保存 资源
 
-        :param mt_resource_upsert: (required)
-        :type mt_resource_upsert: MtResourceUpsert
+        :param resource_upsert: (required)
+        :type resource_upsert: ResourceUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1054,7 +1054,7 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            mt_resource_upsert=mt_resource_upsert,
+            resource_upsert=resource_upsert,
             tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1063,7 +1063,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1081,7 +1081,7 @@ class ResourceApi:
     @validate_call
     async def resource_upsert_without_preload_content(
         self,
-        mt_resource_upsert: MtResourceUpsert,
+        resource_upsert: ResourceUpsert,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
@@ -1100,8 +1100,8 @@ class ResourceApi:
 
         保存 资源
 
-        :param mt_resource_upsert: (required)
-        :type mt_resource_upsert: MtResourceUpsert
+        :param resource_upsert: (required)
+        :type resource_upsert: ResourceUpsert
         :param tenant: The tenant id (required)
         :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1127,7 +1127,7 @@ class ResourceApi:
         """ # noqa: E501
 
         _param = self._resource_upsert_serialize(
-            mt_resource_upsert=mt_resource_upsert,
+            resource_upsert=resource_upsert,
             tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1136,7 +1136,7 @@ class ResourceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "MtResource",
+            '200': "Resource",
             '400': "APIErrors",
             '403': "APIError",
         }
@@ -1149,7 +1149,7 @@ class ResourceApi:
 
     def _resource_upsert_serialize(
         self,
-        mt_resource_upsert,
+        resource_upsert,
         tenant,
         _request_auth,
         _content_type,
@@ -1178,8 +1178,8 @@ class ResourceApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if mt_resource_upsert is not None:
-            _body_params = mt_resource_upsert
+        if resource_upsert is not None:
+            _body_params = resource_upsert
 
 
         # set the HTTP header `Accept`
