@@ -25,6 +25,7 @@ from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
 from mtmai.clients.rest.models.assistant_message import (
     AssistantMessage as MtAssistantMessage,
 )
@@ -34,6 +35,7 @@ from mtmai.clients.rest.models.chat_start_input import ChatStartInput
 from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -116,12 +118,19 @@ class UserAgent(RoutedAgent):
                     content=[
                         FunctionCall(
                             id=generate_uuid(),
-                            name="social_login",
-                            arguments=SocialLoginInput(
-                                type="SocialLoginInput",
-                                username="username1",
-                                password="password1",
-                                otp_key="",
+                            name="ask_user",
+                            arguments=AskUserFunctionCall(
+                                type="AskUserFunctionCall",
+                                title="请选择一个社交媒体账号登录",
+                                fields=[
+                                    FormField(
+                                        type="FormField",
+                                        name="username",
+                                        label="用户名",
+                                        placeholder="请输入用户名",
+                                    )
+                                ],
+                                question="请选择一个社交媒体账号登录",
                             ).model_dump_json(),
                         )
                     ],
