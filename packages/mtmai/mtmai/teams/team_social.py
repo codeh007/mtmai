@@ -2,12 +2,8 @@ import asyncio
 from typing import Any, Callable, List, Mapping
 
 from autogen_agentchat.base import ChatAgent, TerminationCondition
-from autogen_agentchat.messages import (
-    BaseAgentEvent,
-    BaseChatMessage,
-    MessageFactory,
-    TextMessage,
-)
+from autogen_agentchat.messages import (BaseAgentEvent, BaseChatMessage,
+                                        MessageFactory, TextMessage)
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import AgentRuntime, Component, ComponentModel
@@ -187,11 +183,18 @@ class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
             ChatAgent.load_component(participant) for participant in config.participants
         ]
 
-        a = config.termination_condition.actual_instance
-        if not a.provider.startswith("autogen_agentchat.conditions."):
-            a.provider = "autogen_agentchat.conditions." + a.provider
+        termination_condition = config.termination_condition
+
+        # 补充完整的 provider 前缀
+        if termination_condition:
+            if not termination_condition.provider.startswith(
+                "autogen_agentchat.conditions."
+            ):
+                termination_condition.provider = (
+                    "autogen_agentchat.conditions." + termination_condition.provider
+                )
         termination_condition = (
-            TerminationCondition.load_component(a.to_dict())
+            TerminationCondition.load_component(termination_condition)
             if config.termination_condition
             else None
         )
