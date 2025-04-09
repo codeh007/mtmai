@@ -18,26 +18,25 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ThoughtEvent(BaseModel):
+class StartNewChatInput(BaseModel):
     """
-    ThoughtEvent
+    StartNewChatInput
     """ # noqa: E501
     type: StrictStr
-    source: StrictStr
-    content: StrictStr
-    metadata: Optional[Dict[str, Any]] = None
-    models_usage: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["type", "source", "content", "metadata", "models_usage"]
+    task: StrictStr
+    config: StartNewChatInputConfig
+    __properties: ClassVar[List[str]] = ["type", "task", "config"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['ThoughtEvent']):
-            raise ValueError("must be one of enum values ('ThoughtEvent')")
+        if value not in set(['StartNewChatInput']):
+            raise ValueError("must be one of enum values ('StartNewChatInput')")
         return value
 
     model_config = ConfigDict(
@@ -58,7 +57,7 @@ class ThoughtEvent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ThoughtEvent from a JSON string"""
+        """Create an instance of StartNewChatInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,11 +78,14 @@ class ThoughtEvent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ThoughtEvent from a dict"""
+        """Create an instance of StartNewChatInput from a dict"""
         if obj is None:
             return None
 
@@ -93,14 +95,12 @@ class ThoughtEvent(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ThoughtEvent) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in StartNewChatInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type") if obj.get("type") is not None else 'ThoughtEvent',
-            "source": obj.get("source"),
-            "content": obj.get("content"),
-            "metadata": obj.get("metadata"),
-            "models_usage": obj.get("models_usage")
+            "type": obj.get("type") if obj.get("type") is not None else 'StartNewChatInput',
+            "task": obj.get("task"),
+            "config": StartNewChatInputConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

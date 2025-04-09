@@ -93,7 +93,7 @@ class TenantInitInput(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TenantInitInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'TenantInitInput',
             "tenant_id": obj.get("tenant_id")
         })
         return _obj

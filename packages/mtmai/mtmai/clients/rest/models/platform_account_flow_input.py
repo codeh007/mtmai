@@ -26,7 +26,7 @@ class PlatformAccountFlowInput(BaseModel):
     """
     PlatformAccountFlowInput
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: Optional[StrictStr] = 'PlatformAccountFlowInput'
     platform_account_id: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = ["type", "platform_account_id"]
 
@@ -96,7 +96,7 @@ class PlatformAccountFlowInput(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in PlatformAccountFlowInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'PlatformAccountFlowInput',
             "platform_account_id": obj.get("platform_account_id")
         })
         return _obj

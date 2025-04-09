@@ -34,6 +34,7 @@ class AgentEventType(str, Enum):
     SOCIALLOGININPUT = 'SocialLoginInput'
     TENANTINITINPUT = 'TenantInitInput'
     ASKUSERFUNCTIONCALLINPUT = 'AskUserFunctionCallInput'
+    STARTNEWCHATINPUT = 'StartNewChatInput'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

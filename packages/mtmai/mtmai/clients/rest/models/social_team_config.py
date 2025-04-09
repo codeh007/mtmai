@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,7 +27,11 @@ class SocialTeamConfig(BaseModel):
     SocialTeamConfig
     """ # noqa: E501
     max_turns: Optional[StrictInt] = 25
-    __properties: ClassVar[List[str]] = ["max_turns"]
+    username: StrictStr
+    password: StrictStr
+    otp_key: StrictStr
+    proxy_url: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["max_turns", "username", "password", "otp_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,7 +89,11 @@ class SocialTeamConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SocialTeamConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
+            "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25,
+            "username": obj.get("username"),
+            "password": obj.get("password"),
+            "otp_key": obj.get("otp_key"),
+            "proxy_url": obj.get("proxy_url")
         })
         return _obj
 

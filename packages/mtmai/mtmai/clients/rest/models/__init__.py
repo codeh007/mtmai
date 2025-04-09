@@ -237,6 +237,8 @@ from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollow
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
+from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
 from mtmai.clients.rest.models.step_run import StepRun

@@ -26,7 +26,7 @@ class TextMessage(BaseModel):
     """
     TextMessage
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: Optional[StrictStr] = 'TextMessage'
     source: Optional[StrictStr] = None
     content: Optional[StrictStr] = None
     metadata: Optional[Any] = None
@@ -104,7 +104,7 @@ class TextMessage(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TextMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'TextMessage',
             "source": obj.get("source"),
             "content": obj.get("content"),
             "metadata": obj.get("metadata"),

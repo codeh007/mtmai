@@ -27,7 +27,7 @@ class AskUserFunctionCall(BaseModel):
     """
     AskUserFunctionCall
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: Optional[StrictStr] = 'AskUserFunctionCall'
     id: Optional[StrictStr] = None
     title: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
@@ -107,7 +107,7 @@ class AskUserFunctionCall(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in AskUserFunctionCall) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'AskUserFunctionCall',
             "id": obj.get("id"),
             "title": obj.get("title"),
             "description": obj.get("description"),

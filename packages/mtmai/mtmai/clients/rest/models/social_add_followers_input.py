@@ -94,7 +94,7 @@ class SocialAddFollowersInput(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SocialAddFollowersInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'SocialAddFollowersInput',
             "platform_account_id": obj.get("platform_account_id"),
             "count_to_follow": obj.get("count_to_follow") if obj.get("count_to_follow") is not None else 1
         })
