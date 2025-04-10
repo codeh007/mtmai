@@ -77,11 +77,9 @@ class SocialTeamManager(BaseGroupChatManager):
         allow_repeated_speaker: bool = False,
         selector_func: Optional[SelectorFuncType] = None,
         max_selector_attempts: int = 10,
-        # candidate_func: Optional[CandidateFuncType] = None,
         model_client: ChatCompletionClient | None = None,
         max_turns: int | None = None,
         termination_condition: TerminationCondition | None = None,
-        #
     ) -> None:
         super().__init__(
             name,
@@ -133,11 +131,10 @@ class SocialTeamManager(BaseGroupChatManager):
         self, thread: List[BaseAgentEvent | BaseChatMessage]
     ) -> str:
         """Select a speaker from the participants in a round-robin fashion."""
-        current_speaker_index = self._state.next_speaker_index
-        self._state.next_speaker_index = (current_speaker_index + 1) % len(
+        self._state.next_speaker_index = (self._state.next_speaker_index + 1) % len(
             self._participant_names
         )
-        current_speaker = self._participant_names[current_speaker_index]
+        current_speaker = self._participant_names[self._state.next_speaker_index]
         return current_speaker
 
     def social_login_tool(self):

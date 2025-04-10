@@ -17,24 +17,29 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.request_usage import RequestUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgState(BaseModel):
+class BaseTextChatMessage(BaseModel):
     """
-    AgState
+    BaseTextChatMessage
     """ # noqa: E501
-    metadata: APIResourceMeta
-    type: AgentStateTypes
-    chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
-    topic: StrictStr
+    type: StrictStr
     source: StrictStr
-    state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "type", "chatId", "topic", "source", "state"]
+    models_usage: Optional[RequestUsage] = None
+    metadata: Optional[Dict[str, Any]] = None
+    content: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "source", "models_usage", "metadata", "content"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['BaseTextChatMessage']):
+            raise ValueError("must be one of enum values ('BaseTextChatMessage')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +59,7 @@ class AgState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgState from a JSON string"""
+        """Create an instance of BaseTextChatMessage from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,14 +80,14 @@ class AgState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of models_usage
+        if self.models_usage:
+            _dict['models_usage'] = self.models_usage.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgState from a dict"""
+        """Create an instance of BaseTextChatMessage from a dict"""
         if obj is None:
             return None
 
@@ -92,15 +97,14 @@ class AgState(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AgState) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in BaseTextChatMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "type": obj.get("type"),
-            "chatId": obj.get("chatId"),
-            "topic": obj.get("topic"),
+            "type": obj.get("type") if obj.get("type") is not None else 'BaseTextChatMessage',
             "source": obj.get("source"),
-            "state": obj.get("state")
+            "models_usage": RequestUsage.from_dict(obj["models_usage"]) if obj.get("models_usage") is not None else None,
+            "metadata": obj.get("metadata"),
+            "content": obj.get("content")
         })
         return _obj
 

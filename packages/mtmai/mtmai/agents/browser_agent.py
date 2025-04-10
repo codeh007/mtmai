@@ -3,7 +3,7 @@ import logging
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
-from mtlibs.autogen_utils._types import BrowserOpenTask, BrowserTask
+from mtmai.mtlibs.autogen_utils._types import BrowserOpenTask, BrowserTask
 
 logger2 = logging.getLogger("browser_use")
 logger2.setLevel(logging.DEBUG)

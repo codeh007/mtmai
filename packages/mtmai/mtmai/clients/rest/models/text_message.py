@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.request_usage import RequestUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,19 +27,16 @@ class TextMessage(BaseModel):
     """
     TextMessage
     """ # noqa: E501
-    type: Optional[StrictStr] = 'TextMessage'
-    source: Optional[StrictStr] = None
-    content: Optional[StrictStr] = None
-    metadata: Optional[Any] = None
-    models_usage: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["type", "source", "content", "metadata", "models_usage"]
+    type: StrictStr
+    source: StrictStr
+    models_usage: Optional[RequestUsage] = None
+    metadata: Optional[Dict[str, Any]] = None
+    content: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "source", "models_usage", "metadata", "content"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['TextMessage']):
             raise ValueError("must be one of enum values ('TextMessage')")
         return value
@@ -82,11 +80,9 @@ class TextMessage(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if metadata (nullable) is None
-        # and model_fields_set contains the field
-        if self.metadata is None and "metadata" in self.model_fields_set:
-            _dict['metadata'] = None
-
+        # override the default output from pydantic by calling `to_dict()` of models_usage
+        if self.models_usage:
+            _dict['models_usage'] = self.models_usage.to_dict()
         return _dict
 
     @classmethod
@@ -106,9 +102,9 @@ class TextMessage(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type") if obj.get("type") is not None else 'TextMessage',
             "source": obj.get("source"),
-            "content": obj.get("content"),
+            "models_usage": RequestUsage.from_dict(obj["models_usage"]) if obj.get("models_usage") is not None else None,
             "metadata": obj.get("metadata"),
-            "models_usage": obj.get("models_usage")
+            "content": obj.get("content")
         })
         return _obj
 

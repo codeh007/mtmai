@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt
-from typing import Any, ClassVar, Dict, List, Union
+from pydantic import BaseModel, ConfigDict, StrictInt
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,8 @@ class RequestUsage(BaseModel):
     """
     RequestUsage
     """ # noqa: E501
-    prompt_tokens: Union[StrictFloat, StrictInt]
-    completion_tokens: Union[StrictFloat, StrictInt]
+    prompt_tokens: StrictInt
+    completion_tokens: StrictInt
     __properties: ClassVar[List[str]] = ["prompt_tokens", "completion_tokens"]
 
     model_config = ConfigDict(

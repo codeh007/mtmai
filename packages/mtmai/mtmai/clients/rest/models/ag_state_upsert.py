@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.state_type import StateType
+from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +27,7 @@ class AgStateUpsert(BaseModel):
     """
     AgStateUpsert
     """ # noqa: E501
-    type: StateType
+    type: AgentStateTypes
     chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
     topic: StrictStr
     source: StrictStr

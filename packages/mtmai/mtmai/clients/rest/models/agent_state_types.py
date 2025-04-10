@@ -29,6 +29,16 @@ class AgentStateTypes(str, Enum):
     INSTAGRAMAGENTSTATE = 'InstagramAgentState'
     USERPROXYAGENTSTATE = 'UserProxyAgentState'
     SOCIALTEAMMANAGERSTATE = 'SocialTeamManagerState'
+    TEAMSTATE = 'TeamState'
+    RUNTIMESTATE = 'RuntimeState'
+    ASSISTANTAGENTSTATE = 'AssistantAgentState'
+    ROUNDROBINMANAGERSTATE = 'RoundRobinManagerState'
+    SELECTORMANAGERSTATE = 'SelectorManagerState'
+    SWARMMANAGERSTATE = 'SwarmManagerState'
+    MAGENTICONEORCHESTRATORSTATE = 'MagenticOneOrchestratorState'
+    SOCIETYOFMINDAGENTSTATE = 'SocietyOfMindAgentState'
+    CHATAGENTCONTAINERSTATE = 'ChatAgentContainerState'
+    BASEGROUPCHATMANAGERSTATE = 'BaseGroupChatManagerState'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -26,6 +26,7 @@ from mtmai.clients.rest.models.api_token import APIToken
 from mtmai.clients.rest.models.accept_invite_request import AcceptInviteRequest
 from mtmai.clients.rest.models.ag_event import AgEvent
 from mtmai.clients.rest.models.ag_event_list import AgEventList
+from mtmai.clients.rest.models.ag_events import AgEvents
 from mtmai.clients.rest.models.ag_state import AgState
 from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
@@ -50,10 +51,12 @@ from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfi
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.assistant_message import AssistantMessage
 from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
+from mtmai.clients.rest.models.base_chat_message import BaseChatMessage
 from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
 from mtmai.clients.rest.models.base_open_ai_client_configuration_config_model import BaseOpenAIClientConfigurationConfigModel
 from mtmai.clients.rest.models.base_state import BaseState
+from mtmai.clients.rest.models.base_text_chat_message import BaseTextChatMessage
 from mtmai.clients.rest.models.blog import Blog
 from mtmai.clients.rest.models.blog_config import BlogConfig
 from mtmai.clients.rest.models.blog_list import BlogList
@@ -189,7 +192,6 @@ from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
-from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
@@ -263,7 +265,6 @@ from mtmai.clients.rest.models.source_match_termination import SourceMatchTermin
 from mtmai.clients.rest.models.source_match_termination_config import SourceMatchTerminationConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
-from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.step import Step
 from mtmai.clients.rest.models.step_run import StepRun
 from mtmai.clients.rest.models.step_run_archive import StepRunArchive
