@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.instagram_credentials import InstagramCredentials
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,7 +27,7 @@ class InstagramAgentState(BaseModel):
     """
     InstagramAgentState
     """ # noqa: E501
-    type: Optional[StrictStr] = 'InstagramAgentState'
+    type: StrictStr
     version: Optional[StrictStr] = None
     llm_context: Optional[Any] = None
     username: Optional[StrictStr] = None
@@ -37,14 +38,12 @@ class InstagramAgentState(BaseModel):
     ig_settings: Optional[Dict[str, Any]] = None
     proxy_url: Optional[StrictStr] = None
     platform_account_id: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "otp_key", "session_state", "is_wait_user_input", "ig_settings", "proxy_url", "platform_account_id"]
+    credentials: Optional[InstagramCredentials] = None
+    __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "otp_key", "session_state", "is_wait_user_input", "ig_settings", "proxy_url", "platform_account_id", "credentials"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['InstagramAgentState']):
             raise ValueError("must be one of enum values ('InstagramAgentState')")
         return value
@@ -88,6 +87,9 @@ class InstagramAgentState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of credentials
+        if self.credentials:
+            _dict['credentials'] = self.credentials.to_dict()
         # set to None if llm_context (nullable) is None
         # and model_fields_set contains the field
         if self.llm_context is None and "llm_context" in self.model_fields_set:
@@ -120,7 +122,8 @@ class InstagramAgentState(BaseModel):
             "is_wait_user_input": obj.get("is_wait_user_input"),
             "ig_settings": obj.get("ig_settings"),
             "proxy_url": obj.get("proxy_url"),
-            "platform_account_id": obj.get("platform_account_id")
+            "platform_account_id": obj.get("platform_account_id"),
+            "credentials": InstagramCredentials.from_dict(obj["credentials"]) if obj.get("credentials") is not None else None
         })
         return _obj
 

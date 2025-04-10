@@ -17,18 +17,27 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BaseState(BaseModel):
+class SocialTeamManagerState(BaseModel):
     """
-    BaseState
+    SocialTeamManagerState
     """ # noqa: E501
     type: StrictStr
     version: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version"]
+    next_speaker_index: Optional[StrictInt] = 0
+    previous_speaker: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['SocialTeamManagerState']):
+            raise ValueError("must be one of enum values ('SocialTeamManagerState')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +57,7 @@ class BaseState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BaseState from a JSON string"""
+        """Create an instance of SocialTeamManagerState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,7 +82,7 @@ class BaseState(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BaseState from a dict"""
+        """Create an instance of SocialTeamManagerState from a dict"""
         if obj is None:
             return None
 
@@ -83,11 +92,13 @@ class BaseState(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BaseState) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SocialTeamManagerState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "version": obj.get("version")
+            "type": obj.get("type") if obj.get("type") is not None else 'SocialTeamManagerState',
+            "version": obj.get("version"),
+            "next_speaker_index": obj.get("next_speaker_index") if obj.get("next_speaker_index") is not None else 0,
+            "previous_speaker": obj.get("previous_speaker")
         })
         return _obj
 

@@ -2845,6 +2845,24 @@ wheels = [
 ]
 
 [[package]]
+name = "magika"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "numpy" },
+    { name = "onnxruntime" },
+    { name = "python-dotenv" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/18/ea70f6abd36f455037340f12c8125918c726d08cd6e01f0b76b6884e0c38/magika-0.6.1.tar.gz", hash = "sha256:e3dd22c73936630b1cd79d0f412d6d9a53dc99ba5e3709b1ac53f56bc998e635", size = 3030234 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/be/c9f7bb9ee94abe8d344b660672001313e459c67b867b24abe32d5c80a9ce/magika-0.6.1-py3-none-any.whl", hash = "sha256:15838d2469f1394d8e9598bc7fceea1ede7f35aebe9675c6b45c6b5c48315931", size = 2968516 },
+    { url = "https://files.pythonhosted.org/packages/3c/b9/016b174520e81faef5edb31b6c7a73966dc84ee33acd23a2e7b775df7ba4/magika-0.6.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:dadd036296a2e4840fd48fa0712848fe122da438e8f607dc8f19ca4663c359dc", size = 12408519 },
+    { url = "https://files.pythonhosted.org/packages/02/b7/e7dfeb235823a82d676c68a748541c24db0249b854f945f6e3cec11c1b7e/magika-0.6.1-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:133c0e1a844361de86ca2dd7c530e38b324e86177d30c52e36fd82101c190b5c", size = 15089294 },
+    { url = "https://files.pythonhosted.org/packages/64/f0/bec5bff0125d08c1bc3baef88beeb910121085249f67b5994ea961615b55/magika-0.6.1-py3-none-win_amd64.whl", hash = "sha256:0342b6230ea9aea7ab4b8fa92e1b46f1cc62e724d452ee8d6821a37f56738d22", size = 12378455 },
+]
+
+[[package]]
 name = "mako"
 version = "1.3.8"
 source = { registry = "https://pypi.org/simple" }
@@ -2879,6 +2897,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/1b/75/483a4bcca436fe88d02dc7686c372631d833848951b368700bdc0c770bb7/markdownify-0.14.1.tar.gz", hash = "sha256:a62a7a216947ed0b8dafb95b99b2ef4a0edd1e18d5653c656f68f03db2bfb2f1", size = 14332 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/65/0b/74cec93a7b05edf4fc3ea1c899fe8a37f041d7b9d303c75abf7a162924e0/markdownify-0.14.1-py3-none-any.whl", hash = "sha256:4c46a6c0c12c6005ddcd49b45a5a890398b002ef51380cd319db62df5e09bc2a", size = 11530 },
+]
+
+[[package]]
+name = "markitdown"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "charset-normalizer" },
+    { name = "magika" },
+    { name = "markdownify" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cb/e8/83669ba97718bbbccd4c432b763d22783df4c8218e770717151acf01e85b/markitdown-0.1.1.tar.gz", hash = "sha256:da97a55a45a3d775ea758e88a344d5cac94ee97115fb0293f99027d32c2fc3f6", size = 31475 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/8a/c1f85ee609de5d45f80d0213bebf6664f76ab406e9d57709e684a4a436ba/markitdown-0.1.1-py3-none-any.whl", hash = "sha256:98ea8c009fe174b37ef933e00f4364214e8fed35691178b8521b13604d0c4a58", size = 48230 },
 ]
 
 [[package]]
@@ -3208,6 +3242,7 @@ dependencies = [
     { name = "loguru" },
     { name = "lxml-html-clean" },
     { name = "markdownify" },
+    { name = "markitdown" },
     { name = "mcp-server-fetch" },
     { name = "minify-html" },
     { name = "nanoid" },
@@ -3326,6 +3361,7 @@ requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "lxml-html-clean", specifier = ">=0.4.1" },
     { name = "markdownify", specifier = "==0.14.1" },
+    { name = "markitdown", specifier = ">=0.1.1" },
     { name = "mcp-server-fetch", specifier = ">=2025.1.17" },
     { name = "minify-html", specifier = ">=0.15.0" },
     { name = "nanoid", specifier = ">=2.0.0" },

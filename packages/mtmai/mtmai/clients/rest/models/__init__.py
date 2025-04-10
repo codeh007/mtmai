@@ -34,6 +34,8 @@ from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_properties import AgentProperties
+from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
+from mtmai.clients.rest.models.agent_states import AgentStates
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.agents import Agents
@@ -161,6 +163,7 @@ from mtmai.clients.rest.models.image_content import ImageContent
 from mtmai.clients.rest.models.instagram_agent import InstagramAgent
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.instagram_credentials import InstagramCredentials
 from mtmai.clients.rest.models.instagram_task import InstagramTask
 from mtmai.clients.rest.models.job import Job
 from mtmai.clients.rest.models.job_run import JobRun
@@ -253,6 +256,7 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.social_team_manager_state import SocialTeamManagerState
 from mtmai.clients.rest.models.society_of_mind_agent import SocietyOfMindAgent
 from mtmai.clients.rest.models.society_of_mind_agent_config import SocietyOfMindAgentConfig
 from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
@@ -332,13 +336,13 @@ from mtmai.clients.rest.models.update_tenant_request import UpdateTenantRequest
 from mtmai.clients.rest.models.update_worker_request import UpdateWorkerRequest
 from mtmai.clients.rest.models.upsert_model import UpsertModel
 from mtmai.clients.rest.models.user import User
-from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
 from mtmai.clients.rest.models.user_input_requested_event import UserInputRequestedEvent
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage
 from mtmai.clients.rest.models.user_proxy_agent import UserProxyAgent
 from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
+from mtmai.clients.rest.models.user_proxy_agent_state import UserProxyAgentState
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmai.clients.rest.models.user_tenant_public import UserTenantPublic

@@ -22,13 +22,14 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BaseState(BaseModel):
+class InstagramCredentials(BaseModel):
     """
-    BaseState
+    InstagramCredentials
     """ # noqa: E501
-    type: StrictStr
-    version: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version"]
+    username: StrictStr
+    password: StrictStr
+    otp_key: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["username", "password", "otp_key"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +49,7 @@ class BaseState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BaseState from a JSON string"""
+        """Create an instance of InstagramCredentials from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,7 +74,7 @@ class BaseState(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BaseState from a dict"""
+        """Create an instance of InstagramCredentials from a dict"""
         if obj is None:
             return None
 
@@ -83,11 +84,12 @@ class BaseState(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BaseState) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in InstagramCredentials) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "version": obj.get("version")
+            "username": obj.get("username"),
+            "password": obj.get("password"),
+            "otp_key": obj.get("otp_key")
         })
         return _obj
 

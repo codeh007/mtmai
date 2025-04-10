@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.instagram_credentials import InstagramCredentials
 from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient
 from typing import Optional, Set
 from typing_extensions import Self
@@ -39,11 +40,8 @@ class InstagramAgentConfig(BaseModel):
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr
     metadata: Optional[Dict[str, Any]] = None
-    username: Optional[StrictStr] = None
-    password: Optional[StrictStr] = None
-    otp_key: Optional[StrictStr] = None
-    proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "metadata", "username", "password", "otp_key", "proxy_url"]
+    credentials: Optional[InstagramCredentials] = None
+    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "metadata", "credentials"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,6 +85,9 @@ class InstagramAgentConfig(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of model_client
         if self.model_client:
             _dict['model_client'] = self.model_client.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of credentials
+        if self.credentials:
+            _dict['credentials'] = self.credentials.to_dict()
         return _dict
 
     @classmethod
@@ -116,10 +117,7 @@ class InstagramAgentConfig(BaseModel):
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
             "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}',
             "metadata": obj.get("metadata"),
-            "username": obj.get("username"),
-            "password": obj.get("password"),
-            "otp_key": obj.get("otp_key"),
-            "proxy_url": obj.get("proxy_url")
+            "credentials": InstagramCredentials.from_dict(obj["credentials"]) if obj.get("credentials") is not None else None
         })
         return _obj
 

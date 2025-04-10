@@ -26,7 +26,7 @@ class AssistantAgentState(BaseModel):
     """
     AssistantAgentState
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: StrictStr
     version: Optional[StrictStr] = None
     llm_context: Optional[Any] = None
     __properties: ClassVar[List[str]] = ["type", "version", "llm_context"]
@@ -34,9 +34,6 @@ class AssistantAgentState(BaseModel):
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['AssistantAgentState']):
             raise ValueError("must be one of enum values ('AssistantAgentState')")
         return value
@@ -102,7 +99,7 @@ class AssistantAgentState(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in AssistantAgentState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'AssistantAgentState',
             "version": obj.get("version"),
         })
         return _obj

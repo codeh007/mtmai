@@ -2,11 +2,10 @@ import email
 import imaplib
 import random
 import re
-from typing import Any, List, Mapping
+from typing import Any, Awaitable, Callable, Dict, List, Mapping, Sequence
 
 import pyotp
-
-# from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.base import Handoff as HandoffBase
 from autogen_core import (
     CancellationToken,
     Component,
@@ -14,8 +13,10 @@ from autogen_core import (
     MessageContext,
     message_handler,
 )
-from autogen_core.model_context import BufferedChatCompletionContext
+from autogen_core.memory import Memory
+from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
+from autogen_core.tools import BaseTool
 from loguru import logger
 from mtmai.agents.assistant_agent import AssistantAgent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
@@ -25,13 +26,13 @@ from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
-from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
+from pydantic import BaseModel
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
@@ -41,22 +42,41 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
 
     def __init__(
         self,
-        description: str,
-        user_topic: str,
-        model_client: ChatCompletionClient | None = None,
+        name: str,
+        model_client: ChatCompletionClient,
+        *,
+        tools: List[
+            BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
+        ]
+        | None = None,
+        handoffs: List[HandoffBase | str] | None = None,
+        model_context: ChatCompletionContext | None = None,
+        description: str = "An agent that interacts with instagram",
+        system_message: (
+            str | None
+        ) = "You are a helpful AI assistant. Solve tasks using your tools. Reply with TERMINATE when the task has been completed.",
+        model_client_stream: bool = False,
+        reflect_on_tool_use: bool | None = None,
+        tool_call_summary_format: str = "{result}",
+        output_content_type: type[BaseModel] | None = None,
+        memory: Sequence[Memory] | None = None,
+        metadata: Dict[str, str] | None = None,
     ) -> None:
         super().__init__(
-            description=description or "An agent that interacts with instagram",
+            name=name,
+            model_client=model_client,
+            tools=tools or [],
+            description=description or self.DEFAULT_DESCRIPTION,
+            system_message=system_message or self.DEFAULT_SYSTEM_MESSAGE,
+            model_client_stream=model_client_stream,
+            reflect_on_tool_use=reflect_on_tool_use,
+            tool_call_summary_format=tool_call_summary_format,
+            output_content_type=output_content_type,
+            memory=memory,
+            metadata=metadata,
         )
-        self.model_client = model_client
-        self.user_topic = user_topic
-        self._model_context = BufferedChatCompletionContext(buffer_size=10)
-        self._initialized = False
-        self.ig_client = Client()
-        self._state = InstagramAgentState(
-            proxy=settings.default_proxy_url,
-        )
-        self.tenant_client = TenantClient()
+        # self.user_topic = user_topic
+        self._state = InstagramAgentState()
 
     @message_handler
     async def on_instagram_login(
@@ -331,15 +351,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         pass
 
     async def save_state(self) -> Mapping[str, Any]:
-        model_context_state = await self._model_context.save_state()
-        return InstagramAgentState(
-            llm_context=model_context_state,
-            username=self._state.username,
-            password=self._state.password,
-            otp_key=self._state.otp_key,
-            proxy_url=self._state.proxy_url,
-            ig_settings=self.ig_client.get_settings(),
-        ).model_dump()
+        self._state.llm_context = await self._model_context.save_state()
+        return self._state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = InstagramAgentState.from_dict(state)

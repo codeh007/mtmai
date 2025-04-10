@@ -1,6 +1,8 @@
 import asyncio
+import logging
+from inspect import iscoroutinefunction
 from textwrap import dedent
-from typing import Any, Callable, List, Mapping, Sequence, cast
+from typing import Any, Awaitable, Callable, List, Mapping, Optional, Sequence, Union
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
@@ -9,6 +11,7 @@ from autogen_agentchat.messages import (
     BaseChatMessage,
     MessageFactory,
     TextMessage,
+    UserInputRequestedEvent,
 )
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
@@ -27,9 +30,8 @@ from autogen_core import (
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
-    FunctionExecutionResultMessage,
+    ChatCompletionClient,
     LLMMessage,
-    SystemMessage,
     UserMessage,
 )
 from autogen_core.tools import FunctionTool, Tool
@@ -37,11 +39,9 @@ from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
-from mtmai.clients.rest.models.assistant_message import (
-    AssistantMessage as MtAssistantMessage,
-)
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
@@ -49,16 +49,30 @@ from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
-from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.social_team_manager_state import SocialTeamManagerState
 from mtmai.clients.rest.models.state_type import StateType
-from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.mtlibs.id import generate_uuid
 from typing_extensions import Self
+
+TRACE_LOGGER_NAME = "mtmai.teams.team_social"
+trace_logger = logging.getLogger(TRACE_LOGGER_NAME)
+
+SyncSelectorFunc = Callable[[Sequence[BaseAgentEvent | BaseChatMessage]], str | None]
+AsyncSelectorFunc = Callable[
+    [Sequence[BaseAgentEvent | BaseChatMessage]], Awaitable[str | None]
+]
+SelectorFuncType = Union[SyncSelectorFunc | AsyncSelectorFunc]
+
+SyncCandidateFunc = Callable[[Sequence[BaseAgentEvent | BaseChatMessage]], List[str]]
+AsyncCandidateFunc = Callable[
+    [Sequence[BaseAgentEvent | BaseChatMessage]], Awaitable[List[str]]
+]
+CandidateFuncType = Union[SyncCandidateFunc | AsyncCandidateFunc]
 
 
 class SocialTeamManager(BaseGroupChatManager):
@@ -74,8 +88,15 @@ class SocialTeamManager(BaseGroupChatManager):
             BaseAgentEvent | BaseChatMessage | GroupChatTermination
         ],
         message_factory: MessageFactory,
+        selector_prompt: str | None = None,
+        allow_repeated_speaker: bool = False,
+        selector_func: Optional[SelectorFuncType] = None,
+        max_selector_attempts: int = 10,
+        # candidate_func: Optional[CandidateFuncType] = None,
+        model_client: ChatCompletionClient | None = None,
         max_turns: int | None = None,
         termination_condition: TerminationCondition | None = None,
+        #
     ) -> None:
         super().__init__(
             name,
@@ -89,10 +110,28 @@ class SocialTeamManager(BaseGroupChatManager):
             max_turns,
             message_factory,
         )
-        self._next_speaker_index = 0
-        self._state = UserAgentState()
         self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
         self.tenant_client = TenantClient()
+        self._model_client = model_client
+        self._selector_prompt = selector_prompt
+        self._previous_speaker: str | None = None
+        self._allow_repeated_speaker = allow_repeated_speaker
+        self._selector_func = selector_func
+        self._is_selector_func_async = iscoroutinefunction(self._selector_func)
+        self._max_selector_attempts = max_selector_attempts
+        # self._candidate_func = candidate_func
+        self._is_candidate_func_async = iscoroutinefunction(self._candidate_func)
+
+        self._state = SocialTeamManagerState(
+            type=AgentStateTypes.SOCIALTEAMMANAGERSTATE.value,
+            next_speaker_index=0,
+            previous_speaker=None,
+        )
+
+    async def _candidate_func(
+        self, messages: List[BaseChatMessage] | None
+    ) -> List[str]:
+        return []
 
     async def validate_group_state(
         self, messages: List[BaseChatMessage] | None
@@ -109,8 +148,8 @@ class SocialTeamManager(BaseGroupChatManager):
         self, thread: List[BaseAgentEvent | BaseChatMessage]
     ) -> str:
         """Select a speaker from the participants in a round-robin fashion."""
-        current_speaker_index = self._next_speaker_index
-        self._next_speaker_index = (current_speaker_index + 1) % len(
+        current_speaker_index = self._state.next_speaker_index
+        self._state.next_speaker_index = (current_speaker_index + 1) % len(
             self._participant_names
         )
         current_speaker = self._participant_names[current_speaker_index]
@@ -259,77 +298,65 @@ class SocialTeamManager(BaseGroupChatManager):
         return response
 
     async def save_state(self) -> Mapping[str, Any]:
-        # state = await super().save_state()
-        # session_id = get_chat_session_id_ctx()
-        # upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
-        #     tenant=self.tenant_client.tenant_id,
-        #     session=session_id,
-        #     chat_upsert=ChatUpsert(
-        #         title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
-        #         name="userAgent",
-        #         state=state,
-        #         state_type="UserAgentState",
-        #     ).model_dump(),
-        # )
         return {
             "some": "value",
         }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        self._state = UserAgentState.from_dict(state)
-        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
+        self._state = SocialTeamManagerState.from_dict(state)
+        # self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
         # 从数据库加载聊天记录
-        chat_messages = await self.tenant_client.chat_api.chat_messages_list(
-            tenant=self.tenant_client.tenant_id,
-            chat=self._session_id,
-        )
-        for chat_message in chat_messages.rows:
-            if chat_message.type.value == MtLlmMessageTypes.USERMESSAGE.value:
-                msg = UserMessage.model_validate(
-                    chat_message.llm_message.actual_instance.model_dump()
-                )
-                await self._state.model_context.add_message(msg)
-            elif chat_message.type.value == MtLlmMessageTypes.ASSISTANTMESSAGE.value:
-                mt_assistant_message = cast(
-                    MtAssistantMessage, chat_message.llm_message.actual_instance
-                )
+        # chat_messages = await self.tenant_client.chat_api.chat_messages_list(
+        #     tenant=self.tenant_client.tenant_id,
+        #     chat=self._session_id,
+        # )
+        # for chat_message in chat_messages.rows:
+        #     if chat_message.type.value == MtLlmMessageTypes.USERMESSAGE.value:
+        #         msg = UserMessage.model_validate(
+        #             chat_message.llm_message.actual_instance.model_dump()
+        #         )
+        #         await self._state.model_context.add_message(msg)
+        #     elif chat_message.type.value == MtLlmMessageTypes.ASSISTANTMESSAGE.value:
+        #         mt_assistant_message = cast(
+        #             MtAssistantMessage, chat_message.llm_message.actual_instance
+        #         )
 
-                content = mt_assistant_message.content.actual_instance
-                if isinstance(content, str):
-                    content = content
-                else:
-                    fc_list = []
-                    for item in content:
-                        fc = FunctionCall(
-                            id=item.id,
-                            name=item.name,
-                            arguments=item.arguments,
-                        )
-                        fc_list.append(fc)
-                    content = fc_list
-                msg = AssistantMessage(
-                    content=content,
-                    source=mt_assistant_message.source,
-                    thought=mt_assistant_message.thought,
-                )
-                await self._state.model_context.add_message(msg)
-            elif chat_message.type.value == MtLlmMessageTypes.SYSTEMMESSAGE.value:
-                msg = SystemMessage.model_validate(
-                    chat_message.llm_message.actual_instance.model_dump()
-                )
-                await self._state.model_context.add_message(msg)
-            elif (
-                chat_message.type.value
-                == MtLlmMessageTypes.FUNCTIONEXECUTIONRESULTMESSAGE.value
-            ):
-                msg = FunctionExecutionResultMessage.model_validate(
-                    chat_message.llm_message.actual_instance.model_dump()
-                )
-                await self._state.model_context.add_message(msg)
-            else:
-                raise ValueError(
-                    f"load_state error, Unknown llm message type: {chat_message.type}"
-                )
+        #         content = mt_assistant_message.content.actual_instance
+        #         if isinstance(content, str):
+        #             content = content
+        #         else:
+        #             fc_list = []
+        #             for item in content:
+        #                 fc = FunctionCall(
+        #                     id=item.id,
+        #                     name=item.name,
+        #                     arguments=item.arguments,
+        #                 )
+        #                 fc_list.append(fc)
+        #             content = fc_list
+        #         msg = AssistantMessage(
+        #             content=content,
+        #             source=mt_assistant_message.source,
+        #             thought=mt_assistant_message.thought,
+        #         )
+        #         await self._state.model_context.add_message(msg)
+        #     elif chat_message.type.value == MtLlmMessageTypes.SYSTEMMESSAGE.value:
+        #         msg = SystemMessage.model_validate(
+        #             chat_message.llm_message.actual_instance.model_dump()
+        #         )
+        #         await self._state.model_context.add_message(msg)
+        #     elif (
+        #         chat_message.type.value
+        #         == MtLlmMessageTypes.FUNCTIONEXECUTIONRESULTMESSAGE.value
+        #     ):
+        #         msg = FunctionExecutionResultMessage.model_validate(
+        #             chat_message.llm_message.actual_instance.model_dump()
+        #         )
+        #         await self._state.model_context.add_message(msg)
+        #     else:
+        #         raise ValueError(
+        #             f"load_state error, Unknown llm message type: {chat_message.type}"
+        #         )
 
     async def add_chat_message(
         self,
@@ -351,8 +378,16 @@ class SocialTeamManager(BaseGroupChatManager):
         )
 
     async def reset(self) -> None:
-        """Reset the group chat manager."""
-        ...
+        self._current_turn = 0
+        self._message_thread.clear()
+        if self._termination_condition is not None:
+            await self._termination_condition.reset()
+        self._previous_speaker = None
+        self._state = SocialTeamManagerState(
+            type=AgentStateTypes.SOCIALTEAMMANAGERSTATE.value,
+            next_speaker_index=0,
+            previous_speaker=None,
+        )
 
 
 class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
@@ -411,13 +446,15 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         return _factory
 
     async def reset(self) -> None:
-        self._is_running = False
+        # self._is_running = False
+        await super().reset()
 
     async def save_state(self) -> Mapping[str, Any]:
         return await super().save_state()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
-        await self._runtime.load_state(state)
+        # await self._runtime.load_state(state)
+        await super().load_state(state)
 
     def _to_config(self) -> SocialTeamConfig:
         return SocialTeamConfig(
@@ -456,27 +493,36 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         cancellation_token: CancellationToken | None = None,
     ) -> TaskResult:
         result: TaskResult | None = None
+        is_slow_user_input = False
         async for message in self.run_stream(
             task=task,
             cancellation_token=cancellation_token,
         ):
             if isinstance(message, TaskResult):
                 result = message
-        if result is not None:
-            # 状态保存到数据库
-            state = await self.save_state()
-            session_id = get_chat_session_id_ctx()
-            tenant_client = TenantClient()
-            await tenant_client.ag_state_api.ag_state_upsert(
-                tenant=tenant_client.tenant_id,
-                ag_state_upsert=AgStateUpsert(
-                    type=StateType.TEAMSTATE.value,
-                    chatId=session_id,
-                    state=state,
-                    topic="default",
-                    source="default",
-                ),
-            )
+            elif isinstance(message, UserInputRequestedEvent):
+                # 强制停止运行, 登录用户的输入(在下一轮中启动)
+                self._is_running = False
+                is_slow_user_input = True
+                await self._runtime.stop()
+                break
+        state = await self.save_state()
+        session_id = get_chat_session_id_ctx()
+        tenant_client = TenantClient()
+        await tenant_client.ag_state_api.ag_state_upsert(
+            tenant=tenant_client.tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                type=StateType.TEAMSTATE.value,
+                chatId=session_id,
+                state=state,
+                topic="default",
+                source="default",
+            ),
+        )
 
-            return result
-        raise AssertionError("The stream should have returned the final result.")
+        if is_slow_user_input:
+            return {"result": "wait user input"}
+
+        if result is None:
+            raise RuntimeError("result is None")
+        return result

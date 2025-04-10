@@ -26,7 +26,7 @@ class BaseGroupChatManagerState(BaseModel):
     """
     BaseGroupChatManagerState
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: StrictStr
     version: Optional[StrictStr] = None
     message_thread: Optional[List[Dict[str, Any]]] = None
     current_turn: Optional[StrictInt] = None
@@ -35,9 +35,6 @@ class BaseGroupChatManagerState(BaseModel):
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['BaseGroupChatManagerState']):
             raise ValueError("must be one of enum values ('BaseGroupChatManagerState')")
         return value

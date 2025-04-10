@@ -1,10 +1,22 @@
 from textwrap import dedent
-from typing import Any, List, Mapping, Optional, cast
+from typing import (
+    Any,
+    AsyncGenerator,
+    Awaitable,
+    Callable,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+    cast,
+)
 
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.agents import UserProxyAgent as AutoGenUserProxyAgent
-from autogen_agentchat.messages import BaseChatMessage, TextMessage
+from autogen_agentchat.base import Response
+from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, TextMessage
 from autogen_core import (
+    CancellationToken,
     Component,
     DefaultTopicId,
     FunctionCall,
@@ -21,7 +33,6 @@ from autogen_core.models import (
 )
 from autogen_core.tools import Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
-from autogen_ext.teams.magentic_one import InputFuncType
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
@@ -42,6 +53,10 @@ from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 from mtmai.mtlibs.id import generate_uuid
 from typing_extensions import Self
+
+SyncInputFunc = Callable[[str], str]
+AsyncInputFunc = Callable[[str, Optional[CancellationToken]], Awaitable[str]]
+InputFuncType = Union[SyncInputFunc, AsyncInputFunc]
 
 
 class UserProxyAgent(AutoGenUserProxyAgent, Component[UserProxyAgentConfig]):
@@ -297,27 +312,24 @@ class UserProxyAgent(AutoGenUserProxyAgent, Component[UserProxyAgentConfig]):
             ).model_dump(),
         )
 
-    # async def select_speaker(
-    #     self, thread: List[BaseAgentEvent | BaseChatMessage]
-    # ) -> str:
-    #     """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
-    #     return ""
-
     async def reset(self) -> None:
-        """Reset the group chat manager."""
-        # self._message_thread.clear()
-        # if self._termination_condition is not None:
-        #     await self._termination_condition.reset()
-        # self._n_rounds = 0
-        # self._n_stalls = 0
-        # self._task = ""
-        # self._facts = ""
-        # self._plan = ""
-        ...
+        await super().reset()
 
-    async def validate_group_state(
-        self, messages: List[BaseChatMessage] | None
-    ) -> None: ...
+    # async def validate_group_state(
+    #     self, messages: List[BaseChatMessage] | None
+    # ) -> None: ...
+
+    async def _get_input(
+        self, prompt: str, cancellation_token: Optional[CancellationToken]
+    ) -> str:
+        # return await super()._get_input(prompt, cancellation_token)
+        return "fake_user_input_content_123"
+
+    async def on_messages_stream(
+        self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
+    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | Response, None]:
+        async for message in super().on_messages_stream(messages, cancellation_token):
+            yield message
 
     def _to_config(self) -> UserProxyAgentConfig:
         # TODO: Add ability to serialie input_func

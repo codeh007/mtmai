@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.agents import Agents
 from mtmai.clients.rest.models.terminations import Terminations
@@ -31,11 +31,11 @@ class SocialTeamConfig(BaseModel):
     participants: List[Agents]
     termination_condition: Terminations
     max_turns: StrictInt
-    username: StrictStr
-    password: StrictStr
-    otp_key: StrictStr
-    proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns", "username", "password", "otp_key", "proxy_url"]
+    selector_prompt: Optional[StrictStr] = None
+    allow_repeated_speaker: Optional[StrictBool] = None
+    max_selector_attempts: Optional[StrictInt] = None
+    selector_func: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -106,10 +106,10 @@ class SocialTeamConfig(BaseModel):
             "participants": [Agents.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": Terminations.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
             "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25,
-            "username": obj.get("username"),
-            "password": obj.get("password"),
-            "otp_key": obj.get("otp_key"),
-            "proxy_url": obj.get("proxy_url")
+            "selector_prompt": obj.get("selector_prompt"),
+            "allow_repeated_speaker": obj.get("allow_repeated_speaker"),
+            "max_selector_attempts": obj.get("max_selector_attempts"),
+            "selector_func": obj.get("selector_func")
         })
         return _obj
 

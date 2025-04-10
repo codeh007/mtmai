@@ -17,18 +17,28 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.schema_form import SchemaForm
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BaseState(BaseModel):
+class UserProxyAgentState(BaseModel):
     """
-    BaseState
+    UserProxyAgentState
     """ # noqa: E501
     type: StrictStr
-    version: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version"]
+    model_context: Optional[Any] = None
+    action_form: Optional[SchemaForm] = None
+    platform_account_id: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "model_context", "action_form", "platform_account_id"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['UserProxyAgentState']):
+            raise ValueError("must be one of enum values ('UserProxyAgentState')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -48,7 +58,7 @@ class BaseState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BaseState from a JSON string"""
+        """Create an instance of UserProxyAgentState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,11 +79,19 @@ class BaseState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of action_form
+        if self.action_form:
+            _dict['action_form'] = self.action_form.to_dict()
+        # set to None if model_context (nullable) is None
+        # and model_fields_set contains the field
+        if self.model_context is None and "model_context" in self.model_fields_set:
+            _dict['model_context'] = None
+
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BaseState from a dict"""
+        """Create an instance of UserProxyAgentState from a dict"""
         if obj is None:
             return None
 
@@ -83,11 +101,13 @@ class BaseState(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BaseState) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in UserProxyAgentState) in the input: " + _key)
 
         _obj = cls.model_validate({
             "type": obj.get("type"),
-            "version": obj.get("version")
+            "model_context": obj.get("model_context"),
+            "action_form": SchemaForm.from_dict(obj["action_form"]) if obj.get("action_form") is not None else None,
+            "platform_account_id": obj.get("platform_account_id")
         })
         return _obj
 

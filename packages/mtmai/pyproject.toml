@@ -126,6 +126,7 @@ dependencies = [
     "docker>=7.1.0",
     "asyncio-atexit>=1.0.1",
     "chromadb>=1.0.4",
+    "markitdown>=0.1.1",
 ]
 
 
