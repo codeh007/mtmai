@@ -30,8 +30,18 @@ class ProviderTypes(str, Enum):
     SELECTORGROUPCHAT = 'SelectorGroupChat'
     SOCIALTEAM = 'SocialTeam'
     ASSISTANTAGENT = 'AssistantAgent'
+    CODEEXECUTORAGENT = 'CodeExecutorAgent'
+    SOCIETYOFMINDAGENT = 'SocietyOfMindAgent'
+    USERPROXYAGENT = 'UserProxyAgent'
     MTOPENAICHATCOMPLETIONCLIENT = 'MtOpenAIChatCompletionClient'
     TEXTMENTIONTERMINATION = 'TextMentionTermination'
+    HANDOFFTERMINATION = 'HandoffTermination'
+    TIMEOUTTERMINATION = 'TimeoutTermination'
+    SOURCEMATCHTERMINATION = 'SourceMatchTermination'
+    FUNCTIONCALLTERMINATION = 'FunctionCallTermination'
+    TOKENUSAGETERMINATION = 'TokenUsageTermination'
+    MAXMESSAGETERMINATION = 'MaxMessageTermination'
+    STOPMESSAGETERMINATION = 'StopMessageTermination'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

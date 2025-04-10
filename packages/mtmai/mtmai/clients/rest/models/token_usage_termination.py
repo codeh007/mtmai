@@ -34,8 +34,8 @@ class TokenUsageTermination(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.conditions.TokenUsageTermination']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.TokenUsageTermination')")
+        if value not in set(['TokenUsageTermination']):
+            raise ValueError("must be one of enum values ('TokenUsageTermination')")
         return value
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class TokenUsageTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TokenUsageTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.TokenUsageTermination',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'TokenUsageTermination',
             "config": TokenUsageTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

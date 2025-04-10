@@ -12,11 +12,21 @@ ExpectedType = TypeVar("ExpectedType")
 
 CUSTOM_WELL_KNOWN_PROVIDERS = WELL_KNOWN_PROVIDERS | {
     "SocialTeam": "mtmai.teams.team_social.SocialTeam",
-    "AssistantAgent": "autogen_agentchat.agents.assistant_agent.AssistantAgent",
+    "AssistantAgent": "autogen_agentchat.agents.AssistantAgent",
+    "CodeExecutorAgent": "autogen_agentchat.agents.CodeExecutorAgent",
+    "SocietyOfMindAgent": "autogen_agentchat.agents.SocietyOfMindAgent",
+    "UserProxyAgent": "autogen_agentchat.agents.UserProxyAgent",
     "RoundRobinGroupChat": "autogen_agentchat.teams.RoundRobinGroupChat",
     "SelectorGroupChat": "autogen_agentchat.teams.SelectorGroupChat",
     "MtOpenAIChatCompletionClient": "mtmai.model_client.MtOpenAIChatCompletionClient",
     "TextMentionTermination": "autogen_agentchat.conditions.TextMentionTermination",
+    "HandoffTermination": "autogen_agentchat.conditions.HandoffTermination",
+    "TimeoutTermination": "autogen_agentchat.conditions.TimeoutTermination",
+    "SourceMatchTermination": "autogen_agentchat.conditions.SourceMatchTermination",
+    "FunctionCallTermination": "autogen_agentchat.conditions.FunctionCallTermination",
+    "TokenUsageTermination": "autogen_agentchat.conditions.TokenUsageTermination",
+    "MaxMessageTermination": "autogen_agentchat.conditions.MaxMessageTermination",
+    "StopMessageTermination": "autogen_agentchat.conditions.StopMessageTermination",
 }
 
 

@@ -17,28 +17,31 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_open_ai_chat_completion_client import MtOpenAIChatCompletionClient
+from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AssistantAgentConfig(BaseModel):
+class MtOpenAIChatCompletionClient(BaseModel):
     """
-    AssistantAgentConfig
+    MtOpenAIChatCompletionClient
     """ # noqa: E501
-    name: StrictStr
-    description: StrictStr
-    model_context: Optional[Dict[str, Dict[str, Any]]] = None
-    memory: Optional[Dict[str, Dict[str, Any]]] = None
-    model_client_stream: Optional[StrictBool] = False
-    system_message: Optional[StrictStr] = None
-    model_client: MtOpenAIChatCompletionClient
-    tools: List[Dict[str, Dict[str, Any]]]
-    handoffs: Optional[List[StrictStr]] = None
-    reflect_on_tool_use: StrictBool
-    tool_call_summary_format: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format"]
+    provider: StrictStr
+    component_type: Optional[StrictStr] = None
+    version: Optional[StrictInt] = None
+    component_version: Optional[StrictInt] = None
+    description: Optional[StrictStr] = None
+    label: Optional[StrictStr] = None
+    config: OpenAIClientConfigurationConfigModel
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MtOpenAIChatCompletionClient']):
+            raise ValueError("must be one of enum values ('MtOpenAIChatCompletionClient')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -58,7 +61,7 @@ class AssistantAgentConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AssistantAgentConfig from a JSON string"""
+        """Create an instance of MtOpenAIChatCompletionClient from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -79,14 +82,14 @@ class AssistantAgentConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of model_client
-        if self.model_client:
-            _dict['model_client'] = self.model_client.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of config
+        if self.config:
+            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AssistantAgentConfig from a dict"""
+        """Create an instance of MtOpenAIChatCompletionClient from a dict"""
         if obj is None:
             return None
 
@@ -96,20 +99,16 @@ class AssistantAgentConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AssistantAgentConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in MtOpenAIChatCompletionClient) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "name": obj.get("name"),
+            "provider": obj.get("provider"),
+            "component_type": obj.get("component_type"),
+            "version": obj.get("version"),
+            "component_version": obj.get("component_version"),
             "description": obj.get("description"),
-            "model_context": obj.get("model_context"),
-            "memory": obj.get("memory"),
-            "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
-            "system_message": obj.get("system_message"),
-            "model_client": MtOpenAIChatCompletionClient.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
-            "tools": obj.get("tools"),
-            "handoffs": obj.get("handoffs"),
-            "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
-            "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}'
+            "label": obj.get("label"),
+            "config": OpenAIClientConfigurationConfigModel.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

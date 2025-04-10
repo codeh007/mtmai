@@ -34,8 +34,8 @@ class SourceMatchTermination(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.conditions.SourceMatchTermination']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.SourceMatchTermination')")
+        if value not in set(['SourceMatchTermination']):
+            raise ValueError("must be one of enum values ('SourceMatchTermination')")
         return value
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class SourceMatchTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SourceMatchTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.SourceMatchTermination',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'SourceMatchTermination',
             "config": SourceMatchTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

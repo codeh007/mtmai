@@ -19,23 +19,22 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.handoff_termination_config import HandoffTerminationConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class HandoffTermination(BaseModel):
+class CodeExecutorAgentConfig(BaseModel):
     """
-    HandoffTermination
+    CodeExecutorAgentConfig
     """ # noqa: E501
     provider: StrictStr
-    config: HandoffTerminationConfig
-    __properties: ClassVar[List[str]] = ["provider", "config"]
+    code: StrictStr
+    __properties: ClassVar[List[str]] = ["provider", "code"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['HandoffTermination']):
-            raise ValueError("must be one of enum values ('HandoffTermination')")
+        if value not in set(['CodeExecutorAgent']):
+            raise ValueError("must be one of enum values ('CodeExecutorAgent')")
         return value
 
     model_config = ConfigDict(
@@ -56,7 +55,7 @@ class HandoffTermination(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of HandoffTermination from a JSON string"""
+        """Create an instance of CodeExecutorAgentConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,14 +76,11 @@ class HandoffTermination(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of config
-        if self.config:
-            _dict['config'] = self.config.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of HandoffTermination from a dict"""
+        """Create an instance of CodeExecutorAgentConfig from a dict"""
         if obj is None:
             return None
 
@@ -94,11 +90,11 @@ class HandoffTermination(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in HandoffTermination) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in CodeExecutorAgentConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'HandoffTermination',
-            "config": HandoffTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'CodeExecutorAgent',
+            "code": obj.get("code")
         })
         return _obj
 

@@ -84,6 +84,8 @@ from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.chat_welcome import ChatWelcome
 from mtmai.clients.rest.models.code_execution_input import CodeExecutionInput
 from mtmai.clients.rest.models.code_execution_result import CodeExecutionResult
+from mtmai.clients.rest.models.code_executor_agent import CodeExecutorAgent
+from mtmai.clients.rest.models.code_executor_agent_config import CodeExecutorAgentConfig
 from mtmai.clients.rest.models.common_result import CommonResult
 from mtmai.clients.rest.models.component import Component
 from mtmai.clients.rest.models.component_list import ComponentList
@@ -185,7 +187,7 @@ from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
-from mtmai.clients.rest.models.mt_open_ai_chat_completion_client_component import MtOpenAIChatCompletionClientComponent
+from mtmai.clients.rest.models.mt_open_ai_chat_completion_client import MtOpenAIChatCompletionClient
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
 from mtmai.clients.rest.models.open_ai_model_config import OpenAIModelConfig
@@ -205,6 +207,7 @@ from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
 from mtmai.clients.rest.models.prompt import Prompt
 from mtmai.clients.rest.models.prompt_list import PromptList
+from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.proxy import Proxy
 from mtmai.clients.rest.models.proxy_list import ProxyList
 from mtmai.clients.rest.models.proxy_properties import ProxyProperties
@@ -249,6 +252,8 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.society_of_mind_agent import SocietyOfMindAgent
+from mtmai.clients.rest.models.society_of_mind_agent_config import SocietyOfMindAgentConfig
 from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
 from mtmai.clients.rest.models.source_match_termination_config import SourceMatchTerminationConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
@@ -330,6 +335,8 @@ from mtmai.clients.rest.models.user_change_password_request import UserChangePas
 from mtmai.clients.rest.models.user_input_requested_event import UserInputRequestedEvent
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage
+from mtmai.clients.rest.models.user_proxy_agent import UserProxyAgent
+from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmai.clients.rest.models.user_tenant_public import UserTenantPublic

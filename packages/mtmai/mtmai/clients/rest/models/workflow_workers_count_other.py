@@ -31,6 +31,7 @@ from mtmai.clients.rest.models.chat_session_start_event import ChatSessionStartE
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
 from mtmai.clients.rest.models.code_execution_input import CodeExecutionInput
 from mtmai.clients.rest.models.code_execution_result import CodeExecutionResult
+from mtmai.clients.rest.models.code_executor_agent import CodeExecutorAgent
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.components import Components
 from mtmai.clients.rest.models.flow_error import FlowError
@@ -39,24 +40,28 @@ from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.instagram_task import InstagramTask
-from mtmai.clients.rest.models.mt_open_ai_chat_completion_client_component import MtOpenAIChatCompletionClientComponent
+from mtmai.clients.rest.models.mt_open_ai_chat_completion_client import MtOpenAIChatCompletionClient
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
+from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.round_robin_group_chat import RoundRobinGroupChat
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
+from mtmai.clients.rest.models.society_of_mind_agent import SocietyOfMindAgent
+from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.tool_call_request_event import ToolCallRequestEvent
 from mtmai.clients.rest.models.tool_types import ToolTypes
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.rest.models.user_input_requested_event import UserInputRequestedEvent
+from mtmai.clients.rest.models.user_proxy_agent import UserProxyAgent
 from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AgentTypes", "AskUserFunctionCall", "AssistantAgent", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "ChatStartInput", "CodeExecutionInput", "CodeExecutionResult", "ComponentTypes", "Components", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "InstagramAgentState", "InstagramTask", "MtOpenAIChatCompletionClientComponent", "MyDemoAgentEvent", "PlatformAccountData", "PlatformAccountFlowInput", "RoundRobinGroupChat", "SocialAddFollowersInput", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolCallRequestEvent", "ToolTypes", "UserAgentState", "UserInputRequestedEvent"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentTopicTypes", "AgentTypes", "AskUserFunctionCall", "AssistantAgent", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "ChatStartInput", "CodeExecutionInput", "CodeExecutionResult", "CodeExecutorAgent", "ComponentTypes", "Components", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "InstagramAgentState", "InstagramTask", "MtOpenAIChatCompletionClient", "MyDemoAgentEvent", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "RoundRobinGroupChat", "SocialAddFollowersInput", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "SocietyOfMindAgent", "StateType", "ToolCallRequestEvent", "ToolTypes", "UserAgentState", "UserInputRequestedEvent", "UserProxyAgent"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -71,69 +76,79 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_3_validator: Optional[AgentTopicTypes] = None
     # data type: ComponentTypes
     anyof_schema_4_validator: Optional[ComponentTypes] = None
-    # data type: AgentTypes
-    anyof_schema_5_validator: Optional[AgentTypes] = None
-    # data type: BrowserData
-    anyof_schema_6_validator: Optional[BrowserData] = None
-    # data type: PlatformAccountData
-    anyof_schema_7_validator: Optional[PlatformAccountData] = None
-    # data type: InstagramTask
-    anyof_schema_8_validator: Optional[InstagramTask] = None
-    # data type: ChatSessionStartEvent
-    anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
-    # data type: BrowserTask
-    anyof_schema_10_validator: Optional[BrowserTask] = None
-    # data type: BrowserOpenTask
-    anyof_schema_11_validator: Optional[BrowserOpenTask] = None
-    # data type: PlatformAccountFlowInput
-    anyof_schema_12_validator: Optional[PlatformAccountFlowInput] = None
+    # data type: ProviderTypes
+    anyof_schema_5_validator: Optional[ProviderTypes] = None
     # data type: AgentEventType
-    anyof_schema_13_validator: Optional[AgentEventType] = None
+    anyof_schema_6_validator: Optional[AgentEventType] = None
+    # data type: StateType
+    anyof_schema_7_validator: Optional[StateType] = None
+    # data type: AgentTypes
+    anyof_schema_8_validator: Optional[AgentTypes] = None
+    # data type: BrowserData
+    anyof_schema_9_validator: Optional[BrowserData] = None
+    # data type: PlatformAccountData
+    anyof_schema_10_validator: Optional[PlatformAccountData] = None
+    # data type: InstagramTask
+    anyof_schema_11_validator: Optional[InstagramTask] = None
+    # data type: ChatSessionStartEvent
+    anyof_schema_12_validator: Optional[ChatSessionStartEvent] = None
+    # data type: BrowserTask
+    anyof_schema_13_validator: Optional[BrowserTask] = None
+    # data type: BrowserOpenTask
+    anyof_schema_14_validator: Optional[BrowserOpenTask] = None
+    # data type: PlatformAccountFlowInput
+    anyof_schema_15_validator: Optional[PlatformAccountFlowInput] = None
     # data type: InstagramAgentState
-    anyof_schema_14_validator: Optional[InstagramAgentState] = None
+    anyof_schema_16_validator: Optional[InstagramAgentState] = None
     # data type: FlowError
-    anyof_schema_15_validator: Optional[FlowError] = None
+    anyof_schema_17_validator: Optional[FlowError] = None
     # data type: SocialAddFollowersInput
-    anyof_schema_16_validator: Optional[SocialAddFollowersInput] = None
+    anyof_schema_18_validator: Optional[SocialAddFollowersInput] = None
     # data type: FlowTeamInput
-    anyof_schema_17_validator: Optional[FlowTeamInput] = None
+    anyof_schema_19_validator: Optional[FlowTeamInput] = None
     # data type: UserAgentState
-    anyof_schema_18_validator: Optional[UserAgentState] = None
+    anyof_schema_20_validator: Optional[UserAgentState] = None
     # data type: CodeExecutionInput
-    anyof_schema_19_validator: Optional[CodeExecutionInput] = None
+    anyof_schema_21_validator: Optional[CodeExecutionInput] = None
     # data type: CodeExecutionResult
-    anyof_schema_20_validator: Optional[CodeExecutionResult] = None
+    anyof_schema_22_validator: Optional[CodeExecutionResult] = None
     # data type: SocialLoginInput
-    anyof_schema_21_validator: Optional[SocialLoginInput] = None
+    anyof_schema_23_validator: Optional[SocialLoginInput] = None
     # data type: SocialLoginResult
-    anyof_schema_22_validator: Optional[SocialLoginResult] = None
+    anyof_schema_24_validator: Optional[SocialLoginResult] = None
     # data type: FlowResult
-    anyof_schema_23_validator: Optional[FlowResult] = None
+    anyof_schema_25_validator: Optional[FlowResult] = None
     # data type: ChatStartInput
-    anyof_schema_24_validator: Optional[ChatStartInput] = None
+    anyof_schema_26_validator: Optional[ChatStartInput] = None
     # data type: AskUserFunctionCall
-    anyof_schema_25_validator: Optional[AskUserFunctionCall] = None
+    anyof_schema_27_validator: Optional[AskUserFunctionCall] = None
     # data type: ToolCallRequestEvent
-    anyof_schema_26_validator: Optional[ToolCallRequestEvent] = None
+    anyof_schema_28_validator: Optional[ToolCallRequestEvent] = None
     # data type: MyDemoAgentEvent
-    anyof_schema_27_validator: Optional[MyDemoAgentEvent] = None
+    anyof_schema_29_validator: Optional[MyDemoAgentEvent] = None
     # data type: UserInputRequestedEvent
-    anyof_schema_28_validator: Optional[UserInputRequestedEvent] = None
+    anyof_schema_30_validator: Optional[UserInputRequestedEvent] = None
     # data type: AssistantAgent
-    anyof_schema_29_validator: Optional[AssistantAgent] = None
-    # data type: MtOpenAIChatCompletionClientComponent
-    anyof_schema_30_validator: Optional[MtOpenAIChatCompletionClientComponent] = None
+    anyof_schema_31_validator: Optional[AssistantAgent] = None
+    # data type: MtOpenAIChatCompletionClient
+    anyof_schema_32_validator: Optional[MtOpenAIChatCompletionClient] = None
     # data type: RoundRobinGroupChat
-    anyof_schema_31_validator: Optional[RoundRobinGroupChat] = None
+    anyof_schema_33_validator: Optional[RoundRobinGroupChat] = None
     # data type: Components
-    anyof_schema_32_validator: Optional[Components] = None
+    anyof_schema_34_validator: Optional[Components] = None
     # data type: SocialTeam
-    anyof_schema_33_validator: Optional[SocialTeam] = None
+    anyof_schema_35_validator: Optional[SocialTeam] = None
+    # data type: CodeExecutorAgent
+    anyof_schema_36_validator: Optional[CodeExecutorAgent] = None
+    # data type: SocietyOfMindAgent
+    anyof_schema_37_validator: Optional[SocietyOfMindAgent] = None
+    # data type: UserProxyAgent
+    anyof_schema_38_validator: Optional[UserProxyAgent] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClientComponent, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent]] = None
+        actual_instance: Optional[Union[AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, CodeExecutorAgent, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClient, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, SocietyOfMindAgent, StateType, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent, UserProxyAgent]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AgentTypes", "AskUserFunctionCall", "AssistantAgent", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "ChatStartInput", "CodeExecutionInput", "CodeExecutionResult", "ComponentTypes", "Components", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "InstagramAgentState", "InstagramTask", "MtOpenAIChatCompletionClientComponent", "MyDemoAgentEvent", "PlatformAccountData", "PlatformAccountFlowInput", "RoundRobinGroupChat", "SocialAddFollowersInput", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolCallRequestEvent", "ToolTypes", "UserAgentState", "UserInputRequestedEvent" }
+    any_of_schemas: Set[str] = { "AgentEventType", "AgentTopicTypes", "AgentTypes", "AskUserFunctionCall", "AssistantAgent", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatSessionStartEvent", "ChatStartInput", "CodeExecutionInput", "CodeExecutionResult", "CodeExecutorAgent", "ComponentTypes", "Components", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "InstagramAgentState", "InstagramTask", "MtOpenAIChatCompletionClient", "MyDemoAgentEvent", "PlatformAccountData", "PlatformAccountFlowInput", "ProviderTypes", "RoundRobinGroupChat", "SocialAddFollowersInput", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "SocietyOfMindAgent", "StateType", "ToolCallRequestEvent", "ToolTypes", "UserAgentState", "UserInputRequestedEvent", "UserProxyAgent" }
 
     model_config = {
         "validate_assignment": True,
@@ -175,6 +190,24 @@ class WorkflowWorkersCountOther(BaseModel):
         # validate data type: ComponentTypes
         if not isinstance(v, ComponentTypes):
             error_messages.append(f"Error! Input type `{type(v)}` is not `ComponentTypes`")
+        else:
+            return v
+
+        # validate data type: ProviderTypes
+        if not isinstance(v, ProviderTypes):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `ProviderTypes`")
+        else:
+            return v
+
+        # validate data type: AgentEventType
+        if not isinstance(v, AgentEventType):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentEventType`")
+        else:
+            return v
+
+        # validate data type: StateType
+        if not isinstance(v, StateType):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `StateType`")
         else:
             return v
 
@@ -223,12 +256,6 @@ class WorkflowWorkersCountOther(BaseModel):
         # validate data type: PlatformAccountFlowInput
         if not isinstance(v, PlatformAccountFlowInput):
             error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountFlowInput`")
-        else:
-            return v
-
-        # validate data type: AgentEventType
-        if not isinstance(v, AgentEventType):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentEventType`")
         else:
             return v
 
@@ -328,9 +355,9 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
-        # validate data type: MtOpenAIChatCompletionClientComponent
-        if not isinstance(v, MtOpenAIChatCompletionClientComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `MtOpenAIChatCompletionClientComponent`")
+        # validate data type: MtOpenAIChatCompletionClient
+        if not isinstance(v, MtOpenAIChatCompletionClient):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `MtOpenAIChatCompletionClient`")
         else:
             return v
 
@@ -352,9 +379,27 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
+        # validate data type: CodeExecutorAgent
+        if not isinstance(v, CodeExecutorAgent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `CodeExecutorAgent`")
+        else:
+            return v
+
+        # validate data type: SocietyOfMindAgent
+        if not isinstance(v, SocietyOfMindAgent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SocietyOfMindAgent`")
+        else:
+            return v
+
+        # validate data type: UserProxyAgent
+        if not isinstance(v, UserProxyAgent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `UserProxyAgent`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClientComponent, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, CodeExecutorAgent, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClient, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, SocietyOfMindAgent, StateType, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent, UserProxyAgent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -391,184 +436,214 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_5_validator: Optional[AgentTypes] = None
+        # anyof_schema_5_validator: Optional[ProviderTypes] = None
         try:
-            instance.actual_instance = AgentTypes.from_json(json_str)
+            instance.actual_instance = ProviderTypes.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_6_validator: Optional[BrowserData] = None
-        try:
-            instance.actual_instance = BrowserData.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_7_validator: Optional[PlatformAccountData] = None
-        try:
-            instance.actual_instance = PlatformAccountData.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_8_validator: Optional[InstagramTask] = None
-        try:
-            instance.actual_instance = InstagramTask.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_9_validator: Optional[ChatSessionStartEvent] = None
-        try:
-            instance.actual_instance = ChatSessionStartEvent.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_10_validator: Optional[BrowserTask] = None
-        try:
-            instance.actual_instance = BrowserTask.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_11_validator: Optional[BrowserOpenTask] = None
-        try:
-            instance.actual_instance = BrowserOpenTask.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_12_validator: Optional[PlatformAccountFlowInput] = None
-        try:
-            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_13_validator: Optional[AgentEventType] = None
+        # anyof_schema_6_validator: Optional[AgentEventType] = None
         try:
             instance.actual_instance = AgentEventType.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_14_validator: Optional[InstagramAgentState] = None
+        # anyof_schema_7_validator: Optional[StateType] = None
+        try:
+            instance.actual_instance = StateType.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_8_validator: Optional[AgentTypes] = None
+        try:
+            instance.actual_instance = AgentTypes.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_9_validator: Optional[BrowserData] = None
+        try:
+            instance.actual_instance = BrowserData.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_10_validator: Optional[PlatformAccountData] = None
+        try:
+            instance.actual_instance = PlatformAccountData.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_11_validator: Optional[InstagramTask] = None
+        try:
+            instance.actual_instance = InstagramTask.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_12_validator: Optional[ChatSessionStartEvent] = None
+        try:
+            instance.actual_instance = ChatSessionStartEvent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_13_validator: Optional[BrowserTask] = None
+        try:
+            instance.actual_instance = BrowserTask.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_14_validator: Optional[BrowserOpenTask] = None
+        try:
+            instance.actual_instance = BrowserOpenTask.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_15_validator: Optional[PlatformAccountFlowInput] = None
+        try:
+            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_16_validator: Optional[InstagramAgentState] = None
         try:
             instance.actual_instance = InstagramAgentState.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_15_validator: Optional[FlowError] = None
+        # anyof_schema_17_validator: Optional[FlowError] = None
         try:
             instance.actual_instance = FlowError.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_16_validator: Optional[SocialAddFollowersInput] = None
+        # anyof_schema_18_validator: Optional[SocialAddFollowersInput] = None
         try:
             instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_17_validator: Optional[FlowTeamInput] = None
+        # anyof_schema_19_validator: Optional[FlowTeamInput] = None
         try:
             instance.actual_instance = FlowTeamInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_18_validator: Optional[UserAgentState] = None
+        # anyof_schema_20_validator: Optional[UserAgentState] = None
         try:
             instance.actual_instance = UserAgentState.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_19_validator: Optional[CodeExecutionInput] = None
+        # anyof_schema_21_validator: Optional[CodeExecutionInput] = None
         try:
             instance.actual_instance = CodeExecutionInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_20_validator: Optional[CodeExecutionResult] = None
+        # anyof_schema_22_validator: Optional[CodeExecutionResult] = None
         try:
             instance.actual_instance = CodeExecutionResult.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_21_validator: Optional[SocialLoginInput] = None
+        # anyof_schema_23_validator: Optional[SocialLoginInput] = None
         try:
             instance.actual_instance = SocialLoginInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_22_validator: Optional[SocialLoginResult] = None
+        # anyof_schema_24_validator: Optional[SocialLoginResult] = None
         try:
             instance.actual_instance = SocialLoginResult.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_23_validator: Optional[FlowResult] = None
+        # anyof_schema_25_validator: Optional[FlowResult] = None
         try:
             instance.actual_instance = FlowResult.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_24_validator: Optional[ChatStartInput] = None
+        # anyof_schema_26_validator: Optional[ChatStartInput] = None
         try:
             instance.actual_instance = ChatStartInput.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_25_validator: Optional[AskUserFunctionCall] = None
+        # anyof_schema_27_validator: Optional[AskUserFunctionCall] = None
         try:
             instance.actual_instance = AskUserFunctionCall.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_26_validator: Optional[ToolCallRequestEvent] = None
+        # anyof_schema_28_validator: Optional[ToolCallRequestEvent] = None
         try:
             instance.actual_instance = ToolCallRequestEvent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_27_validator: Optional[MyDemoAgentEvent] = None
+        # anyof_schema_29_validator: Optional[MyDemoAgentEvent] = None
         try:
             instance.actual_instance = MyDemoAgentEvent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_28_validator: Optional[UserInputRequestedEvent] = None
+        # anyof_schema_30_validator: Optional[UserInputRequestedEvent] = None
         try:
             instance.actual_instance = UserInputRequestedEvent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_29_validator: Optional[AssistantAgent] = None
+        # anyof_schema_31_validator: Optional[AssistantAgent] = None
         try:
             instance.actual_instance = AssistantAgent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_30_validator: Optional[MtOpenAIChatCompletionClientComponent] = None
+        # anyof_schema_32_validator: Optional[MtOpenAIChatCompletionClient] = None
         try:
-            instance.actual_instance = MtOpenAIChatCompletionClientComponent.from_json(json_str)
+            instance.actual_instance = MtOpenAIChatCompletionClient.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_31_validator: Optional[RoundRobinGroupChat] = None
+        # anyof_schema_33_validator: Optional[RoundRobinGroupChat] = None
         try:
             instance.actual_instance = RoundRobinGroupChat.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_32_validator: Optional[Components] = None
+        # anyof_schema_34_validator: Optional[Components] = None
         try:
             instance.actual_instance = Components.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_33_validator: Optional[SocialTeam] = None
+        # anyof_schema_35_validator: Optional[SocialTeam] = None
         try:
             instance.actual_instance = SocialTeam.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_36_validator: Optional[CodeExecutorAgent] = None
+        try:
+            instance.actual_instance = CodeExecutorAgent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_37_validator: Optional[SocietyOfMindAgent] = None
+        try:
+            instance.actual_instance = SocietyOfMindAgent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_38_validator: Optional[UserProxyAgent] = None
+        try:
+            instance.actual_instance = UserProxyAgent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClientComponent, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, CodeExecutorAgent, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClient, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, SocietyOfMindAgent, StateType, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent, UserProxyAgent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -582,7 +657,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClientComponent, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentTopicTypes, AgentTypes, AskUserFunctionCall, AssistantAgent, BrowserData, BrowserOpenTask, BrowserTask, ChatSessionStartEvent, ChatStartInput, CodeExecutionInput, CodeExecutionResult, CodeExecutorAgent, ComponentTypes, Components, FlowError, FlowNames, FlowResult, FlowTeamInput, InstagramAgentState, InstagramTask, MtOpenAIChatCompletionClient, MyDemoAgentEvent, PlatformAccountData, PlatformAccountFlowInput, ProviderTypes, RoundRobinGroupChat, SocialAddFollowersInput, SocialLoginInput, SocialLoginResult, SocialTeam, SocietyOfMindAgent, StateType, ToolCallRequestEvent, ToolTypes, UserAgentState, UserInputRequestedEvent, UserProxyAgent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

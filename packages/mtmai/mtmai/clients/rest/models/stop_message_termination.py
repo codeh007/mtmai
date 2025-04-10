@@ -34,8 +34,8 @@ class StopMessageTermination(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.conditions.StopMessageTermination']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.StopMessageTermination')")
+        if value not in set(['StopMessageTermination']):
+            raise ValueError("must be one of enum values ('StopMessageTermination')")
         return value
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class StopMessageTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in StopMessageTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.StopMessageTermination',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'StopMessageTermination',
             "config": StopMessageTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
