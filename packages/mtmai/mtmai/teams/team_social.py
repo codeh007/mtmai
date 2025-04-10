@@ -2,24 +2,26 @@ import asyncio
 from typing import Any, Callable, List, Mapping
 
 from autogen_agentchat.base import ChatAgent, TerminationCondition
-from autogen_agentchat.messages import (BaseAgentEvent, BaseChatMessage,
-                                        MessageFactory, TextMessage)
+from autogen_agentchat.messages import (
+    BaseAgentEvent,
+    BaseChatMessage,
+    MessageFactory,
+    TextMessage,
+)
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
-from autogen_core import AgentRuntime, Component, ComponentModel
+from autogen_core import AgentRuntime, Component
 from loguru import logger
-from pydantic import BaseModel
-from typing_extensions import Self
-
 from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.agents.social_team_manager import SocialTeamManager
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.context.context import Context
+from mtmai.teams.social_team_manager import SocialTeamManager
 from mtmai.worker_app import mtmapp
+from typing_extensions import Self
 
 
 @mtmapp.workflow(
@@ -48,17 +50,9 @@ class FlowSocial:
         return result
 
 
-class SocialGroupChatConfig(BaseModel):
-    """The declarative configuration SocialTeam."""
-
-    participants: List[ComponentModel]
-    termination_condition: ComponentModel | None = None
-    max_turns: int | None = None
-
-
-class SocialTeam(BaseGroupChat, Component[SocialGroupChatConfig]):
+class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     component_provider_override = "mtmai.teams.team_social.SocialTeam"
-    component_config_schema = SocialGroupChatConfig
+    component_config_schema = SocialTeamConfig
 
     def __init__(
         self,
