@@ -19,6 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.ag_events import AgEvents
+from mtmai.clients.rest.models.agent_states import AgentStates
 from mtmai.clients.rest.models.team_component import TeamComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,8 +31,8 @@ class FlowTeamInput(BaseModel):
     """ # noqa: E501
     session_id: StrictStr
     component: TeamComponent
-    task: StrictStr
-    init_state: Dict[str, Any]
+    task: AgEvents
+    init_state: AgentStates
     __properties: ClassVar[List[str]] = ["session_id", "component", "task", "init_state"]
 
     model_config = ConfigDict(
@@ -75,6 +77,12 @@ class FlowTeamInput(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of component
         if self.component:
             _dict['component'] = self.component.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of task
+        if self.task:
+            _dict['task'] = self.task.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of init_state
+        if self.init_state:
+            _dict['init_state'] = self.init_state.to_dict()
         return _dict
 
     @classmethod
@@ -94,8 +102,8 @@ class FlowTeamInput(BaseModel):
         _obj = cls.model_validate({
             "session_id": obj.get("session_id"),
             "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None,
-            "task": obj.get("task"),
-            "init_state": obj.get("init_state")
+            "task": AgEvents.from_dict(obj["task"]) if obj.get("task") is not None else None,
+            "init_state": AgentStates.from_dict(obj["init_state"]) if obj.get("init_state") is not None else None
         })
         return _obj
 

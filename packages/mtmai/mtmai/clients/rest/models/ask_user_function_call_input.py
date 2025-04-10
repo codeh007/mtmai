@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,16 +26,13 @@ class AskUserFunctionCallInput(BaseModel):
     """
     AskUserFunctionCallInput
     """ # noqa: E501
-    type: Optional[StrictStr] = 'AskUserFunctionCallInput'
-    title: Optional[StrictStr] = None
+    type: StrictStr
+    title: StrictStr
     __properties: ClassVar[List[str]] = ["type", "title"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['AskUserFunctionCallInput']):
             raise ValueError("must be one of enum values ('AskUserFunctionCallInput')")
         return value

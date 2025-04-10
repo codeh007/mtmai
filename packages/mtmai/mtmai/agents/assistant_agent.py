@@ -50,15 +50,7 @@ class AssistantAgent(AutogenAssistantAgent, Component[AssistantAgentConfig]):
         super().__init__(
             name=name,
             model_client=model_client,
-            tools=tools
-            or [
-                # get_video_length,
-                # get_screenshot_at,
-                # save_screenshot,
-                # self.vs_transribe_video_screenshot,
-                # extract_audio,
-                # transcribe_audio_with_timestamps,
-            ],
+            tools=tools or [],
             description=description or self.DEFAULT_DESCRIPTION,
             system_message=system_message or self.DEFAULT_SYSTEM_MESSAGE,
             model_client_stream=model_client_stream,
