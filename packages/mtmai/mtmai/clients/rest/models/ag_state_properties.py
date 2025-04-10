@@ -27,13 +27,12 @@ class AgStateProperties(BaseModel):
     """
     AgStateProperties
     """ # noqa: E501
-    version: Optional[StrictStr] = '1.0.0'
     type: StateType
     chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
     topic: StrictStr
     source: StrictStr
     state: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["version", "type", "chatId", "topic", "source", "state"]
+    __properties: ClassVar[List[str]] = ["type", "chatId", "topic", "source", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,7 +90,6 @@ class AgStateProperties(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in AgStateProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "version": obj.get("version") if obj.get("version") is not None else '1.0.0',
             "type": obj.get("type"),
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),

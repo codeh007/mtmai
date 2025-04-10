@@ -39,8 +39,8 @@ class RoundRobinGroupChatComponent(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.teams.RoundRobinGroupChat']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.teams.RoundRobinGroupChat')")
+        if value not in set(['RoundRobinGroupChat']):
+            raise ValueError("must be one of enum values ('RoundRobinGroupChat')")
         return value
 
     @field_validator('component_type')

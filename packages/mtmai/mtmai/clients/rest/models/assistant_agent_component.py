@@ -39,8 +39,8 @@ class AssistantAgentComponent(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.agents.AssistantAgent']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.agents.AssistantAgent')")
+        if value not in set(['AssistantAgent']):
+            raise ValueError("must be one of enum values ('AssistantAgent')")
         return value
 
     @field_validator('component_type')
