@@ -20,9 +20,9 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.chat_message_properties_config import ChatMessagePropertiesConfig
+from mtmai.clients.rest.models.llm_message import LlmMessage
+from mtmai.clients.rest.models.llm_message_types import LlmMessageTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
-from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
-from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,9 +30,9 @@ class ChatMessageProperties(BaseModel):
     """
     ChatMessageProperties
     """ # noqa: E501
-    type: MtLlmMessageTypes
+    type: LlmMessageTypes
     content: StrictStr
-    llm_message: MtLlmMessage
+    llm_message: LlmMessage
     content_type: StrictStr
     source: StrictStr
     topic: StrictStr
@@ -115,7 +115,7 @@ class ChatMessageProperties(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type"),
             "content": obj.get("content"),
-            "llm_message": MtLlmMessage.from_dict(obj["llm_message"]) if obj.get("llm_message") is not None else None,
+            "llm_message": LlmMessage.from_dict(obj["llm_message"]) if obj.get("llm_message") is not None else None,
             "content_type": obj.get("content_type"),
             "source": obj.get("source"),
             "topic": obj.get("topic"),

@@ -19,22 +19,26 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.request_usage import RequestUsage
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PlatformAccountFlowInput(BaseModel):
+class StructuredMessage(BaseModel):
     """
-    PlatformAccountFlowInput
+    StructuredMessage
     """ # noqa: E501
     type: StrictStr
-    platform_account_id: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "platform_account_id"]
+    source: StrictStr
+    models_usage: Optional[RequestUsage] = None
+    metadata: Optional[Dict[str, Any]] = None
+    content: StrictStr
+    __properties: ClassVar[List[str]] = ["type", "source", "models_usage", "metadata", "content"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['PlatformAccountFlowInput']):
-            raise ValueError("must be one of enum values ('PlatformAccountFlowInput')")
+        if value not in set(['StructuredMessage']):
+            raise ValueError("must be one of enum values ('StructuredMessage')")
         return value
 
     model_config = ConfigDict(
@@ -55,7 +59,7 @@ class PlatformAccountFlowInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PlatformAccountFlowInput from a JSON string"""
+        """Create an instance of StructuredMessage from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,11 +80,14 @@ class PlatformAccountFlowInput(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of models_usage
+        if self.models_usage:
+            _dict['models_usage'] = self.models_usage.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PlatformAccountFlowInput from a dict"""
+        """Create an instance of StructuredMessage from a dict"""
         if obj is None:
             return None
 
@@ -90,11 +97,14 @@ class PlatformAccountFlowInput(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in PlatformAccountFlowInput) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in StructuredMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type") if obj.get("type") is not None else 'PlatformAccountFlowInput',
-            "platform_account_id": obj.get("platform_account_id")
+            "type": obj.get("type") if obj.get("type") is not None else 'StructuredMessage',
+            "source": obj.get("source"),
+            "models_usage": RequestUsage.from_dict(obj["models_usage"]) if obj.get("models_usage") is not None else None,
+            "metadata": obj.get("metadata"),
+            "content": obj.get("content")
         })
         return _obj
 

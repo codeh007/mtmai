@@ -51,6 +51,7 @@ from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfi
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.assistant_message import AssistantMessage
 from mtmai.clients.rest.models.assistant_message_content import AssistantMessageContent
+from mtmai.clients.rest.models.base_agent_event import BaseAgentEvent
 from mtmai.clients.rest.models.base_chat_message import BaseChatMessage
 from mtmai.clients.rest.models.base_group_chat_manager_state import BaseGroupChatManagerState
 from mtmai.clients.rest.models.base_message_config import BaseMessageConfig
@@ -175,6 +176,8 @@ from mtmai.clients.rest.models.list_api_tokens_response import ListAPITokensResp
 from mtmai.clients.rest.models.list_pull_requests_response import ListPullRequestsResponse
 from mtmai.clients.rest.models.list_sns_integrations import ListSNSIntegrations
 from mtmai.clients.rest.models.list_slack_webhooks import ListSlackWebhooks
+from mtmai.clients.rest.models.llm_message import LlmMessage
+from mtmai.clients.rest.models.llm_message_types import LlmMessageTypes
 from mtmai.clients.rest.models.log_line import LogLine
 from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
@@ -192,8 +195,7 @@ from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
-from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
-from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
+from mtmai.clients.rest.models.multi_modal_message import MultiModalMessage
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient
 from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
@@ -278,6 +280,7 @@ from mtmai.clients.rest.models.step_run_status import StepRunStatus
 from mtmai.clients.rest.models.stop_message_config import StopMessageConfig
 from mtmai.clients.rest.models.stop_message_termination import StopMessageTermination
 from mtmai.clients.rest.models.stop_message_termination_config import StopMessageTerminationConfig
+from mtmai.clients.rest.models.structured_message import StructuredMessage
 from mtmai.clients.rest.models.subsection import Subsection
 from mtmai.clients.rest.models.system_message import SystemMessage
 from mtmai.clients.rest.models.team import Team
