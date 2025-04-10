@@ -10,9 +10,9 @@ from typing_extensions import Self, TypeVar
 
 ExpectedType = TypeVar("ExpectedType")
 
-CUSTOM_WELL_KNOWN_PROVIDERS = WELL_KNOWN_PROVIDERS | {
+WELL_KNOWN_PROVIDERS = WELL_KNOWN_PROVIDERS | {
     "SocialTeam": "mtmai.teams.team_social.SocialTeam",
-    "AssistantAgent": "autogen_agentchat.agents.AssistantAgent",
+    "AssistantAgent": "mtmai.agents.assistant_agent.AssistantAgent",
     "CodeExecutorAgent": "autogen_agentchat.agents.CodeExecutorAgent",
     "SocietyOfMindAgent": "autogen_agentchat.agents.SocietyOfMindAgent",
     "UserProxyAgent": "autogen_agentchat.agents.UserProxyAgent",
@@ -66,8 +66,8 @@ class ComponentLoader:
             loaded_model = model
 
         # First, do a look up in well known providers
-        if loaded_model.provider in CUSTOM_WELL_KNOWN_PROVIDERS:
-            loaded_model.provider = CUSTOM_WELL_KNOWN_PROVIDERS[loaded_model.provider]
+        if loaded_model.provider in WELL_KNOWN_PROVIDERS:
+            loaded_model.provider = WELL_KNOWN_PROVIDERS[loaded_model.provider]
 
         output = loaded_model.provider.rsplit(".", maxsplit=1)
         if len(output) != 2:
