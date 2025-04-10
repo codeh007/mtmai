@@ -29,11 +29,11 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-TEAMCONFIGTERMINATIONCONDITION_ONE_OF_SCHEMAS = ["FunctionCallTermination", "HandoffTermination", "MaxMessageTermination", "SourceMatchTermination", "StopMessageTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination"]
+SOCIALTEAMCONFIGALLOFTERMINATIONCONDITION_ONE_OF_SCHEMAS = ["FunctionCallTermination", "HandoffTermination", "MaxMessageTermination", "SourceMatchTermination", "StopMessageTermination", "TextMentionTermination", "TimeoutTermination", "TokenUsageTermination"]
 
-class TeamConfigTerminationCondition(BaseModel):
+class SocialTeamConfigAllOfTerminationCondition(BaseModel):
     """
-    TeamConfigTerminationCondition
+    SocialTeamConfigAllOfTerminationCondition
     """
     # data type: TextMentionTermination
     oneof_schema_1_validator: Optional[TextMentionTermination] = None
@@ -75,7 +75,7 @@ class TeamConfigTerminationCondition(BaseModel):
 
     @field_validator('actual_instance')
     def actual_instance_must_validate_oneof(cls, v):
-        instance = TeamConfigTerminationCondition.model_construct()
+        instance = SocialTeamConfigAllOfTerminationCondition.model_construct()
         error_messages = []
         match = 0
         # validate data type: TextMentionTermination
@@ -120,10 +120,10 @@ class TeamConfigTerminationCondition(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in TeamConfigTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in SocialTeamConfigAllOfTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in TeamConfigTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in SocialTeamConfigAllOfTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -234,10 +234,10 @@ class TeamConfigTerminationCondition(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into TeamConfigTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into SocialTeamConfigAllOfTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into TeamConfigTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into SocialTeamConfigAllOfTerminationCondition with oneOf schemas: FunctionCallTermination, HandoffTermination, MaxMessageTermination, SourceMatchTermination, StopMessageTermination, TextMentionTermination, TimeoutTermination, TokenUsageTermination. Details: " + ", ".join(error_messages))
         else:
             return instance
 

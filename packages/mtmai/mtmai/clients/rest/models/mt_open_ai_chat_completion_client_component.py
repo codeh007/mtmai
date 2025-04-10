@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
 from typing import Optional, Set
@@ -27,7 +27,7 @@ class MtOpenAIChatCompletionClientComponent(BaseModel):
     """
     MtOpenAIChatCompletionClientComponent
     """ # noqa: E501
-    provider: Optional[StrictStr] = None
+    provider: StrictStr
     component_type: Optional[StrictStr] = None
     version: Optional[StrictInt] = None
     component_version: Optional[StrictInt] = None
@@ -35,6 +35,13 @@ class MtOpenAIChatCompletionClientComponent(BaseModel):
     label: Optional[StrictStr] = None
     config: OpenAIClientConfigurationConfigModel
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
+
+    @field_validator('provider')
+    def provider_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MtOpenAIChatCompletionClient']):
+            raise ValueError("must be one of enum values ('MtOpenAIChatCompletionClient')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

@@ -34,8 +34,8 @@ class FunctionCallTermination(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['FunctionCallTermination']):
-            raise ValueError("must be one of enum values ('FunctionCallTermination')")
+        if value not in set(['autogen_agentchat.conditions.FunctionCallTermination']):
+            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.FunctionCallTermination')")
         return value
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class FunctionCallTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in FunctionCallTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'FunctionCallTermination',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.FunctionCallTermination',
             "config": FunctionCallTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

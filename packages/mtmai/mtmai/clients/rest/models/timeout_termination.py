@@ -34,8 +34,8 @@ class TimeoutTermination(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['TimeoutTermination']):
-            raise ValueError("must be one of enum values ('TimeoutTermination')")
+        if value not in set(['autogen_agentchat.conditions.TimeoutTermination']):
+            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.TimeoutTermination')")
         return value
 
     model_config = ConfigDict(
@@ -97,7 +97,7 @@ class TimeoutTermination(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TimeoutTermination) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'TimeoutTermination',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.TimeoutTermination',
             "config": TimeoutTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj

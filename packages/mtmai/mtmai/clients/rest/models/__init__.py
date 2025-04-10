@@ -42,7 +42,7 @@ from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
 from mtmai.clients.rest.models.ask_user_function_call_input import AskUserFunctionCallInput
 from mtmai.clients.rest.models.ask_user_function_call_input_field_value import AskUserFunctionCallInputFieldValue
 from mtmai.clients.rest.models.assigned_action import AssignedAction
-from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
+from mtmai.clients.rest.models.assistant_agent import AssistantAgent
 from mtmai.clients.rest.models.assistant_agent_config import AssistantAgentConfig
 from mtmai.clients.rest.models.assistant_agent_state import AssistantAgentState
 from mtmai.clients.rest.models.assistant_message import AssistantMessage
@@ -205,7 +205,6 @@ from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
 from mtmai.clients.rest.models.prompt import Prompt
 from mtmai.clients.rest.models.prompt_list import PromptList
-from mtmai.clients.rest.models.provider_types import ProviderTypes
 from mtmai.clients.rest.models.proxy import Proxy
 from mtmai.clients.rest.models.proxy_list import ProxyList
 from mtmai.clients.rest.models.proxy_properties import ProxyProperties
@@ -229,7 +228,7 @@ from mtmai.clients.rest.models.resource import Resource
 from mtmai.clients.rest.models.resource_list import ResourceList
 from mtmai.clients.rest.models.resource_properties import ResourceProperties
 from mtmai.clients.rest.models.resource_upsert import ResourceUpsert
-from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
+from mtmai.clients.rest.models.round_robin_group_chat import RoundRobinGroupChat
 from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
@@ -248,7 +247,7 @@ from mtmai.clients.rest.models.slack_webhook import SlackWebhook
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
-from mtmai.clients.rest.models.social_team_component import SocialTeamComponent
+from mtmai.clients.rest.models.social_team import SocialTeam
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
 from mtmai.clients.rest.models.source_match_termination_config import SourceMatchTerminationConfig

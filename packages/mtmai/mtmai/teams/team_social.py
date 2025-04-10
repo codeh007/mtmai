@@ -1,6 +1,9 @@
 import asyncio
-from typing import Any, Callable, List, Mapping
+from datetime import datetime
+from textwrap import dedent
+from typing import Any, Callable, List, Mapping, cast
 
+from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import ChatAgent, TerminationCondition
 from autogen_agentchat.messages import (
     BaseAgentEvent,
@@ -9,45 +12,344 @@ from autogen_agentchat.messages import (
     TextMessage,
 )
 from autogen_agentchat.teams import BaseGroupChat
+from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
+    BaseGroupChatManager,
+)
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
-from autogen_core import AgentRuntime, Component
+from autogen_core import (
+    AgentRuntime,
+    Component,
+    DefaultTopicId,
+    FunctionCall,
+    MessageContext,
+    message_handler,
+)
+from autogen_core.model_context import BufferedChatCompletionContext
+from autogen_core.models import (
+    AssistantMessage,
+    FunctionExecutionResultMessage,
+    LLMMessage,
+    SystemMessage,
+    UserMessage,
+)
+from autogen_core.tools import FunctionTool, Tool
+from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
+from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
-from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
+from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
+from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
+from mtmai.clients.rest.models.assistant_message import (
+    AssistantMessage as MtAssistantMessage,
+)
+from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
+from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
+from mtmai.clients.rest.models.chat_start_input import ChatStartInput
+from mtmai.clients.rest.models.chat_upsert import ChatUpsert
+from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.form_field import FormField
+from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
+from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
+from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
-from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.state_type import StateType
-from mtmai.context.context import Context
-from mtmai.teams.social_team_manager import SocialTeamManager
-from mtmai.worker_app import mtmapp
+from mtmai.clients.rest.models.user_agent_state import UserAgentState
+from mtmai.clients.tenant_client import TenantClient
+from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
+from mtmai.mtlibs.id import generate_uuid
 from typing_extensions import Self
 
 
-@mtmapp.workflow(
-    name=FlowNames.SOCIAL,
-    on_events=[FlowNames.SOCIAL],
-)
-class FlowSocial:
-    @mtmapp.step(timeout="60m")
-    async def step0(self, hatctx: Context):
-        # input = MtAgEvent.from_dict(hatctx.input)
-        input = StartNewChatInput.from_dict(hatctx.input)
-        cancellation_token = MtCancelToken()
+class SocialTeamManager(BaseGroupChatManager):
+    def __init__(
+        self,
+        name: str,
+        group_topic_type: str,
+        output_topic_type: str,
+        participant_topic_types: List[str],
+        participant_names: List[str],
+        participant_descriptions: List[str],
+        output_message_queue: asyncio.Queue[
+            BaseAgentEvent | BaseChatMessage | GroupChatTermination
+        ],
+        message_factory: MessageFactory,
+        max_turns: int | None = None,
+        termination_condition: TerminationCondition | None = None,
+    ) -> None:
+        super().__init__(
+            name,
+            group_topic_type,
+            output_topic_type,
+            participant_topic_types,
+            participant_names,
+            participant_descriptions,
+            output_message_queue,
+            termination_condition,
+            max_turns,
+            message_factory,
+        )
+        self._next_speaker_index = 0
+        self._state = UserAgentState()
+        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
+        self.tenant_client = TenantClient()
 
-        if isinstance(input.config.actual_instance, SocialTeamConfig):
-            team = SocialTeam._from_config(
-                SocialTeamConfig.from_dict(input.config.actual_instance.model_dump())
-            )
-        else:
-            raise ValueError(
-                f"Invalid team config type: {type(input.config.actual_instance)}"
-            )
+    async def validate_group_state(
+        self, messages: List[BaseChatMessage] | None
+    ) -> None:
+        pass
 
-        task = TextMessage(content=input.task, source="user")
-        result = await team.run(task=task, cancellation_token=cancellation_token)
-        logger.info(f"result: {result}")
-        return result
+    def weather_tool(self):
+        def get_weather(city: str) -> str:
+            return "sunny"
+
+        return FunctionTool(get_weather, description="Get the weather of a city.")
+
+    async def select_speaker(
+        self, thread: List[BaseAgentEvent | BaseChatMessage]
+    ) -> str:
+        """Select a speaker from the participants in a round-robin fashion."""
+        current_speaker_index = self._next_speaker_index
+        self._next_speaker_index = (current_speaker_index + 1) % len(
+            self._participant_names
+        )
+        current_speaker = self._participant_names[current_speaker_index]
+        return current_speaker
+
+    def social_login_tool(self):
+        def social_login() -> str:
+            json1 = SocialLoginInput(
+                type="SocialLoginInput",
+                username="username1",
+                password="password1",
+                otp_key="",
+            ).model_dump_json()
+            return json1
+
+        return FunctionTool(
+            social_login,
+            description="Social login tool. 登录第三方社交媒体, 例如: instagram, twitter, tiktok, etc.",
+        )
+
+    async def code_execution_tool(self):
+        code_executor = DockerCommandLineCodeExecutor()
+        await code_executor.start()
+        code_execution_tool = PythonCodeExecutionTool(code_executor)
+        return code_execution_tool
+
+    async def get_tools(self, ctx: MessageContext) -> list[Tool]:
+        tools: list[Tool] = []
+        tools.append(await self.code_execution_tool())
+        tools.append(self.weather_tool())
+        tools.append(self.social_login_tool())
+        return tools
+
+    @message_handler
+    async def handle_user_input(
+        self, message: ChatStartInput, ctx: MessageContext
+    ) -> None:
+        """对话开始"""
+        logger.info(f"handle_agent_run_input: {message}")
+
+    @message_handler
+    async def handle_chat_start(
+        self, message: ChatMessageInput, ctx: MessageContext
+    ) -> None:
+        """用户跟聊天助手的对话"""
+        logger.info(f"handle_agent_run_input: {message}")
+
+        if not self._state.platform_account_id:
+            # 显示 社交媒体登录框
+            await self.add_chat_message(
+                ctx,
+                AssistantMessage(
+                    source="assistant",
+                    content=[
+                        FunctionCall(
+                            id=generate_uuid(),
+                            name="ask_user",
+                            arguments=AskUserFunctionCall(
+                                type="AskUserFunctionCall",
+                                id=generate_uuid(),
+                                title="请选择一个社交媒体账号登录",
+                                description="请选择一个社交媒体账号登录",
+                                fields=[
+                                    FormField(
+                                        type="text",
+                                        name="username",
+                                        label="用户名",
+                                        placeholder="请输入用户名",
+                                    )
+                                ],
+                            ).model_dump_json(),
+                        )
+                    ],
+                ),
+            )
+            return
+
+        await self.add_chat_message(
+            ctx, UserMessage(content=message.content, source="user")
+        )
+
+        assistant = AssistantAgent(
+            "assistant",
+            model_client=self.model_client,
+            model_context=self._state.model_context,
+            tools=await self.get_tools(ctx),
+            system_message=dedent(
+                "你是实用助手,需要使用提供的工具解决用户提出的问题"
+                "重要:"
+                "1. 当用户明确调用 登录工具时才调用 登录工具"
+                "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
+            ),
+        )
+
+        response = await assistant.on_messages(
+            [TextMessage(content=message.content, source="user")],
+            ctx.cancellation_token,
+        )
+        await self.add_chat_message(
+            ctx,
+            AssistantMessage(
+                content=response.chat_message.content,
+                source=response.chat_message.source,
+            ),
+        )
+        await self.publish_message(
+            response,
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
+        )
+
+    @message_handler
+    async def on_AskUserFunctionCallInput(
+        self, message: AskUserFunctionCall, ctx: MessageContext
+    ) -> None:
+        logger.info(f"on_AskUserFunctionCallInput: {message}")
+        pass
+
+    @message_handler
+    async def on_social_login(
+        self, message: SocialLoginInput, ctx: MessageContext
+    ) -> AssistantMessage:
+        """
+        TODO: 提供两个选项
+        1. 登录新账号
+        2. 选择已有账号
+        """
+        child_flow_ref = await self._hatctx.aio.spawn_workflow(
+            FlowNames.SOCIAL,
+            input=message.model_dump(),
+        )
+        result = await child_flow_ref.result()
+        flow_result = FlowLoginResult.from_dict(result.get("step0"))
+
+        response = AssistantMessage(
+            content=f"成功登录 instagram, id: {flow_result.account_id}",
+            source=flow_result.source,
+        )
+        await self.publish_message(
+            response,
+            topic_id=DefaultTopicId(
+                type=AgentTopicTypes.RESPONSE.value, source=ctx.topic_id.source
+            ),
+        )
+        self._state.model_context.add_message(response)
+        return response
+
+    async def save_state(self) -> Mapping[str, Any]:
+        upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
+            tenant=self.tenant_client.tenant_id,
+            session=self._session_id,
+            chat_upsert=ChatUpsert(
+                title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
+                name="userAgent",
+                state=self._state.model_dump(),
+                state_type="UserAgentState",
+            ).model_dump(),
+        )
+        return self._state.model_dump()
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        self._state = UserAgentState.from_dict(state)
+        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
+        # 从数据库加载聊天记录
+        chat_messages = await self.tenant_client.chat_api.chat_messages_list(
+            tenant=self.tenant_client.tenant_id,
+            chat=self._session_id,
+        )
+        for chat_message in chat_messages.rows:
+            if chat_message.type.value == MtLlmMessageTypes.USERMESSAGE.value:
+                msg = UserMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
+                )
+                await self._state.model_context.add_message(msg)
+            elif chat_message.type.value == MtLlmMessageTypes.ASSISTANTMESSAGE.value:
+                mt_assistant_message = cast(
+                    MtAssistantMessage, chat_message.llm_message.actual_instance
+                )
+
+                content = mt_assistant_message.content.actual_instance
+                if isinstance(content, str):
+                    content = content
+                else:
+                    fc_list = []
+                    for item in content:
+                        fc = FunctionCall(
+                            id=item.id,
+                            name=item.name,
+                            arguments=item.arguments,
+                        )
+                        fc_list.append(fc)
+                    content = fc_list
+                msg = AssistantMessage(
+                    content=content,
+                    source=mt_assistant_message.source,
+                    thought=mt_assistant_message.thought,
+                )
+                await self._state.model_context.add_message(msg)
+            elif chat_message.type.value == MtLlmMessageTypes.SYSTEMMESSAGE.value:
+                msg = SystemMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
+                )
+                await self._state.model_context.add_message(msg)
+            elif (
+                chat_message.type.value
+                == MtLlmMessageTypes.FUNCTIONEXECUTIONRESULTMESSAGE.value
+            ):
+                msg = FunctionExecutionResultMessage.model_validate(
+                    chat_message.llm_message.actual_instance.model_dump()
+                )
+                await self._state.model_context.add_message(msg)
+            else:
+                raise ValueError(
+                    f"load_state error, Unknown llm message type: {chat_message.type}"
+                )
+
+    async def add_chat_message(
+        self,
+        ctx: MessageContext,
+        message: LLMMessage,
+    ):
+        await self._state.model_context.add_message(message)
+        await self.tenant_client.chat_api.chat_message_upsert(
+            tenant=self.tenant_client.tenant_id,
+            chat_message_upsert=ChatMessageUpsert(
+                type=message.type,
+                thread_id=self._session_id,
+                content=message.model_dump_json(),  # 可能过时了
+                content_type="text",
+                llm_message=MtLlmMessage.from_dict(message.model_dump()),
+                source=message.source,
+                topic=ctx.topic_id.type,
+            ).model_dump(),
+        )
+
+    async def reset(self) -> None:
+        """Reset the group chat manager."""
+        ...
 
 
 class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
@@ -64,8 +366,6 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         custom_message_types: List[type[BaseAgentEvent | BaseChatMessage]]
         | None = None,
     ) -> None:
-        # self.session_id = get_chat_session_id_ctx() or generate_uuid()
-
         super().__init__(
             participants,
             group_chat_manager_name="SocialTeamManager",
@@ -135,17 +435,17 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._runtime.load_state(state)
 
-    async def load_runtimestate(self, session_id: str, runtime: AgentRuntime) -> None:
-        state_list = await self.tenant_client.ag_state_api.ag_state_list(
-            tenant=self.tenant_client.tenant_id,
-            session=session_id,
-        )
+    # async def load_runtimestate(self, session_id: str, runtime: AgentRuntime) -> None:
+    #     state_list = await self.tenant_client.ag_state_api.ag_state_list(
+    #         tenant=self.tenant_client.tenant_id,
+    #         session=session_id,
+    #     )
 
-        state_dict = {}
-        for state in state_list.rows:
-            key = f"{state.topic}/{state.source}"
-            state_dict[key] = state.state
-        await runtime.load_state(state_dict)
+    #     state_dict = {}
+    #     for state in state_list.rows:
+    #         key = f"{state.topic}/{state.source}"
+    #         state_dict[key] = state.state
+    #     await runtime.load_state(state_dict)
 
     def _to_config(self) -> SocialTeamConfig:
         return SocialTeamConfig(
@@ -154,41 +454,14 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
 
     @classmethod
     def _from_config(cls, config: SocialTeamConfig) -> Self:
-        # model_client = get_default_model_client()
-        # participants = [
-        #     AssistantAgent(
-        #         name="assisant",
-        #         description="an useful assistant.",
-        #         system_message=dedent(
-        #             "你是实用助手,需要使用提供的工具解决用户提出的问题"
-        #             "重要:"
-        #             "1. 当用户明确调用 登录工具时才调用 登录工具"
-        #             "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
-        #         ),
-        #         model_client=model_client,
-        #     )
-        # ]
-        # return cls(
-        #     participants,
-        #     # termination_condition=termination_condition,
-        #     max_turns=config.max_turns,
-        # )
         participants = [
-            ChatAgent.load_component(participant) for participant in config.participants
+            ComponentLoader.load_component(participant, expected=ChatAgent)
+            for participant in config.participants
         ]
-
-        termination_condition = config.termination_condition
-
-        # 补充完整的 provider 前缀
-        if termination_condition:
-            if not termination_condition.provider.startswith(
-                "autogen_agentchat.conditions."
-            ):
-                termination_condition.provider = (
-                    "autogen_agentchat.conditions." + termination_condition.provider
-                )
         termination_condition = (
-            TerminationCondition.load_component(termination_condition)
+            ComponentLoader.load_component(
+                config.termination_condition, expected=TerminationCondition
+            )
             if config.termination_condition
             else None
         )
@@ -198,16 +471,8 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
             max_turns=config.max_turns,
         )
 
-    async def _from_db_config(self, config: any) -> Self:
-        pass
-
     async def pause(self) -> None:
         logger.info("TODO: pause team")
 
     async def resume(self) -> None:
         logger.info("TODO: resume team")
-
-
-def normalize_config(config) -> SocialTeamConfig:
-    if hasattr(config, "provider"):
-        config.provider = config.provider.replace("mtmai.teams.team_social.", "")

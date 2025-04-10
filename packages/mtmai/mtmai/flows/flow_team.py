@@ -5,6 +5,7 @@ from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.context.context import Context
 from mtmai.hatchet import Hatchet
+from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 
 mtmapp = Hatchet()
 
@@ -17,9 +18,6 @@ class FlowTeam:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
         input = FlowTeamInput.from_dict(hatctx.input)
-        cancellation_token = MtCancelToken()
-
-        component_dict = input.component.to_dict()
-        team = Team.load_component(component_dict)
+        team = ComponentLoader.load_component(input.component, expected=Team)
         task = TextMessage(content=input.task, source="user")
-        return await team.run(task=task, cancellation_token=cancellation_token)
+        return await team.run(task=task, cancellation_token=MtCancelToken())

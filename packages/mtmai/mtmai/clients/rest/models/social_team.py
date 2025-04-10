@@ -17,25 +17,37 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.handoff_termination_config import HandoffTerminationConfig
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class HandoffTermination(BaseModel):
+class SocialTeam(BaseModel):
     """
-    HandoffTermination
+    SocialTeam
     """ # noqa: E501
     provider: StrictStr
-    config: HandoffTerminationConfig
-    __properties: ClassVar[List[str]] = ["provider", "config"]
+    component_type: StrictStr
+    version: Optional[StrictInt] = None
+    component_version: Optional[StrictInt] = None
+    description: Optional[StrictStr] = None
+    label: Optional[StrictStr] = None
+    config: SocialTeamConfig
+    __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['autogen_agentchat.conditions.HandoffTermination']):
-            raise ValueError("must be one of enum values ('autogen_agentchat.conditions.HandoffTermination')")
+        if value not in set(['mtmai.teams.team_social.SocialTeam']):
+            raise ValueError("must be one of enum values ('mtmai.teams.team_social.SocialTeam')")
+        return value
+
+    @field_validator('component_type')
+    def component_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['team']):
+            raise ValueError("must be one of enum values ('team')")
         return value
 
     model_config = ConfigDict(
@@ -56,7 +68,7 @@ class HandoffTermination(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of HandoffTermination from a JSON string"""
+        """Create an instance of SocialTeam from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +96,7 @@ class HandoffTermination(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of HandoffTermination from a dict"""
+        """Create an instance of SocialTeam from a dict"""
         if obj is None:
             return None
 
@@ -94,11 +106,16 @@ class HandoffTermination(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in HandoffTermination) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SocialTeam) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'autogen_agentchat.conditions.HandoffTermination',
-            "config": HandoffTerminationConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "provider": obj.get("provider"),
+            "component_type": obj.get("component_type") if obj.get("component_type") is not None else 'team',
+            "version": obj.get("version"),
+            "component_version": obj.get("component_version"),
+            "description": obj.get("description"),
+            "label": obj.get("label"),
+            "config": SocialTeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

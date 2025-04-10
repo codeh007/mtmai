@@ -39,8 +39,8 @@ class SocialTeamComponent(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['SocialTeam']):
-            raise ValueError("must be one of enum values ('SocialTeam')")
+        if value not in set(['mtmai.teams.team_social.SocialTeam']):
+            raise ValueError("must be one of enum values ('mtmai.teams.team_social.SocialTeam')")
         return value
 
     @field_validator('component_type')

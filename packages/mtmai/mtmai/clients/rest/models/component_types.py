@@ -28,6 +28,7 @@ class ComponentTypes(str, Enum):
     """
     AGENT = 'agent'
     TEAM = 'team'
+    TERMINATION = 'termination'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -17,27 +17,27 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from mtmai.clients.rest.models.assistant_agent_component import AssistantAgentComponent
-from mtmai.clients.rest.models.round_robin_group_chat_component import RoundRobinGroupChatComponent
-from mtmai.clients.rest.models.social_team_component import SocialTeamComponent
+from mtmai.clients.rest.models.assistant_agent import AssistantAgent
+from mtmai.clients.rest.models.round_robin_group_chat import RoundRobinGroupChat
+from mtmai.clients.rest.models.social_team import SocialTeam
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-COMPONENTS_ONE_OF_SCHEMAS = ["AssistantAgentComponent", "RoundRobinGroupChatComponent", "SocialTeamComponent"]
+COMPONENTS_ONE_OF_SCHEMAS = ["AssistantAgent", "RoundRobinGroupChat", "SocialTeam"]
 
 class Components(BaseModel):
     """
     Components
     """
-    # data type: SocialTeamComponent
-    oneof_schema_1_validator: Optional[SocialTeamComponent] = None
-    # data type: RoundRobinGroupChatComponent
-    oneof_schema_2_validator: Optional[RoundRobinGroupChatComponent] = None
-    # data type: AssistantAgentComponent
-    oneof_schema_3_validator: Optional[AssistantAgentComponent] = None
-    actual_instance: Optional[Union[AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent]] = None
-    one_of_schemas: Set[str] = { "AssistantAgentComponent", "RoundRobinGroupChatComponent", "SocialTeamComponent" }
+    # data type: SocialTeam
+    oneof_schema_1_validator: Optional[SocialTeam] = None
+    # data type: RoundRobinGroupChat
+    oneof_schema_2_validator: Optional[RoundRobinGroupChat] = None
+    # data type: AssistantAgent
+    oneof_schema_3_validator: Optional[AssistantAgent] = None
+    actual_instance: Optional[Union[AssistantAgent, RoundRobinGroupChat, SocialTeam]] = None
+    one_of_schemas: Set[str] = { "AssistantAgent", "RoundRobinGroupChat", "SocialTeam" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -63,27 +63,27 @@ class Components(BaseModel):
         instance = Components.model_construct()
         error_messages = []
         match = 0
-        # validate data type: SocialTeamComponent
-        if not isinstance(v, SocialTeamComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeamComponent`")
+        # validate data type: SocialTeam
+        if not isinstance(v, SocialTeam):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeam`")
         else:
             match += 1
-        # validate data type: RoundRobinGroupChatComponent
-        if not isinstance(v, RoundRobinGroupChatComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChatComponent`")
+        # validate data type: RoundRobinGroupChat
+        if not isinstance(v, RoundRobinGroupChat):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChat`")
         else:
             match += 1
-        # validate data type: AssistantAgentComponent
-        if not isinstance(v, AssistantAgentComponent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgentComponent`")
+        # validate data type: AssistantAgent
+        if not isinstance(v, AssistantAgent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AssistantAgent`")
         else:
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in Components with oneOf schemas: AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in Components with oneOf schemas: AssistantAgent, RoundRobinGroupChat, SocialTeam. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in Components with oneOf schemas: AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in Components with oneOf schemas: AssistantAgent, RoundRobinGroupChat, SocialTeam. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -103,46 +103,46 @@ class Components(BaseModel):
         if not _data_type:
             raise ValueError("Failed to lookup data type from the field `provider` in the input.")
 
-        # check if data type is `AssistantAgentComponent`
-        if _data_type == "AssistantAgentComponent":
-            instance.actual_instance = AssistantAgentComponent.from_json(json_str)
+        # check if data type is `AssistantAgent`
+        if _data_type == "AssistantAgent":
+            instance.actual_instance = AssistantAgent.from_json(json_str)
             return instance
 
-        # check if data type is `RoundRobinGroupChatComponent`
-        if _data_type == "RoundRobinGroupChatComponent":
-            instance.actual_instance = RoundRobinGroupChatComponent.from_json(json_str)
+        # check if data type is `RoundRobinGroupChat`
+        if _data_type == "RoundRobinGroupChat":
+            instance.actual_instance = RoundRobinGroupChat.from_json(json_str)
             return instance
 
-        # check if data type is `SocialTeamComponent`
-        if _data_type == "SocialTeamComponent":
-            instance.actual_instance = SocialTeamComponent.from_json(json_str)
+        # check if data type is `SocialTeam`
+        if _data_type == "SocialTeam":
+            instance.actual_instance = SocialTeam.from_json(json_str)
             return instance
 
-        # deserialize data into SocialTeamComponent
+        # deserialize data into SocialTeam
         try:
-            instance.actual_instance = SocialTeamComponent.from_json(json_str)
+            instance.actual_instance = SocialTeam.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into RoundRobinGroupChatComponent
+        # deserialize data into RoundRobinGroupChat
         try:
-            instance.actual_instance = RoundRobinGroupChatComponent.from_json(json_str)
+            instance.actual_instance = RoundRobinGroupChat.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into AssistantAgentComponent
+        # deserialize data into AssistantAgent
         try:
-            instance.actual_instance = AssistantAgentComponent.from_json(json_str)
+            instance.actual_instance = AssistantAgent.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into Components with oneOf schemas: AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into Components with oneOf schemas: AssistantAgent, RoundRobinGroupChat, SocialTeam. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into Components with oneOf schemas: AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into Components with oneOf schemas: AssistantAgent, RoundRobinGroupChat, SocialTeam. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -156,7 +156,7 @@ class Components(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgentComponent, RoundRobinGroupChatComponent, SocialTeamComponent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AssistantAgent, RoundRobinGroupChat, SocialTeam]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
