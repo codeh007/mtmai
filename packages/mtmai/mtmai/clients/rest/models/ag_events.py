@@ -19,8 +19,6 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.ask_user_function_call_input import AskUserFunctionCallInput
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
-from mtmai.clients.rest.models.platform_account_flow_input import PlatformAccountFlowInput
-from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
 from mtmai.clients.rest.models.tenant_init_input import TenantInitInput
@@ -30,7 +28,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGEVENTS_ONE_OF_SCHEMAS = ["AskUserFunctionCallInput", "ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "StartNewChatInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
+AGEVENTS_ONE_OF_SCHEMAS = ["AskUserFunctionCallInput", "ChatMessageInput", "SocialLoginInput", "StartNewChatInput", "TenantInitInput", "TextMessage", "ThoughtEvent"]
 
 class AgEvents(BaseModel):
     """
@@ -40,22 +38,18 @@ class AgEvents(BaseModel):
     oneof_schema_1_validator: Optional[ThoughtEvent] = None
     # data type: TextMessage
     oneof_schema_2_validator: Optional[TextMessage] = None
-    # data type: PlatformAccountFlowInput
-    oneof_schema_3_validator: Optional[PlatformAccountFlowInput] = None
-    # data type: SocialAddFollowersInput
-    oneof_schema_4_validator: Optional[SocialAddFollowersInput] = None
     # data type: SocialLoginInput
-    oneof_schema_5_validator: Optional[SocialLoginInput] = None
+    oneof_schema_3_validator: Optional[SocialLoginInput] = None
     # data type: TenantInitInput
-    oneof_schema_6_validator: Optional[TenantInitInput] = None
+    oneof_schema_4_validator: Optional[TenantInitInput] = None
     # data type: ChatMessageInput
-    oneof_schema_7_validator: Optional[ChatMessageInput] = None
+    oneof_schema_5_validator: Optional[ChatMessageInput] = None
     # data type: AskUserFunctionCallInput
-    oneof_schema_8_validator: Optional[AskUserFunctionCallInput] = None
+    oneof_schema_6_validator: Optional[AskUserFunctionCallInput] = None
     # data type: StartNewChatInput
-    oneof_schema_9_validator: Optional[StartNewChatInput] = None
-    actual_instance: Optional[Union[AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent]] = None
-    one_of_schemas: Set[str] = { "AskUserFunctionCallInput", "ChatMessageInput", "PlatformAccountFlowInput", "SocialAddFollowersInput", "SocialLoginInput", "StartNewChatInput", "TenantInitInput", "TextMessage", "ThoughtEvent" }
+    oneof_schema_7_validator: Optional[StartNewChatInput] = None
+    actual_instance: Optional[Union[AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent]] = None
+    one_of_schemas: Set[str] = { "AskUserFunctionCallInput", "ChatMessageInput", "SocialLoginInput", "StartNewChatInput", "TenantInitInput", "TextMessage", "ThoughtEvent" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -91,16 +85,6 @@ class AgEvents(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `TextMessage`")
         else:
             match += 1
-        # validate data type: PlatformAccountFlowInput
-        if not isinstance(v, PlatformAccountFlowInput):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `PlatformAccountFlowInput`")
-        else:
-            match += 1
-        # validate data type: SocialAddFollowersInput
-        if not isinstance(v, SocialAddFollowersInput):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `SocialAddFollowersInput`")
-        else:
-            match += 1
         # validate data type: SocialLoginInput
         if not isinstance(v, SocialLoginInput):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialLoginInput`")
@@ -128,10 +112,10 @@ class AgEvents(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -159,16 +143,6 @@ class AgEvents(BaseModel):
         # check if data type is `ChatMessageInput`
         if _data_type == "ChatMessageInput":
             instance.actual_instance = ChatMessageInput.from_json(json_str)
-            return instance
-
-        # check if data type is `PlatformAccountFlowInput`
-        if _data_type == "PlatformAccountFlowInput":
-            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
-            return instance
-
-        # check if data type is `SocialAddFollowersInput`
-        if _data_type == "SocialAddFollowersInput":
-            instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
             return instance
 
         # check if data type is `SocialLoginInput`
@@ -208,18 +182,6 @@ class AgEvents(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
-        # deserialize data into PlatformAccountFlowInput
-        try:
-            instance.actual_instance = PlatformAccountFlowInput.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into SocialAddFollowersInput
-        try:
-            instance.actual_instance = SocialAddFollowersInput.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
         # deserialize data into SocialLoginInput
         try:
             instance.actual_instance = SocialLoginInput.from_json(json_str)
@@ -253,10 +215,10 @@ class AgEvents(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgEvents with oneOf schemas: AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -270,7 +232,7 @@ class AgEvents(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AskUserFunctionCallInput, ChatMessageInput, PlatformAccountFlowInput, SocialAddFollowersInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AskUserFunctionCallInput, ChatMessageInput, SocialLoginInput, StartNewChatInput, TenantInitInput, TextMessage, ThoughtEvent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

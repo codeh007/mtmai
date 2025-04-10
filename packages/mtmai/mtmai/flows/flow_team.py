@@ -19,6 +19,5 @@ class FlowTeam:
     async def step0(self, hatctx: Context):
         input = FlowTeamInput.from_dict(hatctx.input)
         team = ComponentLoader.load_component(input.component, expected=Team)
-        task = TextMessage(content=input.task, source="user")
-        result = await team.run(task=task, cancellation_token=MtCancelToken())
-        return result
+        task = TextMessage.model_validate(input.task.model_dump())
+        return await team.run(task=task, cancellation_token=MtCancelToken())

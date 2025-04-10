@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.request_usage import RequestUsage
 from typing import Optional, Set
@@ -27,19 +27,12 @@ class BaseTextChatMessage(BaseModel):
     """
     BaseTextChatMessage
     """ # noqa: E501
-    type: StrictStr
+    type: Optional[StrictStr] = None
     source: StrictStr
     models_usage: Optional[RequestUsage] = None
     metadata: Optional[Dict[str, Any]] = None
     content: StrictStr
     __properties: ClassVar[List[str]] = ["type", "source", "models_usage", "metadata", "content"]
-
-    @field_validator('type')
-    def type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['BaseTextChatMessage']):
-            raise ValueError("must be one of enum values ('BaseTextChatMessage')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,7 +93,7 @@ class BaseTextChatMessage(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in BaseTextChatMessage) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type") if obj.get("type") is not None else 'BaseTextChatMessage',
+            "type": obj.get("type"),
             "source": obj.get("source"),
             "models_usage": RequestUsage.from_dict(obj["models_usage"]) if obj.get("models_usage") is not None else None,
             "metadata": obj.get("metadata"),

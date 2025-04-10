@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.ag_events import AgEvents
 from mtmai.clients.rest.models.agent_states import AgentStates
 from mtmai.clients.rest.models.team_component import TeamComponent
@@ -32,7 +32,7 @@ class FlowTeamInput(BaseModel):
     session_id: StrictStr
     component: TeamComponent
     task: AgEvents
-    init_state: AgentStates
+    init_state: Optional[AgentStates] = None
     __properties: ClassVar[List[str]] = ["session_id", "component", "task", "init_state"]
 
     model_config = ConfigDict(

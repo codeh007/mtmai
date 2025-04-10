@@ -31,7 +31,7 @@ class ThoughtEvent(BaseModel):
     source: StrictStr
     models_usage: Optional[RequestUsage] = None
     metadata: Optional[Dict[str, Any]] = None
-    content: Optional[StrictStr] = None
+    content: StrictStr
     __properties: ClassVar[List[str]] = ["type", "source", "models_usage", "metadata", "content"]
 
     @field_validator('type')

@@ -1,7 +1,17 @@
 import asyncio
 import logging
 from inspect import iscoroutinefunction
-from typing import Any, Awaitable, Callable, List, Mapping, Optional, Sequence, Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Awaitable,
+    Callable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+)
 
 from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import (
@@ -508,3 +518,15 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         if result is None:
             raise RuntimeError("result is None")
         return result
+
+    async def run_stream(
+        self,
+        *,
+        task: str | BaseChatMessage | Sequence[BaseChatMessage] | None = None,
+        cancellation_token: CancellationToken | None = None,
+    ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | TaskResult, None]:
+        async for message in super().run_stream(
+            task=task,
+            cancellation_token=cancellation_token,
+        ):
+            yield message

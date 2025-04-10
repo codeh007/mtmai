@@ -27,7 +27,7 @@ class BaseChatMessage(BaseModel):
     """
     BaseChatMessage
     """ # noqa: E501
-    type: StrictStr
+    type: Optional[StrictStr] = None
     source: StrictStr
     models_usage: Optional[RequestUsage] = None
     metadata: Optional[Dict[str, Any]] = None
