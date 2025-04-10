@@ -84,6 +84,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         self._state = InstagramAgentState(
             type=AgentStateTypes.INSTAGRAMAGENTSTATE.value,
         )
+        self._credentials = credentials
 
     @message_handler
     async def on_instagram_login(
@@ -154,10 +155,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
     async def example(self):
         # IG_CREDENTIAL_PATH = "./ig_settings.json"
         # SLEEP_TIME = "600"  # in seconds
-
         self.ig_client.login(self.username, self.password)
-        # self.ig_client.dump_settings(IG_CREDENTIAL_PATH)
-
         userid = self.ig_client.user_id_from_username("hello")
         self.ig_client.user_follow(userid)
         self.ig_client.user_unfollow(userid)
@@ -330,6 +328,62 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             ]
         )
 
+    async def on_social_login(self, hatctx: Context, msg: SocialLoginInput):
+        logger.info(f"input: {msg}")
+        self._state.username = msg.username
+        self._state.password = msg.password
+        self._state.otp_key = msg.otp_key
+
+        return {"state": "social_login"}
+
+    async def on_social_add_followers(
+        self, hatctx: Context, msg: SocialAddFollowersInput
+    ):
+        logger.info(f"input: {msg}")
+        return {"state": "social_add_followers"}
+
+    async def on_reset(self, cancellation_token: CancellationToken) -> None:
+        await super().on_reset(cancellation_token)
+        self._state = InstagramAgentState(
+            type=AgentStateTypes.INSTAGRAMAGENTSTATE.value,
+        )
+
+    async def save_state(self) -> Mapping[str, Any]:
+        self._state.llm_context = await self._model_context.save_state()
+        return self._state.model_dump()
+
+    async def load_state(self, state: Mapping[str, Any]) -> None:
+        self._state = InstagramAgentState.from_dict(state)
+        self.ig_client.set_settings(self._state.ig_settings)
+        self.ig_client.set_proxy(self._state.proxy_url)
+
+    async def _to_config(self) -> InstagramAgentConfig:
+        if self._output_content_type:
+            raise ValueError(
+                "AssistantAgent with output_content_type does not support declarative config."
+            )
+
+        return InstagramAgentConfig(
+            name=self.name,
+            model_client=self._model_client.dump_component(),
+            tools=[tool.dump_component() for tool in self._tools],
+            handoffs=list(self._handoffs.values()) if self._handoffs else None,
+            model_context=self._model_context.dump_component(),
+            memory=[memory.dump_component() for memory in self._memory]
+            if self._memory
+            else None,
+            description=self.description,
+            system_message=self._system_messages[0].content
+            if self._system_messages
+            and isinstance(self._system_messages[0].content, str)
+            else None,
+            model_client_stream=self._model_client_stream,
+            reflect_on_tool_use=self._reflect_on_tool_use,
+            tool_call_summary_format=self._tool_call_summary_format,
+            metadata=self._metadata,
+            credentials=self._credentials,
+        )
+
     @classmethod
     def _from_config(cls, config: InstagramAgentConfig) -> Self:
         return cls(
@@ -358,32 +412,3 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             handoffs=config.handoffs,
             credentials=config.credentials,
         )
-
-    async def on_reset(self, cancellation_token: CancellationToken) -> None:
-        await super().on_reset(cancellation_token)
-        self._state = InstagramAgentState(
-            type=AgentStateTypes.INSTAGRAMAGENTSTATE.value,
-        )
-
-    async def save_state(self) -> Mapping[str, Any]:
-        self._state.llm_context = await self._model_context.save_state()
-        return self._state.model_dump()
-
-    async def load_state(self, state: Mapping[str, Any]) -> None:
-        self._state = InstagramAgentState.from_dict(state)
-        self.ig_client.set_settings(self._state.ig_settings)
-        self.ig_client.set_proxy(self._state.proxy_url)
-
-    async def on_social_login(self, hatctx: Context, msg: SocialLoginInput):
-        logger.info(f"input: {msg}")
-        self._state.username = msg.username
-        self._state.password = msg.password
-        self._state.otp_key = msg.otp_key
-
-        return {"state": "social_login"}
-
-    async def on_social_add_followers(
-        self, hatctx: Context, msg: SocialAddFollowersInput
-    ):
-        logger.info(f"input: {msg}")
-        return {"state": "social_add_followers"}
