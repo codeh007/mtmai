@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.mt_open_ai_chat_completion_client import MtOpenAIChatCompletionClient
+from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -33,7 +33,7 @@ class InstagramAgentConfig(BaseModel):
     memory: Optional[Dict[str, Dict[str, Any]]] = None
     model_client_stream: Optional[StrictBool] = False
     system_message: Optional[StrictStr] = None
-    model_client: MtOpenAIChatCompletionClient
+    model_client: OpenAIChatCompletionClient
     tools: List[Dict[str, Dict[str, Any]]]
     handoffs: Optional[List[StrictStr]] = None
     reflect_on_tool_use: StrictBool
@@ -110,7 +110,7 @@ class InstagramAgentConfig(BaseModel):
             "memory": obj.get("memory"),
             "model_client_stream": obj.get("model_client_stream") if obj.get("model_client_stream") is not None else False,
             "system_message": obj.get("system_message"),
-            "model_client": MtOpenAIChatCompletionClient.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
+            "model_client": OpenAIChatCompletionClient.from_dict(obj["model_client"]) if obj.get("model_client") is not None else None,
             "tools": obj.get("tools"),
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,

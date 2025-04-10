@@ -52,7 +52,9 @@ from autogen_ext.models._utils.normalize_stop_reason import normalize_stop_reaso
 from autogen_ext.models._utils.parse_r1_content import parse_r1_content
 from autogen_ext.models.openai import _model_info
 from autogen_ext.models.openai.config import (
-    OpenAIClientConfiguration,
+    OpenAIClientConfiguration,  # OpenAIClientConfigurationConfigModel,
+)
+from clients.rest.models.open_ai_client_configuration_config_model import (
     OpenAIClientConfigurationConfigModel,
 )
 from openai import NOT_GIVEN, AsyncAzureOpenAI, AsyncOpenAI

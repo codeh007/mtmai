@@ -187,8 +187,8 @@ from mtmai.clients.rest.models.model_usage import ModelUsage
 from mtmai.clients.rest.models.mt_ag_event import MtAgEvent
 from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
-from mtmai.clients.rest.models.mt_open_ai_chat_completion_client import MtOpenAIChatCompletionClient
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
+from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient
 from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
