@@ -43,6 +43,7 @@ from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from mtmai.clients.rest.models.ask_user_function_call import AskUserFunctionCall
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
+from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
@@ -522,7 +523,11 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     async def run_stream(
         self,
         *,
-        task: str | BaseChatMessage | Sequence[BaseChatMessage] | None = None,
+        task: str
+        | BaseChatMessage
+        | Sequence[BaseChatMessage]
+        | FlowTeamInput
+        | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | TaskResult, None]:
         async for message in super().run_stream(
