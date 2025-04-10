@@ -1,6 +1,6 @@
 from autogen_core.tools import FunctionTool
 from loguru import logger
-from mtmai.agents._types import (  # issues_and_repairs_agent_topic_type,; sales_agent_topic_type,; triage_agent_topic_type,
+from mtlibs.autogen_utils._types import (  # issues_and_repairs_agent_topic_type,; sales_agent_topic_type,; triage_agent_topic_type,
     AgentRegistryBase,
     IntentClassifierBase,
 )

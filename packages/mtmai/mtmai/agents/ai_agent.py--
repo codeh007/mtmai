@@ -17,8 +17,7 @@ from autogen_core.models import (
 )
 from autogen_core.tools import Tool
 from loguru import logger
-
-from mtmai.agents._types import AgentResponse, UserTask
+from mtlibs.autogen_utils._types import AgentResponse, UserTask
 
 
 class AIAgent(RoutedAgent):

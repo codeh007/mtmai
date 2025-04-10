@@ -8,8 +8,7 @@ from autogen_core.models import (
     SystemMessage,
     UserMessage,
 )
-
-from mtmai.agents._types import CodeReviewResult, CodeReviewTask
+from mtlibs.autogen_utils._types import CodeReviewResult, CodeReviewTask
 
 
 class ReviewerAgent(RoutedAgent):

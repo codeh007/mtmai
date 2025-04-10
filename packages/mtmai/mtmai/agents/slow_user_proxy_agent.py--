@@ -19,14 +19,14 @@ from autogen_core.models import (
     UserMessage,
 )
 from autogen_core.tools import BaseTool
-from mtmai.agents._agents import scheduling_assistant_topic_type
-from mtmai.agents._types import (
+from mtlibs.autogen_utils._types import (
     AssistantTextMessage,
     GetSlowUserMessage,
     ScheduleMeetingOutput,
     TerminateMessage,
     UserTextMessage,
 )
+from mtmai.agents._agents import scheduling_assistant_topic_type
 from pydantic import BaseModel, Field
 
 

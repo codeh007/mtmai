@@ -13,7 +13,7 @@ from autogen_core import (
 )
 from autogen_core.tool_agent import ToolException
 from loguru import logger
-from mtmai.agents._types import GetSlowUserMessage
+from mtlibs.autogen_utils._types import GetSlowUserMessage
 
 
 class NeedsUserInputHandler(DefaultInterventionHandler):

@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,7 +30,11 @@ class SocialTeamManagerState(BaseModel):
     version: Optional[StrictStr] = None
     next_speaker_index: Optional[StrictInt] = 0
     previous_speaker: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker"]
+    selector_prompt: Optional[StrictStr] = None
+    allow_repeated_speaker: Optional[StrictBool] = None
+    max_selector_attempts: Optional[StrictInt] = None
+    selector_func: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -98,7 +102,11 @@ class SocialTeamManagerState(BaseModel):
             "type": obj.get("type") if obj.get("type") is not None else 'SocialTeamManagerState',
             "version": obj.get("version"),
             "next_speaker_index": obj.get("next_speaker_index") if obj.get("next_speaker_index") is not None else 0,
-            "previous_speaker": obj.get("previous_speaker")
+            "previous_speaker": obj.get("previous_speaker"),
+            "selector_prompt": obj.get("selector_prompt"),
+            "allow_repeated_speaker": obj.get("allow_repeated_speaker"),
+            "max_selector_attempts": obj.get("max_selector_attempts"),
+            "selector_func": obj.get("selector_func")
         })
         return _obj
 

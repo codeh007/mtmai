@@ -13,45 +13,6 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.team_runner_task import TeamRunnerTask
 from mtmai.clients.rest.models.termination_message import TerminationMessage
 
-# class UserTask(BaseModel):
-#     context: List[LLMMessage]
-
-
-# class AgentResponse(BaseModel):
-#     reply_to_topic_type: str
-#     context: List[LLMMessage]
-
-
-# class IntentClassifierBase(ABC):
-#     @abstractmethod
-#     async def classify_intent(self, message: str) -> str:
-#         pass
-
-
-# class AgentRegistryBase(ABC):
-#     @abstractmethod
-#     async def get_agent(self, intent: str) -> str:
-#         pass
-
-
-# class UserTextMessage(BaseModel):
-#     source: str
-#     content: str
-
-
-# class AssistantTextMessage(BaseModel):
-#     source: str
-#     content: str
-
-
-# class GetSlowUserMessage(BaseModel):
-#     content: str
-
-
-# class TerminateMessage(BaseModel):
-#     content: str
-
-
 agent_message_types = [
     TerminationMessage,
     CodeWritingTask,

@@ -18,11 +18,14 @@ from autogen_core.model_context import ChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import BaseTool
 from loguru import logger
+from mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.agents.assistant_agent import AssistantAgent
+from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
+from mtmai.clients.rest.models.instagram_credentials import InstagramCredentials
 from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
@@ -33,6 +36,7 @@ from mtmai.mtlibs.instagrapi import Client
 from mtmai.mtlibs.instagrapi.mixins.challenge import ChallengeChoice
 from mtmai.mtlibs.instagrapi.types import Media
 from pydantic import BaseModel
+from typing_extensions import Self
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
@@ -45,6 +49,7 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
         name: str,
         model_client: ChatCompletionClient,
         *,
+        credentials: InstagramCredentials,
         tools: List[
             BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]
         ]
@@ -76,7 +81,9 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             metadata=metadata,
         )
         # self.user_topic = user_topic
-        self._state = InstagramAgentState()
+        self._state = InstagramAgentState(
+            type=AgentStateTypes.INSTAGRAMAGENTSTATE.value,
+        )
 
     @message_handler
     async def on_instagram_login(
@@ -323,32 +330,40 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             ]
         )
 
-    # @classmethod
-    # def _from_config(cls, config: InstagramAgentConfig) -> Self:
-    #     return cls(
-    #         name=config.name,
-    #         model_client=ChatCompletionClient.load_component(
-    #             config.model_client.model_dump()
-    #         ),
-    #         tools=[BaseTool.load_component(tool) for tool in config.tools]
-    #         if config.tools
-    #         else None,
-    #         model_context=None,
-    #         memory=[Memory.load_component(memory) for memory in config.memory]
-    #         if config.memory
-    #         else None,
-    #         description=config.description,
-    #         system_message=config.system_message,
-    #         model_client_stream=config.model_client_stream,
-    #         reflect_on_tool_use=config.reflect_on_tool_use,
-    #         tool_call_summary_format=config.tool_call_summary_format,
-    #         handoffs=config.handoffs,
-    #         username=config.username,
-    #         password=config.password,
-    #     )
+    @classmethod
+    def _from_config(cls, config: InstagramAgentConfig) -> Self:
+        return cls(
+            name=config.name,
+            model_client=ComponentLoader.load_component(
+                config.model_client, ChatCompletionClient
+            ),
+            tools=[
+                ComponentLoader.load_component(tool, expected=BaseTool)
+                for tool in config.tools
+            ]
+            if config.tools
+            else None,
+            model_context=None,
+            memory=[
+                ComponentLoader.load_component(memory, expected=Memory)
+                for memory in config.memory
+            ]
+            if config.memory
+            else None,
+            description=config.description,
+            system_message=config.system_message,
+            model_client_stream=config.model_client_stream,
+            reflect_on_tool_use=config.reflect_on_tool_use,
+            tool_call_summary_format=config.tool_call_summary_format,
+            handoffs=config.handoffs,
+            credentials=config.credentials,
+        )
 
     async def on_reset(self, cancellation_token: CancellationToken) -> None:
-        pass
+        await super().on_reset(cancellation_token)
+        self._state = InstagramAgentState(
+            type=AgentStateTypes.INSTAGRAMAGENTSTATE.value,
+        )
 
     async def save_state(self) -> Mapping[str, Any]:
         self._state.llm_context = await self._model_context.save_state()

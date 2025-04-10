@@ -38,7 +38,7 @@ class InstagramAgentState(BaseModel):
     ig_settings: Optional[Dict[str, Any]] = None
     proxy_url: Optional[StrictStr] = None
     platform_account_id: Optional[StrictStr] = None
-    credentials: Optional[InstagramCredentials] = None
+    credentials: InstagramCredentials
     __properties: ClassVar[List[str]] = ["type", "version", "llm_context", "username", "password", "otp_key", "session_state", "is_wait_user_input", "ig_settings", "proxy_url", "platform_account_id", "credentials"]
 
     @field_validator('type')
