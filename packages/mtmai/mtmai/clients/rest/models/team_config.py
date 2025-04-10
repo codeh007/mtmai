@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt
 from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.agents import Agents
 from mtmai.clients.rest.models.terminations import Terminations
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,7 +28,7 @@ class TeamConfig(BaseModel):
     """
     TeamConfig
     """ # noqa: E501
-    participants: List[Dict[str, Any]]
+    participants: List[Agents]
     termination_condition: Terminations
     max_turns: StrictInt
     __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns"]
@@ -71,6 +72,13 @@ class TeamConfig(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in participants (list)
+        _items = []
+        if self.participants:
+            for _item_participants in self.participants:
+                if _item_participants:
+                    _items.append(_item_participants.to_dict())
+            _dict['participants'] = _items
         # override the default output from pydantic by calling `to_dict()` of termination_condition
         if self.termination_condition:
             _dict['termination_condition'] = self.termination_condition.to_dict()
@@ -91,7 +99,7 @@ class TeamConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TeamConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "participants": obj.get("participants"),
+            "participants": [Agents.from_dict(_item) for _item in obj["participants"]] if obj.get("participants") is not None else None,
             "termination_condition": Terminations.from_dict(obj["termination_condition"]) if obj.get("termination_condition") is not None else None,
             "max_turns": obj.get("max_turns") if obj.get("max_turns") is not None else 25
         })

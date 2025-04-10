@@ -120,19 +120,6 @@ class AgClient:
         except NotFoundException:
             return None
 
-    # async def save_team_state(
-    #     self, componentId: str, tenant_id: str, chat_id: str, state: dict
-    # ) -> None:
-    #     await self.ag_state_api.ag_state_upsert(
-    #         tenant=tenant_id,
-    #         ag_state_upsert=AgStateUpsert(
-    #             componentId=componentId,
-    #             chatId=chat_id,
-    #             state=state,
-    #             type=StateType.TEAMSTATE,
-    #         ),
-    #     )
-
     async def upsert_team(
         self, tenant_id: str, team: Team, component_id: str | None = None
     ):

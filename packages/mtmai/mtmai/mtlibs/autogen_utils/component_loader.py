@@ -13,9 +13,10 @@ ExpectedType = TypeVar("ExpectedType")
 WELL_KNOWN_PROVIDERS = WELL_KNOWN_PROVIDERS | {
     "SocialTeam": "mtmai.teams.team_social.SocialTeam",
     "AssistantAgent": "mtmai.agents.assistant_agent.AssistantAgent",
+    "InstagramAgent": "mtmai.agents.instagram_agent.InstagramAgent",
     "CodeExecutorAgent": "autogen_agentchat.agents.CodeExecutorAgent",
     "SocietyOfMindAgent": "autogen_agentchat.agents.SocietyOfMindAgent",
-    "UserProxyAgent": "autogen_agentchat.agents.UserProxyAgent",
+    "UserProxyAgent": "mtmai.agents.userproxy_agent.UserProxyAgent",
     "RoundRobinGroupChat": "autogen_agentchat.teams.RoundRobinGroupChat",
     "SelectorGroupChat": "autogen_agentchat.teams.SelectorGroupChat",
     "OpenAIChatCompletionClient": "mtmai.model_client.MtOpenAIChatCompletionClient",

@@ -1,10 +1,9 @@
 import asyncio
-from datetime import datetime
 from textwrap import dedent
-from typing import Any, Callable, List, Mapping, cast
+from typing import Any, Callable, List, Mapping, Sequence, cast
 
 from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.base import ChatAgent, TerminationCondition
+from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import (
     BaseAgentEvent,
     BaseChatMessage,
@@ -18,6 +17,7 @@ from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
 from autogen_agentchat.teams._group_chat._events import GroupChatTermination
 from autogen_core import (
     AgentRuntime,
+    CancellationToken,
     Component,
     DefaultTopicId,
     FunctionCall,
@@ -45,7 +45,6 @@ from mtmai.clients.rest.models.assistant_message import (
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
-from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.form_field import FormField
@@ -56,6 +55,7 @@ from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.state_type import StateType
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
 from mtmai.clients.tenant_client import TenantClient
+from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.mtlibs.id import generate_uuid
 from typing_extensions import Self
@@ -228,7 +228,6 @@ class SocialTeamManager(BaseGroupChatManager):
         self, message: AskUserFunctionCall, ctx: MessageContext
     ) -> None:
         logger.info(f"on_AskUserFunctionCallInput: {message}")
-        pass
 
     @message_handler
     async def on_social_login(
@@ -260,17 +259,21 @@ class SocialTeamManager(BaseGroupChatManager):
         return response
 
     async def save_state(self) -> Mapping[str, Any]:
-        upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
-            tenant=self.tenant_client.tenant_id,
-            session=self._session_id,
-            chat_upsert=ChatUpsert(
-                title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
-                name="userAgent",
-                state=self._state.model_dump(),
-                state_type="UserAgentState",
-            ).model_dump(),
-        )
-        return self._state.model_dump()
+        # state = await super().save_state()
+        # session_id = get_chat_session_id_ctx()
+        # upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
+        #     tenant=self.tenant_client.tenant_id,
+        #     session=session_id,
+        #     chat_upsert=ChatUpsert(
+        #         title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
+        #         name="userAgent",
+        #         state=state,
+        #         state_type="UserAgentState",
+        #     ).model_dump(),
+        # )
+        return {
+            "some": "value",
+        }
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = UserAgentState.from_dict(state)
@@ -411,41 +414,10 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         self._is_running = False
 
     async def save_state(self) -> Mapping[str, Any]:
-        state = await self._runtime.save_state()
-        return state
-
-    async def save_state_db(self):
-        state_data = await self.save_state()
-        for k, v in state_data.items():
-            logger.info(f"key: {k}, value: {v}")
-            parts = k.split("/")
-            topic = parts[0]
-            source = parts[1] if len(parts) > 1 else "default"
-            await self.tenant_client.ag_state_api.ag_state_upsert(
-                tenant=self.tenant_client.tenant_id,
-                ag_state_upsert=AgStateUpsert(
-                    topic=topic,
-                    source=source,
-                    type=StateType.RUNTIMESTATE.value,
-                    chatId=self.session_id,
-                    state=v,
-                ),
-            )
+        return await super().save_state()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         await self._runtime.load_state(state)
-
-    # async def load_runtimestate(self, session_id: str, runtime: AgentRuntime) -> None:
-    #     state_list = await self.tenant_client.ag_state_api.ag_state_list(
-    #         tenant=self.tenant_client.tenant_id,
-    #         session=session_id,
-    #     )
-
-    #     state_dict = {}
-    #     for state in state_list.rows:
-    #         key = f"{state.topic}/{state.source}"
-    #         state_dict[key] = state.state
-    #     await runtime.load_state(state_dict)
 
     def _to_config(self) -> SocialTeamConfig:
         return SocialTeamConfig(
@@ -476,3 +448,35 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
 
     async def resume(self) -> None:
         logger.info("TODO: resume team")
+
+    async def run(
+        self,
+        *,
+        task: str | BaseChatMessage | Sequence[BaseChatMessage] | None = None,
+        cancellation_token: CancellationToken | None = None,
+    ) -> TaskResult:
+        result: TaskResult | None = None
+        async for message in self.run_stream(
+            task=task,
+            cancellation_token=cancellation_token,
+        ):
+            if isinstance(message, TaskResult):
+                result = message
+        if result is not None:
+            # 状态保存到数据库
+            state = await self.save_state()
+            session_id = get_chat_session_id_ctx()
+            tenant_client = TenantClient()
+            await tenant_client.ag_state_api.ag_state_upsert(
+                tenant=tenant_client.tenant_id,
+                ag_state_upsert=AgStateUpsert(
+                    type=StateType.TEAMSTATE.value,
+                    chatId=session_id,
+                    state=state,
+                    topic="default",
+                    source="default",
+                ),
+            )
+
+            return result
+        raise AssertionError("The stream should have returned the final result.")

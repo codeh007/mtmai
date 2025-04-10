@@ -1,22 +1,27 @@
-from datetime import datetime
 from textwrap import dedent
-from typing import Any, List, Mapping, cast
+from typing import Any, List, Mapping, Optional, cast
 
-from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
-from autogen_agentchat.base import TerminationCondition
-from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, TextMessage
-from autogen_core import DefaultTopicId, FunctionCall, MessageContext, message_handler
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.agents import UserProxyAgent as AutoGenUserProxyAgent
+from autogen_agentchat.messages import BaseChatMessage, TextMessage
+from autogen_core import (
+    Component,
+    DefaultTopicId,
+    FunctionCall,
+    MessageContext,
+    message_handler,
+)
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import (
     AssistantMessage,
-    ChatCompletionClient,
     FunctionExecutionResultMessage,
     LLMMessage,
     SystemMessage,
     UserMessage,
 )
-from autogen_core.tools import FunctionTool, Tool
+from autogen_core.tools import Tool
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
+from autogen_ext.teams.magentic_one import InputFuncType
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from loguru import logger
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
@@ -27,7 +32,6 @@ from mtmai.clients.rest.models.assistant_message import (
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput
 from mtmai.clients.rest.models.chat_message_upsert import ChatMessageUpsert
 from mtmai.clients.rest.models.chat_start_input import ChatStartInput
-from mtmai.clients.rest.models.chat_upsert import ChatUpsert
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.form_field import FormField
@@ -35,55 +39,45 @@ from mtmai.clients.rest.models.mt_llm_message import MtLlmMessage
 from mtmai.clients.rest.models.mt_llm_message_types import MtLlmMessageTypes
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.user_agent_state import UserAgentState
-from mtmai.clients.tenant_client import TenantClient
-from mtmai.context.context import Context
+from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
 from mtmai.mtlibs.id import generate_uuid
+from typing_extensions import Self
 
 
-class UserAgent(UserProxyAgent):
+class UserProxyAgent(AutoGenUserProxyAgent, Component[UserProxyAgentConfig]):
+    component_type = "agent"
+    component_provider_override = "mtmai.agents.userproxy_agent.UserProxyAgent"
+    component_config_schema = UserProxyAgentConfig
+
     def __init__(
         self,
         name: str,
-        group_topic_type: str,
-        output_topic_type: str,
-        participant_topic_types: List[str],
-        participant_names: List[str],
-        participant_descriptions: List[str],
-        description: str,
-        session_id: str,
-        hatctx: Context,
-        model_client: ChatCompletionClient | None = None,
-        max_turns: int | None = None,
-        termination_condition: TerminationCondition | None = None,
+        *,
+        description: str = "A human user",
+        input_func: Optional[InputFuncType] = None,
     ) -> None:
-        super().__init__(description)
-        self._session_id = session_id
-        self.model_client = model_client
-        self._state = UserAgentState()
-        self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
-        self._hatctx = hatctx
-        self.tenant_client = TenantClient()
+        super().__init__(name=name, description=description, input_func=input_func)
 
-    def weather_tool(self):
-        def get_weather(city: str) -> str:
-            return "sunny"
+    # def weather_tool(self):
+    #     def get_weather(city: str) -> str:
+    #         return "sunny"
 
-        return FunctionTool(get_weather, description="Get the weather of a city.")
+    #     return FunctionTool(get_weather, description="Get the weather of a city.")
 
-    def social_login_tool(self):
-        def social_login() -> str:
-            json1 = SocialLoginInput(
-                type="SocialLoginInput",
-                username="username1",
-                password="password1",
-                otp_key="",
-            ).model_dump_json()
-            return json1
+    # def social_login_tool(self):
+    #     def social_login() -> str:
+    #         json1 = SocialLoginInput(
+    #             type="SocialLoginInput",
+    #             username="username1",
+    #             password="password1",
+    #             otp_key="",
+    #         ).model_dump_json()
+    #         return json1
 
-        return FunctionTool(
-            social_login,
-            description="Social login tool. 登录第三方社交媒体, 例如: instagram, twitter, tiktok, etc.",
-        )
+    #     return FunctionTool(
+    #         social_login,
+    #         description="Social login tool. 登录第三方社交媒体, 例如: instagram, twitter, tiktok, etc.",
+    #     )
 
     async def code_execution_tool(self):
         code_executor = DockerCommandLineCodeExecutor()
@@ -214,17 +208,19 @@ class UserAgent(UserProxyAgent):
         return response
 
     async def save_state(self) -> Mapping[str, Any]:
-        upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
-            tenant=self.tenant_client.tenant_id,
-            session=self._session_id,
-            chat_upsert=ChatUpsert(
-                title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
-                name="userAgent",
-                state=self._state.model_dump(),
-                state_type="UserAgentState",
-            ).model_dump(),
-        )
-        return self._state.model_dump()
+        # upsert_chat_result = await self.tenant_client.chat_api.chat_session_upsert(
+        #     tenant=self.tenant_client.tenant_id,
+        #     session=self._session_id,
+        #     chat_upsert=ChatUpsert(
+        #         title=f"userAgent-{datetime.now().strftime('%m-%d-%H-%M')}",
+        #         name="userAgent",
+        #         state=self._state.model_dump(),
+        #         state_type="UserAgentState",
+        #     ).model_dump(),
+        # )
+        # return self._state.model_dump()
+        state = await super().save_state()
+        return state
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = UserAgentState.from_dict(state)
@@ -301,11 +297,11 @@ class UserAgent(UserProxyAgent):
             ).model_dump(),
         )
 
-    async def select_speaker(
-        self, thread: List[BaseAgentEvent | BaseChatMessage]
-    ) -> str:
-        """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
-        return ""
+    # async def select_speaker(
+    #     self, thread: List[BaseAgentEvent | BaseChatMessage]
+    # ) -> str:
+    #     """Not used in this orchestrator, we select next speaker in _orchestrate_step."""
+    #     return ""
 
     async def reset(self) -> None:
         """Reset the group chat manager."""
@@ -322,3 +318,13 @@ class UserAgent(UserProxyAgent):
     async def validate_group_state(
         self, messages: List[BaseChatMessage] | None
     ) -> None: ...
+
+    def _to_config(self) -> UserProxyAgentConfig:
+        # TODO: Add ability to serialie input_func
+        return UserProxyAgentConfig(
+            name=self.name, description=self.description, input_func=None
+        )
+
+    @classmethod
+    def _from_config(cls, config: UserProxyAgentConfig) -> Self:
+        return cls(name=config.name, description=config.description, input_func=None)

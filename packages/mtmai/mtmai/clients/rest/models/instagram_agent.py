@@ -19,13 +19,13 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
+from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class UserProxyAgent(BaseModel):
+class InstagramAgent(BaseModel):
     """
-    UserProxyAgent
+    InstagramAgent
     """ # noqa: E501
     provider: StrictStr
     component_type: Optional[StrictStr] = None
@@ -33,14 +33,14 @@ class UserProxyAgent(BaseModel):
     component_version: Optional[StrictInt] = None
     description: Optional[StrictStr] = None
     label: Optional[StrictStr] = None
-    config: UserProxyAgentConfig
+    config: InstagramAgentConfig
     __properties: ClassVar[List[str]] = ["provider", "component_type", "version", "component_version", "description", "label", "config"]
 
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['UserProxyAgent']):
-            raise ValueError("must be one of enum values ('UserProxyAgent')")
+        if value not in set(['InstagramAgent']):
+            raise ValueError("must be one of enum values ('InstagramAgent')")
         return value
 
     model_config = ConfigDict(
@@ -61,7 +61,7 @@ class UserProxyAgent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of UserProxyAgent from a JSON string"""
+        """Create an instance of InstagramAgent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -89,7 +89,7 @@ class UserProxyAgent(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of UserProxyAgent from a dict"""
+        """Create an instance of InstagramAgent from a dict"""
         if obj is None:
             return None
 
@@ -99,16 +99,16 @@ class UserProxyAgent(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in UserProxyAgent) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in InstagramAgent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'UserProxyAgent',
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'InstagramAgent',
             "component_type": obj.get("component_type"),
             "version": obj.get("version"),
             "component_version": obj.get("component_version"),
             "description": obj.get("description"),
             "label": obj.get("label"),
-            "config": UserProxyAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": InstagramAgentConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

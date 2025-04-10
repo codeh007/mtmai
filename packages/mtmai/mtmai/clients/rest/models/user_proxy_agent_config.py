@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,15 +26,10 @@ class UserProxyAgentConfig(BaseModel):
     """
     UserProxyAgentConfig
     """ # noqa: E501
-    provider: StrictStr
-    __properties: ClassVar[List[str]] = ["provider"]
-
-    @field_validator('provider')
-    def provider_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['UserProxyAgent']):
-            raise ValueError("must be one of enum values ('UserProxyAgent')")
-        return value
+    name: StrictStr
+    description: StrictStr
+    input_func: Optional[StrictStr] = 'None'
+    __properties: ClassVar[List[str]] = ["name", "description", "input_func"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -92,7 +87,9 @@ class UserProxyAgentConfig(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in UserProxyAgentConfig) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider") if obj.get("provider") is not None else 'UserProxyAgent'
+            "name": obj.get("name"),
+            "description": obj.get("description") if obj.get("description") is not None else 'A human user',
+            "input_func": obj.get("input_func") if obj.get("input_func") is not None else 'None'
         })
         return _obj
 
