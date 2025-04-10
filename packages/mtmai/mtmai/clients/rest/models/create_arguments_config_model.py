@@ -17,22 +17,28 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.model_family import ModelFamily
+from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ModelInfo(BaseModel):
+class CreateArgumentsConfigModel(BaseModel):
     """
-    ModelInfo
+    CreateArgumentsConfigModel
     """ # noqa: E501
-    family: ModelFamily
-    vision: StrictBool
-    function_calling: StrictBool
-    json_output: StrictBool
-    structured_output: StrictBool
-    __properties: ClassVar[List[str]] = ["family", "vision", "function_calling", "json_output", "structured_output"]
+    frequency_penalty: Optional[Union[StrictFloat, StrictInt]] = None
+    logit_bias: Optional[Dict[str, StrictInt]] = None
+    max_tokens: Optional[StrictInt] = None
+    n: Optional[StrictInt] = None
+    presence_penalty: Optional[Union[StrictFloat, StrictInt]] = None
+    response_format: Optional[StrictStr] = None
+    seed: Optional[StrictInt] = None
+    stop: Optional[List[StrictStr]] = None
+    temperature: Optional[Union[StrictFloat, StrictInt]] = None
+    top_p: Optional[Union[StrictFloat, StrictInt]] = None
+    user: Optional[StrictStr] = None
+    stream_options: Optional[Dict[str, Dict[str, Any]]] = None
+    __properties: ClassVar[List[str]] = ["frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "stream_options"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +58,7 @@ class ModelInfo(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ModelInfo from a JSON string"""
+        """Create an instance of CreateArgumentsConfigModel from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,7 +83,7 @@ class ModelInfo(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ModelInfo from a dict"""
+        """Create an instance of CreateArgumentsConfigModel from a dict"""
         if obj is None:
             return None
 
@@ -87,14 +93,21 @@ class ModelInfo(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ModelInfo) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in CreateArgumentsConfigModel) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "family": obj.get("family"),
-            "vision": obj.get("vision"),
-            "function_calling": obj.get("function_calling"),
-            "json_output": obj.get("json_output"),
-            "structured_output": obj.get("structured_output")
+            "frequency_penalty": obj.get("frequency_penalty"),
+            "logit_bias": obj.get("logit_bias"),
+            "max_tokens": obj.get("max_tokens"),
+            "n": obj.get("n"),
+            "presence_penalty": obj.get("presence_penalty"),
+            "response_format": obj.get("response_format"),
+            "seed": obj.get("seed"),
+            "stop": obj.get("stop"),
+            "temperature": obj.get("temperature"),
+            "top_p": obj.get("top_p"),
+            "user": obj.get("user"),
+            "stream_options": obj.get("stream_options")
         })
         return _obj
 

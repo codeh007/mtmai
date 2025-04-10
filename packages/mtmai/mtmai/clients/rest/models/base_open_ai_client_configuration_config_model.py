@@ -22,9 +22,9 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class OpenAIClientConfigurationConfigModel(BaseModel):
+class BaseOpenAIClientConfigurationConfigModel(BaseModel):
     """
-    OpenAIClientConfigurationConfigModel
+    BaseOpenAIClientConfigurationConfigModel
     """ # noqa: E501
     frequency_penalty: Optional[Union[StrictFloat, StrictInt]] = None
     logit_bias: Optional[Dict[str, StrictInt]] = None
@@ -46,9 +46,7 @@ class OpenAIClientConfigurationConfigModel(BaseModel):
     model_info: Optional[Dict[str, Any]] = None
     add_name_prefixes: Optional[StrictBool] = None
     default_headers: Optional[Dict[str, Any]] = None
-    organization: Optional[StrictStr] = None
-    base_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "stream_options", "model", "api_key", "timeout", "max_retries", "model_capabilities", "model_info", "add_name_prefixes", "default_headers", "organization", "base_url"]
+    __properties: ClassVar[List[str]] = ["frequency_penalty", "logit_bias", "max_tokens", "n", "presence_penalty", "response_format", "seed", "stop", "temperature", "top_p", "user", "stream_options", "model", "api_key", "timeout", "max_retries", "model_capabilities", "model_info", "add_name_prefixes", "default_headers"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,7 +66,7 @@ class OpenAIClientConfigurationConfigModel(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of OpenAIClientConfigurationConfigModel from a JSON string"""
+        """Create an instance of BaseOpenAIClientConfigurationConfigModel from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -93,7 +91,7 @@ class OpenAIClientConfigurationConfigModel(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of OpenAIClientConfigurationConfigModel from a dict"""
+        """Create an instance of BaseOpenAIClientConfigurationConfigModel from a dict"""
         if obj is None:
             return None
 
@@ -103,7 +101,7 @@ class OpenAIClientConfigurationConfigModel(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in OpenAIClientConfigurationConfigModel) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in BaseOpenAIClientConfigurationConfigModel) in the input: " + _key)
 
         _obj = cls.model_validate({
             "frequency_penalty": obj.get("frequency_penalty"),
@@ -125,9 +123,7 @@ class OpenAIClientConfigurationConfigModel(BaseModel):
             "model_capabilities": obj.get("model_capabilities"),
             "model_info": obj.get("model_info"),
             "add_name_prefixes": obj.get("add_name_prefixes"),
-            "default_headers": obj.get("default_headers"),
-            "organization": obj.get("organization"),
-            "base_url": obj.get("base_url")
+            "default_headers": obj.get("default_headers")
         })
         return _obj
 

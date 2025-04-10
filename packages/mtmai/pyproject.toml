@@ -125,6 +125,7 @@ dependencies = [
     "pyotp>=2.9.0",
     "docker>=7.1.0",
     "asyncio-atexit>=1.0.1",
+    "chromadb>=1.0.4",
 ]
 
 

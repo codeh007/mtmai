@@ -38,11 +38,12 @@ class InstagramAgentConfig(BaseModel):
     handoffs: Optional[List[StrictStr]] = None
     reflect_on_tool_use: StrictBool
     tool_call_summary_format: StrictStr
+    metadata: Optional[Dict[str, Any]] = None
     username: Optional[StrictStr] = None
     password: Optional[StrictStr] = None
     otp_key: Optional[StrictStr] = None
     proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "username", "password", "otp_key", "proxy_url"]
+    __properties: ClassVar[List[str]] = ["name", "description", "model_context", "memory", "model_client_stream", "system_message", "model_client", "tools", "handoffs", "reflect_on_tool_use", "tool_call_summary_format", "metadata", "username", "password", "otp_key", "proxy_url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -114,6 +115,7 @@ class InstagramAgentConfig(BaseModel):
             "handoffs": obj.get("handoffs"),
             "reflect_on_tool_use": obj.get("reflect_on_tool_use") if obj.get("reflect_on_tool_use") is not None else False,
             "tool_call_summary_format": obj.get("tool_call_summary_format") if obj.get("tool_call_summary_format") is not None else '{result}',
+            "metadata": obj.get("metadata"),
             "username": obj.get("username"),
             "password": obj.get("password"),
             "otp_key": obj.get("otp_key"),

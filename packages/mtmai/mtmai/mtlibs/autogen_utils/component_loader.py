@@ -18,7 +18,7 @@ WELL_KNOWN_PROVIDERS = WELL_KNOWN_PROVIDERS | {
     "UserProxyAgent": "autogen_agentchat.agents.UserProxyAgent",
     "RoundRobinGroupChat": "autogen_agentchat.teams.RoundRobinGroupChat",
     "SelectorGroupChat": "autogen_agentchat.teams.SelectorGroupChat",
-    "MtOpenAIChatCompletionClient": "mtmai.model_client.MtOpenAIChatCompletionClient",
+    "OpenAIChatCompletionClient": "mtmai.model_client.MtOpenAIChatCompletionClient",
     "TextMentionTermination": "autogen_agentchat.conditions.TextMentionTermination",
     "HandoffTermination": "autogen_agentchat.conditions.HandoffTermination",
     "TimeoutTermination": "autogen_agentchat.conditions.TimeoutTermination",

@@ -39,8 +39,8 @@ class MtOpenAIChatCompletionClient(BaseModel):
     @field_validator('provider')
     def provider_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(['MtOpenAIChatCompletionClient']):
-            raise ValueError("must be one of enum values ('MtOpenAIChatCompletionClient')")
+        if value not in set(['OpenAIChatCompletionClient']):
+            raise ValueError("must be one of enum values ('OpenAIChatCompletionClient')")
         return value
 
     model_config = ConfigDict(
