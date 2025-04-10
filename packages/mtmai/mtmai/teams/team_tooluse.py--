@@ -20,14 +20,13 @@ from autogen_core import (
 from autogen_core.models import SystemMessage
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.flow_names import FlowNames
 from loguru import logger
-from mtmai.agents._types import agent_message_types
-from mtmai.agents.cancel_token import MtCancelToken
-from mtmai.agents.intervention_handlers import (
+from mtlibs.autogen_utils.intervention_handlers import (
     NeedsUserInputHandler,
     ToolInterventionHandler,
 )
+from mtmai.agents._types import agent_message_types
+from mtmai.agents.cancel_token import MtCancelToken
 from mtmai.agents.tooluse_agent import ToolUseAgent
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.instagram_team_config import InstagramTeamConfig
@@ -43,26 +42,26 @@ from pydantic import BaseModel
 from typing_extensions import Self
 
 
-class TenantTeamConfig(BaseModel):
-    pass
-
-
 @mtmapp.workflow(
-    name=FlowNames.TENANT.value,
-    on_events=[FlowNames.TENANT.value],
+    name="tooluse",
+    on_events=["tooluse"],
 )
-class FlowTenant:
+class FlowTooluse:
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
         input = MtAgEvent.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
-        team = TenantTeam._from_config(TenantTeamConfig())
+        team = TooluseTeam._from_config(TooluseTeamConfig())
         return await team.run(task=input, cancellation_token=cancellation_token)
 
 
-class TenantTeam(Team, Component[TenantTeamConfig]):
-    component_provider_override = "mtmai.teams.team_tenant.TenantTeam"
-    component_config_schema = TenantTeamConfig
+class TooluseTeamConfig(BaseModel):
+    pass
+
+
+class TooluseTeam(Team, Component[TooluseTeamConfig]):
+    component_provider_override = "mtmai.teams.toolteam.TooluseTeam"
+    component_config_schema = TooluseTeamConfig
 
     def __init__(
         self,
