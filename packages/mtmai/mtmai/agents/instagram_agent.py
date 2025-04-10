@@ -5,7 +5,8 @@ import re
 from typing import Any, List, Mapping
 
 import pyotp
-from autogen_agentchat.agents import AssistantAgent
+
+# from autogen_agentchat.agents import AssistantAgent
 from autogen_core import (
     CancellationToken,
     Component,
@@ -16,6 +17,7 @@ from autogen_core import (
 from autogen_core.model_context import BufferedChatCompletionContext
 from autogen_core.models import ChatCompletionClient
 from loguru import logger
+from mtmai.agents.assistant_agent import AssistantAgent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.flow_login_result import FlowLoginResult
 from mtmai.clients.rest.models.instagram_agent_config import InstagramAgentConfig
@@ -33,6 +35,7 @@ from mtmai.mtlibs.instagrapi.types import Media
 
 
 class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
+    component_type = "agent"
     component_provider_override = "mtmai.agents.instagram_agent.InstagramAgent"
     component_config_schema = InstagramAgentConfig
 
