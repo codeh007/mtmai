@@ -109,7 +109,7 @@ class RoundRobinGroupChat(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in RoundRobinGroupChat) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "provider": obj.get("provider"),
+            "provider": obj.get("provider") if obj.get("provider") is not None else 'RoundRobinGroupChat',
             "component_type": obj.get("component_type") if obj.get("component_type") is not None else 'team',
             "version": obj.get("version"),
             "component_version": obj.get("component_version"),

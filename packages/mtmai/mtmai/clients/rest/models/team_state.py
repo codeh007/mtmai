@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,17 +26,13 @@ class TeamState(BaseModel):
     """
     TeamState
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    version: Optional[StrictStr] = None
-    agent_states: Optional[Any] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "agent_states"]
+    agent_states: Dict[str, Any]
+    type: StrictStr
+    __properties: ClassVar[List[str]] = ["agent_states", "type"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['TeamState']):
             raise ValueError("must be one of enum values ('TeamState')")
         return value
@@ -80,11 +76,6 @@ class TeamState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if agent_states (nullable) is None
-        # and model_fields_set contains the field
-        if self.agent_states is None and "agent_states" in self.model_fields_set:
-            _dict['agent_states'] = None
-
         return _dict
 
     @classmethod
@@ -102,8 +93,8 @@ class TeamState(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in TeamState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
-            "version": obj.get("version"),
+            "agent_states": obj.get("agent_states"),
+            "type": obj.get("type") if obj.get("type") is not None else 'TeamState'
         })
         return _obj
 

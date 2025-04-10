@@ -280,6 +280,7 @@ from mtmai.clients.rest.models.team_list import TeamList
 from mtmai.clients.rest.models.team_properties import TeamProperties
 from mtmai.clients.rest.models.team_run import TeamRun
 from mtmai.clients.rest.models.team_run_result import TeamRunResult
+from mtmai.clients.rest.models.team_state import TeamState
 from mtmai.clients.rest.models.tenant import Tenant
 from mtmai.clients.rest.models.tenant_alert_email_group import TenantAlertEmailGroup
 from mtmai.clients.rest.models.tenant_alert_email_group_list import TenantAlertEmailGroupList
