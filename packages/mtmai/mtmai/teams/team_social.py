@@ -206,3 +206,8 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
 
     async def resume(self) -> None:
         logger.info("TODO: resume team")
+
+
+def normalize_config(config) -> SocialTeamConfig:
+    if hasattr(config, "provider"):
+        config.provider = config.provider.replace("mtmai.teams.team_social.", "")

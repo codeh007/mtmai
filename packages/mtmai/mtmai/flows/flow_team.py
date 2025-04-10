@@ -19,7 +19,7 @@ class FlowTeam:
         input = FlowTeamInput.from_dict(hatctx.input)
         cancellation_token = MtCancelToken()
 
-        component_dict = input.component
+        component_dict = input.component.to_dict()
         team = Team.load_component(component_dict)
         task = TextMessage(content=input.task, source="user")
         return await team.run(task=task, cancellation_token=cancellation_token)

@@ -26,13 +26,12 @@ class ProviderTypes(str, Enum):
     """
     allowed enum values
     """
-    AUTOGEN_AGENTCHAT_DOT_TEAMS_DOT_ROUND_ROBIN_GROUP_CHAT = 'autogen_agentchat.teams.RoundRobinGroupChat'
-    AUTOGEN_AGENTCHAT_DOT_TEAMS_DOT_SELECTOR_GROUP_CHAT = 'autogen_agentchat.teams.SelectorGroupChat'
-    MTMAI_DOT_TEAMS_DOT_INSTAGRAM_TEAM_DOT_INSTAGRAM_TEAM_DOT_INSTAGRAM_TEAM = 'mtmai.teams.instagram_team.instagram_team.InstagramTeam'
-    MTMAI_DOT_TEAMS_DOT_TEAM_SOCIAL_DOT_SOCIAL_TEAM = 'mtmai.teams.team_social.SocialTeam'
-    AUTOGEN_AGENTCHAT_DOT_AGENTS_DOT_ASSISTANT_AGENT = 'autogen_agentchat.agents.AssistantAgent'
-    MTMAI_DOT_MODEL_CLIENT_DOT_MT_OPEN_AI_CHAT_COMPLETION_CLIENT = 'mtmai.model_client.MtOpenAIChatCompletionClient'
-    AUTOGEN_AGENTCHAT_DOT_CONDITIONS_DOT_TEXT_MENTION_TERMINATION = 'autogen_agentchat.conditions.TextMentionTermination'
+    ROUNDROBINGROUPCHAT = 'RoundRobinGroupChat'
+    SELECTORGROUPCHAT = 'SelectorGroupChat'
+    SOCIALTEAM = 'SocialTeam'
+    ASSISTANTAGENT = 'AssistantAgent'
+    MTOPENAICHATCOMPLETIONCLIENT = 'MtOpenAIChatCompletionClient'
+    TEXTMENTIONTERMINATION = 'TextMentionTermination'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
