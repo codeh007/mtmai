@@ -16,11 +16,14 @@
 import logging
 import os
 
+from mtmai.model_client.utils import get_default_litellm_model
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+llm_model = get_default_litellm_model()
 
 
 class AgentModel(BaseModel):
@@ -28,6 +31,7 @@ class AgentModel(BaseModel):
 
     name: str = Field(default="customer_service_agent")
     model: str = Field(default="gemini-2.0-flash-001")
+    # model: BaseLlm = Field(default=llm_model)
 
 
 class Config(BaseSettings):
@@ -38,7 +42,11 @@ class Config(BaseSettings):
         env_prefix="GOOGLE_",
         case_sensitive=True,
     )
-    agent_settings: AgentModel = Field(default=AgentModel())
+    # agent_settings: AgentModel = Field(
+    #     default=AgentModel(
+    #         model=llm_model,
+    #     )
+    # )
     app_name: str = "customer_service_app"
     CLOUD_PROJECT: str = Field(default="my_project")
     CLOUD_LOCATION: str = Field(default="us-central1")

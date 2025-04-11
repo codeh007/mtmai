@@ -1,16 +1,9 @@
 import datetime
 
-import litellm
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm
 from loguru import logger
+from mtmai.model_client.utils import get_default_litellm_model
 from zoneinfo import ZoneInfo
-
-import mtmai.core.bootstraps as bootstraps
-
-bootstraps.bootstrap_core()
-# litellm.drop_params = True
-litellm._turn_on_debug()
 
 
 def get_weather(city: str) -> dict:
@@ -75,13 +68,7 @@ def get_current_time(city: str) -> dict:
 
 root_agent = Agent(
     name="weather_time_agent",
-    model=LiteLlm(
-        # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
-        # model="openai/qwen/qwq-32b",
-        model="openai/meta/llama-3.3-70b-instruct",
-        api_key="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",
-        base_url="https://integrate.api.nvidia.com/v1",
-    ),
+    model=get_default_litellm_model(),
     description=("Agent to answer questions about the time and weather in a city."),
     instruction=("I can answer your questions about the time and weather in a city."),
     tools=[get_weather, get_current_time],

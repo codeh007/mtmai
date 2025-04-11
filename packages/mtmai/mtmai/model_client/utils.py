@@ -1,8 +1,13 @@
+import litellm
 from autogen_core.models import ModelFamily, ModelInfo
+from google.adk.models.lite_llm import LiteLlm
 
 from mtmai import tools as tools
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
+
+# litellm.drop_params = True
+litellm._turn_on_debug()
 
 
 def get_default_model_client():
@@ -56,3 +61,13 @@ def get_custom_model():
     #     return answer
 
     return model
+
+
+def get_default_litellm_model():
+    LiteLlm(
+        # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
+        # model="openai/qwen/qwq-32b",
+        model="openai/meta/llama-3.3-70b-instruct",
+        api_key="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",
+        base_url="https://integrate.api.nvidia.com/v1",
+    )
