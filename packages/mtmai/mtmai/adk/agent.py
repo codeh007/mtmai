@@ -1,7 +1,17 @@
 import datetime
-from zoneinfo import ZoneInfo
+
+import litellm
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
+from loguru import logger
+from zoneinfo import ZoneInfo
+
+import mtmai.core.bootstraps as bootstraps
+
+bootstraps.bootstrap_core()
+# litellm.drop_params = True
+litellm._turn_on_debug()
+
 
 def get_weather(city: str) -> dict:
     """Retrieves the current weather report for a specified city.
@@ -12,6 +22,7 @@ def get_weather(city: str) -> dict:
     Returns:
         dict: status and result or error msg.
     """
+    logger.error(f"Getting weather for {city}")
     if city.lower() == "new york":
         return {
             "status": "success",
@@ -36,22 +47,19 @@ def get_current_time(city: str) -> dict:
     Returns:
         dict: status and result or error msg.
     """
+    logger.error(f"Getting current time for {city}")
 
     if city.lower() == "new york":
         tz_identifier = "America/New_York"
     else:
         return {
             "status": "error",
-            "error_message": (
-                f"Sorry, I don't have timezone information for {city}."
-            ),
+            "error_message": (f"Sorry, I don't have timezone information for {city}."),
         }
 
     tz = ZoneInfo(tz_identifier)
     now = datetime.datetime.now(tz)
-    report = (
-        f'The current time in {city} is {now.strftime("%Y-%m-%d %H:%M:%S %Z%z")}'
-    )
+    report = f'The current time in {city} is {now.strftime("%Y-%m-%d %H:%M:%S %Z%z")}'
     return {"status": "success", "report": report}
 
 
@@ -59,15 +67,11 @@ root_agent = Agent(
     name="weather_time_agent",
     # model="gemini-2.0-flash-exp",
     model=LiteLlm(
-        model="nvidia/llama-3.3-nemotron-super-49b-v1",
+        model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
         api_key="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",
         base_url="https://integrate.api.nvidia.com/v1",
     ),
-    description=(
-        "Agent to answer questions about the time and weather in a city."
-    ),
-    instruction=(
-        "I can answer your questions about the time and weather in a city."
-    ),
+    description=("Agent to answer questions about the time and weather in a city."),
+    instruction=("I can answer your questions about the time and weather in a city."),
     tools=[get_weather, get_current_time],
 )
