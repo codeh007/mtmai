@@ -282,69 +282,26 @@ class SocialTeamManager(BaseGroupChatManager):
     #     return response
 
     async def save_state(self) -> Mapping[str, Any]:
+        message_thread = [msg.dump() for msg in self._message_thread]
         state = SocialTeamManagerState(
             type=AgentStateTypes.SOCIALTEAMMANAGERSTATE.value,
             next_speaker_index=self._state.next_speaker_index,
             previous_speaker=self._state.previous_speaker,
             current_speaker=self._state.current_speaker,
+            message_thread=message_thread,
+            current_turn=self._current_turn,
         )
         return state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = SocialTeamManagerState.from_dict(state)
-        # self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
-        # 从数据库加载聊天记录
-        # chat_messages = await self.tenant_client.chat_api.chat_messages_list(
-        #     tenant=self.tenant_client.tenant_id,
-        #     chat=self._session_id,
-        # )
-        # for chat_message in chat_messages.rows:
-        #     if chat_message.type.value == MtLlmMessageTypes.USERMESSAGE.value:
-        #         msg = UserMessage.model_validate(
-        #             chat_message.llm_message.actual_instance.model_dump()
-        #         )
-        #         await self._state.model_context.add_message(msg)
-        #     elif chat_message.type.value == MtLlmMessageTypes.ASSISTANTMESSAGE.value:
-        #         mt_assistant_message = cast(
-        #             MtAssistantMessage, chat_message.llm_message.actual_instance
-        #         )
-
-        #         content = mt_assistant_message.content.actual_instance
-        #         if isinstance(content, str):
-        #             content = content
-        #         else:
-        #             fc_list = []
-        #             for item in content:
-        #                 fc = FunctionCall(
-        #                     id=item.id,
-        #                     name=item.name,
-        #                     arguments=item.arguments,
-        #                 )
-        #                 fc_list.append(fc)
-        #             content = fc_list
-        #         msg = AssistantMessage(
-        #             content=content,
-        #             source=mt_assistant_message.source,
-        #             thought=mt_assistant_message.thought,
-        #         )
-        #         await self._state.model_context.add_message(msg)
-        #     elif chat_message.type.value == MtLlmMessageTypes.SYSTEMMESSAGE.value:
-        #         msg = SystemMessage.model_validate(
-        #             chat_message.llm_message.actual_instance.model_dump()
-        #         )
-        #         await self._state.model_context.add_message(msg)
-        #     elif (
-        #         chat_message.type.value
-        #         == MtLlmMessageTypes.FUNCTIONEXECUTIONRESULTMESSAGE.value
-        #     ):
-        #         msg = FunctionExecutionResultMessage.model_validate(
-        #             chat_message.llm_message.actual_instance.model_dump()
-        #         )
-        #         await self._state.model_context.add_message(msg)
-        #     else:
-        #         raise ValueError(
-        #             f"load_state error, Unknown llm message type: {chat_message.type}"
-        #         )
+        self._message_thread = [
+            self._message_factory.create(message)
+            for message in self._state.message_thread
+        ]
+        self._current_turn = self._state.current_turn
+        self._current_speaker = self._state.current_speaker
+        self._previous_speaker = self._state.previous_speaker
 
     # async def add_chat_message(
     #     self,

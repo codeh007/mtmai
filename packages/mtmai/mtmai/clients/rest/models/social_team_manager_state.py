@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.ag_events import AgEvents
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -35,7 +36,9 @@ class SocialTeamManagerState(BaseModel):
     allow_repeated_speaker: Optional[StrictBool] = None
     max_selector_attempts: Optional[StrictInt] = None
     selector_func: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker", "current_speaker", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func"]
+    current_turn: Optional[StrictInt] = 0
+    message_thread: Optional[List[AgEvents]] = None
+    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker", "current_speaker", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func", "current_turn", "message_thread"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -83,6 +86,13 @@ class SocialTeamManagerState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in message_thread (list)
+        _items = []
+        if self.message_thread:
+            for _item_message_thread in self.message_thread:
+                if _item_message_thread:
+                    _items.append(_item_message_thread.to_dict())
+            _dict['message_thread'] = _items
         return _dict
 
     @classmethod
@@ -108,7 +118,9 @@ class SocialTeamManagerState(BaseModel):
             "selector_prompt": obj.get("selector_prompt"),
             "allow_repeated_speaker": obj.get("allow_repeated_speaker"),
             "max_selector_attempts": obj.get("max_selector_attempts"),
-            "selector_func": obj.get("selector_func")
+            "selector_func": obj.get("selector_func"),
+            "current_turn": obj.get("current_turn") if obj.get("current_turn") is not None else 0,
+            "message_thread": [AgEvents.from_dict(_item) for _item in obj["message_thread"]] if obj.get("message_thread") is not None else None
         })
         return _obj
 

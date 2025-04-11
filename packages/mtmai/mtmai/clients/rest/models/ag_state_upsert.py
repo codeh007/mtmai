@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
+from mtmai.clients.rest.models.agent_states import AgentStates
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,7 +32,7 @@ class AgStateUpsert(BaseModel):
     chat_id: Optional[StrictStr] = Field(default=None, alias="chatId")
     topic: StrictStr
     source: StrictStr
-    state: Dict[str, Any]
+    state: AgentStates
     __properties: ClassVar[List[str]] = ["type", "chatId", "topic", "source", "state"]
 
     model_config = ConfigDict(
@@ -73,6 +74,9 @@ class AgStateUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of state
+        if self.state:
+            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
@@ -94,7 +98,7 @@ class AgStateUpsert(BaseModel):
             "chatId": obj.get("chatId"),
             "topic": obj.get("topic"),
             "source": obj.get("source"),
-            "state": obj.get("state")
+            "state": AgentStates.from_dict(obj["state"]) if obj.get("state") is not None else None
         })
         return _obj
 

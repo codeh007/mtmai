@@ -158,6 +158,7 @@ from mtmai.clients.rest.models.gallery_list import GalleryList
 from mtmai.clients.rest.models.gallery_metadata import GalleryMetadata
 from mtmai.clients.rest.models.gallery_update import GalleryUpdate
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
+from mtmai.clients.rest.models.handoff_message import HandoffMessage
 from mtmai.clients.rest.models.handoff_message_config import HandoffMessageConfig
 from mtmai.clients.rest.models.handoff_termination import HandoffTermination
 from mtmai.clients.rest.models.handoff_termination_config import HandoffTerminationConfig
