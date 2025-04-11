@@ -64,10 +64,19 @@ def get_custom_model():
 
 
 def get_default_litellm_model():
-    LiteLlm(
+    # return LiteLlm(
+    #     # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
+    #     # model="openai/qwen/qwq-32b",
+    #     model="openai/meta/llama-3.3-70b-instruct",
+    #     api_key="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",
+    #     base_url="https://integrate.api.nvidia.com/v1",
+    # )
+    return LiteLlm(
         # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
         # model="openai/qwen/qwq-32b",
-        model="openai/meta/llama-3.3-70b-instruct",
-        api_key="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",
-        base_url="https://integrate.api.nvidia.com/v1",
+        # model="openai/qwen/qwen-2.5-coder-32b-instruct:free",
+        # model="openai/qwen/qwq-32b:free",
+        model="openai/google/gemini-2.5-pro-exp-03-25:free",
+        api_key="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",
+        base_url="https://openrouter.ai/api/v1",
     )
