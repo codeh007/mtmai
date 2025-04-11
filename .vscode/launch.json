@@ -11,6 +11,20 @@
 			"jinja": true,
 			"justMyCode": false,
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
+		},
+		{
+			"name": "adk_web",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+			"cwd": "${workspaceFolder}",
+			"args": [
+				"web",
+				"${workspaceFolder}/packages/mtmai/mtmai"
+			],
+			"jinja": true,
+			"justMyCode": false,
+			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		}
 		// {
 		// 	"name": "mtmai_worker",

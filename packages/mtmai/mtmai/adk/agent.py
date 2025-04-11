@@ -33,9 +33,17 @@ def get_weather(city: str) -> dict:
         }
     else:
         return {
-            "status": "error",
-            "error_message": f"Weather information for '{city}' is not available.",
+            "status": "success",
+            "report": (
+                "The weather in New York is sunny with a temperature of 25 degrees"
+                " Celsius (41 degrees Fahrenheit)."
+            ),
         }
+        # 明确的工具调用错误
+        # return {
+        #     "status": "error",
+        #     "error_message": f"Weather information for '{city}' is not available.",
+        # }
 
 
 def get_current_time(city: str) -> dict:
@@ -52,10 +60,12 @@ def get_current_time(city: str) -> dict:
     if city.lower() == "new york":
         tz_identifier = "America/New_York"
     else:
-        return {
-            "status": "error",
-            "error_message": (f"Sorry, I don't have timezone information for {city}."),
-        }
+        tz_identifier = "America/New_York"
+        # 明确的工具调用错误
+        # return {
+        #     "status": "error",
+        #     "error_message": (f"Sorry, I don't have timezone information for {city}."),
+        # }
 
     tz = ZoneInfo(tz_identifier)
     now = datetime.datetime.now(tz)
@@ -65,9 +75,10 @@ def get_current_time(city: str) -> dict:
 
 root_agent = Agent(
     name="weather_time_agent",
-    # model="gemini-2.0-flash-exp",
     model=LiteLlm(
-        model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
+        # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
+        # model="openai/qwen/qwq-32b",
+        model="openai/meta/llama-3.3-70b-instruct",
         api_key="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",
         base_url="https://integrate.api.nvidia.com/v1",
     ),
