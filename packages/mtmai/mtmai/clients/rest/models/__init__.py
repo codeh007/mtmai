@@ -75,6 +75,7 @@ from mtmai.clients.rest.models.browser_update import BrowserUpdate
 from mtmai.clients.rest.models.bulk_create_event_request import BulkCreateEventRequest
 from mtmai.clients.rest.models.bulk_create_event_response import BulkCreateEventResponse
 from mtmai.clients.rest.models.cancel_event_request import CancelEventRequest
+from mtmai.clients.rest.models.chat_agent_container_state import ChatAgentContainerState
 from mtmai.clients.rest.models.chat_history_list import ChatHistoryList
 from mtmai.clients.rest.models.chat_message import ChatMessage
 from mtmai.clients.rest.models.chat_message_input import ChatMessageInput

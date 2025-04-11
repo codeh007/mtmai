@@ -228,19 +228,6 @@ class SocialTeamManager(BaseGroupChatManager):
             ctx, UserMessage(content=message.content, source="user")
         )
 
-        # assistant = AssistantAgent(
-        #     "assistant",
-        #     model_client=self.model_client,
-        #     model_context=self._state.model_context,
-        #     tools=await self.get_tools(ctx),
-        #     system_message=dedent(
-        #         "你是实用助手,需要使用提供的工具解决用户提出的问题"
-        #         "重要:"
-        #         "1. 当用户明确调用 登录工具时才调用 登录工具"
-        #         "2. 当用户明确调用 获取天气工具时才调用 获取天气工具"
-        #     ),
-        # )
-
         # response = await assistant.on_messages(
         #     [TextMessage(content=message.content, source="user")],
         #     ctx.cancellation_token,
@@ -259,11 +246,11 @@ class SocialTeamManager(BaseGroupChatManager):
         #     ),
         # )
 
-    @message_handler
-    async def on_AskUserFunctionCallInput(
-        self, message: AskUserFunctionCall, ctx: MessageContext
-    ) -> None:
-        logger.info(f"on_AskUserFunctionCallInput: {message}")
+    # @message_handler
+    # async def on_AskUserFunctionCallInput(
+    #     self, message: AskUserFunctionCall, ctx: MessageContext
+    # ) -> None:
+    #     logger.info(f"on_AskUserFunctionCallInput: {message}")
 
     # @message_handler
     # async def on_social_login(
@@ -295,9 +282,13 @@ class SocialTeamManager(BaseGroupChatManager):
     #     return response
 
     async def save_state(self) -> Mapping[str, Any]:
-        return {
-            "some": "value",
-        }
+        state = SocialTeamManagerState(
+            type=AgentStateTypes.SOCIALTEAMMANAGERSTATE.value,
+            next_speaker_index=self._state.next_speaker_index,
+            previous_speaker=self._state.previous_speaker,
+            current_speaker=self._state.current_speaker,
+        )
+        return state.model_dump()
 
     async def load_state(self, state: Mapping[str, Any]) -> None:
         self._state = SocialTeamManagerState.from_dict(state)

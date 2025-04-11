@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.chat_message import ChatMessage
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,18 +26,15 @@ class ChatAgentContainerState(BaseModel):
     """
     ChatAgentContainerState
     """ # noqa: E501
-    type: Optional[StrictStr] = None
+    type: StrictStr
     version: Optional[StrictStr] = None
-    agent_state: Optional[Any] = None
-    message_buffer: Optional[List[ChatMessage]] = None
+    agent_state: Optional[Dict[str, Any]] = None
+    message_buffer: Optional[List[Any]] = None
     __properties: ClassVar[List[str]] = ["type", "version", "agent_state", "message_buffer"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value is None:
-            return value
-
         if value not in set(['ChatAgentContainerState']):
             raise ValueError("must be one of enum values ('ChatAgentContainerState')")
         return value
@@ -82,18 +78,6 @@ class ChatAgentContainerState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in message_buffer (list)
-        _items = []
-        if self.message_buffer:
-            for _item_message_buffer in self.message_buffer:
-                if _item_message_buffer:
-                    _items.append(_item_message_buffer.to_dict())
-            _dict['message_buffer'] = _items
-        # set to None if agent_state (nullable) is None
-        # and model_fields_set contains the field
-        if self.agent_state is None and "agent_state" in self.model_fields_set:
-            _dict['agent_state'] = None
-
         return _dict
 
     @classmethod
@@ -111,9 +95,10 @@ class ChatAgentContainerState(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in ChatAgentContainerState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'ChatAgentContainerState',
             "version": obj.get("version"),
-            "message_buffer": [ChatMessage.from_dict(_item) for _item in obj["message_buffer"]] if obj.get("message_buffer") is not None else None
+            "agent_state": obj.get("agent_state"),
+            "message_buffer": obj.get("message_buffer")
         })
         return _obj
 
