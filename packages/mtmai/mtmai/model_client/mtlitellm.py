@@ -1,8 +1,9 @@
 import logging
 from typing import Any, AsyncGenerator, Dict
 
+import litellm
 from google.adk.models.base_llm import BaseLlm
-from google.adk.tools.lite_llm import (
+from google.adk.models.lite_llm import (
     FunctionChunk,
     LiteLLMClient,
     TextChunk,
@@ -12,8 +13,8 @@ from google.adk.tools.lite_llm import (
     _model_response_to_chunk,
     _model_response_to_generate_content_response,
 )
-from google.adk.tools.llm_request import LlmRequest
-from google.adk.tools.llm_response import LlmResponse
+from google.adk.models.llm_request import LlmRequest
+from google.adk.models.llm_response import LlmResponse
 from litellm import (
     ChatCompletionAssistantMessage,
     ChatCompletionMessageToolCall,
@@ -21,6 +22,9 @@ from litellm import (
 )
 from pydantic import Field
 from typing_extensions import override
+
+litellm._turn_on_debug()
+
 
 logger = logging.getLogger(__name__)
 

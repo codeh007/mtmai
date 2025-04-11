@@ -24,10 +24,12 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    from mtmai.worker_app import run_worker
-
     logger.info("running worker")
-    asyncio.run(run_worker())
+
+    # 启动web 但是不阻塞
+
+    web("packages/mtmai/mtmai/agents")
+    # asyncio.run(run_worker())
 
 
 @app.command()
@@ -61,58 +63,58 @@ def test_model_client():
 
 
 @app.command()
-@click.option(
-    "--session_db_url",
-    help=(
-        "Optional. The database URL to store the session.\n\n  - Use"
-        " 'agentengine://<agent_engine_resource_id>' to connect to Vertex"
-        " managed session service.\n\n  - Use 'sqlite://<path_to_sqlite_file>'"
-        " to connect to a SQLite DB.\n\n  - See"
-        " https://docs.sqlalchemy.org/en/20/core/engines.html#backend-specific-urls"
-        " for more details on supported DB URLs."
-    ),
-)
-@click.option(
-    "--port",
-    type=int,
-    help="Optional. The port of the server",
-    default=8000,
-)
-@click.option(
-    "--allow_origins",
-    help="Optional. Any additional origins to allow for CORS.",
-    multiple=True,
-)
-@click.option(
-    "--log_level",
-    type=click.Choice(
-        ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
-    ),
-    default="INFO",
-    help="Optional. Set the logging level",
-)
-@click.option(
-    "--log_to_tmp",
-    is_flag=True,
-    show_default=True,
-    default=False,
-    help=(
-        "Optional. Whether to log to system temp folder instead of console."
-        " This is useful for local debugging."
-    ),
-)
-@click.option(
-    "--trace_to_cloud",
-    is_flag=True,
-    show_default=True,
-    default=False,
-    help="Optional. Whether to enable cloud trace for telemetry.",
-)
-@click.argument(
-    "agents_dir",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, resolve_path=True),
-    default=os.getcwd(),
-)
+# @click.option(
+#     "--session_db_url",
+#     help=(
+#         "Optional. The database URL to store the session.\n\n  - Use"
+#         " 'agentengine://<agent_engine_resource_id>' to connect to Vertex"
+#         " managed session service.\n\n  - Use 'sqlite://<path_to_sqlite_file>'"
+#         " to connect to a SQLite DB.\n\n  - See"
+#         " https://docs.sqlalchemy.org/en/20/core/engines.html#backend-specific-urls"
+#         " for more details on supported DB URLs."
+#     ),
+# )
+# @click.option(
+#     "--port",
+#     type=int,
+#     help="Optional. The port of the server",
+#     default=8000,
+# )
+# @click.option(
+#     "--allow_origins",
+#     help="Optional. Any additional origins to allow for CORS.",
+#     multiple=True,
+# )
+# @click.option(
+#     "--log_level",
+#     type=click.Choice(
+#         ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
+#     ),
+#     default="INFO",
+#     help="Optional. Set the logging level",
+# )
+# @click.option(
+#     "--log_to_tmp",
+#     is_flag=True,
+#     show_default=True,
+#     default=False,
+#     help=(
+#         "Optional. Whether to log to system temp folder instead of console."
+#         " This is useful for local debugging."
+#     ),
+# )
+# @click.option(
+#     "--trace_to_cloud",
+#     is_flag=True,
+#     show_default=True,
+#     default=False,
+#     help="Optional. Whether to enable cloud trace for telemetry.",
+# )
+# @click.argument(
+#     "agents_dir",
+#     type=click.Path(exists=True, dir_okay=True, file_okay=False, resolve_path=True),
+#     default=os.getcwd(),
+# )
 def web(
     agents_dir: str,
     log_to_tmp: bool = True,
@@ -122,13 +124,6 @@ def web(
     port: int = 8000,
     trace_to_cloud: bool = False,
 ):
-    # if log_to_tmp:
-    #     logs.log_to_tmp_folder()
-    # else:
-    #     logs.log_to_stderr()
-
-    # logging.getLogger().setLevel(log_level)
-
     @asynccontextmanager
     async def _lifespan(app: FastAPI):
         click.secho(
