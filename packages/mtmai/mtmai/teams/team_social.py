@@ -529,6 +529,21 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     #         raise RuntimeError("result is None")
     #     return result
 
+    async def persist_team_state(self) -> None:
+        state = await self.save_state()
+        session_id = get_chat_session_id_ctx()
+        tenant_client = TenantClient()
+        await tenant_client.ag_state_api.ag_state_upsert(
+            tenant=tenant_client.tenant_id,
+            ag_state_upsert=AgStateUpsert(
+                type=StateType.TEAMSTATE.value,
+                chatId=session_id,
+                state=state,
+                topic="default",
+                source="default",
+            ),
+        )
+
     async def run_stream(
         self,
         *,
@@ -554,26 +569,36 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         ):
             if isinstance(message, TaskResult):
                 result = message
-                state = await self.save_state()
-                session_id = get_chat_session_id_ctx()
-                tenant_client = TenantClient()
-                await tenant_client.ag_state_api.ag_state_upsert(
-                    tenant=tenant_client.tenant_id,
-                    ag_state_upsert=AgStateUpsert(
-                        type=StateType.TEAMSTATE.value,
-                        chatId=session_id,
-                        state=state,
-                        topic="default",
-                        source="default",
-                    ),
-                )
+                # state = await self.save_state()
+                # session_id = get_chat_session_id_ctx()
+                # tenant_client = TenantClient()
+                # await tenant_client.ag_state_api.ag_state_upsert(
+                #     tenant=tenant_client.tenant_id,
+                #     ag_state_upsert=AgStateUpsert(
+                #         type=StateType.TEAMSTATE.value,
+                #         chatId=session_id,
+                #         state=state,
+                #         topic="default",
+                #         source="default",
+                #     ),
+                # )
+                await self.persist_team_state()
                 yield result
                 break
             elif isinstance(message, UserInputRequestedEvent):
                 # 强制停止运行, 登录用户的输入(在下一轮中启动)
                 self._is_running = False
                 is_slow_user_input = True
-                await self._runtime.stop()
+                # await self._runtime.stop()
+
+                await self.persist_team_state()
+                yield TaskResult(
+                    # type=TaskResultTypes.USERINPUTREQUESTED.value,
+                    message=AutogenTextMessage(
+                        content="wait user input", source="assistant", metadata={}
+                    ),
+                    stop_reason="wait user input",
+                )
                 break
             else:
                 yield message
