@@ -89,8 +89,7 @@ dependencies = [
     # "autogen-ext[magentic-one, openai, azure, mcp, http-tool]>=0.4.7,<0.5",
     # "autogen-agentchat @ git+https://github.com/microsoft/autogen.git#subdirectory=python/packages/autogen-agentchat",
     # "autogen-core @ git+https://github.com/microsoft/autogen.git#subdirectory=python/packages/autogen-core/src/autogen_core",
-    # uv pip install -e "/workspace/autogen/python/packages/autogen-agentchat"
-    # "autogenstudio>=0.4.1",
+    "google-adk @file:///workspace/adk-python",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
     "json-repair>=0.35.0",
