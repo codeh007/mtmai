@@ -29,27 +29,8 @@ _EXCLUDED_PART_FIELD = {"inline_data": {"data"}}
 
 
 class MtLiteLlm(BaseLlm):
-    """Wrapper around litellm.
-
-    This wrapper can be used with any of the models supported by litellm. The
-    environment variable(s) needed for authenticating with the model endpoint must
-    be set prior to instantiating this class.
-
-    Example usage:
-    ```
-    os.environ["VERTEXAI_PROJECT"] = "your-gcp-project-id"
-    os.environ["VERTEXAI_LOCATION"] = "your-gcp-location"
-
-    agent = Agent(
-        model=LiteLlm(model="vertex_ai/claude-3-7-sonnet@20250219"),
-        ...
-    )
-    ```
-
-    Attributes:
-      model: The name of the LiteLlm model.
-      llm_client: The LLM client to use for the model.
-      model_config: The model config.
+    """
+    改写 adk 内置的 LiteLlm, 增加自动 重试等功能.
     """
 
     llm_client: LiteLLMClient = Field(default_factory=LiteLLMClient)
