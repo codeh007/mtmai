@@ -100,7 +100,7 @@ def before_tool(tool: BaseTool, args: Dict[str, Any], tool_context: CallbackCont
 def before_agent(callback_context: InvocationContext):
     if "customer_profile" not in callback_context.state:
         callback_context.state["customer_profile"] = Customer.get_customer(
-            "123"
+            "fake-customer-id18827"
         ).to_json()
 
     # logger.info(callback_context.state["customer_profile"])

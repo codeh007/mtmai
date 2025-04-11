@@ -77,6 +77,6 @@ def get_default_litellm_model():
         # model="openai/qwen/qwen-2.5-coder-32b-instruct:free",
         # model="openai/qwen/qwq-32b:free",
         model="openai/google/gemini-2.5-pro-exp-03-25:free",
-        api_key="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",
+        api_key=settings.OPENROUTER_API_KEY,
         base_url="https://openrouter.ai/api/v1",
     )
