@@ -1,12 +1,15 @@
-"""Defines Brand Search Optimization Agent"""
-
 from google.adk.agents.llm_agent import Agent
-
-from . import prompt
-from .shared_libraries import constants
-from .sub_agents.comparison.agent import comparison_root_agent
-from .sub_agents.keyword_finding.agent import keyword_finding_agent
-from .sub_agents.search_results.agent import search_results_agent
+from mtmai.agents.brand_search_optimization import prompt
+from mtmai.agents.brand_search_optimization.shared_libraries import constants
+from mtmai.agents.brand_search_optimization.sub_agents.comparison.agent import (
+    comparison_root_agent,
+)
+from mtmai.agents.brand_search_optimization.sub_agents.keyword_finding.agent import (
+    keyword_finding_agent,
+)
+from mtmai.agents.brand_search_optimization.sub_agents.search_results.agent import (
+    search_results_agent,
+)
 
 root_agent = Agent(
     model=constants.MODEL,
