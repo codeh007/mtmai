@@ -1,5 +1,4 @@
 from autogen_agentchat.base import Team
-from autogen_agentchat.messages import TextMessage
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.context.context import Context
@@ -19,5 +18,5 @@ class FlowTeam:
     async def step0(self, hatctx: Context):
         input = FlowTeamInput.from_dict(hatctx.input)
         team = ComponentLoader.load_component(input.component, expected=Team)
-        task = TextMessage.model_validate(input.task.model_dump())
-        return await team.run(task=task, cancellation_token=MtCancelToken())
+        # task = TextMessage.model_validate(input.task.model_dump())
+        return await team.run(task=input, cancellation_token=MtCancelToken())

@@ -95,7 +95,7 @@ class SocialLoginInput(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SocialLoginInput) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "type": obj.get("type"),
+            "type": obj.get("type") if obj.get("type") is not None else 'SocialLoginInput',
             "username": obj.get("username"),
             "password": obj.get("password"),
             "otp_key": obj.get("otp_key")

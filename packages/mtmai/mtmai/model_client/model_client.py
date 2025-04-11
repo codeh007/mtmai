@@ -51,12 +51,7 @@ from autogen_core.tools import Tool, ToolSchema
 from autogen_ext.models._utils.normalize_stop_reason import normalize_stop_reason
 from autogen_ext.models._utils.parse_r1_content import parse_r1_content
 from autogen_ext.models.openai import _model_info
-from autogen_ext.models.openai.config import (
-    OpenAIClientConfiguration,  # OpenAIClientConfigurationConfigModel,
-)
-from clients.rest.models.open_ai_client_configuration_config_model import (
-    OpenAIClientConfigurationConfigModel,
-)
+from autogen_ext.models.openai.config import OpenAIClientConfiguration
 from openai import NOT_GIVEN, AsyncAzureOpenAI, AsyncOpenAI
 from openai.types.chat import (
     ChatCompletion,
@@ -81,6 +76,10 @@ from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.shared_params import FunctionDefinition, FunctionParameters
 from pydantic import BaseModel, SecretStr
 from typing_extensions import Self, Unpack
+
+from mtmai.clients.rest.models.open_ai_client_configuration_config_model import (
+    OpenAIClientConfigurationConfigModel,
+)
 
 # from mtmai.clients.rest.models.model_config import ModelConfig
 

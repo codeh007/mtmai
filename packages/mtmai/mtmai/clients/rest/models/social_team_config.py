@@ -36,7 +36,8 @@ class SocialTeamConfig(BaseModel):
     max_selector_attempts: Optional[StrictInt] = None
     selector_func: Optional[StrictStr] = None
     proxy_url: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func", "proxy_url"]
+    enable_swarm: Optional[StrictBool] = False
+    __properties: ClassVar[List[str]] = ["participants", "termination_condition", "max_turns", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func", "proxy_url", "enable_swarm"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -111,7 +112,8 @@ class SocialTeamConfig(BaseModel):
             "allow_repeated_speaker": obj.get("allow_repeated_speaker"),
             "max_selector_attempts": obj.get("max_selector_attempts"),
             "selector_func": obj.get("selector_func"),
-            "proxy_url": obj.get("proxy_url")
+            "proxy_url": obj.get("proxy_url"),
+            "enable_swarm": obj.get("enable_swarm") if obj.get("enable_swarm") is not None else False
         })
         return _obj
 

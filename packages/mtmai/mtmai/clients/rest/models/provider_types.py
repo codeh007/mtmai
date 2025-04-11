@@ -26,7 +26,6 @@ class ProviderTypes(str, Enum):
     """
     allowed enum values
     """
-    ROUNDROBINGROUPCHAT = 'RoundRobinGroupChat'
     SELECTORGROUPCHAT = 'SelectorGroupChat'
     SOCIALTEAM = 'SocialTeam'
     ASSISTANTAGENT = 'AssistantAgent'

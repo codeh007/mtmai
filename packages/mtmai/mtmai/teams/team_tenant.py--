@@ -20,7 +20,7 @@ from autogen_core import (
 from autogen_core.models import SystemMessage
 from autogen_ext.code_executors.docker import DockerCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
-from clients.rest.models.flow_names import FlowNames
+from mtmai.clients.rest.models.flow_names import FlowNames
 from loguru import logger
 from mtlibs.autogen_utils.intervention_handlers import (
     NeedsUserInputHandler,

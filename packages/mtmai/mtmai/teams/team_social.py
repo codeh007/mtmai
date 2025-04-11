@@ -17,9 +17,11 @@ from autogen_agentchat.base import ChatAgent, TaskResult, TerminationCondition
 from autogen_agentchat.messages import (
     BaseAgentEvent,
     BaseChatMessage,
+    HandoffMessage,
     MessageFactory,
     UserInputRequestedEvent,
 )
+from autogen_agentchat.messages import TextMessage as AutogenTextMessage
 from autogen_agentchat.teams import BaseGroupChat
 from autogen_agentchat.teams._group_chat._base_group_chat_manager import (
     BaseGroupChatManager,
@@ -49,6 +51,7 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
 from mtmai.clients.rest.models.social_team_manager_state import SocialTeamManagerState
 from mtmai.clients.rest.models.state_type import StateType
+from mtmai.clients.rest.models.text_message import TextMessage
 from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.ctx import get_chat_session_id_ctx
 from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
@@ -119,6 +122,7 @@ class SocialTeamManager(BaseGroupChatManager):
             type=AgentStateTypes.SOCIALTEAMMANAGERSTATE.value,
             next_speaker_index=0,
             previous_speaker=None,
+            current_speaker=self._participant_names[0],
         )
         # self._state.model_context = BufferedChatCompletionContext(buffer_size=15)
 
@@ -394,6 +398,7 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         termination_condition: TerminationCondition | None = None,
         max_turns: int | None = 20,
         runtime: AgentRuntime | None = None,
+        enable_swarm: bool = False,
         custom_message_types: List[type[BaseAgentEvent | BaseChatMessage]]
         | None = None,
     ) -> None:
@@ -406,6 +411,13 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
             runtime=runtime,
             custom_message_types=custom_message_types,
         )
+        if enable_swarm:
+            # The first participant must be able to produce handoff messages.
+            first_participant = self._participants[0]
+            if HandoffMessage not in first_participant.produced_message_types:
+                raise ValueError(
+                    "if enable_swarm, The first participant must be able to produce a handoff messages."
+                )
 
     def _create_group_chat_manager_factory(
         self,
@@ -452,6 +464,7 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
     def _to_config(self) -> SocialTeamConfig:
         return SocialTeamConfig(
             max_turns=self._max_turns,
+            enable_swarm=self._enable_swarm,
         )
 
     @classmethod
@@ -471,54 +484,59 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
             participants,
             termination_condition=termination_condition,
             max_turns=config.max_turns,
+            enable_swarm=config.enable_swarm,
         )
 
     async def pause(self) -> None:
-        logger.info("TODO: pause team")
+        raise NotImplementedError("TODO: pause team")
 
     async def resume(self) -> None:
-        logger.info("TODO: resume team")
+        raise NotImplementedError("TODO: resume team")
 
-    async def run(
-        self,
-        *,
-        task: str | BaseChatMessage | Sequence[BaseChatMessage] | None = None,
-        cancellation_token: CancellationToken | None = None,
-    ) -> TaskResult:
-        result: TaskResult | None = None
-        is_slow_user_input = False
-        async for message in self.run_stream(
-            task=task,
-            cancellation_token=cancellation_token,
-        ):
-            if isinstance(message, TaskResult):
-                result = message
-            elif isinstance(message, UserInputRequestedEvent):
-                # 强制停止运行, 登录用户的输入(在下一轮中启动)
-                self._is_running = False
-                is_slow_user_input = True
-                await self._runtime.stop()
-                break
-        state = await self.save_state()
-        session_id = get_chat_session_id_ctx()
-        tenant_client = TenantClient()
-        await tenant_client.ag_state_api.ag_state_upsert(
-            tenant=tenant_client.tenant_id,
-            ag_state_upsert=AgStateUpsert(
-                type=StateType.TEAMSTATE.value,
-                chatId=session_id,
-                state=state,
-                topic="default",
-                source="default",
-            ),
-        )
+    # async def run(
+    #     self,
+    #     *,
+    #     task: str
+    #     | BaseChatMessage
+    #     | Sequence[BaseChatMessage]
+    #     | FlowTeamInput
+    #     | None = None,
+    #     cancellation_token: CancellationToken | None = None,
+    # ) -> TaskResult:
+    #     result: TaskResult | None = None
+    #     is_slow_user_input = False
+    #     async for message in self.run_stream(
+    #         task=task,
+    #         cancellation_token=cancellation_token,
+    #     ):
+    #         if isinstance(message, TaskResult):
+    #             result = message
+    #         elif isinstance(message, UserInputRequestedEvent):
+    #             # 强制停止运行, 登录用户的输入(在下一轮中启动)
+    #             self._is_running = False
+    #             is_slow_user_input = True
+    #             await self._runtime.stop()
+    #             break
+    #     state = await self.save_state()
+    #     session_id = get_chat_session_id_ctx()
+    #     tenant_client = TenantClient()
+    #     await tenant_client.ag_state_api.ag_state_upsert(
+    #         tenant=tenant_client.tenant_id,
+    #         ag_state_upsert=AgStateUpsert(
+    #             type=StateType.TEAMSTATE.value,
+    #             chatId=session_id,
+    #             state=state,
+    #             topic="default",
+    #             source="default",
+    #         ),
+    #     )
 
-        if is_slow_user_input:
-            return {"result": "wait user input"}
+    #     if is_slow_user_input:
+    #         return {"result": "wait user input"}
 
-        if result is None:
-            raise RuntimeError("result is None")
-        return result
+    #     if result is None:
+    #         raise RuntimeError("result is None")
+    #     return result
 
     async def run_stream(
         self,
@@ -530,8 +548,41 @@ class SocialTeam(BaseGroupChat, Component[SocialTeamConfig]):
         | None = None,
         cancellation_token: CancellationToken | None = None,
     ) -> AsyncGenerator[BaseAgentEvent | BaseChatMessage | TaskResult, None]:
+        finnal_task = task
+        if isinstance(task, FlowTeamInput):
+            input_event = task.task.actual_instance
+            if isinstance(input_event, TextMessage):
+                if not hasattr(input_event, "metadata"):
+                    input_event.metadata = {}
+                finnal_task = AutogenTextMessage.model_validate(
+                    input_event.model_dump()
+                )
         async for message in super().run_stream(
-            task=task,
+            task=finnal_task,
             cancellation_token=cancellation_token,
         ):
-            yield message
+            if isinstance(message, TaskResult):
+                result = message
+                state = await self.save_state()
+                session_id = get_chat_session_id_ctx()
+                tenant_client = TenantClient()
+                await tenant_client.ag_state_api.ag_state_upsert(
+                    tenant=tenant_client.tenant_id,
+                    ag_state_upsert=AgStateUpsert(
+                        type=StateType.TEAMSTATE.value,
+                        chatId=session_id,
+                        state=state,
+                        topic="default",
+                        source="default",
+                    ),
+                )
+                yield result
+                break
+            elif isinstance(message, UserInputRequestedEvent):
+                # 强制停止运行, 登录用户的输入(在下一轮中启动)
+                self._is_running = False
+                is_slow_user_input = True
+                await self._runtime.stop()
+                break
+            else:
+                yield message

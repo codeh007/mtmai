@@ -71,6 +71,8 @@ class InstagramAgent(AssistantAgent, Component[InstagramAgentConfig]):
             name=name,
             model_client=model_client,
             tools=tools or [],
+            handoffs=handoffs,
+            model_context=model_context,
             description=description or self.DEFAULT_DESCRIPTION,
             system_message=system_message or self.DEFAULT_SYSTEM_MESSAGE,
             model_client_stream=model_client_stream,

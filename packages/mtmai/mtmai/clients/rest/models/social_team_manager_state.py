@@ -30,11 +30,12 @@ class SocialTeamManagerState(BaseModel):
     version: Optional[StrictStr] = None
     next_speaker_index: Optional[StrictInt] = 0
     previous_speaker: Optional[StrictStr] = None
+    current_speaker: Optional[StrictStr] = None
     selector_prompt: Optional[StrictStr] = None
     allow_repeated_speaker: Optional[StrictBool] = None
     max_selector_attempts: Optional[StrictInt] = None
     selector_func: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func"]
+    __properties: ClassVar[List[str]] = ["type", "version", "next_speaker_index", "previous_speaker", "current_speaker", "selector_prompt", "allow_repeated_speaker", "max_selector_attempts", "selector_func"]
 
     @field_validator('type')
     def type_validate_enum(cls, value):
@@ -103,6 +104,7 @@ class SocialTeamManagerState(BaseModel):
             "version": obj.get("version"),
             "next_speaker_index": obj.get("next_speaker_index") if obj.get("next_speaker_index") is not None else 0,
             "previous_speaker": obj.get("previous_speaker"),
+            "current_speaker": obj.get("current_speaker"),
             "selector_prompt": obj.get("selector_prompt"),
             "allow_repeated_speaker": obj.get("allow_repeated_speaker"),
             "max_selector_attempts": obj.get("max_selector_attempts"),

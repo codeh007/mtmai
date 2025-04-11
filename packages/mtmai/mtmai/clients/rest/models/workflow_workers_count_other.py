@@ -37,7 +37,6 @@ from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.platform_account_data import PlatformAccountData
 from mtmai.clients.rest.models.provider_types import ProviderTypes
-from mtmai.clients.rest.models.round_robin_group_chat import RoundRobinGroupChat
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
@@ -47,7 +46,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgEvents", "AgentEventType", "AgentStateTypes", "AgentStates", "AgentTopicTypes", "AgentTypes", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatStartInput", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "PlatformAccountData", "ProviderTypes", "RoundRobinGroupChat", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "UserInputRequestedEvent"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgEvents", "AgentEventType", "AgentStateTypes", "AgentStates", "AgentTopicTypes", "AgentTypes", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatStartInput", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "PlatformAccountData", "ProviderTypes", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "UserInputRequestedEvent"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -94,19 +93,17 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_19_validator: Optional[ChatStartInput] = None
     # data type: UserInputRequestedEvent
     anyof_schema_20_validator: Optional[UserInputRequestedEvent] = None
-    # data type: RoundRobinGroupChat
-    anyof_schema_21_validator: Optional[RoundRobinGroupChat] = None
     # data type: SocialTeam
-    anyof_schema_22_validator: Optional[SocialTeam] = None
+    anyof_schema_21_validator: Optional[SocialTeam] = None
     # data type: AgentStates
-    anyof_schema_23_validator: Optional[AgentStates] = None
+    anyof_schema_22_validator: Optional[AgentStates] = None
     # data type: AgEvents
-    anyof_schema_24_validator: Optional[AgEvents] = None
+    anyof_schema_23_validator: Optional[AgEvents] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, RoundRobinGroupChat, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent]] = None
+        actual_instance: Optional[Union[AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgEvents", "AgentEventType", "AgentStateTypes", "AgentStates", "AgentTopicTypes", "AgentTypes", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatStartInput", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "PlatformAccountData", "ProviderTypes", "RoundRobinGroupChat", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "UserInputRequestedEvent" }
+    any_of_schemas: Set[str] = { "AgEvents", "AgentEventType", "AgentStateTypes", "AgentStates", "AgentTopicTypes", "AgentTypes", "BrowserData", "BrowserOpenTask", "BrowserTask", "ChatStartInput", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "PlatformAccountData", "ProviderTypes", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "UserInputRequestedEvent" }
 
     model_config = {
         "validate_assignment": True,
@@ -247,12 +244,6 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
-        # validate data type: RoundRobinGroupChat
-        if not isinstance(v, RoundRobinGroupChat):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `RoundRobinGroupChat`")
-        else:
-            return v
-
         # validate data type: SocialTeam
         if not isinstance(v, SocialTeam):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeam`")
@@ -273,7 +264,7 @@ class WorkflowWorkersCountOther(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, RoundRobinGroupChat, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -406,25 +397,19 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_21_validator: Optional[RoundRobinGroupChat] = None
-        try:
-            instance.actual_instance = RoundRobinGroupChat.from_json(json_str)
-            return instance
-        except (ValidationError, ValueError) as e:
-             error_messages.append(str(e))
-        # anyof_schema_22_validator: Optional[SocialTeam] = None
+        # anyof_schema_21_validator: Optional[SocialTeam] = None
         try:
             instance.actual_instance = SocialTeam.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_23_validator: Optional[AgentStates] = None
+        # anyof_schema_22_validator: Optional[AgentStates] = None
         try:
             instance.actual_instance = AgentStates.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_24_validator: Optional[AgEvents] = None
+        # anyof_schema_23_validator: Optional[AgEvents] = None
         try:
             instance.actual_instance = AgEvents.from_json(json_str)
             return instance
@@ -433,7 +418,7 @@ class WorkflowWorkersCountOther(BaseModel):
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, RoundRobinGroupChat, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -447,7 +432,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, RoundRobinGroupChat, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgEvents, AgentEventType, AgentStateTypes, AgentStates, AgentTopicTypes, AgentTypes, BrowserData, BrowserOpenTask, BrowserTask, ChatStartInput, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, PlatformAccountData, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, UserInputRequestedEvent]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

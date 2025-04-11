@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,8 @@ class FlowError(BaseModel):
     """
     FlowError
     """ # noqa: E501
-    type: Optional[StrictStr] = None
-    error: Optional[StrictStr] = None
+    type: StrictStr
+    error: StrictStr
     __properties: ClassVar[List[str]] = ["type", "error"]
 
     model_config = ConfigDict(

@@ -239,8 +239,6 @@ from mtmai.clients.rest.models.resource import Resource
 from mtmai.clients.rest.models.resource_list import ResourceList
 from mtmai.clients.rest.models.resource_properties import ResourceProperties
 from mtmai.clients.rest.models.resource_upsert import ResourceUpsert
-from mtmai.clients.rest.models.round_robin_group_chat import RoundRobinGroupChat
-from mtmai.clients.rest.models.round_robin_group_chat_config import RoundRobinGroupChatConfig
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
 from mtmai.clients.rest.models.scheduled_workflows import ScheduledWorkflows
