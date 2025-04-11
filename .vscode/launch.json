@@ -20,7 +20,7 @@
 			"cwd": "${workspaceFolder}",
 			"args": [
 				"web",
-				"${workspaceFolder}/packages/mtmai/mtmai"
+				"${workspaceFolder}/packages/mtmai/mtmai/agents"
 			],
 			"jinja": true,
 			"justMyCode": false,
