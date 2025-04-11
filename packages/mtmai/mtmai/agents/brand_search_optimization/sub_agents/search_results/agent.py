@@ -167,20 +167,22 @@ def analyze_webpage_and_determine_action(
     return analysis_prompt
 
 
-search_results_agent = Agent(
-    model=constants.MODEL,
-    name="search_results_agent",
-    description="Get top 3 search results info for a keyword using web browsing",
-    instruction=prompt.SEARCH_RESULT_AGENT_PROMPT,
-    tools=[
-        go_to_url,
-        take_screenshot,
-        find_element_with_text,
-        click_element_with_text,
-        enter_text_into_element,
-        scroll_down_screen,
-        get_page_source,
-        load_artifacts_tool,
-        analyze_webpage_and_determine_action,
-    ],
-)
+def new_search_results_agent():
+    search_results_agent = Agent(
+        model=constants.MODEL,
+        name="search_results_agent",
+        description="Get top 3 search results info for a keyword using web browsing",
+        instruction=prompt.SEARCH_RESULT_AGENT_PROMPT,
+        tools=[
+            go_to_url,
+            take_screenshot,
+            find_element_with_text,
+            click_element_with_text,
+            enter_text_into_element,
+            scroll_down_screen,
+            get_page_source,
+            load_artifacts_tool,
+            analyze_webpage_and_determine_action,
+        ],
+    )
+    return search_results_agent

@@ -42,8 +42,8 @@ class MtLiteLlm(BaseLlm):
         """Initializes the LiteLlm class.
 
         Args:
-          model: The name of the LiteLlm model.
-          **kwargs: Additional arguments to pass to the litellm completion api.
+            model: The name of the LiteLlm model.
+            **kwargs: Additional arguments to pass to the litellm completion api.
         """
         super().__init__(model=model, **kwargs)
         self._additional_args = kwargs
@@ -61,11 +61,11 @@ class MtLiteLlm(BaseLlm):
         """Generates content asynchronously.
 
         Args:
-          llm_request: LlmRequest, the request to send to the LiteLlm model.
-          stream: bool = False, whether to do streaming call.
+            llm_request: LlmRequest, the request to send to the LiteLlm model.
+            stream: bool = False, whether to do streaming call.
 
         Yields:
-          LlmResponse: The model response.
+            LlmResponse: The model response.
         """
 
         logger.info(_build_request_log(llm_request))
