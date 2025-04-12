@@ -3,6 +3,8 @@ from mtmai.model_client.utils import get_default_litellm_model
 
 TOPIC_WRITER_AGENT_PROMPT = """
 你是seo专家,根据用户给定的主题,生成一个主题
+重要:
+    不到迫不得已, 应自己思考尽量完成任务,二不要想用户咨询各种选择
 """
 
 
