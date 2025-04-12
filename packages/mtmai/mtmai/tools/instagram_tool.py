@@ -1,7 +1,8 @@
 import pyotp
+from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
-from loguru import logger
 
+from mtmai.core.config import settings
 from mtmai.mtlibs.instagrapi import Client
 
 
@@ -19,22 +20,7 @@ def instagram_login(
     Returns:
         string: The instagram login result.
     """
-    logger.info(f"instagram_login_tool: {username}, {password}, {otp_key}")
-    # name = "instagram_login"
-    # description = """登录 instagram
-    # """
-    # inputs = {
-    #     "task": {
-    #         "type": "string",
-    #         "description": "the task category (such as text-classification, depth-estimation, etc)",
-    #     }
-    # }
-    # output_type = "string"
-
     # def forward(self, task: str):
-    #     IG_USERNAME = ""
-    #     IG_PASSWORD = ""
-    #     IG_CREDENTIAL_PATH = "./ig_settings.json"
     #     # SLEEP_TIME = "600"  # in seconds
 
     #     ig_client = Client()
@@ -51,7 +37,20 @@ def instagram_login(
     username = username.strip()
     password = password.strip()
     otp_key = otp_key.strip().replace(" ", "")
-    ig_client = Client()
+
+    if tool_context.state.get("ig_settings"):
+        # 如果已经登录过, 直接返回登录信息
+        return {
+            "success": True,
+            "result": tool_context.state["ig_settings"],
+        }
+    if not username or not password:
+        return {
+            "success": False,
+            "result": "username or password is empty",
+        }
+
+    ig_client = _get_ig_client(tool_context)
     try:
         ok = ig_client.login(
             username,
@@ -79,22 +78,55 @@ def instagram_login(
         if ok:
             # return "instagram login success"
             login_data = ig_client.get_settings()
-            return login_data
+            return {
+                "success": True,
+                "result": login_data,
+            }
     except Exception as e:
-        logger.error(f"instagram_login_tool: {e}")
-        return f"instagram login failed, reason: {e}"
+        # logger.error(f"instagram_login_tool: {e}")
+        # return f"instagram login failed, reason: {e}"
+        return {
+            "success": False,
+            "result": f"instagram login failed, reason: {e}",
+        }
 
 
-def instagram_write_post_tool(post_content: str):
+def instagram_follow_user(user_id: str, tool_context: ToolContext):
+    """
+    关注 instagram 用户.
+    """
+    ig_client = _get_ig_client(tool_context)
+
+    try:
+        ok = ig_client.user_follow(user_id)
+        if ok:
+            return {
+                "success": True,
+                "result": "instagram follow user success",
+            }
+        else:
+            return {
+                "success": False,
+                "result": "instagram follow user failed",
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "result": f"instagram follow user failed, reason: {e}",
+        }
+
+
+def instagram_write_post(post_content: str, tool_context: ToolContext):
     """
     在 instagram 上发布帖子.
     """
-    ig_client = Client()
+    ig_client = _get_ig_client(tool_context)
+
     ig_client.post_to_instagram(post_content)
     return "instagram post success"
 
 
-def instagram_user_info_tool(user_id: str, tool_context: ToolContext):
+def instagram_account_info(tool_context: ToolContext):
     """
     获取 instagram 当前用户信息.
     Args:
@@ -103,6 +135,44 @@ def instagram_user_info_tool(user_id: str, tool_context: ToolContext):
     Returns:
         string: The instagram login result.
     """
-    ig_client = Client()
-    user_info = ig_client.user_info(user_id)
-    return user_info
+    # user_id = (
+    #     tool_context.state.get("ig_settings", {})
+    #     .get("authorization_data", {})
+    #     .get("ds_user_id")
+    # )
+    # if not user_id:
+    #     return {
+    #         "success": False,
+    #         "result": "user_id is not set",
+    #     }
+
+    ig_settings = tool_context.state.get("ig_settings", None)
+    if not ig_settings:
+        return {
+            "success": False,
+            "result": "ig_settings is not set",
+        }
+
+    ig_client = _get_ig_client(tool_context)
+    try:
+        user_info = ig_client.account_info()
+        return {
+            "success": True,
+            "result": jsonable_encoder(user_info.model_dump()),
+        }
+    except Exception as e:
+        # debug_traceback(e)
+        # return {
+        #     "success": False,
+        #     "result": f"instagram user info failed, reason: {e}",
+        # }
+        raise e
+
+
+def _get_ig_client(tool_context: ToolContext):
+    ig_client = Client(
+        proxy=settings.default_proxy_url,
+    )
+    if tool_context.state.get("ig_settings"):
+        ig_client.set_settings(tool_context.state["ig_settings"])
+    return ig_client

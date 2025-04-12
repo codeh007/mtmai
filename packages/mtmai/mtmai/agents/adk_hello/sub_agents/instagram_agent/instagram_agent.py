@@ -4,8 +4,98 @@ from google.adk.agents import Agent
 from google.adk.tools import BaseTool
 from google.adk.tools.tool_context import ToolContext
 from mtmai.model_client.utils import get_default_litellm_model
-from mtmai.tools.instagram_tool import instagram_login, instagram_write_post_tool
-from mtmai.tools.store_state import store_state_tool
+from mtmai.tools.instagram_tool import (
+    instagram_account_info,
+    instagram_follow_user,
+    instagram_login,
+    instagram_write_post,
+)
+
+seed_users = [
+    "yumeka64002",
+    "a_ka.ri_3",
+    # "ri.sa_0826",
+    # "nobuko008",
+    # "ayu55273",
+    # "yuki_rax00x",
+    # "m_i_yu_1102",
+    # "anna1199aa",
+    # "ric.odesu",
+    # "elena_chan063",
+    # "foxingbutsu",
+    # "motoka556",
+    # "4619.hina",
+    # "sushengziyuan73",
+    # sachi_ura_ako
+    # momo.y0325
+    # nakamura.tomoko1970
+    # sayo_cha0
+    # an_ni7571
+    # mikuch35
+    # kuru.mi9511
+    # sayuri78263
+    # chiyota_1524
+    # yukino98221
+    # sukurakawai13014
+    # zi.yun14013
+    # sayakadamii
+    # miporin.0923
+    # ayako.0229
+    # manami_no_ura
+    # yuu_nn000
+    # minaaa50789
+    # anna1199aa
+    # miwa93218
+    # kaor.iyanyan
+    # rori0160
+    # no_rik00
+    # kawademikako
+    # kanae_15758
+    # haruru_ch
+    # rina.18562
+    # kyouko_music0829
+    # laiaitianmeisha
+    # usachan0712
+    # yabunakahiroko4
+    # miyuki20245
+    # eunjoo1168
+    # mikamikadesuyo
+    # mik_ki0124
+    # yurikoxt
+    # kannachocho
+    # nana_.xill
+    # ayumienko
+    # marn_na_94
+    # mi_kki.3621
+    # yuuna.x.ura
+    # yuino.__1
+    # kihoho77
+    # reika_nt
+    # 12460725a.sara
+    # hiyori_2999
+    # chie_7979
+    # kumiko_823
+    # 126656a.eina
+    # yukie_desuyo
+    # kaori_09.13
+    # 19865413a.moe
+    # rrr__iip
+    # ai_uradazo
+    # rin3.833
+    # omg_boy.n
+    # fumino.ig
+    # kanako.440
+    # kayosan67
+    # ayaka_rin8
+    # kana.ura01
+    # naonoona
+    # reirei_1118v
+    # manamoo80
+    # aikato.asobitai1
+    # hina29500
+    # kan_chandayo
+    # shiratorimomoko1111
+]
 
 INSTAGRAM_AGENT_PROMPT = """你是 instagram 社交媒体操作的专家
 背景:
@@ -16,9 +106,8 @@ INSTAGRAM_AGENT_PROMPT = """你是 instagram 社交媒体操作的专家
 ## 工具调用
     - login_to_instagram: 登录到 instagram 的账户
     - post_to_instagram: 在 instagram 上发布帖子
-    - follow_user: 关注其他用户
-    - unfollow_user: 取消关注其他用户
-    -
+    - instagram_follow_user: 关注其他用户
+    - instagram_account_info: 获取当前用户信息
 
 步骤建议:
     1: 登录到 instagram 的账户. 登录成功后, 保存登录信息到 state 中.
@@ -34,8 +123,37 @@ def after_tool_callback(
     tool_response: dict[str, Any] = None,
 ) -> Optional[dict]:
     if tool.name == "instagram_login":
-        tool_context.state["ig_settings"] = tool_response
+        if tool_response["success"]:
+            tool_context.state.update({"ig_settings": tool_response["result"]})
 
+            # --- Define State Changes ---
+            # current_time = time.time()
+            # state_changes = {
+            #     "task_status": "active",  # Update session state
+            #     "user:login_count": tool_context.state.get("user:login_count", 0)
+            #     + 1,  # Update user state
+            #     "user:last_login_ts": current_time,  # Add user state
+            #     "temp:validation_needed": True,  # Add temporary state (will be discarded)
+            # }
+
+            # # --- Create Event with Actions ---
+            # actions_with_update = EventActions(state_delta=state_changes)
+            # # This event might represent an internal system action, not just an agent response
+            # system_event = Event(
+            #     invocation_id="inv_login_update",
+            #     author="system",  # Or 'agent', 'tool' etc.
+            #     actions=actions_with_update,
+            #     timestamp=current_time,
+            #     # content might be None or represent the action taken
+            # )
+            # return system_event
+
+            # --- Append the Event (This updates the state) ---
+            # session_service.append_event(session, system_event)
+    if tool.name == "instagram_account_info":
+        if tool_response["success"]:
+            # tool_context.state["user_info"] = tool_response["result"]
+            tool_context.state.update({"user_info": tool_response["result"]})
     return None
 
 
@@ -47,21 +165,9 @@ def new_instagram_agent():
         instruction=INSTAGRAM_AGENT_PROMPT,
         tools=[
             instagram_login,
-            instagram_write_post_tool,
-            store_state_tool,
+            instagram_write_post,
+            instagram_account_info,
+            instagram_follow_user,
         ],
         after_tool_callback=after_tool_callback,
     )
-
-
-# def lowercase_value(value):
-#     """Make dictionary lowercase"""
-#     if isinstance(value, dict):
-#         return (dict(k, lowercase_value(v)) for k, v in value.items())
-#     elif isinstance(value, str):
-#         return value.lower()
-#     elif isinstance(value, (list, set, tuple)):
-#         tp = type(value)
-#         return tp(lowercase_value(i) for i in value)
-#     else:
-#         return value
