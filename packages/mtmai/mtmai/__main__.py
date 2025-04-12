@@ -28,7 +28,9 @@ def run():
 
     # 启动web 但是不阻塞
 
-    web("packages/mtmai/mtmai/agents")
+    pwd = os.path.dirname(os.path.abspath(__file__))
+    agents_dir = os.path.join(pwd, "agents")
+    web(agents_dir)
     # asyncio.run(run_worker())
 
 

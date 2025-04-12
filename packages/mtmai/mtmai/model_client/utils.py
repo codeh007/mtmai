@@ -67,12 +67,24 @@ def get_default_litellm_model():
     #     api_key="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",
     #     base_url="https://integrate.api.nvidia.com/v1",
     # )
+    # return MtLiteLlm(
+    #     # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
+    #     # model="openai/qwen/qwq-32b",
+    #     # model="openai/qwen/qwen-2.5-coder-32b-instruct:free",
+    #     # model="openai/qwen/qwq-32b:free",
+    #     model="openai/google/gemini-2.5-pro-exp-03-25:free",
+    #     api_key=settings.OPENROUTER_API_KEY,
+    #     base_url="https://openrouter.ai/api/v1",
+    # )
+    # return MtLiteLlm(
+    #     model="openai/google/gemini-2.5-pro-exp-03-25:free",
+    #     api_key=settings.OPENROUTER_API_KEY,
+    #     base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/openrouter",
+    # )
+
     return MtLiteLlm(
-        # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
-        # model="openai/qwen/qwq-32b",
-        # model="openai/qwen/qwen-2.5-coder-32b-instruct:free",
-        # model="openai/qwen/qwq-32b:free",
-        model="openai/google/gemini-2.5-pro-exp-03-25:free",
-        api_key=settings.OPENROUTER_API_KEY,
-        base_url="https://openrouter.ai/api/v1",
+        # model="openai/deepseek-ai/DeepSeek-V3-0324",
+        model="huggingface/sambanova/meta-llama/Llama-3.3-70B-Instruct",
+        api_key=settings.HF_TOKEN,
+        # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/huggingface",
     )

@@ -346,7 +346,6 @@ from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage
 from mtmai.clients.rest.models.user_proxy_agent import UserProxyAgent
 from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConfig
-from mtmai.clients.rest.models.user_proxy_agent_state import UserProxyAgentState
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmai.clients.rest.models.user_tenant_public import UserTenantPublic

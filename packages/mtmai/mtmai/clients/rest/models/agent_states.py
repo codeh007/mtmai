@@ -20,12 +20,11 @@ from typing import Any, List, Optional
 from mtmai.clients.rest.models.chat_agent_container_state import ChatAgentContainerState
 from mtmai.clients.rest.models.instagram_agent_state import InstagramAgentState
 from mtmai.clients.rest.models.social_team_manager_state import SocialTeamManagerState
-from mtmai.clients.rest.models.user_proxy_agent_state import UserProxyAgentState
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-AGENTSTATES_ONE_OF_SCHEMAS = ["ChatAgentContainerState", "InstagramAgentState", "SocialTeamManagerState", "UserProxyAgentState"]
+AGENTSTATES_ONE_OF_SCHEMAS = ["ChatAgentContainerState", "InstagramAgentState", "SocialTeamManagerState"]
 
 class AgentStates(BaseModel):
     """
@@ -33,14 +32,12 @@ class AgentStates(BaseModel):
     """
     # data type: InstagramAgentState
     oneof_schema_1_validator: Optional[InstagramAgentState] = None
-    # data type: UserProxyAgentState
-    oneof_schema_2_validator: Optional[UserProxyAgentState] = None
     # data type: SocialTeamManagerState
-    oneof_schema_3_validator: Optional[SocialTeamManagerState] = None
+    oneof_schema_2_validator: Optional[SocialTeamManagerState] = None
     # data type: ChatAgentContainerState
-    oneof_schema_4_validator: Optional[ChatAgentContainerState] = None
-    actual_instance: Optional[Union[ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState]] = None
-    one_of_schemas: Set[str] = { "ChatAgentContainerState", "InstagramAgentState", "SocialTeamManagerState", "UserProxyAgentState" }
+    oneof_schema_3_validator: Optional[ChatAgentContainerState] = None
+    actual_instance: Optional[Union[ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState]] = None
+    one_of_schemas: Set[str] = { "ChatAgentContainerState", "InstagramAgentState", "SocialTeamManagerState" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -71,11 +68,6 @@ class AgentStates(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `InstagramAgentState`")
         else:
             match += 1
-        # validate data type: UserProxyAgentState
-        if not isinstance(v, UserProxyAgentState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `UserProxyAgentState`")
-        else:
-            match += 1
         # validate data type: SocialTeamManagerState
         if not isinstance(v, SocialTeamManagerState):
             error_messages.append(f"Error! Input type `{type(v)}` is not `SocialTeamManagerState`")
@@ -88,10 +80,10 @@ class AgentStates(BaseModel):
             match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -126,20 +118,9 @@ class AgentStates(BaseModel):
             instance.actual_instance = SocialTeamManagerState.from_json(json_str)
             return instance
 
-        # check if data type is `UserProxyAgentState`
-        if _data_type == "UserProxyAgentState":
-            instance.actual_instance = UserProxyAgentState.from_json(json_str)
-            return instance
-
         # deserialize data into InstagramAgentState
         try:
             instance.actual_instance = InstagramAgentState.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into UserProxyAgentState
-        try:
-            instance.actual_instance = UserProxyAgentState.from_json(json_str)
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
@@ -158,10 +139,10 @@ class AgentStates(BaseModel):
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into AgentStates with oneOf schemas: ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +156,7 @@ class AgentStates(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState, UserProxyAgentState]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], ChatAgentContainerState, InstagramAgentState, SocialTeamManagerState]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

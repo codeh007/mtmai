@@ -214,6 +214,10 @@ class Settings(BaseSettings):
         return os.environ.get("OPENROUTER_API_KEY", "openrouter_api_key_not_set")
 
     @property
+    def WEATHER_API_KEY(self) -> str | None:
+        return os.environ.get("WEATHER_API_KEY", "weather_api_key_not_set")
+
+    @property
     def HF_TOKEN(self) -> str | None:
         return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 

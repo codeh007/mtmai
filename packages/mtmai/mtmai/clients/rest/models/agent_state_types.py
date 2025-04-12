@@ -27,7 +27,6 @@ class AgentStateTypes(str, Enum):
     allowed enum values
     """
     INSTAGRAMAGENTSTATE = 'InstagramAgentState'
-    USERPROXYAGENTSTATE = 'UserProxyAgentState'
     SOCIALTEAMMANAGERSTATE = 'SocialTeamManagerState'
     TEAMSTATE = 'TeamState'
     RUNTIMESTATE = 'RuntimeState'
