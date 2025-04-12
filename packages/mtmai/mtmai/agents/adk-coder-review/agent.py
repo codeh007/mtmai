@@ -10,7 +10,6 @@ from mtmai.model_client.utils import get_default_litellm_model
 APP_NAME = "code_pipeline_app"
 USER_ID = "dev_user_01"
 SESSION_ID = "pipeline_session_01"
-# GEMINI_MODEL = "gemini-2.0-flash-exp"
 
 # --- 1. 定义代码处理管道的各个阶段子代理 ---
 # 代码编写代理
