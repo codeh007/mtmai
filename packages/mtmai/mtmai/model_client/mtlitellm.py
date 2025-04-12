@@ -1,7 +1,7 @@
 import logging
 from typing import Any, AsyncGenerator, Dict
 
-import litellm
+# import litellm
 from google.adk.models.base_llm import BaseLlm
 from google.adk.models.lite_llm import (
     FunctionChunk,
@@ -23,7 +23,7 @@ from litellm import (
 from pydantic import Field
 from typing_extensions import override
 
-litellm._turn_on_debug()
+# litellm._turn_on_debug()
 
 
 logger = logging.getLogger(__name__)
