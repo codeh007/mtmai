@@ -1,7 +1,8 @@
 import asyncio
 import importlib
 import json
-import logging
+
+# import logging
 import os
 import re
 import sys
@@ -36,13 +37,15 @@ from google.adk.sessions.in_memory_session_service import InMemorySessionService
 from google.adk.sessions.session import Session
 from google.adk.sessions.vertex_ai_session_service import VertexAiSessionService
 from google.genai import types
+from loguru import logger
 from opentelemetry import trace
 from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+# logger = logging.getLogger("mtmai")
 
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
 
@@ -126,7 +129,7 @@ def get_fast_api_app(
             )
             provider.add_span_processor(processor)
         else:
-            logging.warning(
+            logger.warning(
                 "GOOGLE_CLOUD_PROJECT environment variable is not set. Tracing will"
                 " not be enabled."
             )

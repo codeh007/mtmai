@@ -98,6 +98,7 @@ def get_default_litellm_model():
     # )
 
     return MtLiteLlm(
-        model="gemini/gemini-2.5-pro-exp-03-25",
+        # model="gemini/gemini-2.5-pro-exp-03-25",
+        model="gemini/gemini-2.0-flash-exp",
         api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
     )
