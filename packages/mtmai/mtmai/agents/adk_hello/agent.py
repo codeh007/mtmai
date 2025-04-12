@@ -9,7 +9,8 @@ from mtmai.agents.adk_hello.sub_agents.extract_page_data_agent import (
 from mtmai.agents.adk_hello.sub_agents.instagram_agent.instagram_agent import (
     new_instagram_agent,
 )
-from mtmai.agents.adk_hello.sub_agents.topic_writer_agent import new_topic_writer_agent
+
+# from mtmai.agents.adk_hello.sub_agents.topic_writer_agent import new_topic_writer_agent
 from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.tools.fetch_page import fetch_page_tool
 
@@ -30,7 +31,7 @@ root_agent = Agent(
 """
     ),
     sub_agents=[
-        new_topic_writer_agent(),
+        # new_topic_writer_agent(),
         new_content_writer_agent(),
         new_instagram_agent(),
     ],

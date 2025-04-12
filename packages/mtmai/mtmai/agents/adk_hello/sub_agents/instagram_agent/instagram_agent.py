@@ -1,5 +1,7 @@
 from google.adk.agents import Agent
 from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.tools.instagram_tool import instagram_login_tool, instagram_write_post_tool
+from mtmai.tools.store_state import store_state_tool
 
 INSTAGRAM_AGENT_PROMPT = """你是跟 instagram 社交媒体操作的专家
 背景:
@@ -20,14 +22,6 @@ INSTAGRAM_AGENT_PROMPT = """你是跟 instagram 社交媒体操作的专家
 """
 
 
-def login_to_instagram(username: str, password: str, otp_key: str):
-    pass
-
-
-def post_to_instagram(post_content: str):
-    pass
-
-
 def new_instagram_agent():
     return Agent(
         model=get_default_litellm_model(),
@@ -35,16 +29,8 @@ def new_instagram_agent():
         description="跟 instagram 社交媒体操作的专家",
         instruction=INSTAGRAM_AGENT_PROMPT,
         tools=[
-            login_to_instagram,
-            post_to_instagram,
-            # go_to_url,
-            # take_screenshot,
-            # find_element_with_text,
-            # click_element_with_text,
-            # enter_text_into_element,
-            # scroll_down_screen,
-            # get_page_source,
-            # load_artifacts_tool,
-            # analyze_webpage_and_determine_action,
+            instagram_login_tool,
+            instagram_write_post_tool,
+            store_state_tool,
         ],
     )
