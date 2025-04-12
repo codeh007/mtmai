@@ -35,8 +35,12 @@ root_agent = Agent(
         new_instagram_agent(),
     ],
     tools=[
+        # 学习: fetch_page_tool + ExtractPageDataAgent 获取网页内容原代码 +
+        # 智能提取所需的数据及格式放到聊天上下文中,
+        # 进而后续的对话上下文中正确保存了所需的关键信息,同时又保留对话上下文的整洁
+        # 而 html 源码保留在state 中, 可以后续根据具体需要二次用 ExtractPageDataAgent 再次提取
+        # 更进一步,可以考虑使用 长期记忆(memory) + artifact 实现更加高级的功能.
         fetch_page_tool,
         AgentTool(ExtractPageDataAgent),
-        # store_state_tool,
     ],
 )
