@@ -1,12 +1,18 @@
-from typing import Any
-
 import pyotp
-from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
-from pydantic import BaseModel
 
 from mtmai.core.config import settings
+from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.instagrapi import Client
+
+
+def _get_ig_client(tool_context: ToolContext):
+    ig_client = Client(
+        proxy=settings.default_proxy_url,
+    )
+    if tool_context.state.get("ig_settings"):
+        ig_client.set_settings(tool_context.state["ig_settings"])
+    return ig_client
 
 
 def instagram_login(
@@ -14,7 +20,6 @@ def instagram_login(
 ):
     """
     根据用户名密码登录 instagram, 其中 otp_key 是可选的, 如果需要使用两步验证的话.
-
     Args:
         username (str): The instagram username.
         password (str): The instagram password.
@@ -61,44 +66,31 @@ def instagram_login(
             verification_code=pyotp.TOTP(otp_key).now(),
             relogin=False,
         )
-        # current_time = time.time()
-        # state_changes = {
-        #     "task_status": "active",  # Update session state
-        #     "user:login_count": tool_context.state.get("user:login_count", 0)
-        #     + 1,  # Update user state
-        #     "user:last_login_ts": current_time,  # Add user state
-        #     "temp:validation_needed": True,  # Add temporary state (will be discarded)
-        # }
-        # actions_with_update = EventActions(state_delta=state_changes)
-        # system_event = Event(
-        #     invocation_id="inv_login_update",
-        #     author="system",  # Or 'agent', 'tool' etc.
-        #     actions=actions_with_update,
-        #     timestamp=current_time,
-        #     # content might be None or represent the action taken
-        # )
-
         if ok:
-            # return "instagram login success"
             login_data = ig_client.get_settings()
             return {
                 "success": True,
                 "result": login_data,
             }
     except Exception as e:
-        # logger.error(f"instagram_login_tool: {e}")
-        # return f"instagram login failed, reason: {e}"
         return {
             "success": False,
             "result": f"instagram login failed, reason: {e}",
         }
 
 
-def instagram_follow_user(user_id: str, tool_context: ToolContext):
+def instagram_follow_user(username: str, tool_context: ToolContext):
     """
     关注 instagram 用户.
+    Args:
+        username (str): The instagram user name.
+        tool_context: ToolContext object.
+    Returns:
+        string: The instagram login result.
     """
     ig_client = _get_ig_client(tool_context)
+
+    user_id = ig_client.user_id_from_username(username)
 
     try:
         ok = ig_client.user_follow(user_id)
@@ -138,17 +130,6 @@ def instagram_account_info(tool_context: ToolContext):
     Returns:
         string: The instagram login result.
     """
-    # user_id = (
-    #     tool_context.state.get("ig_settings", {})
-    #     .get("authorization_data", {})
-    #     .get("ds_user_id")
-    # )
-    # if not user_id:
-    #     return {
-    #         "success": False,
-    #         "result": "user_id is not set",
-    #     }
-
     ig_settings = tool_context.state.get("ig_settings", None)
     if not ig_settings:
         return {
@@ -156,8 +137,8 @@ def instagram_account_info(tool_context: ToolContext):
             "result": "ig_settings is not set",
         }
 
-    ig_client = _get_ig_client(tool_context)
     try:
+        ig_client = _get_ig_client(tool_context)
         user_info = ig_client.account_info()
         return tool_success(user_info)
     except Exception as e:
@@ -167,35 +148,3 @@ def instagram_account_info(tool_context: ToolContext):
         #     "result": f"instagram user info failed, reason: {e}",
         # }
         raise e
-
-
-def _get_ig_client(tool_context: ToolContext):
-    ig_client = Client(
-        proxy=settings.default_proxy_url,
-    )
-    if tool_context.state.get("ig_settings"):
-        ig_client.set_settings(tool_context.state["ig_settings"])
-    return ig_client
-
-
-def tool_success(
-    data: dict[str, Any] | str | BaseModel | None, tool_context: ToolContext
-):
-    if data is None:
-        return {
-            "success": False,
-        }
-    if isinstance(data, BaseModel):
-        return {
-            "success": True,
-            "result": jsonable_encoder(data.model_dump()),
-        }
-    if isinstance(data, str):
-        return {
-            "success": True,
-            "result": data,
-        }
-    return {
-        "success": True,
-        "result": data,
-    }
