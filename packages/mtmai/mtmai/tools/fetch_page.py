@@ -26,11 +26,11 @@ def fetch_page_tool(url: str, tool_context: ToolContext) -> dict[str, str]:
     """Retrieves the content of 'url' and stores it in the ToolContext.
 
     Args:
-      url: URL to fetch.
-      tool_context: ToolContext object.
+        url: URL to fetch.
+        tool_context: ToolContext object.
 
     Returns:
-      A dict with "status" and (optional) "error_message" keys.
+        A dict with "status" and (optional) "error_message" keys.
     """
     opener = urllib.request.build_opener()
     opener.addheaders = [("User-Agent", "Mozilla/5.0")]
@@ -44,4 +44,6 @@ def fetch_page_tool(url: str, tool_context: ToolContext) -> dict[str, str]:
         logger.error(errmsg)
         return {"status": "ERROR", "message": errmsg}
     tool_context.state.update({"page_contents": page_text})
+
+    tool_context.save_artifact(filename="page_contents.txt", artifact=page_text)
     return {"status": "OK"}

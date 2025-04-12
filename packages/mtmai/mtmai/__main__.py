@@ -148,7 +148,8 @@ def web(
             fg="green",
         )
 
-    from google.adk.cli.fast_api import get_fast_api_app
+    # from google.adk.cli.fast_api import get_fast_api_app
+    from mtmai.api.adk_fast_api import get_fast_api_app
 
     app = get_fast_api_app(
         agent_dir=agents_dir,

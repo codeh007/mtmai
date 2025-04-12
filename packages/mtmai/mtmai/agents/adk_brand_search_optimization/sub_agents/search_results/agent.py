@@ -6,8 +6,8 @@ from google.adk.agents.llm_agent import Agent
 from google.adk.tools.load_artifacts_tool import load_artifacts_tool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
-from mtmai.agents.brand_search_optimization.shared_libraries import constants
-from mtmai.agents.brand_search_optimization.sub_agents.search_results import prompt
+from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
+from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results import prompt
 from PIL import Image
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By

@@ -218,6 +218,12 @@ class Settings(BaseSettings):
         return os.environ.get("WEATHER_API_KEY", "weather_api_key_not_set")
 
     @property
+    def GOOGLE_AI_STUDIO_API_KEY(self) -> str | None:
+        return os.environ.get(
+            "GOOGLE_AI_STUDIO_API_KEY", "google_ai_studio_api_key_not_set"
+        )
+
+    @property
     def HF_TOKEN(self) -> str | None:
         return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 

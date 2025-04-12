@@ -136,6 +136,7 @@ class MtLiteLlm(BaseLlm):
 
         else:
             response = await self.llm_client.acompletion(**completion_args)
+
             yield _model_response_to_generate_content_response(response)
 
     @staticmethod

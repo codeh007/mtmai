@@ -82,9 +82,22 @@ def get_default_litellm_model():
     #     base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/openrouter",
     # )
 
+    # return MtLiteLlm(
+    #     # model="openai/deepseek-ai/DeepSeek-V3-0324",
+    #     model="huggingface/sambanova/meta-llama/Llama-3.3-70B-Instruct",
+    #     api_key=settings.HF_TOKEN,
+    #     # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/huggingface",
+    # )
+
+    # return MtLiteLlm(
+    #     # model="openai/nvidia/Llama-3_3-Nemotron-Super-49B-v1",
+    #     model="openai/chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8",
+    #     api_key="cpk_85dee936b21c481ea7d542176feb9200.e3d47e0e31625c8d950242c2df75d5bf.yiIDLv7Symy5QjdrPuRO7pU6ImMnR9iw",
+    #     base_url="https://llm.chutes.ai/v1",
+    #     # tool_choice="auto",
+    # )
+
     return MtLiteLlm(
-        # model="openai/deepseek-ai/DeepSeek-V3-0324",
-        model="huggingface/sambanova/meta-llama/Llama-3.3-70B-Instruct",
-        api_key=settings.HF_TOKEN,
-        # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/huggingface",
+        model="gemini/gemini-2.5-pro-exp-03-25",
+        api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
     )
