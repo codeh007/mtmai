@@ -1,6 +1,9 @@
+from typing import Any
+
 import pyotp
 from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
+from pydantic import BaseModel
 
 from mtmai.core.config import settings
 from mtmai.mtlibs.instagrapi import Client
@@ -156,10 +159,7 @@ def instagram_account_info(tool_context: ToolContext):
     ig_client = _get_ig_client(tool_context)
     try:
         user_info = ig_client.account_info()
-        return {
-            "success": True,
-            "result": jsonable_encoder(user_info.model_dump()),
-        }
+        return tool_success(user_info)
     except Exception as e:
         # debug_traceback(e)
         # return {
@@ -176,3 +176,26 @@ def _get_ig_client(tool_context: ToolContext):
     if tool_context.state.get("ig_settings"):
         ig_client.set_settings(tool_context.state["ig_settings"])
     return ig_client
+
+
+def tool_success(
+    data: dict[str, Any] | str | BaseModel | None, tool_context: ToolContext
+):
+    if data is None:
+        return {
+            "success": False,
+        }
+    if isinstance(data, BaseModel):
+        return {
+            "success": True,
+            "result": jsonable_encoder(data.model_dump()),
+        }
+    if isinstance(data, str):
+        return {
+            "success": True,
+            "result": data,
+        }
+    return {
+        "success": True,
+        "result": data,
+    }
