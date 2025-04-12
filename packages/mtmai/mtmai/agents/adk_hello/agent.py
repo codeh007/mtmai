@@ -23,7 +23,6 @@ root_agent = Agent(
 重要:
     你有多个合作伙伴,可以帮你分担特定方面的任务,你应该善于安排合适的任务给合作伙伴
     其中
-    - topic_writer_agent擅长生成主题
     - content_writer_agent擅长生成内容
     - instagram_agent擅长操作 instagram 账户
     你需要主动判断任务是否正确完成,如果任务完成,请主动告诉用户任务完成

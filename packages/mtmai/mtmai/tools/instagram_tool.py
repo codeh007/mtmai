@@ -5,7 +5,7 @@ from loguru import logger
 from mtmai.mtlibs.instagrapi import Client
 
 
-def instagram_login_tool(
+def instagram_login(
     username: str, password: str, otp_key: str, tool_context: ToolContext
 ):
     """
@@ -92,3 +92,17 @@ def instagram_write_post_tool(post_content: str):
     ig_client = Client()
     ig_client.post_to_instagram(post_content)
     return "instagram post success"
+
+
+def instagram_user_info_tool(user_id: str, tool_context: ToolContext):
+    """
+    获取 instagram 当前用户信息.
+    Args:
+        user_id (str): The instagram user id.
+        tool_context: ToolContext object.
+    Returns:
+        string: The instagram login result.
+    """
+    ig_client = Client()
+    user_info = ig_client.user_info(user_id)
+    return user_info
