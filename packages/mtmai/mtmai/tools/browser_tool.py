@@ -1,17 +1,18 @@
 from browser_use import Agent as BrowserUserAgent
-from browser_use import Browser, BrowserConfig, BrowserContextConfig, Controller
+from browser_use import (Browser, BrowserConfig, BrowserContextConfig,
+                         Controller)
 from browser_use.agent.views import AgentHistoryList
 from browser_use.browser.context import BrowserContext, BrowserContextConfig
 from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
-from mtmai.core.config import settings
-from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from playwright._impl._api_structures import ProxySettings
 from playwright.async_api import Route
 from pydantic import SecretStr
-from undetected_playwright import Malenia
+
+from mtmai.core.config import settings
+from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 
 
 def proxy_url_to_proxy_setting(proxy_url: str) -> ProxySettings:
@@ -54,14 +55,25 @@ async def get_default_browser_config():
             # browser_binary_path=chrome_dir,
             disable_security=True,
             _force_keep_browser_alive=True,
-            new_context_config=BrowserContextConfig(
-                _force_keep_context_alive=True,
-                disable_security=False,
-            ),
+            # new_context_config=BrowserContextConfig(
+            #     _force_keep_context_alive=True,
+            #     disable_security=False,
+            # ),
         )
     )
 
+    # browser = Browser(
+    #     config=BrowserConfig(
+    #         headless=False,
+    #         cdp_url="http://localhost:9222",
+    #     )
+    # )
+
     return browser
+
+
+class MtBrowserContext(BrowserContext):
+    pass
 
 
 async def create_browser_context():
@@ -69,14 +81,16 @@ async def create_browser_context():
     # 参考: https://github.com/QIN2DIM/undetected-playwright?tab=readme-ov-file
     browser = await get_default_browser_config()
 
-    browser_context = BrowserContext(
+    browser_context = MtBrowserContext(
         config=BrowserContextConfig(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
         ),
         browser=browser,
     )
-    await Malenia.apply_stealth(browser_context)
+    from undetected_playwright import Malenia
 
+    playwright_session = await browser_context.get_session()
+    await Malenia.apply_stealth(playwright_session.context)
     return browser_context
 
 
