@@ -7,9 +7,9 @@ from google.adk.tools.load_artifacts_tool import load_artifacts_tool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 from loguru import logger
-from mtmai.mtlibs.selenium_utils import get_selenium_driver
 from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
 from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results import prompt
+from mtmai.mtlibs.selenium_utils import get_selenium_driver
 from PIL import Image
 from selenium.webdriver.common.by import By
 
@@ -186,8 +186,8 @@ def analyze_webpage_and_determine_action(
 def new_search_results_agent():
     search_results_agent = Agent(
         model=constants.MODEL,
-        # name="search_results_agent",
-        name="browser_agent",
+        name="search_results_agent",
+        # name="browser_agent",
         description="Get top 3 search results info for a keyword using web browsing",
         instruction=prompt.SEARCH_RESULT_AGENT_PROMPT,
         tools=[

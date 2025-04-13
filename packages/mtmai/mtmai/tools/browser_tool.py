@@ -1,36 +1,26 @@
-import urllib.request
-from gettext import pgettext
-
+from browser_use import Agent as BrowserUserAgent
 from browser_use import Browser, BrowserConfig
 from google.adk.tools import ToolContext
-from mtmai.mtlibs.selenium_utils import get_chrome_path
-from pydantic import BaseModel, Field
+from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
+from mtmai.core.config import settings
+from mtmai.mtlibs.adk_utils.adk_utils import tool_success
+from pydantic import SecretStr
 
 
 def get_default_browser_config():
-    chrome_dir = get_chrome_path()
     browser = Browser(
         config=BrowserConfig(
             # headless=config.headless,
             headless=False,
             # browser_binary_path=config.chrome_path,
-            browser_binary_path=chrome_dir,
+            # browser_binary_path=chrome_dir,
         )
     )
     return browser
 
 
-class BrowserUseInput(BaseModel):
-    """Input for WriteFileTool."""
-
-    instruction: str = Field(..., description="The instruction to use browser")
-    #
-
-
-
-
-def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, str]:
+async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, str]:
     """基于 browser use 的浏览器自动化工具, 可以根据任务的描述,自动完成多个步骤的浏览器操作,并最终返回操作的结果.
 
     Args:
@@ -41,11 +31,19 @@ def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, str]:
         操作的最终结果
     """
     logger.info(f"browser_use_tool: {task}")
-    opener = urllib.request.build_opener()
-    opener.addheaders = [("User-Agent", "Mozilla/5.0")]
-    urllib.request.install_opener(opener)
 
-    tool_context.state.update({"page_contents": pgettext})
+    browser = get_default_browser_config()
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.0-flash-exp",
+        api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
+    )
+    browser_user_agent = BrowserUserAgent(
+        task=task,
+        llm=llm,
+        use_vision=False,
+        browser=browser,
+        max_actions_per_step=4,
+    )
 
-    # tool_context.save_artifact(filename="page_contents.txt", artifact=page_text)
-    return {"status": "OK"}
+    result = await browser_user_agent.run(max_steps=25)
+    return tool_success(result)

@@ -1,15 +1,9 @@
 from google.adk.agents import Agent
 from google.adk.agents.invocation_context import InvocationContext
 from loguru import logger
-from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results.agent import (
-    new_search_results_agent,
-)
-from mtmai.agents.sub_agents.content_writer_agent import (
-    new_content_writer_agent,
-)
-from mtmai.agents.sub_agents.instagram_agent.instagram_agent import (
-    new_instagram_agent,
-)
+from mtmai.agents.browser.agent import create_browser_agent
+from mtmai.agents.sub_agents.content_writer_agent import new_content_writer_agent
+from mtmai.agents.sub_agents.instagram_agent.instagram_agent import new_instagram_agent
 from mtmai.model_client.utils import get_default_litellm_model
 
 
@@ -27,7 +21,8 @@ def get_agent_by_name(name: str) -> Agent:
     elif name == "content_writer_agent":
         return new_content_writer_agent()
     elif name == "browser_agent":
-        return new_search_results_agent()
+        # return new_search_results_agent()
+        return create_browser_agent()
     else:
         raise ValueError(f"agent {name} not found")
 
