@@ -7,7 +7,7 @@ from google.adk.tools.load_artifacts_tool import load_artifacts_tool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 from loguru import logger
-from mtlibs.browser_util import get_selenium_driver
+from mtmai.mtlibs.selenium_utils import get_selenium_driver
 from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
 from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results import prompt
 from PIL import Image

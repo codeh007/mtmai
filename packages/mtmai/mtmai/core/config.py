@@ -229,5 +229,9 @@ class Settings(BaseSettings):
 
     default_proxy_url: str = "http://127.0.0.1:10809"
 
+    @property
+    def SESSION_DB_URL(self) -> str:
+        return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
+
 
 settings = Settings()  # type: ignore

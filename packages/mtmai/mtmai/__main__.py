@@ -1,4 +1,3 @@
-import asyncio
 import os
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -10,6 +9,7 @@ from fastapi import FastAPI
 from loguru import logger
 
 import mtmai.core.bootstraps as bootstraps
+from mtmai.core.config import settings
 
 bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
@@ -34,34 +34,34 @@ def run():
     # asyncio.run(run_worker())
 
 
-@app.command()
-def host():
-    asyncio.run(_run_ag_grpc_host())
+# @app.command()
+# def host():
+#     asyncio.run(_run_ag_grpc_host())
 
 
-async def _run_ag_grpc_host():
-    import asyncio
-    import platform
+# async def _run_ag_grpc_host():
+#     import asyncio
+#     import platform
 
-    from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
+#     from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
 
-    host = GrpcWorkerAgentRuntimeHost(address="localhost:7071")
-    host.start()  # Start a host service in the background.
-    if platform.system() == "Windows":
-        try:
-            while True:
-                await asyncio.sleep(1)
-        except KeyboardInterrupt:
-            await host.stop()
-    else:
-        await host.stop_when_signal()
+#     host = GrpcWorkerAgentRuntimeHost(address="localhost:7071")
+#     host.start()  # Start a host service in the background.
+#     if platform.system() == "Windows":
+#         try:
+#             while True:
+#                 await asyncio.sleep(1)
+#         except KeyboardInterrupt:
+#             await host.stop()
+#     else:
+#         await host.stop_when_signal()
 
 
-@app.command()
-def test_model_client():
-    from mtmai.model_client.model_client import test_model_client2
+# @app.command()
+# def test_model_client():
+#     from mtmai.model_client.model_client import test_model_client2
 
-    asyncio.run(test_model_client2(os.environ.get("OPENAI_API_KEY")))
+#     asyncio.run(test_model_client2(os.environ.get("OPENAI_API_KEY")))
 
 
 @app.command()
@@ -151,6 +151,7 @@ def web(
     # from google.adk.cli.fast_api import get_fast_api_app
     from mtmai.api.adk_fast_api import get_fast_api_app
 
+    session_db_url = settings.SESSION_DB_URL
     app = get_fast_api_app(
         agent_dir=agents_dir,
         session_db_url=session_db_url,
