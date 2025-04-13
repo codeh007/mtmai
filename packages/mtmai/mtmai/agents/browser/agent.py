@@ -4,7 +4,7 @@ from textwrap import dedent
 
 from google.adk.agents import Agent
 from mtmai.model_client.utils import get_default_litellm_model
-from mtmai.tools.browser_tool import browser_use_tool
+from mtmai.tools.browser_tool import browser_use_steal_tool, browser_use_tool
 
 
 # ============ Configuration Section ============
@@ -40,15 +40,18 @@ def create_browser_agent():
         description="网页浏览器操作助理,可以根据任务描述,自动浏览网页,获取网页内容,和模拟用户的操作,使用自主多步骤的流程,完成任务",
         instruction=dedent(
             """你是专业操作浏览器的助手,擅长根据用户的对话上下文调用工具完成用户的指定任务.
-重要:
+**重要**:
     - 工具是开源 browser use, 版本号是 v0.1.40, 你必须一次性通过自然语音的描述将完整的任务交代清楚,
     - browser use 本身是 ai agent 可以理解你的任务并且内部能智能规划通过多个步骤操作浏览器来完成你给出的任务.
     - browser use 在任务结束后给你返回任务的最终结果描述, 并且会将任务的相关状态保存. 你可以在下一轮对话中获取到任务的结果的详细描述以及关键状态数据
-    - 如果任务需要一些基本的资料, 你应该再任务描述中附带, 特别是 账号, 网址, 等等.
+    - 如果任务需要一些基本的资料, 应该在任务描述中附带. 特别是 账号, 网址, 等等.
     - 你需要完全明白浏览器所需的任务规划, 给出经过优化的步骤规划指引 browser use 操作
     - 你需要完全了解用户的意图以及任务涉及网站的相关特性
 
+工具指引:
+    browser_use_tool: 用于完成通用浏览器操作任务
+    browser_use_steal_tool: 创建独立浏览器配置文件, 使用特定的 网络代理 和 浏览器指纹配置,防止账号间关联
 """
         ),
-        tools=[browser_use_tool],
+        tools=[browser_use_tool, browser_use_steal_tool],
     )
