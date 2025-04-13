@@ -1,5 +1,7 @@
 from browser_use import Agent as BrowserUserAgent
-from browser_use import Browser, BrowserConfig
+from browser_use import Browser, BrowserConfig, BrowserContextConfig
+from browser_use.agent.views import AgentHistoryList
+from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
@@ -13,8 +15,15 @@ def get_default_browser_config():
         config=BrowserConfig(
             # headless=config.headless,
             headless=False,
+            # keep_alive=True,
             # browser_binary_path=config.chrome_path,
             # browser_binary_path=chrome_dir,
+            disable_security=True,
+            _force_keep_browser_alive=True,
+            new_context_config=BrowserContextConfig(
+                _force_keep_context_alive=True,
+                disable_security=False,
+            ),
         )
     )
     return browser
@@ -45,5 +54,10 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         max_actions_per_step=4,
     )
 
-    result = await browser_user_agent.run(max_steps=25)
-    return tool_success(result)
+    # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
+    #      其他有用信息保存到 state 即可
+    history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
+    tool_context.state.update({"browser_history": jsonable_encoder(history)})
+
+    final_result = history.final_result()
+    return tool_success(final_result)
