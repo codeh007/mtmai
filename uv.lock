@@ -1486,6 +1486,15 @@ wheels = [
 ]
 
 [[package]]
+name = "filetype"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/bb/29/745f7d30d47fe0f251d3ad3dc2978a23141917661998763bebb6da007eb1/filetype-1.2.0.tar.gz", hash = "sha256:66b56cd6474bf41d8c54660347d37afcc3f7d1970648de365c102ef77548aadb", size = 998020 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/79/1b8fa1bb3568781e84c9200f951c735f3f157429f44be0495da55894d620/filetype-1.2.0-py2.py3-none-any.whl", hash = "sha256:7ce71b6880181241cf7ac8697a2f1eb6a8bd9b429f7ad6d27b8db9ba5f1c2d25", size = 19970 },
+]
+
+[[package]]
 name = "fireworks-ai"
 version = "0.15.12"
 source = { registry = "https://pypi.org/simple" }
@@ -1657,6 +1666,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", marker = "extra == 'extensions'", specifier = ">=0.43.0" },
+    { name = "anthropic", marker = "extra == 'test'", specifier = ">=0.43.0" },
     { name = "authlib", specifier = ">=1.5.1" },
     { name = "autodoc-pydantic", marker = "extra == 'docs'" },
     { name = "beautifulsoup4", marker = "extra == 'extensions'", specifier = ">=3.2.2" },
@@ -1677,8 +1687,11 @@ requires-dist = [
     { name = "isort", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "langchain-community", marker = "extra == 'test'", specifier = ">=0.3.17" },
     { name = "langgraph", marker = "extra == 'extensions'", specifier = ">=0.2.60" },
+    { name = "langgraph", marker = "extra == 'test'", specifier = ">=0.2.60" },
     { name = "litellm", marker = "extra == 'extensions'", specifier = ">=1.63.11" },
+    { name = "litellm", marker = "extra == 'test'", specifier = ">=1.63.11" },
     { name = "llama-index-readers-file", marker = "extra == 'extensions'", specifier = ">=0.4.0" },
+    { name = "llama-index-readers-file", marker = "extra == 'test'", specifier = ">=0.4.0" },
     { name = "lxml", marker = "extra == 'extensions'", specifier = ">=5.3.0" },
     { name = "mcp", marker = "python_full_version >= '3.10'", specifier = ">=1.5.0" },
     { name = "myst-parser", marker = "extra == 'docs'" },
@@ -1704,6 +1717,21 @@ requires-dist = [
     { name = "uvicorn", specifier = ">=0.34.0" },
 ]
 provides-extras = ["dev", "docs", "eval", "extensions", "test"]
+
+[[package]]
+name = "google-ai-generativelanguage"
+version = "0.6.17"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/aa/809e7de6af007e36d456d9a5361250bc906a3f3a6dfc9babebb0de146641/google_ai_generativelanguage-0.6.17.tar.gz", hash = "sha256:8439503503aba6c85b3871504f490bbc66be854031d8bb4d5ac95d3ca2173f38", size = 1423814 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e7/ae/1c1553aea9209db84ed8c0b2f8d2dd3feb146290fdae5988b54ee71b5c9d/google_ai_generativelanguage-0.6.17-py3-none-any.whl", hash = "sha256:1aedc8df9bf27c9b6b7e0a70944a29a3db2e7a34bfc0cc8e0ca54a84d361a8a1", size = 1356577 },
+]
 
 [[package]]
 name = "google-api-core"
@@ -2752,6 +2780,21 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-google-genai"
+version = "2.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "filetype" },
+    { name = "google-ai-generativelanguage" },
+    { name = "langchain-core" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e4/02/226a0953f894cd8db859838469535888054fa29afad8c1d62d0e31b49a1a/langchain_google_genai-2.1.1.tar.gz", hash = "sha256:da87977d1a72428b568ff3f65033af023a99edb244dddeb0a7842b40559355f6", size = 36827 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/2d/30c034260786bfd2c3fc553f4b01406dc28ecb684d9ddd1bd64be33ec1f1/langchain_google_genai-2.1.1-py3-none-any.whl", hash = "sha256:946cdd1bc008112a0aea8066274fc1e273a3b8b3b4325badec2dbd4b467eadfc", size = 40814 },
+]
+
+[[package]]
 name = "langchain-google-vertexai"
 version = "2.0.16"
 source = { registry = "https://pypi.org/simple" }
@@ -3434,6 +3477,7 @@ dependencies = [
     { name = "langchain-anthropic" },
     { name = "langchain-community" },
     { name = "langchain-core" },
+    { name = "langchain-google-genai" },
     { name = "langchain-nvidia-ai-endpoints" },
     { name = "langchain-ollama" },
     { name = "langchain-openai" },
@@ -3557,6 +3601,7 @@ requires-dist = [
     { name = "langchain-anthropic", specifier = "==0.3.3" },
     { name = "langchain-community", specifier = ">=0.3.19" },
     { name = "langchain-core", specifier = ">=0.3.47" },
+    { name = "langchain-google-genai", specifier = ">=2.1.1" },
     { name = "langchain-nvidia-ai-endpoints", specifier = ">=0.3.9" },
     { name = "langchain-ollama", specifier = "==0.2.2" },
     { name = "langchain-ollama", specifier = ">=0.1.3" },

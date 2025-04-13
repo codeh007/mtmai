@@ -1,9 +1,7 @@
-"""Defines keyword finding agent."""
-
 from google.adk.agents.llm_agent import Agent
-from mtmai.agents.brand_search_optimization.shared_libraries import constants
-from mtmai.agents.brand_search_optimization.sub_agents.keyword_finding import prompt
-from mtmai.agents.brand_search_optimization.tools import bq_connector
+from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
+from mtmai.agents.adk_brand_search_optimization.sub_agents.keyword_finding import prompt
+from mtmai.tools import bq_connector
 
 
 def new_keyword_finding_agent():

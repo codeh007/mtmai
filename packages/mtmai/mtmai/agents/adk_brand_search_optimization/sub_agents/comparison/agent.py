@@ -1,6 +1,6 @@
 from google.adk.agents.llm_agent import Agent
-from mtmai.agents.brand_search_optimization.shared_libraries import constants
-from mtmai.agents.brand_search_optimization.sub_agents.comparison import prompt
+from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
+from mtmai.agents.adk_brand_search_optimization.sub_agents.comparison import prompt
 
 
 def new_comparison_root_agent():

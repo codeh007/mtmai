@@ -130,6 +130,7 @@ dependencies = [
     "diff-match-patch>=20241021",
     "absl-py>=2.2.2",
     "pdfplumber>=0.11.6",
+    "langchain-google-genai>=2.1.1",
 ]
 
 
