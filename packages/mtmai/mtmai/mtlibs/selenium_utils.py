@@ -8,14 +8,14 @@ import os
 import subprocess
 import time
 from pathlib import Path
-import os
+
+import selenium
+from loguru import logger
+from selenium.webdriver.chrome.options import Options
 
 from mtmai.core.config import settings
-from mtmai.core.logging import get_logger
 from mtmai.mtlibs.httpUtils import download_file
 from mtmai.mtlibs.mtutils import is_in_gitpod
-
-logger = get_logger()
 
 selenium_server_jar_bin = str(
     Path(settings.storage_dir).joinpath("seleniumselenium-server.jar")
@@ -205,7 +205,6 @@ async def start_selenium_server():
         # "SE_OPTS": "--log-level INFO"
     }
 
-
     selenium_command = [
         "java",
         "-jar",
@@ -258,3 +257,93 @@ def test_selenium():
     else:
         logger.error("Failed to start Selenium")
         return False
+
+
+def get_chrome_path():
+    # 方法1: 使用 find 命令查找
+    try:
+        result = subprocess.run(
+            [
+                "find",
+                "/home/gitpod/.cache/ms-playwright",
+                "-name",
+                "chrome",
+                "-type",
+                "f",
+                "-executable",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            paths = result.stdout.strip().split("\n")
+            # 优先选择 chrome-linux 目录下的 chrome
+            for path in paths:
+                if "chrome-linux" in path:
+                    return path
+            # 如果没有找到 chrome-linux 目录下的，返回第一个
+            if paths:
+                return paths[0]
+    except Exception:
+        pass
+
+    # 方法2: 根据日志中的路径模式直接构建路径
+    try:
+        home_dir = str(Path.home())
+        playwright_dir = os.path.join(home_dir, ".cache", "ms-playwright")
+
+        if not os.path.exists(playwright_dir):
+            return None
+
+        # 查找最新版本的 Chromium
+        latest_version = None
+        latest_version_num = 0
+
+        for entry in os.listdir(playwright_dir):
+            if entry.startswith("chromium-"):
+                try:
+                    version_num = int(entry.replace("chromium-", ""))
+                    if version_num > latest_version_num:
+                        latest_version_num = version_num
+                        latest_version = entry
+                except ValueError:
+                    continue
+
+        if latest_version:
+            chrome_path = os.path.join(
+                playwright_dir, latest_version, "chrome-linux", "chrome"
+            )
+            if os.path.exists(chrome_path):
+                return chrome_path
+
+    except Exception:
+        pass
+
+    return None
+
+
+driver = None
+
+
+def get_selenium_driver():
+    os.environ["DISPLAY"] = ":1"
+
+    global driver
+    if driver is None:
+        chrome_dir = get_chrome_path()
+        if not chrome_dir:
+            raise ValueError("cant find chrome dir")
+        options = Options()
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--verbose")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+        # options.binary_location = chrome_dir
+        options.binary_location = chrome_dir
+
+        driver = selenium.webdriver.Chrome(options=options)
+    return driver
