@@ -1,6 +1,5 @@
 from google.adk.agents import Agent
 from google.adk.agents.invocation_context import InvocationContext
-from google.adk.tools.agent_tool import AgentTool
 from loguru import logger
 from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results.agent import (
     new_search_results_agent,
@@ -8,19 +7,15 @@ from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results.agent 
 from mtmai.agents.sub_agents.content_writer_agent import (
     new_content_writer_agent,
 )
-from mtmai.agents.sub_agents.extract_page_data_agent import (
-    ExtractPageDataAgent,
-)
 from mtmai.agents.sub_agents.instagram_agent.instagram_agent import (
     new_instagram_agent,
 )
 from mtmai.model_client.utils import get_default_litellm_model
-from mtmai.tools.fetch_page import fetch_page_tool
 
 
 def before_agent_callback(callback_context: InvocationContext):
     logger.info("before_agent_callback ")
-    # return state
+
     return None
 
 
@@ -61,8 +56,7 @@ root_agent = Agent(
         # 进而后续的对话上下文中正确保存了所需的关键信息,同时又保留对话上下文的整洁
         # 而 html 源码保留在state 中, 可以后续根据具体需要二次用 ExtractPageDataAgent 再次提取
         # 更进一步,可以考虑使用 长期记忆(memory) + artifact 实现更加高级的功能.
-        fetch_page_tool,
-        AgentTool(ExtractPageDataAgent),
+        # fetch_page_tool,
+        # AgentTool(ExtractPageDataAgent),
     ],
-)
 )

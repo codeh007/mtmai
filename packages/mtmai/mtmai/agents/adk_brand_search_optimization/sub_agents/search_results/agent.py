@@ -6,6 +6,7 @@ from google.adk.agents.llm_agent import Agent
 from google.adk.tools.load_artifacts_tool import load_artifacts_tool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
+from loguru import logger
 from mtmai.agents.adk_brand_search_optimization.shared_libraries import constants
 from mtmai.agents.adk_brand_search_optimization.sub_agents.search_results import prompt
 from PIL import Image
@@ -14,19 +15,25 @@ from selenium.webdriver.common.by import By
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-if not constants.DISABLE_WEB_DRIVER:
-    options = Options()
-    options.add_argument("--window-size=1920x1080")
-    options.add_argument("--verbose")
-    options.add_argument("user-data-dir=/tmp/selenium")
+driver = None
 
-    driver = selenium.webdriver.Chrome(options=options)
+
+def get_driver():
+    global driver
+    if driver is None:
+        options = Options()
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--verbose")
+        options.add_argument("user-data-dir=/tmp/selenium")
+
+        driver = selenium.webdriver.Chrome(options=options)
+    return driver
 
 
 def go_to_url(url: str) -> str:
     """Navigates the browser to the given URL."""
-    print(f"🌐 Navigating to URL: {url}")  # Added print statement
-    driver.get(url.strip())
+    logger.info(f"🌐 Navigating to URL: {url}")  # Added print statement
+    get_driver().get(url.strip())
     return f"Navigated to URL: {url}"
 
 
@@ -34,8 +41,8 @@ def take_screenshot(tool_context: ToolContext) -> dict:
     """Takes a screenshot and saves it with the given filename. called 'load artifacts' after to load the image"""
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     filename = f"screenshot_{timestamp}.png"
-    print(f"📸 Taking screenshot and saving as: {filename}")
-    driver.save_screenshot(filename)
+    logger.info(f"📸 Taking screenshot and saving as: {filename}")
+    get_driver().save_screenshot(filename)
 
     image = Image.open(filename)
 
@@ -49,8 +56,8 @@ def take_screenshot(tool_context: ToolContext) -> dict:
 
 def click_at_coordinates(x: int, y: int) -> str:
     """Clicks at the specified coordinates on the screen."""
-    driver.execute_script(f"window.scrollTo({x}, {y});")
-    driver.find_element(By.TAG_NAME, "body").click()
+    get_driver().execute_script(f"window.scrollTo({x}, {y});")
+    get_driver().find_element(By.TAG_NAME, "body").click()
 
 
 def find_element_with_text(text: str) -> str:
@@ -58,7 +65,7 @@ def find_element_with_text(text: str) -> str:
     print(f"🔍 Finding element with text: '{text}'")  # Added print statement
 
     try:
-        element = driver.find_element(By.XPATH, f"//*[text()='{text}']")
+        element = get_driver().find_element(By.XPATH, f"//*[text()='{text}']")
         if element:
             return "Element found."
         else:
@@ -74,7 +81,7 @@ def click_element_with_text(text: str) -> str:
     print(f"🖱️ Clicking element with text: '{text}'")  # Added print statement
 
     try:
-        element = driver.find_element(By.XPATH, f"//*[text()='{text}']")
+        element = get_driver().find_element(By.XPATH, f"//*[text()='{text}']")
         element.click()
         return f"Clicked element with text: {text}"
     except selenium.common.exceptions.NoSuchElementException:
@@ -92,7 +99,7 @@ def enter_text_into_element(text_to_enter: str, element_id: str) -> str:
     )  # Added print statement
 
     try:
-        input_element = driver.find_element(By.ID, element_id)
+        input_element = get_driver().find_element(By.ID, element_id)
         input_element.send_keys(text_to_enter)
         return f"Entered text '{text_to_enter}' into element with ID: {element_id}"
     except selenium.common.exceptions.NoSuchElementException:
@@ -104,7 +111,7 @@ def enter_text_into_element(text_to_enter: str, element_id: str) -> str:
 def scroll_down_screen() -> str:
     """Scrolls down the screen by a moderate amount."""
     print("⬇️ scroll the screen")  # Added print statement
-    driver.execute_script("window.scrollBy(0, 500)")
+    get_driver().execute_script("window.scrollBy(0, 500)")
     return "Scrolled down the screen."
 
 
@@ -112,7 +119,7 @@ def get_page_source() -> str:
     LIMIT = 1000000
     """Returns the current page source."""
     print("📄 Getting page source...")  # Added print statement
-    return driver.page_source[0:LIMIT]
+    return get_driver().page_source[0:LIMIT]
 
 
 def analyze_webpage_and_determine_action(
@@ -170,7 +177,8 @@ def analyze_webpage_and_determine_action(
 def new_search_results_agent():
     search_results_agent = Agent(
         model=constants.MODEL,
-        name="search_results_agent",
+        # name="search_results_agent",
+        name="browser_agent",
         description="Get top 3 search results info for a keyword using web browsing",
         instruction=prompt.SEARCH_RESULT_AGENT_PROMPT,
         tools=[
