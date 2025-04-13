@@ -8,6 +8,7 @@ from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from playwright._impl._api_structures import ProxySettings
+from playwright.async_api import Browser as PlaywrightBrowser
 from playwright.async_api import Route
 from pydantic import SecretStr
 
@@ -53,7 +54,7 @@ async def get_default_browser_config():
             headless=False,
             proxy=proxy_url_to_proxy_setting(settings.default_proxy_url),
             # browser_binary_path=chrome_dir,
-            disable_security=True,
+            disable_security=False,
             _force_keep_browser_alive=True,
             # new_context_config=BrowserContextConfig(
             #     _force_keep_context_alive=True,
@@ -72,8 +73,45 @@ async def get_default_browser_config():
     return browser
 
 
+undetect_script = """
+console.log("设置额外的 反检测脚本");
+navigator.webdriver = false;
+window.__pwInitScripts=undefined;
+navigator.userAgentData = {
+    "brands": [
+        {
+            "brand": "Google Chrome",
+            "version": "135"
+        },
+        {
+            "brand": "Not-A.Brand",
+            "version": "8"
+        },
+        {
+            "brand": "Chromium",
+            "version": "135"
+        }
+    ],
+    "mobile": false,
+    "platform": "Windows"
+}
+
+console.log("设置额外的 反检测脚本结束");
+
+"""
+
+
 class MtBrowserContext(BrowserContext):
-    pass
+    async def _create_context(self, browser: PlaywrightBrowser):
+        playwright_context = await super()._create_context(browser)
+        from undetected_playwright import Malenia
+
+        await Malenia.apply_stealth(playwright_context)
+
+        # 额外的反检测脚本
+        await playwright_context.add_init_script(undetect_script)
+
+        return playwright_context
 
 
 async def create_browser_context():
@@ -83,14 +121,14 @@ async def create_browser_context():
 
     browser_context = MtBrowserContext(
         config=BrowserContextConfig(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+            disable_security=False,  # 如果禁用了 csp, 一般会被识别为机器人
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
         ),
         browser=browser,
     )
-    from undetected_playwright import Malenia
 
-    playwright_session = await browser_context.get_session()
-    await Malenia.apply_stealth(playwright_session.context)
+    # playwright_session = await browser_context.get_session()
+    # await Malenia.apply_stealth(playwright_session.context)
     return browser_context
 
 
@@ -187,4 +225,5 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
     )
 
     final_result = steal_history.final_result()
+    return tool_success(final_result)
     return tool_success(final_result)
