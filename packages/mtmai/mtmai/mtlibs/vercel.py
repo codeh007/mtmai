@@ -1,8 +1,4 @@
-import logging
-
 from mtmai.mtlibs.utils import bash
-
-logger = logging.getLogger()
 
 
 def deploy_vercel(
@@ -15,7 +11,6 @@ def deploy_vercel(
     vercel_token: str,
     deploy_to_vercel: bool = False,
 ):
-    logger.info("deploy_verce %s, %s", project_dir, project_name)
     if not mtutils.command_exists("vercel"):
         bash("npm install -g vercel@latest")
     bash(

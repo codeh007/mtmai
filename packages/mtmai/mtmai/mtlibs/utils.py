@@ -2,12 +2,13 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar, cast
 
-# import emails
 import jwt
+from google.protobuf.message import Message
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
+from pydantic import BaseModel
 
 from mtmai.core.config import settings
 
@@ -141,3 +142,27 @@ def verify_password_reset_token(token: str) -> str | None:
         return str(decoded_token["sub"])
     except InvalidTokenError:
         return None
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def is_basemodel_subclass(model: Any) -> bool:
+    try:
+        return issubclass(model, BaseModel)
+    except TypeError:
+        return False
+
+
+def get_type_name(cls: type[Any] | Any) -> str:
+    # If cls is a protobuf, then we need to determine the descriptor
+    if isinstance(cls, type):
+        if issubclass(cls, Message):
+            return cast(str, cls.DESCRIPTOR.full_name)
+    elif isinstance(cls, Message):
+        return cast(str, cls.DESCRIPTOR.full_name)
+
+    if isinstance(cls, type):
+        return cls.__name__
+    else:
+        return cast(str, cls.__class__.__name__)

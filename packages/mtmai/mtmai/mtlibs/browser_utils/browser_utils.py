@@ -19,8 +19,6 @@ def proxy_url_to_proxy_setting(proxy_url: str) -> ProxySettings:
 
     parsed = urlparse(proxy_url)
     settings = ProxySettings()
-
-    # Build server string
     server = f"{parsed.hostname}:{parsed.port}"
     settings["server"] = server
 
