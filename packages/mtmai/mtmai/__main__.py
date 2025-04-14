@@ -15,6 +15,9 @@ bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
 
 
+os.environ["DISPLAY"] = ":1"
+
+
 @app.callback()
 def main(ctx: typer.Context):
     # 如果没有指定子命令，默认执行 serve 命令

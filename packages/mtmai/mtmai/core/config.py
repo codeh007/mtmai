@@ -235,5 +235,9 @@ class Settings(BaseSettings):
 
     default_proxy_url: str = "http://127.0.0.1:10809"
 
+    @property
+    def BROWSER_DEBUG_PORT(self) -> int:
+        return os.environ.get("BROWSER_DEBUG_PORT", 19222)
+
 
 settings = Settings()  # type: ignore

@@ -5,8 +5,8 @@ from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from mtmai.core.config import settings
+from mtmai.crawl4ai import BrowserConfig
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
-from mtmai.mtlibs.browser_utils.browser_config import MtBrowserConfig
 from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
 from pydantic import SecretStr
 
@@ -24,7 +24,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
     """
     logger.info(f"browser_use_tool: {task}")
     browser_manager = MtBrowserManager(
-        browser_config=MtBrowserConfig(
+        browser_config=BrowserConfig(
             browser_type="chromium",
             headless=False,
             debugging_port=19222,
@@ -76,48 +76,44 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
         操作的最终结果
     """
 
-    browser_manager = MtBrowserManager(
-        browser_config=MtBrowserConfig(
-            browser_type="chromium",
-            headless=False,
-            debugging_port=19222,
-            use_managed_browser=True,
+    config = BrowserConfig(
+        browser_type="chromium",
+        headless=False,
+        debugging_port=settings.BROWSER_DEBUG_PORT,
+        use_managed_browser=True,
+    )
+    async with MtBrowserManager(config=config) as browser_manager:
+        browser_context = await browser_manager.create_browser_use_context()
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash-exp",
+            api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
         )
-    )
-    await browser_manager.start()
-    browser_context = await browser_manager.create_browser_use_context()
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-exp",
-        api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
-    )
 
-    steal_agent = BrowserUserAgent(
-        task="""
-            访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
-        """,
-        llm=llm,
-        browser_context=browser_context,
-    )
-    # steal_agent = BrowserUserAgent(
-    #     task="""
-    #         访问: https://bot.sannysoft.com/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
-    #     """,
-    #     llm=llm,
-    #     browser_context=browser_context,
-    # )
+        steal_agent = BrowserUserAgent(
+            task="""
+                访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
+            """,
+            llm=llm,
+            browser_context=browser_context,
+        )
+        # steal_agent = BrowserUserAgent(
+        #     task="""
+        #         访问: https://bot.sannysoft.com/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
+        #     """,
+        #     llm=llm,
+        #     browser_context=browser_context,
+        # )
 
-    steal_history = await steal_agent.run(max_steps=3)
+        steal_history = await steal_agent.run(max_steps=3)
+        tool_context.state.update(
+            {
+                "browser_config": jsonable_encoder(
+                    {
+                        "hello": "value",
+                    }
+                )
+            }
+        )
 
-    # history: AgentHistoryList = await steal_agent.run(max_steps=25)
-    tool_context.state.update(
-        {
-            "browser_config": jsonable_encoder(
-                {
-                    "hello": "value",
-                }
-            )
-        }
-    )
-
-    final_result = steal_history.final_result()
-    return tool_success(final_result)
+        final_result = steal_history.final_result()
+        return tool_success(final_result)
