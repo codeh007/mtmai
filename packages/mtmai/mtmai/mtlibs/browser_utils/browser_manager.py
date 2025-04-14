@@ -6,31 +6,17 @@ from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig as BrowseruseBrowserConfig
 from browser_use import BrowserContextConfig
 from browser_use.browser.context import BrowserContext
-from crawl4ai.async_crawler_strategy import (
-    AsyncCrawlerStrategy,
-    AsyncPlaywrightCrawlerStrategy,
-)
-from crawl4ai.async_logger import AsyncLoggerBase
-
-# from crawl4ai.browser_manager import BrowserManager
+from crawl4ai.async_configs import BrowserConfig
+from crawl4ai.async_crawler_strategy import AsyncCrawlerStrategy
+from crawl4ai.async_webcrawler import AsyncWebCrawler
+from crawl4ai.types import AsyncLoggerBase
 from loguru import logger
-from mtmai.crawl4ai.async_configs import BrowserConfig
-from mtmai.crawl4ai.async_webcrawler import AsyncWebCrawler
-
-# from mtmai.mtlibs.browser_utils.browser_manager import BrowserManager
 from playwright.async_api import Browser as PlaywrightBrowser
 from playwright.async_api import Page
 
 
 class MtBrowserConfig(BrowseruseBrowserConfig):
     pass
-
-
-async def load_undetect_script():
-    undetect_script = open(
-        "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js", "r"
-    ).read()
-    return undetect_script
 
 
 class MtBrowserContext(BrowserContext):
@@ -41,6 +27,13 @@ class MtBrowserContext(BrowserContext):
         # await Malenia.apply_stealth(playwright_context)
 
         # 额外的反检测脚本
+        async def load_undetect_script():
+            undetect_script = open(
+                "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js",
+                "r",
+            ).read()
+            return undetect_script
+
         await playwright_context.add_init_script(await load_undetect_script())
         playwright_context.on(
             "page",
@@ -78,6 +71,8 @@ class MtBrowserManager(AsyncWebCrawler):
             logger=logger,
         )
         # browser use 的浏览器配置,共享 crawl4ai 的浏览器配置
+        from crawl4ai.async_crawler_strategy import AsyncPlaywrightCrawlerStrategy
+
         crawler_strategy = cast(AsyncPlaywrightCrawlerStrategy, self.crawler_strategy)
         config = crawler_strategy.browser_manager.config
         self.browseruse_browser = BrowserUseBrowser(

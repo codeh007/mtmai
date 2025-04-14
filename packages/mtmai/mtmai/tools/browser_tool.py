@@ -1,13 +1,12 @@
 from browser_use import Agent as BrowserUserAgent
 from browser_use.agent.views import AgentHistoryList
+from crawl4ai.async_configs import BrowserConfig
 from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from mtmai.core.config import settings
-from mtmai.crawl4ai import BrowserConfig
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
-from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
 from pydantic import SecretStr
 
 
@@ -23,9 +22,14 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         操作的最终结果
     """
     logger.info(f"browser_use_tool: {task}")
+    from crawl4ai.async_configs import BrowserConfig
+    from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
+
     browser_manager = MtBrowserManager(
         browser_config=BrowserConfig(
             browser_type="chromium",
+            chrome_channel="chrome",
+            channel="chrome",
             headless=False,
             debugging_port=19222,
             use_managed_browser=True,
@@ -75,6 +79,7 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
     Returns:
         操作的最终结果
     """
+    # from crawl4ai import BrowserConfig
 
     config = BrowserConfig(
         browser_type="chromium",
@@ -82,6 +87,8 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
         debugging_port=settings.BROWSER_DEBUG_PORT,
         use_managed_browser=True,
     )
+    from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
+
     async with MtBrowserManager(config=config) as browser_manager:
         browser_context = await browser_manager.create_browser_use_context()
         llm = ChatGoogleGenerativeAI(

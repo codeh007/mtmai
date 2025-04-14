@@ -1,9 +1,8 @@
+from autogen_core import tool_agent
 from google.adk.agents import Agent
 from google.adk.agents.invocation_context import InvocationContext
 from loguru import logger
-from mtmai.agents.browser.agent import create_browser_agent
-from mtmai.agents.sub_agents.content_writer_agent import new_content_writer_agent
-from mtmai.agents.sub_agents.instagram_agent.instagram_agent import new_instagram_agent
+from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.model_client.utils import get_default_litellm_model
 
 
@@ -15,13 +14,23 @@ def before_agent_callback(callback_context: InvocationContext):
 
 def get_agent_by_name(name: str) -> Agent:
     if name == "webpage_summary_agent":
-        return root_agent
+        return tool_agent
     elif name == "instagram_agent":
+        from mtmai.agents.sub_agents.instagram_agent.instagram_agent import (
+            new_instagram_agent,
+        )
+
         return new_instagram_agent()
     elif name == "content_writer_agent":
+        from mtmai.agents.sub_agents.content_writer_agent import (
+            new_content_writer_agent,
+        )
+
         return new_content_writer_agent()
     elif name == "browser_agent":
         # return new_search_results_agent()
+        from mtmai.agents.browser.agent import create_browser_agent
+
         return create_browser_agent()
     else:
         raise ValueError(f"agent {name} not found")

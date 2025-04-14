@@ -4,7 +4,6 @@ from textwrap import dedent
 
 from google.adk.agents import Agent
 from mtmai.model_client.utils import get_default_litellm_model
-from mtmai.tools.browser_tool import browser_use_steal_tool, browser_use_tool
 
 
 # ============ Configuration Section ============
@@ -34,6 +33,8 @@ config = TwitterConfig(
 
 
 def create_browser_agent():
+    from mtmai.tools.browser_tool import browser_use_steal_tool, browser_use_tool
+
     return Agent(
         model=get_default_litellm_model(),
         name="web_browser_agent",
