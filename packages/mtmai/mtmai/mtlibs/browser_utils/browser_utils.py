@@ -44,6 +44,7 @@ async def get_default_browser_config():
             # browser_binary_path=chrome_dir,
             disable_security=False,
             _force_keep_browser_alive=True,
+            chrome_instance_path="/usr/bin/google-chrome", # 使用google 正式版,有利于反扒检测
             # new_context_config=BrowserContextConfig(
             #     _force_keep_context_alive=True,
             #     disable_security=False,

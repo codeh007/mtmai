@@ -6,7 +6,9 @@ import orjson
 from json_repair import repair_json
 from langchain_core.messages import AIMessage, ToolCall
 from langgraph.checkpoint.memory import MemorySaver
+
 memory = MemorySaver()
+
 
 async def call_model(
     prompt: list,
