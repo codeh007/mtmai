@@ -4,12 +4,10 @@ from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
+from mtlibs.browser_utils.browser_config import MtBrowserConfig
+from mtlibs.browser_utils.browser_manager import MtBrowserManager
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
-from mtmai.mtlibs.browser_utils.browser_utils import (
-    create_browser_context,
-    get_default_browser_config,
-)
 from pydantic import SecretStr
 
 
@@ -26,7 +24,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
     """
     logger.info(f"browser_use_tool: {task}")
 
-    browser = await get_default_browser_config()
+    # browser = await get_default_browser_config()
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash-exp",
         api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
@@ -69,8 +67,15 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
         操作的最终结果
     """
 
-
-    browser_context = await create_browser_context()
+    browser_manager = MtBrowserManager(
+        browser_config=MtBrowserConfig(
+            browser_type="chromium",
+            headless=False,
+            debugging_port=19222,
+        )
+    )
+    await browser_manager.start()
+    browser_context = await browser_manager.create_browser_use_context()
 
     # browser.playwright_browser.
     llm = ChatGoogleGenerativeAI(

@@ -1,10 +1,11 @@
 import os
 
-from browser_use import Browser, BrowserConfig, BrowserContextConfig
+from browser_use import Browser as BrowserUseBrowser
+from browser_use import BrowserConfig, BrowserContextConfig
 
 # from mtmai. import MtBrowserContext
 from browser_use.browser.context import BrowserContext
-from mtmai.crawl4ai.browser_manager import BrowserManager
+from mtmai.crawl4ai.browser_manager import BrowserManager, ManagedBrowser
 from mtmai.mtlibs.browser_utils.browser_config import MtBrowserConfig
 from playwright.async_api import Browser as PlaywrightBrowser
 
@@ -45,16 +46,27 @@ class MtBrowserManager(BrowserManager):
         os.environ["DISPLAY"] = ":1"
         await super().start()
 
-    async def create_browser_use_context():
+    async def create_browser_use_context(self):
         # 指纹
         # 参考: https://github.com/QIN2DIM/undetected-playwright?tab=readme-ov-file
 
         # browser = await get_default_browser_config()
 
-        browser = Browser(
+        # c=await self.browser.new_context()
+
+        managed_browser = ManagedBrowser(
+            browser_type="chromium",
+            headless=False,
+            debugging_port=19222,
+        )
+        cdp_url = await managed_browser.start()
+
+        browser = BrowserUseBrowser(
             config=BrowserConfig(
                 headless=False,
-                cdp_url="http://localhost:9222",
+                disable_security=False,
+                # cdp_url=f"http://{self.config.host}:{self.config.debugging_port}",
+                cdp_url=cdp_url,
             )
         )
 
