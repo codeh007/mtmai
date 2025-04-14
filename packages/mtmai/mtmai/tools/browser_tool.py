@@ -68,7 +68,7 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
     Returns:
         操作的最终结果
     """
-    # browser = get_default_browser_config()
+
 
     browser_context = await create_browser_context()
 
