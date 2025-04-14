@@ -3502,7 +3502,6 @@ dependencies = [
     { name = "passlib" },
     { name = "pdfplumber" },
     { name = "pgvector" },
-    { name = "playwright" },
     { name = "psycopg2-binary" },
     { name = "pycryptodomex" },
     { name = "pydantic" },
@@ -3561,7 +3560,6 @@ other-language-models = [
 screenshot-scraper = [
     { name = "ipywidgets" },
     { name = "matplotlib" },
-    { name = "pillow" },
 ]
 
 [package.metadata]
@@ -3628,7 +3626,6 @@ requires-dist = [
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "pdfplumber", specifier = ">=0.11.6" },
     { name = "pgvector", specifier = ">=0.3.6" },
-    { name = "playwright", specifier = ">=1.51.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pycryptodomex", specifier = ">=3.22.0" },
     { name = "pydantic", specifier = ">=2.10.5" },
@@ -3645,7 +3642,7 @@ requires-dist = [
     { name = "semchunk", specifier = ">=2.2.0" },
     { name = "simpleeval", specifier = ">=1.0.0" },
     { name = "slugify", specifier = ">=0.0.1" },
-    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.11.0" },
+    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.13.0" },
     { name = "sqlalchemy", specifier = ">=2.0.37" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
     { name = "structlog", specifier = ">=24.4.0" },
@@ -3684,7 +3681,6 @@ other-language-models = [
 screenshot-scraper = [
     { name = "ipywidgets", specifier = ">=8.1.0" },
     { name = "matplotlib", specifier = ">=3.7.2" },
-    { name = "pillow", specifier = ">=10.4.0" },
 ]
 
 [[package]]
@@ -5794,22 +5790,21 @@ wheels = [
 
 [[package]]
 name = "smolagents"
-version = "1.11.0"
+version = "1.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "duckduckgo-search" },
     { name = "huggingface-hub" },
     { name = "jinja2" },
     { name = "markdownify" },
-    { name = "pandas" },
     { name = "pillow" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cd/25/0557391bdac6ee0825f10c22f3d5011342f6bd9d8e95b4c3f4a7e28ae016/smolagents-1.11.0.tar.gz", hash = "sha256:d009779f37d893e04accd1167f7aff5fccbd73c83e842d76769678b9e57fa86f", size = 138516 }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/e7/ca6b45f15cd5228bbdcc2101f34235bbbb2bf16a60404554608b6c90e701/smolagents-1.13.0.tar.gz", hash = "sha256:42cd2835c143a8bd7063aa662e669a0791c1e0b0883931e386119742f0889f78", size = 147152 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/09/51dc413aca27d14f681d8f800ce845eeaa52203a5d649bb2f18896ec3dc7/smolagents-1.11.0-py3-none-any.whl", hash = "sha256:895711a90760b18b4229aa835dfddf11823457dcfdd0001c496423cad356326b", size = 105262 },
+    { url = "https://files.pythonhosted.org/packages/28/fe/f124306da2abf74568a6b41a195ea4529a33d313c173943665348d930027/smolagents-1.13.0-py3-none-any.whl", hash = "sha256:7c0cfcb126ee732781e8ed8ad650d3f8f968f018f64bd1a432f2ac4082950d8c", size = 108161 },
 ]
 
 [package.optional-dependencies]

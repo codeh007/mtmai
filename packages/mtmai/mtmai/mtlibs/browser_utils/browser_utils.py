@@ -1,3 +1,5 @@
+import os
+
 from browser_use import Browser, BrowserConfig, BrowserContextConfig, Controller
 from browser_use.browser.context import BrowserContext
 from mtmai.core.config import settings
@@ -44,11 +46,12 @@ async def get_default_browser_config():
             # browser_binary_path=chrome_dir,
             disable_security=False,
             _force_keep_browser_alive=True,
-            chrome_instance_path="/usr/bin/google-chrome", # 使用google 正式版,有利于反扒检测
+            chrome_instance_path="/usr/bin/google-chrome",  # 使用google 正式版,有利于反扒检测
             # new_context_config=BrowserContextConfig(
             #     _force_keep_context_alive=True,
             #     disable_security=False,
             # ),
+            extra_chromium_args=["--user-data-dir=.vol/chrome_user_data"],
         )
     )
 
@@ -62,35 +65,16 @@ async def get_default_browser_config():
     return browser
 
 
-undetect_script = """
-console.log("设置额外的 反检测脚本");
-navigator.webdriver = false;
-window.__pwInitScripts=undefined;
-navigator.userAgentData = {
-    "brands": [
-        {
-            "brand": "Google Chrome",
-            "version": "135"
-        },
-        {
-            "brand": "Not-A.Brand",
-            "version": "8"
-        },
-        {
-            "brand": "Chromium",
-            "version": "135"
-        }
-    ],
-    "mobile": false,
-    "platform": "Windows"
-}
-
-console.log("设置额外的 反检测脚本结束");
-
-"""
+async def load_undetect_script():
+    undetect_script = open(
+        "packages/mtmai/mtmai/mtlibs/browser_utils/undetect_script.js", "r"
+    ).read()
+    return undetect_script
 
 
 class MtBrowserContext(BrowserContext):
+    os.environ["DISPLAY"] = ":1"
+
     async def _create_context(self, browser: PlaywrightBrowser):
         playwright_context = await super()._create_context(browser)
         from undetected_playwright import Malenia
@@ -99,7 +83,7 @@ class MtBrowserContext(BrowserContext):
 
         # 额外的反检测脚本
 
-        await playwright_context.add_init_script(undetect_script)
+        await playwright_context.add_init_script(await load_undetect_script())
 
         return playwright_context
 

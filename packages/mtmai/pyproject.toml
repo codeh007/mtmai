@@ -1,18 +1,4 @@
 [project]
-name = "mtxai"
-version = "0.0.269"
-description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
-authors = [{ name = "Marco Vinciguerra", email = "mvincig11@gmail.com" }]
-license = "MIT"
-readme = "README.md"
-keywords = ["scrapegraph", "llm"]
-classifiers = [
-    "Intended Audience :: Developers",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
-requires-python = ">=3.12,<4.0"
 dependencies = [
     "grpcio>=1.70.0",
     "grpcio-tools>=1.70.0",
@@ -26,8 +12,8 @@ dependencies = [
     "minify-html>=0.15.0",
     # "click>=8.1.7,<9",
     "free-proxy>=1.1.1",
-    #"playwright>=1.51.0",
-    "playwright>=1.51.0",
+    # "playwright>=1.51.0",
+    # "Crawl4AI>=0.5.0.post8",
     "rebrowser-playwright>=1.49.1",
     "undetected-playwright>=0.3.0",
     # "qdrant-client>=1.11.3",
@@ -116,7 +102,7 @@ dependencies = [
     "langchain-nvidia-ai-endpoints>=0.3.9",
     "quantstats",
     "json-schema-to-pydantic>=0.2.2",
-    "smolagents[telemetry]>=1.11.0",
+    "smolagents[telemetry]>=1.13.0",
     "anthropic>=0.49.0",
     "html2text>=2024.2.26",
     "azure-core>=1.32.0",
@@ -133,6 +119,20 @@ dependencies = [
     "pdfplumber>=0.11.6",
     "langchain-google-genai>=2.1.1",
 ]
+name = "mtxai"
+version = "0.0.269"
+description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
+authors = [{ name = "Marco Vinciguerra", email = "mvincig11@gmail.com" }]
+license = "MIT"
+readme = "README.md"
+keywords = ["scrapegraph", "llm"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.12,<4.0"
 
 
 [project.scripts]
@@ -186,7 +186,7 @@ screenshot_scraper = [
     # "surya-ocr>=0.5.0",
     "matplotlib>=3.7.2",
     "ipywidgets>=8.1.0",
-    "pillow>=10.4.0",
+    # "pillow>=10.4.0",
 ]
 
 [build-system]
