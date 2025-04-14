@@ -1,17 +1,19 @@
 import asyncio
+import hashlib
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
 import time
 from typing import List, Optional
-import os
-import sys
-import shutil
-import tempfile
-import subprocess
+
 from playwright.async_api import BrowserContext
-import hashlib
-from .js_snippet import load_js_script
-from .config import DOWNLOAD_PAGE_TIMEOUT
-from .async_configs import BrowserConfig, CrawlerRunConfig
 from playwright_stealth import StealthConfig
+
+from .async_configs import BrowserConfig, CrawlerRunConfig
+from .config import DOWNLOAD_PAGE_TIMEOUT
+from .js_snippet import load_js_script
 from .utils import get_chromium_path
 
 stealth_config = StealthConfig(
@@ -93,7 +95,7 @@ class ManagedBrowser:
         logger=None,
         host: str = "localhost",
         debugging_port: int = 9222,
-        cdp_url: Optional[str] = None, 
+        cdp_url: Optional[str] = None,
     ):
         """
         Initialize the ManagedBrowser instance.
@@ -126,7 +128,7 @@ class ManagedBrowser:
         Starts the browser process or returns CDP endpoint URL.
         If cdp_url is provided, returns it directly.
         If user_data_dir is not provided for local browser, creates a temporary directory.
-        
+
         Returns:
             str: CDP endpoint URL
         """
@@ -149,19 +151,20 @@ class ManagedBrowser:
             # On Unix, we'll use preexec_fn=os.setpgrp to start the process in a new process group
             if sys.platform == "win32":
                 self.browser_process = subprocess.Popen(
-                    args, 
-                    stdout=subprocess.PIPE, 
+                    args,
+                    stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+                    creationflags=subprocess.DETACHED_PROCESS
+                    | subprocess.CREATE_NEW_PROCESS_GROUP,
                 )
             else:
                 self.browser_process = subprocess.Popen(
-                    args, 
-                    stdout=subprocess.PIPE, 
+                    args,
+                    stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    preexec_fn=os.setpgrp  # Start in a new process group
+                    preexec_fn=os.setpgrp,  # Start in a new process group
                 )
-                
+
             # We'll monitor for a short time to make sure it starts properly, but won't keep monitoring
             await asyncio.sleep(0.5)  # Give browser time to start
             await self._initial_startup_check()
@@ -178,7 +181,7 @@ class ManagedBrowser:
         """
         if not self.browser_process:
             return
-            
+
         # Check that process started without immediate termination
         await asyncio.sleep(0.5)
         if self.browser_process.poll() is not None:
@@ -188,7 +191,7 @@ class ManagedBrowser:
                 stdout, stderr = self.browser_process.communicate(timeout=0.5)
             except subprocess.TimeoutExpired:
                 pass
-                
+
             self.logger.error(
                 message="Browser process terminated during startup | Code: {code} | STDOUT: {stdout} | STDERR: {stderr}",
                 tag="ERROR",
@@ -198,7 +201,7 @@ class ManagedBrowser:
                     "stderr": stderr.decode() if stderr else "",
                 },
             )
-    
+
     async def _monitor_browser_process(self):
         """
         Monitor the browser process for unexpected termination.
@@ -321,7 +324,14 @@ class ManagedBrowser:
                         if sys.platform == "win32":
                             # On Windows we might need taskkill for detached processes
                             try:
-                                subprocess.run(["taskkill", "/F", "/PID", str(self.browser_process.pid)])
+                                subprocess.run(
+                                    [
+                                        "taskkill",
+                                        "/F",
+                                        "/PID",
+                                        str(self.browser_process.pid),
+                                    ]
+                                )
                             except Exception:
                                 self.browser_process.kill()
                         else:
@@ -331,7 +341,7 @@ class ManagedBrowser:
             except Exception as e:
                 self.logger.error(
                     message="Error terminating browser: {error}",
-                    tag="ERROR", 
+                    tag="ERROR",
                     params={"error": str(e)},
                 )
 
@@ -344,80 +354,80 @@ class ManagedBrowser:
                     tag="ERROR",
                     params={"error": str(e)},
                 )
-                
+
     # These methods have been moved to BrowserProfiler class
     @staticmethod
     async def create_profile(browser_config=None, profile_name=None, logger=None):
         """
         This method has been moved to the BrowserProfiler class.
-        
+
         Creates a browser profile by launching a browser for interactive user setup
         and waits until the user closes it. The profile is stored in a directory that
         can be used later with BrowserConfig.user_data_dir.
-        
+
         Please use BrowserProfiler.create_profile() instead.
-        
+
         Example:
             ```python
             from crawl4ai.browser_profiler import BrowserProfiler
-            
+
             profiler = BrowserProfiler()
             profile_path = await profiler.create_profile(profile_name="my-login-profile")
             ```
         """
         from .browser_profiler import BrowserProfiler
-        
+
         # Create a BrowserProfiler instance and delegate to it
         profiler = BrowserProfiler(logger=logger)
-        return await profiler.create_profile(profile_name=profile_name, browser_config=browser_config)
-    
+        return await profiler.create_profile(
+            profile_name=profile_name, browser_config=browser_config
+        )
+
     @staticmethod
     def list_profiles():
         """
         This method has been moved to the BrowserProfiler class.
-        
+
         Lists all available browser profiles in the Crawl4AI profiles directory.
-        
+
         Please use BrowserProfiler.list_profiles() instead.
-        
+
         Example:
             ```python
             from crawl4ai.browser_profiler import BrowserProfiler
-            
+
             profiler = BrowserProfiler()
             profiles = profiler.list_profiles()
             ```
         """
         from .browser_profiler import BrowserProfiler
-        
+
         # Create a BrowserProfiler instance and delegate to it
         profiler = BrowserProfiler()
         return profiler.list_profiles()
-        
+
     @staticmethod
     def delete_profile(profile_name_or_path):
         """
         This method has been moved to the BrowserProfiler class.
-        
+
         Delete a browser profile by name or path.
-        
+
         Please use BrowserProfiler.delete_profile() instead.
-        
+
         Example:
             ```python
             from crawl4ai.browser_profiler import BrowserProfiler
-            
+
             profiler = BrowserProfiler()
             success = profiler.delete_profile("my-profile")
             ```
         """
         from .browser_profiler import BrowserProfiler
-        
+
         # Create a BrowserProfiler instance and delegate to it
         profiler = BrowserProfiler()
         return profiler.delete_profile(profile_name_or_path)
-
-
 
 
 class BrowserManager:
@@ -436,13 +446,14 @@ class BrowserManager:
     """
 
     _playwright_instance = None
-    
+
     @classmethod
     async def get_playwright(cls):
         from playwright.async_api import async_playwright
+
         if cls._playwright_instance is None:
             cls._playwright_instance = await async_playwright().start()
-        return cls._playwright_instance    
+        return cls._playwright_instance
 
     def __init__(self, browser_config: BrowserConfig, logger=None):
         """
@@ -467,7 +478,7 @@ class BrowserManager:
 
         # Keep track of contexts by a "config signature," so each unique config reuses a single context
         self.contexts_by_config = {}
-        self._contexts_lock = asyncio.Lock() 
+        self._contexts_lock = asyncio.Lock()
 
         # Initialize ManagedBrowser if needed
         if self.config.use_managed_browser:
@@ -492,7 +503,7 @@ class BrowserManager:
 
         Note: This method should be called in a separate task to avoid blocking the main event loop.
         """
-        self.playwright  = await self.get_playwright()
+        self.playwright = await self.get_playwright()
         if self.playwright is None:
             from playwright.async_api import async_playwright
 
@@ -500,7 +511,11 @@ class BrowserManager:
 
         if self.config.cdp_url or self.config.use_managed_browser:
             self.config.use_managed_browser = True
-            cdp_url = await self.managed_browser.start() if not self.config.cdp_url else self.config.cdp_url
+            cdp_url = (
+                await self.managed_browser.start()
+                if not self.config.cdp_url
+                else self.config.cdp_url
+            )
             self.browser = await self.playwright.chromium.connect_over_cdp(cdp_url)
             contexts = self.browser.contexts
             if contexts:
@@ -520,7 +535,6 @@ class BrowserManager:
                 self.browser = await self.playwright.chromium.launch(**browser_args)
 
             self.default_context = self.browser
-
 
     def _build_browser_args(self) -> dict:
         """Build browser launch arguments from config."""
@@ -640,9 +654,9 @@ class BrowserManager:
             context.set_default_navigation_timeout(DOWNLOAD_PAGE_TIMEOUT)
             if self.config.downloads_path:
                 context._impl_obj._options["accept_downloads"] = True
-                context._impl_obj._options[
-                    "downloads_path"
-                ] = self.config.downloads_path
+                context._impl_obj._options["downloads_path"] = (
+                    self.config.downloads_path
+                )
 
         # Handle user agent and browser hints
         if self.config.user_agent:
@@ -673,7 +687,7 @@ class BrowserManager:
                 or crawlerRunConfig.simulate_user
                 or crawlerRunConfig.magic
             ):
-                await context.add_init_script(load_js_script("navigator_overrider"))        
+                await context.add_init_script(load_js_script("navigator_overrider"))
 
     async def create_browser_context(self, crawlerRunConfig: CrawlerRunConfig = None):
         """
@@ -684,7 +698,7 @@ class BrowserManager:
             Context: Browser context object with the specified configurations
         """
         # Base settings
-        user_agent = self.config.headers.get("User-Agent", self.config.user_agent) 
+        user_agent = self.config.headers.get("User-Agent", self.config.user_agent)
         viewport_settings = {
             "width": self.config.viewport_width,
             "height": self.config.viewport_height,
@@ -757,7 +771,7 @@ class BrowserManager:
             "device_scale_factor": 1.0,
             "java_script_enabled": self.config.java_script_enabled,
         }
-        
+
         if crawlerRunConfig:
             # Check if there is value for crawlerRunConfig.proxy_config set add that to context
             if crawlerRunConfig.proxy_config:
@@ -765,10 +779,12 @@ class BrowserManager:
                     "server": crawlerRunConfig.proxy_config.server,
                 }
                 if crawlerRunConfig.proxy_config.username:
-                    proxy_settings.update({
-                        "username": crawlerRunConfig.proxy_config.username,
-                        "password": crawlerRunConfig.proxy_config.password,
-                    })
+                    proxy_settings.update(
+                        {
+                            "username": crawlerRunConfig.proxy_config.username,
+                            "password": crawlerRunConfig.proxy_config.password,
+                        }
+                    )
                 context_settings["proxy"] = proxy_settings
 
         if self.config.text_mode:
@@ -809,7 +825,7 @@ class BrowserManager:
             "cache_mode",
             "content_filter",
             "semaphore_count",
-            "url"
+            "url",
         ]
         for key in ephemeral_keys:
             if key in config_dict:
@@ -898,7 +914,7 @@ class BrowserManager:
         """Close all browser resources and clean up."""
         if self.config.cdp_url:
             return
-        
+
         if self.config.sleep_on_close:
             await asyncio.sleep(0.5)
 
@@ -914,7 +930,7 @@ class BrowserManager:
                 self.logger.error(
                     message="Error closing context: {error}",
                     tag="ERROR",
-                    params={"error": str(e)}
+                    params={"error": str(e)},
                 )
         self.contexts_by_config.clear()
 

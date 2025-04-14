@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import cast
 
 from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig as BrowseruseBrowserConfig
@@ -11,6 +10,7 @@ from crawl4ai.async_crawler_strategy import AsyncCrawlerStrategy
 from crawl4ai.async_webcrawler import AsyncWebCrawler
 from crawl4ai.types import AsyncLoggerBase
 from loguru import logger
+from mtmai.core.config import settings
 from playwright.async_api import Browser as PlaywrightBrowser
 from playwright.async_api import Page
 
@@ -19,7 +19,7 @@ class MtBrowserConfig(BrowseruseBrowserConfig):
     pass
 
 
-class MtBrowserContext(BrowserContext):
+class MtBrowseruseContext(BrowserContext):
     async def _create_context(self, browser: PlaywrightBrowser):
         playwright_context = await super()._create_context(browser)
         # from undetected_playwright import Malenia
@@ -63,31 +63,69 @@ class MtBrowserManager(AsyncWebCrawler):
         logger: AsyncLoggerBase = None,
         **kwargs,
     ):
+        # 配置备忘:
+        # 1: channel=chrome 则使用了正式发行版(而不是chromium), 这样对于人机检测来说, 更不容易被识别为机器人
+        # 2: 提示: 如果 browser_mode="builtin", 则chrome_channel和channel不会起作用
+        # 3: 提示: 如果use_managed_browser=False, debugging_port= 这个参数不会打开cdp端口,但是可以额外的启动参数启动cdp端口,例如:
+        #         extra_args=[f"--remote-debugging-port={settings.BROWSER_DEBUG_PORT}"]
+        my_browser_config = config or BrowserConfig(
+            browser_mode="dedicated",
+            browser_type="chromium",
+            chrome_channel="chrome",  # msedge
+            channel="chrome",
+            # use_managed_browser=True,
+            headless=False,
+            debugging_port=settings.BROWSER_DEBUG_PORT,
+            # 提示: 如果use_managed_browser=False, debugging_port= 这个参数不会打开cdp端口,
+            # 如果要打开cdp端口就额外添加启动参数
+            extra_args=[f"--remote-debugging-port={settings.BROWSER_DEBUG_PORT}"],
+        )
         super().__init__(
             crawler_strategy=crawler_strategy,
-            config=config,
+            config=my_browser_config,
             base_directory=base_directory,
             thread_safe=thread_safe,
             logger=logger,
         )
-        # browser use 的浏览器配置,共享 crawl4ai 的浏览器配置
-        from crawl4ai.async_crawler_strategy import AsyncPlaywrightCrawlerStrategy
 
-        crawler_strategy = cast(AsyncPlaywrightCrawlerStrategy, self.crawler_strategy)
-        config = crawler_strategy.browser_manager.config
+    # async def start(self):
+    #     await super().start()
+    #     # _self.browseruse_browser = await self.get_browseruse_browser()
+    #     browser_manager = cast(
+    #         AsyncPlaywrightCrawlerStrategy, self.crawler_strategy
+    #     ).browser_manager
+
+    #     # from playwright.async_api import BrowserContext as PlaywrightBrowserContext
+
+    #     # old_setup_context = browser_manager.setup_context
+
+    #     # async def new_setup_context(_self, context: PlaywrightBrowserContext):
+    #     #     await old_setup_context(context)
+    #     #     context.add_init_script("console.log('hello add_init_script 11112222')")
+
+    #     # browser_manager.setup_context = new_setup_context
+
+    #     return self
+
+    async def get_browseruse_browser(self):
+        # browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器
+        cdp_url = (
+            self.browser_config.cdp_url
+            if self.browser_config.cdp_url
+            else f"http://{self.browser_config.host}:{self.browser_config.debugging_port}"
+        )
         self.browseruse_browser = BrowserUseBrowser(
             config=MtBrowserConfig(
                 headless=False,
-                disable_security=False,
-                cdp_url=f"http://{config.host}:{config.debugging_port}",
+                cdp_url=cdp_url,
             )
         )
+        return self.browseruse_browser
 
-    async def create_browser_use_context(self):
-        browser_context = MtBrowserContext(
-            browser=self.browseruse_browser,
+    async def get_browseruse_context(self):
+        browser_context = MtBrowseruseContext(
+            browser=await self.get_browseruse_browser(),
             config=BrowserContextConfig(
-                disable_security=False,  # 如果禁用了 csp, 一般会被识别为机器人
                 # user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
                 _force_keep_context_alive=True,
             ),
