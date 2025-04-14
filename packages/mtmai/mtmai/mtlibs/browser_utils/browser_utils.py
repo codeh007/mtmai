@@ -59,11 +59,11 @@ async def _hijacker(route: Route):
 #     return browser
 
 
-async def load_undetect_script():
-    undetect_script = open(
-        "packages/mtmai/mtmai/mtlibs/browser_utils/undetect_script.js", "r"
-    ).read()
-    return undetect_script
+# async def load_undetect_script():
+#     undetect_script = open(
+#         "packages/mtmai/mtmai/mtlibs/browser_utils/undetect_script.js", "r"
+#     ).read()
+#     return undetect_script
 
 
 # class MtBrowserContext(BrowserContext):

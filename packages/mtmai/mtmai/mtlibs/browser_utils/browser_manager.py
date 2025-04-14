@@ -2,12 +2,36 @@ import os
 
 from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig, BrowserContextConfig
-
-# from mtmai. import MtBrowserContext
 from browser_use.browser.context import BrowserContext
-from mtmai.crawl4ai.browser_manager import BrowserManager, ManagedBrowser
+from loguru import logger
+from mtmai.crawl4ai.browser_manager import BrowserManager
 from mtmai.mtlibs.browser_utils.browser_config import MtBrowserConfig
 from playwright.async_api import Browser as PlaywrightBrowser
+from playwright.async_api import Page
+from playwright_stealth.core import StealthConfig
+
+
+async def load_undetect_script():
+    undetect_script = open(
+        "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js", "r"
+    ).read()
+    return undetect_script
+
+
+stealth_config = StealthConfig(
+    webdriver=True,
+    chrome_app=True,
+    chrome_csi=True,
+    chrome_load_times=True,
+    chrome_runtime=True,
+    navigator_languages=True,
+    navigator_plugins=True,
+    navigator_permissions=True,
+    webgl_vendor=True,
+    outerdimensions=True,
+    navigator_hardware_concurrency=True,
+    media_codecs=True,
+)
 
 
 class MtBrowserContext(BrowserContext):
@@ -30,18 +54,27 @@ class MtBrowserContext(BrowserContext):
 
         await Malenia.apply_stealth(playwright_context)
 
-        # 额外的反检测脚本
+        # properties = Properties(browser_type=stealth_config.browser_type if stealth_config else BrowserType.CHROME)
+        # combined_script = combine_scripts(properties, stealth_config)
+        # await generate_stealth_headers_async(properties, page)
 
-        # await playwright_context.add_init_script(await load_undetect_script())
+        # await page.add_init_script(combined_script)
+        # 额外的反检测脚本
+        await playwright_context.add_init_script(await load_undetect_script())
+        playwright_context.on(
+            "page",
+            self.on_page_created,
+        )
 
         return playwright_context
 
+    async def on_page_created(self, page: Page):
+        # 这行没实际生效, 原因未知
+        logger.info(f"on_page_created: {page}")
+        # await stealth_async(page)
+
 
 class MtBrowserManager(BrowserManager):
-    # def __init__(self, browser_type: str = "chromium", headless: bool = True):
-    #     self.browser_type = browser_type
-    #     self.headless = headless
-
     async def start(self):
         os.environ["DISPLAY"] = ":1"
         await super().start()
@@ -54,19 +87,22 @@ class MtBrowserManager(BrowserManager):
 
         # c=await self.browser.new_context()
 
-        managed_browser = ManagedBrowser(
-            browser_type="chromium",
-            headless=False,
-            debugging_port=19222,
-        )
-        cdp_url = await managed_browser.start()
+        # managed_browser = ManagedBrowser(
+        #     browser_type="chromium",
+        #     headless=False,
+        #     debugging_port=19222,
+        # )
+        # cdp_url = await managed_browser.start()
+
+        # aa= await self.create_browser_context()
+        # default_context = self.default_context
 
         browser = BrowserUseBrowser(
             config=BrowserConfig(
                 headless=False,
                 disable_security=False,
-                # cdp_url=f"http://{self.config.host}:{self.config.debugging_port}",
-                cdp_url=cdp_url,
+                cdp_url=f"http://{self.config.host}:{self.config.debugging_port}",
+                # cdp_url=self.,
             )
         )
 
@@ -77,7 +113,4 @@ class MtBrowserManager(BrowserManager):
             ),
             browser=browser,
         )
-
-        # playwright_session = await browser_context.get_session()
-        # await Malenia.apply_stealth(playwright_session.context)
         return browser_context

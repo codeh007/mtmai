@@ -72,6 +72,7 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
             browser_type="chromium",
             headless=False,
             debugging_port=19222,
+            use_managed_browser=True,
         )
     )
     await browser_manager.start()
@@ -90,6 +91,14 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
         llm=llm,
         browser_context=browser_context,
     )
+    # steal_agent = BrowserUserAgent(
+    #     task="""
+    #         访问: https://bot.sannysoft.com/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
+    #     """,
+    #     llm=llm,
+    #     browser_context=browser_context,
+    # )
+
     steal_history = await steal_agent.run(max_steps=3)
 
     # history: AgentHistoryList = await steal_agent.run(max_steps=25)
