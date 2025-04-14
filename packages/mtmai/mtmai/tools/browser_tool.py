@@ -4,10 +4,10 @@ from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
-from mtlibs.browser_utils.browser_config import MtBrowserConfig
-from mtlibs.browser_utils.browser_manager import MtBrowserManager
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
+from mtmai.mtlibs.browser_utils.browser_config import MtBrowserConfig
+from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
 from pydantic import SecretStr
 
 
@@ -23,8 +23,17 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         操作的最终结果
     """
     logger.info(f"browser_use_tool: {task}")
+    browser_manager = MtBrowserManager(
+        browser_config=MtBrowserConfig(
+            browser_type="chromium",
+            headless=False,
+            debugging_port=19222,
+            use_managed_browser=True,
+        )
+    )
+    await browser_manager.start()
+    browser_context = await browser_manager.create_browser_use_context()
 
-    # browser = await get_default_browser_config()
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash-exp",
         api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
@@ -35,7 +44,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
             Go to https://bot-detector.rebrowser.net/ and verify that all the bot checks are passed.
         """,
         llm=llm,
-        browser=browser,
+        browser_context=browser_context,
     )
     stat_result = await steal_agent.run(max_steps=3)
 
@@ -43,7 +52,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         task=task,
         llm=llm,
         use_vision=False,
-        browser=browser,
+        browser_context=browser_context,
         max_actions_per_step=4,
     )
 
@@ -77,8 +86,6 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
     )
     await browser_manager.start()
     browser_context = await browser_manager.create_browser_use_context()
-
-    # browser.playwright_browser.
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash-exp",
         api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),

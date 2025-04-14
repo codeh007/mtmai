@@ -5,6 +5,11 @@ https://github.com/tinyfish-io/tf-playwright-stealth
 
 但是, 对于 js 反指纹检测, 本质上就是在页面加载前预先运行一段脚本,将指纹相关的 js 变量函数进行必要的修正.
 因此, 这里 不在依赖 tf-playwright-stealth 库,而是合并为自定义js 的形式一次性执行.
+
+再次提示:
+  其他相关:
+    https://github.com/berstend/puppeteer-extra/blob/master/packages/puppeteer-extra-plugin-stealth/readme.md
+    本质依然是 执行一段 js 脚本来设置页面的一些特定变量
  *
  */
 console.log("设置额外的 反检测脚本");

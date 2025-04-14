@@ -38,7 +38,8 @@ def run():
 def web(
     agents_dir: str,
     log_to_tmp: bool = True,
-    session_db_url: str = settings.SESSION_DB_URL,
+    # session_db_url: str = settings.SESSION_DB_URL,
+    session_db_url: str = settings.MTM_DATABASE_URL,
     log_level: str = "INFO",
     allow_origins: Optional[list[str]] = None,
     port: int = settings.PORT,

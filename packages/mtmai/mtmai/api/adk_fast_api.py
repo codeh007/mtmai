@@ -44,9 +44,6 @@ from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 
-# logger = logging.getLogger(__name__)
-# logger = logging.getLogger("mtmai")
-
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
 
 

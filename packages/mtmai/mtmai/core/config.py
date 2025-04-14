@@ -59,6 +59,12 @@ class Settings(BaseSettings):
 
     # db
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
+    MTM_DATABASE_URL: str | None = os.environ.get("MTM_DATABASE_URL", "development")
+
+    @property
+    def SESSION_DB_URL(self) -> str:
+        return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
+
     API_V1_STR: str = "/api/v1"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
 
@@ -228,10 +234,6 @@ class Settings(BaseSettings):
         return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 
     default_proxy_url: str = "http://127.0.0.1:10809"
-
-    @property
-    def SESSION_DB_URL(self) -> str:
-        return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
 
 
 settings = Settings()  # type: ignore
