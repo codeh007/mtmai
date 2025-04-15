@@ -38,6 +38,10 @@ def get_agent_by_name(name: str) -> Agent:
         from mtmai.agents.browser.agent import create_browser_agent
 
         return create_browser_agent()
+    elif name == "browser_automation_agent":
+        from mtmai.agents.adk_smolagent.adk_smolagent import create_adk_smolagent
+
+        return create_adk_smolagent()
     else:
         raise ValueError(f"agent {name} not found")
 
@@ -57,7 +61,8 @@ root_agent = Agent(
     sub_agents=[
         # get_agent_by_name("content_writer_agent"),
         # get_agent_by_name("instagram_agent"),
-        get_agent_by_name("browser_agent"),
+        # get_agent_by_name("browser_agent"),
+        get_agent_by_name("browser_automation_agent"),
         WriterAgent(
             name="writer_agent",
             model=get_default_litellm_model(),

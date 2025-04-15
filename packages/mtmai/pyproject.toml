@@ -118,7 +118,6 @@ dependencies = [
     # "playwright-stealth>=1.0.6",
     "colorama>=0.4.6",
     "xxhash>=3.5.0",
-
     # crawl4ai ========================================
     "aiosqlite~=0.20",
     "lxml~=5.3",
@@ -147,6 +146,7 @@ dependencies = [
     "faust-cchardet>=2.1.19",
     "aiohttp>=3.11.11",
     "humanize>=4.10.0",
+    "helium>=5.1.1",
 ]
 name = "mtxai"
 version = "0.0.269"

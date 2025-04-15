@@ -16,12 +16,14 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictStr
+from pydantic import Field, StrictInt, StrictStr
+from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.adk_app import AdkApp
 from mtmai.clients.rest.models.adk_app_upsert import AdkAppUpsert
 from mtmai.clients.rest.models.adk_event import AdkEvent
 from mtmai.clients.rest.models.adk_event_list import AdkEventList
+from mtmai.clients.rest.models.adk_event_order_by_field import AdkEventOrderByField
 from mtmai.clients.rest.models.adk_event_upsert import AdkEventUpsert
 from mtmai.clients.rest.models.adk_session import AdkSession
 from mtmai.clients.rest.models.adk_session_list import AdkSessionList
@@ -1195,6 +1197,9 @@ class AdkApi:
     async def adk_events_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
+        order_by_field: Optional[AdkEventOrderByField] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1214,6 +1219,12 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
+        :param order_by_field:
+        :type order_by_field: AdkEventOrderByField
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1238,6 +1249,9 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            limit=limit,
+            offset=offset,
+            order_by_field=order_by_field,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1265,6 +1279,9 @@ class AdkApi:
     async def adk_events_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
+        order_by_field: Optional[AdkEventOrderByField] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1284,6 +1301,12 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
+        :param order_by_field:
+        :type order_by_field: AdkEventOrderByField
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1308,6 +1331,9 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            limit=limit,
+            offset=offset,
+            order_by_field=order_by_field,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1335,6 +1361,9 @@ class AdkApi:
     async def adk_events_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Optional[StrictInt] = None,
+        offset: Optional[StrictInt] = None,
+        order_by_field: Optional[AdkEventOrderByField] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1354,6 +1383,12 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param limit:
+        :type limit: int
+        :param offset:
+        :type offset: int
+        :param order_by_field:
+        :type order_by_field: AdkEventOrderByField
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1378,6 +1413,9 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            limit=limit,
+            offset=offset,
+            order_by_field=order_by_field,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1400,6 +1438,9 @@ class AdkApi:
     def _adk_events_list_serialize(
         self,
         tenant,
+        limit,
+        offset,
+        order_by_field,
         _request_auth,
         _content_type,
         _headers,
@@ -1424,6 +1465,18 @@ class AdkApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if limit is not None:
+            
+            _query_params.append(('limit', limit))
+            
+        if offset is not None:
+            
+            _query_params.append(('offset', offset))
+            
+        if order_by_field is not None:
+            
+            _query_params.append(('orderByField', order_by_field.value))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter

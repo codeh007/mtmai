@@ -2252,6 +2252,15 @@ wheels = [
 ]
 
 [[package]]
+name = "helium"
+version = "5.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "selenium" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/71/6f2bef5db8741467848f2b2c7f7818df44234df0de0917428a16da3f6e81/helium-5.1.1.tar.gz", hash = "sha256:8232b6597d24b435cda4e18a95ae883ff0bdcdbff70f98a6cb41133864d2d493", size = 40494 }
+
+[[package]]
 name = "html2text"
 version = "2024.2.26"
 source = { registry = "https://pypi.org/simple" }
@@ -3502,6 +3511,7 @@ dependencies = [
     { name = "googlesearch-python" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
+    { name = "helium" },
     { name = "html2text" },
     { name = "httpx" },
     { name = "huggingface-hub" },
@@ -3646,6 +3656,7 @@ requires-dist = [
     { name = "googlesearch-python", specifier = ">=1.2.5" },
     { name = "grpcio", specifier = ">=1.70.0" },
     { name = "grpcio-tools", specifier = ">=1.70.0" },
+    { name = "helium", specifier = ">=5.1.1" },
     { name = "html2text", specifier = ">=2024.2.26" },
     { name = "httpx", specifier = ">=0.27.2" },
     { name = "huggingface-hub", specifier = ">=0.27.1" },

@@ -30,6 +30,7 @@ from mtmai.clients.rest.models.adk_app_properties import AdkAppProperties
 from mtmai.clients.rest.models.adk_app_upsert import AdkAppUpsert
 from mtmai.clients.rest.models.adk_event import AdkEvent
 from mtmai.clients.rest.models.adk_event_list import AdkEventList
+from mtmai.clients.rest.models.adk_event_order_by_field import AdkEventOrderByField
 from mtmai.clients.rest.models.adk_event_properties import AdkEventProperties
 from mtmai.clients.rest.models.adk_event_upsert import AdkEventUpsert
 from mtmai.clients.rest.models.adk_session import AdkSession
