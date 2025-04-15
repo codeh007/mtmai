@@ -107,6 +107,9 @@ class StorageSession(Base):
     storage_events: Mapped[list["StorageEvent"]] = relationship(
         "StorageEvent",
         back_populates="storage_session",
+        primaryjoin="and_(StorageSession.app_name==StorageEvent.app_name, "
+        "StorageSession.user_id==StorageEvent.user_id, "
+        "StorageSession.id==StorageEvent.session_id)",
     )
 
     def __repr__(self):
@@ -133,12 +136,15 @@ class StorageEvent(Base):
     storage_session: Mapped[StorageSession] = relationship(
         "StorageSession",
         back_populates="storage_events",
+        primaryjoin="and_(StorageEvent.app_name==StorageSession.app_name, "
+        "StorageEvent.user_id==StorageSession.user_id, "
+        "StorageEvent.session_id==StorageSession.id)",
     )
 
     __table_args__ = (
         ForeignKeyConstraint(
             ["app_name", "user_id", "session_id"],
-            ["sessions.app_name", "sessions.user_id", "sessions.id"],
+            ["adk_sessions.app_name", "adk_sessions.user_id", "adk_sessions.id"],
             ondelete="CASCADE",
         ),
     )
