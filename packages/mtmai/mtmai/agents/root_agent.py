@@ -1,17 +1,37 @@
+from datetime import datetime
+from typing import Any, Dict
+
 from autogen_core import tool_agent
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
+from google.adk.sessions.state import State
 from loguru import logger
 from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.model_client.utils import get_default_litellm_model
 
 
+def _set_initial_states(source: Dict[str, Any], target: State | dict[str, Any]):
+    """
+    Setting the initial session state given a JSON object of states.
+
+    Args:
+        source: A JSON object of states.
+        target: The session state object to insert into.
+    """
+    target["systemtime"] = str(datetime.now())
+
+
 def before_agent_callback(callback_context: CallbackContext):
     logger.info("before_agent_callback ")
 
-    user_input = callback_context.user_content
-
-    return None
+    # user_input = callback_context.user_content
+    data = {"state": None}
+    # callback_context.state["browser_config444agent_init"] = {
+    #     "browser_type": "chrome",
+    #     "browser_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    # }
+    _set_initial_states(data["state"], callback_context.state)
+    # return None
 
 
 def get_agent_by_name(name: str) -> Agent:

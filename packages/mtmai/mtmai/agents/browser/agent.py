@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
-from google.adk.events import EventActions
+from google.adk.events import Event, EventActions
 from google.adk.tools import BaseTool, ToolContext
 from google.genai import types
 from loguru import logger
@@ -90,18 +90,24 @@ def before_agent_callback(callback_context: CallbackContext):
         # --- Create Event with Actions ---
         actions_with_update = EventActions(state_delta=state_changes)
         # This event might represent an internal system action, not just an agent response
-        # system_event = Event(
-        #     invocation_id="inv_login_update",
-        #     author="system",  # Or 'agent', 'tool' etc.
-        #     actions=actions_with_update,
-        #     # timestamp=current_time
-        #     # content might be None or represent the action taken
-        # )
+        system_event = Event(
+            invocation_id="inv_login_update",
+            author="system",  # Or 'agent', 'tool' etc.
+            actions=actions_with_update,
+            # timestamp=current_time
+            # content might be None or represent the action taken
+        )
 
         # --- Append the Event (This updates the state) ---
-        # callback_context.
         # callback_context.session_service.append_event(session, system_event)
-
+        # callback_context.state.update(
+        #     {
+        #         "browser_config444agent_init": {
+        #             "browser_type": "chrome",
+        #             "browser_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        #         }
+        #     }
+        # )
         return None
 
 

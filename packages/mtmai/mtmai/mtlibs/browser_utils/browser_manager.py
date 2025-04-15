@@ -1,14 +1,10 @@
-import asyncio
 import os
 from pathlib import Path
 from typing import cast
 
-from browser_use import Browser as BrowserUseBrowser
-from browser_use import BrowserConfig as BrowseruseBrowserConfig
+from browser_use import BrowserConfig as BrowseruseBrowserConfig  # noqa
 from browser_use import BrowserContextConfig
 from browser_use.browser.context import BrowserContext
-from browser_use.browser.views import BrowserState
-from browser_use.utils import time_execution_sync
 from crawl4ai.async_configs import BrowserConfig
 from crawl4ai.async_crawler_strategy import (
     AsyncCrawlerStrategy,
@@ -21,9 +17,8 @@ from mtmai.core.config import settings
 from playwright.async_api import Browser as PlaywrightBrowser
 from playwright.async_api import Page
 
-
-class MtBrowserConfig(BrowseruseBrowserConfig):
-    pass
+# class MtBrowserConfig(BrowseruseBrowserConfig):
+#     pass
 
 
 class MtBrowseruseContext(BrowserContext):
@@ -46,7 +41,7 @@ class MtBrowseruseContext(BrowserContext):
         await playwright_context.add_cookies(
             [
                 {
-                    "name": "cookiesEnabled2222detector",
+                    "name": "cookiesExampleEnabled2222detector",
                     "value": "true",
                     "url": "https://bot-detector.rebrowser.net",
                 }
@@ -57,38 +52,7 @@ class MtBrowseruseContext(BrowserContext):
         return playwright_context
 
     async def on_page_created(self, page: Page):
-        # 这行没实际生效, 原因未知
-        logger.info(f"on_page_created: {page}")
-
-    @time_execution_sync(
-        "--get_state"
-    )  # This decorator might need to be updated to handle async
-    async def get_state(self) -> BrowserState:
-        """Get the current state of the browser"""
-        await self._wait_for_page_and_frames_load()
-        session = await self.get_session()
-        session.cached_state = await self._update_state()
-
-        # Save cookies if a file is specified
-        # if self.config.cookies_file:
-        asyncio.create_task(self.save_cookies())
-
-    async def save_cookies(self):
-        """Save current cookies to file"""
-        # if self.session and self.session.context and self.config.cookies_file:
-        try:
-            cookies = await self.session.context.cookies()
-            logger.debug(f"Saving {len(cookies)} cookies to {self.config.cookies_file}")
-
-            # Check if the path is a directory and create it if necessary
-            # dirname = os.path.dirname(self.config.cookies_file)
-            # if dirname:
-            #     os.makedirs(dirname, exist_ok=True)
-
-            # with open(self.config.cookies_file, "w") as f:
-            #     json.dump(cookies, f)
-        except Exception as e:
-            logger.warning(f"Failed to save cookies: {str(e)}")
+        logger.info(f"browser use : on_page_created: {page}")
 
 
 class MtBrowserManager(AsyncWebCrawler):
@@ -150,16 +114,26 @@ class MtBrowserManager(AsyncWebCrawler):
         return playwright_strategy
 
     async def get_browseruse_browser(self):
-        # browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器
-        cdp_url = (
-            self.browser_config.cdp_url
-            if self.browser_config.cdp_url
-            else f"http://{self.browser_config.host}:{self.browser_config.debugging_port}"
-        )
+        # 方式1: browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器
+        from browser_use import Browser as BrowserUseBrowser  # noqa
+
+        # cdp_url = (
+        #     self.browser_config.cdp_url
+        #     if self.browser_config.cdp_url
+        #     else f"http://{self.browser_config.host}:{self.browser_config.debugging_port}"
+        # )
+        # self.browseruse_browser = BrowserUseBrowser(
+        #     config=BrowseruseBrowserConfig(
+        #         headless=False,
+        #         cdp_url=cdp_url,
+        #     )
+        # )
+        # 方式2: browseruse 自托管
         self.browseruse_browser = BrowserUseBrowser(
-            config=MtBrowserConfig(
+            config=BrowseruseBrowserConfig(
                 headless=False,
-                cdp_url=cdp_url,
+                disable_security=False,
+                chrome_instance_path="/opt/google/chrome/chrome",
             )
         )
         return self.browseruse_browser

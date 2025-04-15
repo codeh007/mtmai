@@ -13,6 +13,7 @@ from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
 from pydantic import SecretStr
 
 STATE_KEY_BROWSER_CONFIG = "browser_config"
+STATE_KEY_BROWSER_COOKIES = "browser_cookies"
 
 
 def get_default_browser_config():
@@ -104,30 +105,31 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
             model="gemini-2.0-flash-exp",
             api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
         )
+        async with await browser_manager.get_browseruse_context() as browseruse_context:
+            # 从 state 加载 cookies
+            browser_cookies = tool_context.state.get(STATE_KEY_BROWSER_COOKIES, None)
+            if browser_cookies:
+                browseruse_context.session.context.add_cookies(browser_cookies)
 
-        browseruse_context = await browser_manager.get_browseruse_context()
-        with browseruse_context:
             steal_agent = BrowserUserAgent(
+                # 其他 人机检测网站: https://bot.sannysoft.com/
                 task="""
                     访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
                 """,
                 llm=llm,
                 browser_context=browseruse_context,
             )
-        # steal_agent = BrowserUserAgent(
-        #     task="""
-        #         访问: https://bot.sannysoft.com/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
-        #     """,
-        #     llm=llm,
-        #     browser_context=browser_context,
-        # )
+            steal_history = await steal_agent.run(max_steps=5)
 
-        steal_history = await steal_agent.run(max_steps=3)
+            # 保存相关 状态到 state
+            cookies = await browseruse_context.session.context.cookies()
+            tool_context.state.update(
+                {STATE_KEY_BROWSER_COOKIES: jsonable_encoder(cookies)}
+            )
+
         tool_context.state.update(
             {STATE_KEY_BROWSER_CONFIG: jsonable_encoder(browser_config)}
         )
-
-        a = await browser_manager.get_playwright_browser_strategy()
         await asyncio.sleep(10)
 
         final_result = steal_history.final_result()
