@@ -153,7 +153,7 @@ class StorageEvent(Base):
 class StorageAppState(Base):
     """Represents an app state stored in the database."""
 
-    __tablename__ = "app_states"
+    __tablename__ = "adk_app_states"
 
     app_name: Mapped[str] = mapped_column(String, primary_key=True)
     state: Mapped[dict] = mapped_column(MutableDict.as_mutable(DynamicJSON), default={})
