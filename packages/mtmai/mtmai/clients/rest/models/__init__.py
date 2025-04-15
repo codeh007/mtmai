@@ -30,6 +30,12 @@ from mtmai.clients.rest.models.adk_app_upsert import AdkAppUpsert
 from mtmai.clients.rest.models.adk_event import AdkEvent
 from mtmai.clients.rest.models.adk_event_properties import AdkEventProperties
 from mtmai.clients.rest.models.adk_event_upsert import AdkEventUpsert
+from mtmai.clients.rest.models.adk_session import AdkSession
+from mtmai.clients.rest.models.adk_session_properties import AdkSessionProperties
+from mtmai.clients.rest.models.adk_session_upsert import AdkSessionUpsert
+from mtmai.clients.rest.models.adk_user_state import AdkUserState
+from mtmai.clients.rest.models.adk_user_state_properties import AdkUserStateProperties
+from mtmai.clients.rest.models.adk_user_state_upsert import AdkUserStateUpsert
 from mtmai.clients.rest.models.ag_event import AgEvent
 from mtmai.clients.rest.models.ag_event_list import AgEventList
 from mtmai.clients.rest.models.ag_events import AgEvents
