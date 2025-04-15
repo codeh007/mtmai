@@ -48,6 +48,7 @@ from .utils import (
 #     media_codecs=True,
 # )
 
+
 class BaseBrowserStrategy(ABC):
     """Base class for all browser strategies.
 
@@ -80,7 +81,9 @@ class BaseBrowserStrategy(ABC):
         pass
 
     @abstractmethod
-    async def get_page(self, crawlerRunConfig: CrawlerRunConfig) -> Tuple[Page, BrowserContext]:
+    async def get_page(
+        self, crawlerRunConfig: CrawlerRunConfig
+    ) -> Tuple[Page, BrowserContext]:
         """Get a page with specified configuration.
 
         Args:
@@ -91,7 +94,9 @@ class BaseBrowserStrategy(ABC):
         """
         pass
 
-    async def get_pages(self, crawlerRunConfig: CrawlerRunConfig, count: int = 1) -> List[Tuple[Page, BrowserContext]]:
+    async def get_pages(
+        self, crawlerRunConfig: CrawlerRunConfig, count: int = 1
+    ) -> List[Tuple[Page, BrowserContext]]:
         """Get multiple pages with the same configuration.
 
         Args:
@@ -132,7 +137,7 @@ class BaseBrowserStrategy(ABC):
             "cache_mode",
             "content_filter",
             "semaphore_count",
-            "url"
+            "url",
         ]
         for key in ephemeral_keys:
             if key in config_dict:
@@ -145,7 +150,9 @@ class BaseBrowserStrategy(ABC):
         signature_hash = hashlib.sha256(signature_json.encode("utf-8")).hexdigest()
         return signature_hash
 
-    async def create_browser_context(self, crawlerRunConfig: Optional[CrawlerRunConfig] = None) -> BrowserContext:
+    async def create_browser_context(
+        self, crawlerRunConfig: Optional[CrawlerRunConfig] = None
+    ) -> BrowserContext:
         """Creates and returns a new browser context with configured settings.
 
         Args:
@@ -168,18 +175,55 @@ class BaseBrowserStrategy(ABC):
         # Define blocked extensions for resource optimization
         blocked_extensions = [
             # Images
-            "jpg", "jpeg", "png", "gif", "webp", "svg", "ico", "bmp", "tiff", "psd",
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "webp",
+            "svg",
+            "ico",
+            "bmp",
+            "tiff",
+            "psd",
             # Fonts
-            "woff", "woff2", "ttf", "otf", "eot",
+            "woff",
+            "woff2",
+            "ttf",
+            "otf",
+            "eot",
             # Media
-            "mp4", "webm", "ogg", "avi", "mov", "wmv", "flv", "m4v", "mp3", "wav", "aac",
-            "m4a", "opus", "flac",
+            "mp4",
+            "webm",
+            "ogg",
+            "avi",
+            "mov",
+            "wmv",
+            "flv",
+            "m4v",
+            "mp3",
+            "wav",
+            "aac",
+            "m4a",
+            "opus",
+            "flac",
             # Documents
-            "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx",
+            "pdf",
+            "doc",
+            "docx",
+            "xls",
+            "xlsx",
+            "ppt",
+            "pptx",
             # Archives
-            "zip", "rar", "7z", "tar", "gz",
+            "zip",
+            "rar",
+            "7z",
+            "tar",
+            "gz",
             # Scripts and data
-            "xml", "swf", "wasm",
+            "xml",
+            "swf",
+            "wasm",
         ]
 
         # Common context settings
@@ -199,25 +243,34 @@ class BaseBrowserStrategy(ABC):
                 "has_touch": False,
                 "is_mobile": False,
                 # Disable javascript in text mode
-                "java_script_enabled": False
+                "java_script_enabled": False,
             }
             # Update context settings with text mode settings
             context_settings.update(text_mode_settings)
             if self.logger:
-                self.logger.debug("Text mode enabled for browser context", tag="BROWSER")
+                self.logger.debug(
+                    "Text mode enabled for browser context", tag="BROWSER"
+                )
 
         # Handle storage state properly - this is key for persistence
         if self.config.storage_state:
             context_settings["storage_state"] = self.config.storage_state
             if self.logger:
                 if isinstance(self.config.storage_state, str):
-                    self.logger.debug(f"Using storage state from file: {self.config.storage_state}", tag="BROWSER")
+                    self.logger.debug(
+                        f"Using storage state from file: {self.config.storage_state}",
+                        tag="BROWSER",
+                    )
                 else:
-                    self.logger.debug("Using storage state from config object", tag="BROWSER")
+                    self.logger.debug(
+                        "Using storage state from config object", tag="BROWSER"
+                    )
 
         # If user_data_dir is specified, browser persistence should be automatic
         if self.config.user_data_dir and self.logger:
-            self.logger.debug(f"Using user data directory: {self.config.user_data_dir}", tag="BROWSER")
+            self.logger.debug(
+                f"Using user data directory: {self.config.user_data_dir}", tag="BROWSER"
+            )
 
         # Apply crawler-specific configurations if provided
         if crawlerRunConfig:
@@ -227,10 +280,12 @@ class BaseBrowserStrategy(ABC):
                     "server": crawlerRunConfig.proxy_config.server,
                 }
                 if crawlerRunConfig.proxy_config.username:
-                    proxy_settings.update({
-                        "username": crawlerRunConfig.proxy_config.username,
-                        "password": crawlerRunConfig.proxy_config.password,
-                    })
+                    proxy_settings.update(
+                        {
+                            "username": crawlerRunConfig.proxy_config.username,
+                            "password": crawlerRunConfig.proxy_config.password,
+                        }
+                    )
                 context_settings["proxy"] = proxy_settings
 
         # Create and return the context
@@ -247,11 +302,17 @@ class BaseBrowserStrategy(ABC):
             return context
         except Exception as e:
             if self.logger:
-                self.logger.error(f"Error creating browser context: {str(e)}", tag="BROWSER")
+                self.logger.error(
+                    f"Error creating browser context: {str(e)}", tag="BROWSER"
+                )
             # Fallback to basic context creation if the advanced settings fail
             return await self.browser.new_context()
 
-    async def setup_context(self, context: BrowserContext, crawlerRunConfig: Optional[CrawlerRunConfig] = None):
+    async def setup_context(
+        self,
+        context: BrowserContext,
+        crawlerRunConfig: Optional[CrawlerRunConfig] = None,
+    ):
         """Set up a browser context with the configured options.
 
         Args:
@@ -269,7 +330,9 @@ class BaseBrowserStrategy(ABC):
             context.set_default_navigation_timeout(DOWNLOAD_PAGE_TIMEOUT)
             if self.config.downloads_path:
                 context._impl_obj._options["accept_downloads"] = True
-                context._impl_obj._options["downloads_path"] = self.config.downloads_path
+                context._impl_obj._options["downloads_path"] = (
+                    self.config.downloads_path
+                )
 
         # Handle user agent and browser hints
         if self.config.user_agent:
@@ -286,7 +349,9 @@ class BaseBrowserStrategy(ABC):
                 {
                     "name": "cookiesEnabled",
                     "value": "true",
-                    "url": crawlerRunConfig and crawlerRunConfig.url or "https://crawl4ai.com/",
+                    "url": crawlerRunConfig
+                    and crawlerRunConfig.url
+                    or "https://crawl4ai.com/",
                 }
             ]
         )
@@ -299,6 +364,7 @@ class BaseBrowserStrategy(ABC):
                 or crawlerRunConfig.magic
             ):
                 await context.add_init_script(load_js_script("navigator_overrider"))
+
 
 class PlaywrightBrowserStrategy(BaseBrowserStrategy):
     """Standard Playwright browser strategy.
@@ -345,6 +411,7 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
         Returns:
             dict: Browser launch arguments
         """
+
         args = [
             "--disable-gpu",
             "--disable-gpu-compositing",
@@ -410,7 +477,9 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
 
         return browser_args
 
-    async def create_browser_context(self, crawlerRunConfig: Optional[CrawlerRunConfig] = None) -> BrowserContext:
+    async def create_browser_context(
+        self, crawlerRunConfig: Optional[CrawlerRunConfig] = None
+    ) -> BrowserContext:
         """Creates and returns a new browser context with configured settings.
 
         This implementation extends the base class version to handle user_data_dir specifically.
@@ -424,7 +493,9 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
         # Handle user_data_dir explicitly to ensure storage persistence
         if self.config.user_data_dir:
             # Create a storage state file path if none exists
-            storage_path = os.path.join(self.config.user_data_dir, "Default", "storage_state.json")
+            storage_path = os.path.join(
+                self.config.user_data_dir, "Default", "storage_state.json"
+            )
 
             # Create the file if it doesn't exist
             if not os.path.exists(storage_path):
@@ -435,7 +506,9 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
             # Override storage_state with our specific path
             self.config.storage_state = storage_path
             if self.logger:
-                self.logger.debug(f"Using persistent storage state at: {storage_path}", tag="BROWSER")
+                self.logger.debug(
+                    f"Using persistent storage state at: {storage_path}", tag="BROWSER"
+                )
 
         # Now call the base class implementation which handles everything else
         return await super().create_browser_context(crawlerRunConfig)
@@ -462,7 +535,9 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
             await page.close()
             del self.sessions[session_id]
 
-    async def get_page(self, crawlerRunConfig: CrawlerRunConfig) -> Tuple[Page, BrowserContext]:
+    async def get_page(
+        self, crawlerRunConfig: CrawlerRunConfig
+    ) -> Tuple[Page, BrowserContext]:
         """Get a page for the given configuration.
 
         Args:
@@ -511,15 +586,22 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
         if self.config.user_data_dir and self.browser and self.default_context:
             for context in self.browser.contexts:
                 try:
-                    await context.storage_state(path=os.path.join(self.config.user_data_dir, "Default", "storage_state.json"))
+                    await context.storage_state(
+                        path=os.path.join(
+                            self.config.user_data_dir, "Default", "storage_state.json"
+                        )
+                    )
                     if self.logger:
-                        self.logger.debug("Ensuring storage state is persisted before closing browser", tag="BROWSER")
+                        self.logger.debug(
+                            "Ensuring storage state is persisted before closing browser",
+                            tag="BROWSER",
+                        )
                 except Exception as e:
                     if self.logger:
                         self.logger.warning(
                             message="Failed to ensure storage persistence: {error}",
                             tag="BROWSER",
-                            params={"error": str(e)}
+                            params={"error": str(e)},
                         )
 
         # Close all sessions
@@ -536,7 +618,7 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
                     self.logger.error(
                         message="Error closing context: {error}",
                         tag="ERROR",
-                        params={"error": str(e)}
+                        params={"error": str(e)},
                     )
         self.contexts_by_config.clear()
 
@@ -547,6 +629,7 @@ class PlaywrightBrowserStrategy(BaseBrowserStrategy):
         if self.playwright:
             await self.playwright.stop()
             self.playwright = None
+
 
 class CDPBrowserStrategy(BaseBrowserStrategy):
     """CDP-based browser strategy.
@@ -622,14 +705,15 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
                     args,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+                    creationflags=subprocess.DETACHED_PROCESS
+                    | subprocess.CREATE_NEW_PROCESS_GROUP,
                 )
             else:
                 self.browser_process = subprocess.Popen(
                     args,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    preexec_fn=os.setpgrp  # Start in a new process group
+                    preexec_fn=os.setpgrp,  # Start in a new process group
                 )
 
             # Monitor for a short time to make sure it starts properly
@@ -696,7 +780,9 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
             if self.config.headless:
                 args.append("--headless")
         else:
-            raise NotImplementedError(f"Browser type {self.config.browser_type} not supported")
+            raise NotImplementedError(
+                f"Browser type {self.config.browser_type} not supported"
+            )
 
         return base_args + args
 
@@ -722,7 +808,14 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
                         if is_windows():
                             # On Windows we might need taskkill for detached processes
                             try:
-                                subprocess.run(["taskkill", "/F", "/PID", str(self.browser_process.pid)])
+                                subprocess.run(
+                                    [
+                                        "taskkill",
+                                        "/F",
+                                        "/PID",
+                                        str(self.browser_process.pid),
+                                    ]
+                                )
                             except Exception:
                                 self.browser_process.kill()
                         else:
@@ -748,7 +841,9 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
                         params={"error": str(e)},
                     )
 
-    async def create_browser_context(self, crawlerRunConfig: Optional[CrawlerRunConfig] = None) -> BrowserContext:
+    async def create_browser_context(
+        self, crawlerRunConfig: Optional[CrawlerRunConfig] = None
+    ) -> BrowserContext:
         """Create a new browser context.
 
         Uses the base class implementation which handles all configurations.
@@ -796,7 +891,9 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
             await page.close()
             del self.sessions[session_id]
 
-    async def get_page(self, crawlerRunConfig: CrawlerRunConfig) -> Tuple[Page, BrowserContext]:
+    async def get_page(
+        self, crawlerRunConfig: CrawlerRunConfig
+    ) -> Tuple[Page, BrowserContext]:
         """Get a page for the given configuration.
 
         Args:
@@ -840,15 +937,22 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
         if self.config.user_data_dir and self.browser and self.default_context:
             for context in self.browser.contexts:
                 try:
-                    await context.storage_state(path=os.path.join(self.config.user_data_dir, "Default", "storage_state.json"))
+                    await context.storage_state(
+                        path=os.path.join(
+                            self.config.user_data_dir, "Default", "storage_state.json"
+                        )
+                    )
                     if self.logger:
-                        self.logger.debug("Ensuring storage state is persisted before closing browser", tag="BROWSER")
+                        self.logger.debug(
+                            "Ensuring storage state is persisted before closing browser",
+                            tag="BROWSER",
+                        )
                 except Exception as e:
                     if self.logger:
                         self.logger.warning(
                             message="Failed to ensure storage persistence: {error}",
                             tag="BROWSER",
-                            params={"error": str(e)}
+                            params={"error": str(e)},
                         )
 
         # Close all sessions
@@ -885,6 +989,7 @@ class CDPBrowserStrategy(BaseBrowserStrategy):
             await self.playwright.stop()
             self.playwright = None
 
+
 class BuiltinBrowserStrategy(CDPBrowserStrategy):
     """Built-in browser strategy.
 
@@ -899,12 +1004,20 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             logger: Logger for recording events and errors
         """
         super().__init__(config, logger)
-        self.builtin_browser_dir = os.path.join(get_home_folder(), "builtin-browser") if not self.config.user_data_dir else self.config.user_data_dir
-        self.builtin_config_file = os.path.join(self.builtin_browser_dir, "browser_config.json")
+        self.builtin_browser_dir = (
+            os.path.join(get_home_folder(), "builtin-browser")
+            if not self.config.user_data_dir
+            else self.config.user_data_dir
+        )
+        self.builtin_config_file = os.path.join(
+            self.builtin_browser_dir, "browser_config.json"
+        )
 
         # Raise error if user data dir is already engaged
         if self._check_user_dir_is_engaged(self.builtin_browser_dir):
-            raise Exception(f"User data directory {self.builtin_browser_dir} is already engaged by another browser instance.")
+            raise Exception(
+                f"User data directory {self.builtin_browser_dir} is already engaged by another browser instance."
+            )
 
         os.makedirs(self.builtin_browser_dir, exist_ok=True)
 
@@ -918,16 +1031,21 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         # the current user data directory
         if os.path.exists(self.builtin_config_file):
             try:
-                with open(self.builtin_config_file, 'r') as f:
+                with open(self.builtin_config_file, "r") as f:
                     browser_info_dict = json.load(f)
 
                 # Check if user data dir is already engaged
-                for port_str, browser_info in browser_info_dict.get("port_map", {}).items():
+                for port_str, browser_info in browser_info_dict.get(
+                    "port_map", {}
+                ).items():
                     if browser_info.get("user_data_dir") == user_data_dir:
                         return True
             except Exception as e:
                 if self.logger:
-                    self.logger.error(f"Error reading built-in browser config: {str(e)}", tag="BUILTIN")
+                    self.logger.error(
+                        f"Error reading built-in browser config: {str(e)}",
+                        tag="BUILTIN",
+                    )
         return False
 
     async def start(self):
@@ -940,11 +1058,17 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         browser_info = self.get_browser_info()
         if browser_info:
             if self.logger:
-                self.logger.info(f"Using existing built-in browser at {browser_info.get('cdp_url')}", tag="BROWSER")
-            self.config.cdp_url = browser_info.get('cdp_url')
+                self.logger.info(
+                    f"Using existing built-in browser at {browser_info.get('cdp_url')}",
+                    tag="BROWSER",
+                )
+            self.config.cdp_url = browser_info.get("cdp_url")
         else:
             if self.logger:
-                self.logger.info("Built-in browser not found, launching new instance...", tag="BROWSER")
+                self.logger.info(
+                    "Built-in browser not found, launching new instance...",
+                    tag="BROWSER",
+                )
             cdp_url = await self.launch_builtin_browser(
                 browser_type=self.config.browser_type,
                 debugging_port=self.config.debugging_port,
@@ -952,7 +1076,10 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             )
             if not cdp_url:
                 if self.logger:
-                    self.logger.warning("Failed to launch built-in browser, falling back to regular CDP strategy", tag="BROWSER")
+                    self.logger.warning(
+                        "Failed to launch built-in browser, falling back to regular CDP strategy",
+                        tag="BROWSER",
+                    )
                 return await super().start()
             self.config.cdp_url = cdp_url
 
@@ -960,7 +1087,9 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         return await super().start()
 
     @classmethod
-    def get_builtin_browser_info(cls, debugging_port: int, config_file: str, logger: Optional[AsyncLogger] = None) -> Optional[Dict[str, Any]]:
+    def get_builtin_browser_info(
+        cls, debugging_port: int, config_file: str, logger: Optional[AsyncLogger] = None
+    ) -> Optional[Dict[str, Any]]:
         """Get information about the built-in browser for a specific debugging port.
 
         Args:
@@ -975,7 +1104,7 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             return None
 
         try:
-            with open(config_file, 'r') as f:
+            with open(config_file, "r") as f:
                 browser_info_dict = json.load(f)
 
             # Get browser info from port map
@@ -985,12 +1114,15 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
                     browser_info = browser_info_dict["port_map"][port_str]
 
                     # Check if the browser is still running
-                    if not is_browser_running(browser_info.get('pid')):
+                    if not is_browser_running(browser_info.get("pid")):
                         if logger:
-                            logger.warning(f"Built-in browser on port {debugging_port} is not running", tag="BUILTIN")
+                            logger.warning(
+                                f"Built-in browser on port {debugging_port} is not running",
+                                tag="BUILTIN",
+                            )
                         # Remove this port from the dictionary
                         del browser_info_dict["port_map"][port_str]
-                        with open(config_file, 'w') as f:
+                        with open(config_file, "w") as f:
                             json.dump(browser_info_dict, f, indent=2)
                         return None
 
@@ -1000,7 +1132,9 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
 
         except Exception as e:
             if logger:
-                logger.error(f"Error reading built-in browser config: {str(e)}", tag="BUILTIN")
+                logger.error(
+                    f"Error reading built-in browser config: {str(e)}", tag="BUILTIN"
+                )
             return None
 
     def get_browser_info(self) -> Optional[Dict[str, Any]]:
@@ -1012,14 +1146,15 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         return self.get_builtin_browser_info(
             debugging_port=self.config.debugging_port,
             config_file=self.builtin_config_file,
-            logger=self.logger
+            logger=self.logger,
         )
 
-
-    async def launch_builtin_browser(self,
-                               browser_type: str = "chromium",
-                               debugging_port: int = 9222,
-                               headless: bool = True) -> Optional[str]:
+    async def launch_builtin_browser(
+        self,
+        browser_type: str = "chromium",
+        debugging_port: int = 9222,
+        headless: bool = True,
+    ) -> Optional[str]:
         """Launch a browser in the background for use as the built-in browser.
 
         Args:
@@ -1034,18 +1169,23 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         browser_info = self.get_builtin_browser_info(
             debugging_port=debugging_port,
             config_file=self.builtin_config_file,
-            logger=self.logger
+            logger=self.logger,
         )
         if browser_info:
             if self.logger:
-                self.logger.info(f"Built-in browser is already running on port {debugging_port}", tag="BUILTIN")
-            return browser_info.get('cdp_url')
+                self.logger.info(
+                    f"Built-in browser is already running on port {debugging_port}",
+                    tag="BUILTIN",
+                )
+            return browser_info.get("cdp_url")
 
         # Create a user data directory for the built-in browser
         user_data_dir = os.path.join(self.builtin_browser_dir, "user_data")
         # Raise error if user data dir is already engaged
         if self._check_user_dir_is_engaged(user_data_dir):
-            raise Exception(f"User data directory {user_data_dir} is already engaged by another browser instance.")
+            raise Exception(
+                f"User data directory {user_data_dir} is already engaged by another browser instance."
+            )
 
         # Create the user data directory if it doesn't exist
         os.makedirs(user_data_dir, exist_ok=True)
@@ -1072,7 +1212,10 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
                 args.append("--headless")
         else:
             if self.logger:
-                self.logger.error(f"Browser type {browser_type} not supported for built-in browser", tag="BUILTIN")
+                self.logger.error(
+                    f"Browser type {browser_type} not supported for built-in browser",
+                    tag="BUILTIN",
+                )
             return None
 
         try:
@@ -1082,14 +1225,15 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
                     args,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+                    creationflags=subprocess.DETACHED_PROCESS
+                    | subprocess.CREATE_NEW_PROCESS_GROUP,
                 )
             else:
                 process = subprocess.Popen(
                     args,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    preexec_fn=os.setpgrp  # Start in a new process group
+                    preexec_fn=os.setpgrp,  # Start in a new process group
                 )
 
             # Wait briefly to ensure the process starts successfully
@@ -1098,7 +1242,10 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             # Check if the process is still running
             if process.poll() is not None:
                 if self.logger:
-                    self.logger.error(f"Browser process exited immediately with code {process.returncode}", tag="BUILTIN")
+                    self.logger.error(
+                        f"Browser process exited immediately with code {process.returncode}",
+                        tag="BUILTIN",
+                    )
                 return None
 
             # Construct CDP URL
@@ -1106,6 +1253,7 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
 
             # Try to verify browser is responsive by fetching version info
             import aiohttp
+
             json_url = f"{cdp_url}/json/version"
             config_json = None
 
@@ -1122,43 +1270,50 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
                         await asyncio.sleep(0.5)
             except Exception as e:
                 if self.logger:
-                    self.logger.warning(f"Could not verify browser: {str(e)}", tag="BUILTIN")
+                    self.logger.warning(
+                        f"Could not verify browser: {str(e)}", tag="BUILTIN"
+                    )
 
             # Create browser info
             browser_info = {
-                'pid': process.pid,
-                'cdp_url': cdp_url,
-                'user_data_dir': user_data_dir,
-                'browser_type': browser_type,
-                'debugging_port': debugging_port,
-                'start_time': time.time(),
-                'config': config_json
+                "pid": process.pid,
+                "cdp_url": cdp_url,
+                "user_data_dir": user_data_dir,
+                "browser_type": browser_type,
+                "debugging_port": debugging_port,
+                "start_time": time.time(),
+                "config": config_json,
             }
 
             # Read existing config file if it exists
             port_map = {}
             if os.path.exists(self.builtin_config_file):
                 try:
-                    with open(self.builtin_config_file, 'r') as f:
+                    with open(self.builtin_config_file, "r") as f:
                         existing_data = json.load(f)
 
                     # Check if it already uses port mapping
                     if isinstance(existing_data, dict) and "port_map" in existing_data:
                         port_map = existing_data["port_map"]
                     # Convert legacy format to port mapping
-                    elif isinstance(existing_data, dict) and "debugging_port" in existing_data:
+                    elif (
+                        isinstance(existing_data, dict)
+                        and "debugging_port" in existing_data
+                    ):
                         old_port = str(existing_data.get("debugging_port"))
                         if self._is_browser_running(existing_data.get("pid")):
                             port_map[old_port] = existing_data
                 except Exception as e:
                     if self.logger:
-                        self.logger.warning(f"Could not read existing config: {str(e)}", tag="BUILTIN")
+                        self.logger.warning(
+                            f"Could not read existing config: {str(e)}", tag="BUILTIN"
+                        )
 
             # Add/update this browser in the port map
             port_map[str(debugging_port)] = browser_info
 
             # Write updated config
-            with open(self.builtin_config_file, 'w') as f:
+            with open(self.builtin_config_file, "w") as f:
                 json.dump({"port_map": port_map}, f, indent=2)
 
             # Detach from the browser process - don't keep any references
@@ -1166,12 +1321,16 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             process = None
 
             if self.logger:
-                self.logger.success(f"Built-in browser launched at CDP URL: {cdp_url}", tag="BUILTIN")
+                self.logger.success(
+                    f"Built-in browser launched at CDP URL: {cdp_url}", tag="BUILTIN"
+                )
             return cdp_url
 
         except Exception as e:
             if self.logger:
-                self.logger.error(f"Error launching built-in browser: {str(e)}", tag="BUILTIN")
+                self.logger.error(
+                    f"Error launching built-in browser: {str(e)}", tag="BUILTIN"
+                )
             return None
 
     async def kill_builtin_browser(self) -> bool:
@@ -1183,10 +1342,13 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
         browser_info = self.get_browser_info()
         if not browser_info:
             if self.logger:
-                self.logger.warning(f"No built-in browser found on port {self.config.debugging_port}", tag="BUILTIN")
+                self.logger.warning(
+                    f"No built-in browser found on port {self.config.debugging_port}",
+                    tag="BUILTIN",
+                )
             return False
 
-        pid = browser_info.get('pid')
+        pid = browser_info.get("pid")
         if not pid:
             return False
 
@@ -1205,13 +1367,13 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
                     os.kill(pid, signal.SIGKILL)
 
             # Update config file to remove this browser
-            with open(self.builtin_config_file, 'r') as f:
+            with open(self.builtin_config_file, "r") as f:
                 browser_info_dict = json.load(f)
             # Remove this port from the dictionary
             port_str = str(self.config.debugging_port)
             if port_str in browser_info_dict.get("port_map", {}):
                 del browser_info_dict["port_map"][port_str]
-            with open(self.builtin_config_file, 'w') as f:
+            with open(self.builtin_config_file, "w") as f:
                 json.dump(browser_info_dict, f, indent=2)
             # Remove user data directory if it exists
             if os.path.exists(self.builtin_browser_dir):
@@ -1226,7 +1388,9 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
             return True
         except Exception as e:
             if self.logger:
-                self.logger.error(f"Error killing built-in browser: {str(e)}", tag="BUILTIN")
+                self.logger.error(
+                    f"Error killing built-in browser: {str(e)}", tag="BUILTIN"
+                )
             return False
 
     async def get_builtin_browser_status(self) -> Dict[str, Any]:
@@ -1239,17 +1403,17 @@ class BuiltinBrowserStrategy(CDPBrowserStrategy):
 
         if not browser_info:
             return {
-                'running': False,
-                'cdp_url': None,
-                'info': None,
-                'port': self.config.debugging_port
+                "running": False,
+                "cdp_url": None,
+                "info": None,
+                "port": self.config.debugging_port,
             }
 
         return {
-            'running': True,
-            'cdp_url': browser_info.get('cdp_url'),
-            'info': browser_info,
-            'port': self.config.debugging_port
+            "running": True,
+            "cdp_url": browser_info.get("cdp_url"),
+            "info": browser_info,
+            "port": self.config.debugging_port,
         }
 
     # Override the close method to handle built-in browser cleanup

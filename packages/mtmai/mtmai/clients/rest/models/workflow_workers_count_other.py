@@ -31,6 +31,7 @@ from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.mt_browser_config import MtBrowserConfig
 from mtmai.clients.rest.models.provider_types import ProviderTypes
+from mtmai.clients.rest.models.root_state import RootState
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
@@ -39,7 +40,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -78,11 +79,13 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_15_validator: Optional[SocialTeam] = None
     # data type: MtBrowserConfig
     anyof_schema_16_validator: Optional[MtBrowserConfig] = None
+    # data type: RootState
+    anyof_schema_17_validator: Optional[RootState] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
+        actual_instance: Optional[Union[AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
+    any_of_schemas: Set[str] = { "AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
 
     model_config = {
         "validate_assignment": True,
@@ -199,9 +202,15 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
+        # validate data type: RootState
+        if not isinstance(v, RootState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RootState`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -310,10 +319,16 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_17_validator: Optional[RootState] = None
+        try:
+            instance.actual_instance = RootState.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -327,7 +342,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

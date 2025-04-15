@@ -11,6 +11,7 @@ from google.genai import types
 from loguru import logger
 from mtmai.model_client.utils import get_default_litellm_model
 from pydantic import BaseModel
+from tools.browser_tool import browser_human_interaction_tool
 
 
 # ============ Configuration Section ============
@@ -48,18 +49,9 @@ def before_agent_callback(callback_context: CallbackContext):
     """
     在 agent 执行前, 设置获取或者初始化浏览器配置
     """
-    # callback_context.state.update(
-    #     {
-    #         "browser_config": {
-    #             "browser_type": "chrome",
-    #             "browser_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    #         }
-    #     }
-    # )
-    # return None
     agent_name = callback_context.agent_name
-    invocation_id = callback_context.invocation_id
-    print(f"[Callback] Entering agent: {agent_name} (Invocation: {invocation_id})")
+    # invocation_id = callback_context.invocation_id
+    # print(f"[Callback] Entering agent: {agent_name} (Invocation: {invocation_id})")
 
     # Example: Check a condition in state
     if callback_context.state.get("skip_agent", False):
@@ -145,7 +137,7 @@ def after_tool_callback(
 
 
 def create_browser_agent():
-    from mtmai.tools.browser_tool import browser_use_steal_tool, browser_use_tool
+    from mtmai.tools.browser_tool import browser_use_tool
 
     return Agent(
         model=get_default_litellm_model(),
@@ -160,13 +152,18 @@ def create_browser_agent():
     - 如果任务需要一些基本的资料, 应该在任务描述中附带. 特别是 账号, 网址, 等等.
     - 你需要完全明白浏览器所需的任务规划, 给出经过优化的步骤规划指引 browser use 操作
     - 你需要完全了解用户的意图以及任务涉及网站的相关特性
-
+    - 如果需要人工操作, 请使用 browser_human_interaction_tool 工具.
+      需要人工操作的常见场景: 人机检测, 验证码接收...
 工具指引:
     browser_use_tool: 用于完成通用浏览器操作任务
     browser_use_steal_tool: 创建独立浏览器配置文件, 使用特定的 网络代理 和 浏览器指纹配置,防止账号间关联
 """
         ),
-        tools=[browser_use_tool, browser_use_steal_tool],
+        tools=[
+            browser_use_tool,
+            # browser_use_steal_tool,
+            browser_human_interaction_tool,
+        ],
         before_agent_callback=before_agent_callback,
         before_tool_callback=before_tool_callback,
     )

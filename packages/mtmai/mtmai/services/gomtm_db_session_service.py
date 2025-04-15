@@ -436,21 +436,22 @@ class GomtmDatabaseSessionService(BaseSessionService):
             storage_user_state.state = user_state
             storage_session.state = session_state
 
-            encoded_content = event.content.model_dump(exclude_none=True)
-            storage_event = StorageEvent(
-                id=event.id,
-                invocation_id=event.invocation_id,
-                author=event.author,
-                branch=event.branch,
-                content=encoded_content,
-                actions=event.actions,
-                session_id=session.id,
-                app_name=session.app_name,
-                user_id=session.user_id,
-                timestamp=datetime.fromtimestamp(event.timestamp),
-            )
+            if event.content:
+                encoded_content = event.content.model_dump(exclude_none=True)
+                storage_event = StorageEvent(
+                    id=event.id,
+                    invocation_id=event.invocation_id,
+                    author=event.author,
+                    branch=event.branch,
+                    content=encoded_content,
+                    actions=event.actions,
+                    session_id=session.id,
+                    app_name=session.app_name,
+                    user_id=session.user_id,
+                    timestamp=datetime.fromtimestamp(event.timestamp),
+                )
 
-            sessionFactory.add(storage_event)
+                sessionFactory.add(storage_event)
 
             sessionFactory.commit()
             sessionFactory.refresh(storage_session)

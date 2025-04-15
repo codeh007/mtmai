@@ -134,6 +134,16 @@ class MtBrowserManager(AsyncWebCrawler):
                 headless=False,
                 disable_security=False,
                 chrome_instance_path="/opt/google/chrome/chrome",
+                extra_chromium_args=[
+                    "--disable-dev-shm-usage",
+                    "--no-first-run",
+                    "--no-default-browser-check",
+                    "--disable-infobars",
+                    "--window-position=0,0",
+                    "--ignore-certificate-errors",
+                    "--ignore-certificate-errors-spki-list",
+                    "--disable-session-crashed-bubble",  # 关闭崩溃提示
+                ],
             )
         )
         return self.browseruse_browser

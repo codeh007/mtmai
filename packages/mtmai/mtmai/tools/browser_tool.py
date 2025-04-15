@@ -59,27 +59,19 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
     )
 
     async with MtBrowserManager() as browser_manager:
-        steal_agent = BrowserUserAgent(
-            task="""
-                Go to https://bot-detector.rebrowser.net/ and verify that all the bot checks are passed.
-            """,
-            llm=llm,
-            browser_context=await browser_manager.create_browser_use_context(),
-        )
-        stat_result = await steal_agent.run(max_steps=3)
+        async with await browser_manager.get_browseruse_context() as browseruse_context:
+            browser_user_agent = BrowserUserAgent(
+                task=task,
+                llm=llm,
+                use_vision=False,
+                browser_context=browseruse_context,
+                max_actions_per_step=4,
+            )
 
-        browser_user_agent = BrowserUserAgent(
-            task=task,
-            llm=llm,
-            use_vision=False,
-            browser_context=await browser_manager.create_browser_use_context(),
-            max_actions_per_step=4,
-        )
-
-        # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
-        #      其他有用信息保存到 state 即可
-        history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
-        tool_context.state.update({"browser_history": jsonable_encoder(history)})
+            # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
+            #      其他有用信息保存到 state 即可
+            history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
+            tool_context.state.update({"browser_history": jsonable_encoder(history)})
 
         final_result = history.final_result()
         return tool_success(final_result)
@@ -134,3 +126,16 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
 
         final_result = steal_history.final_result()
         return tool_success(final_result)
+
+
+async def browser_human_interaction_tool(
+    task: str, tool_context: ToolContext
+) -> dict[str, str]:
+    """网页操作过程中,遇到需要人工操作的场景, 可以调用这个工具, 工具会返回需要人工操作的场景, 并等待人工操作完成.
+
+    Args:
+        task: 需要人工具体的操作描述
+        tool_context: ToolContext object.
+    """
+    logger.info("TODO: 现在智能体操作过程遇到需要人工操作的场景.")
+    return tool_success("人工操作已经完成, 请继续后续任务.")
