@@ -5,9 +5,10 @@ from typing import Any, Dict
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
-from google.adk.events import Event, EventActions
+from google.adk.events import EventActions
 from google.adk.tools import BaseTool, ToolContext
 from google.genai import types
+from loguru import logger
 from mtmai.model_client.utils import get_default_litellm_model
 from pydantic import BaseModel
 
@@ -89,13 +90,13 @@ def before_agent_callback(callback_context: CallbackContext):
         # --- Create Event with Actions ---
         actions_with_update = EventActions(state_delta=state_changes)
         # This event might represent an internal system action, not just an agent response
-        system_event = Event(
-            invocation_id="inv_login_update",
-            author="system",  # Or 'agent', 'tool' etc.
-            actions=actions_with_update,
-            # timestamp=current_time
-            # content might be None or represent the action taken
-        )
+        # system_event = Event(
+        #     invocation_id="inv_login_update",
+        #     author="system",  # Or 'agent', 'tool' etc.
+        #     actions=actions_with_update,
+        #     # timestamp=current_time
+        #     # content might be None or represent the action taken
+        # )
 
         # --- Append the Event (This updates the state) ---
         # callback_context.
@@ -115,21 +116,26 @@ def before_tool_callback(
     # print(f"[Callback] Before tool call for tool '{tool_name}' in agent '{agent_name}'")
     # print(f"[Callback] Original args: {args}")
 
-    if tool_name == "get_capital_city" and args.get("country", "").lower() == "canada":
-        print("[Callback] Detected 'Canada'. Modifying args to 'France'.")
-        args["country"] = "France"
-        print(f"[Callback] Modified args: {args}")
-        return None
-
-    # If the tool is 'get_capital_city' and country is 'BLOCK'
-    if tool_name == "get_capital_city" and args.get("country", "").upper() == "BLOCK":
-        print("[Callback] Detected 'BLOCK'. Skipping tool execution.")
-        return {"result": "Tool execution was blocked by before_tool_callback."}
-
-    # print("[Callback] Proceeding with original or previously modified args.")
-
-    tool_context.state.update({"browser_config222": {"browser_type": "chrome"}})
+    if tool_name == "browser_use_tool" or tool_name == "browser_use_steal_tool":
+        # 调用浏览器工具前, 先初始化 浏览器配置, 包括 浏览器指纹, 网络代理, 浏览器配置
+        logger.warning(
+            "TODO: 调用浏览器工具前, 先初始化 浏览器配置, 包括 浏览器指纹, 网络代理, 浏览器配置"
+        )
+        # 可以这样设置 state
+        # tool_context.state.update({"browser_config222": {"browser_type": "chrome"}})
     return None
+
+
+def after_tool_callback(
+    tool: BaseTool,
+    args: Dict[str, Any],
+    tool_context: ToolContext,
+    tool_response: Dict,
+):
+    """
+    在 tool 执行后, 设置获取或者初始化浏览器配置
+    """
+    logger.warning(f"tool_response: {tool_response}")
 
 
 def create_browser_agent():

@@ -1,12 +1,17 @@
+import json
 import os
 from pathlib import Path
+from typing import cast
 
 from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig as BrowseruseBrowserConfig
 from browser_use import BrowserContextConfig
 from browser_use.browser.context import BrowserContext
 from crawl4ai.async_configs import BrowserConfig
-from crawl4ai.async_crawler_strategy import AsyncCrawlerStrategy
+from crawl4ai.async_crawler_strategy import (
+    AsyncCrawlerStrategy,
+    AsyncPlaywrightCrawlerStrategy,
+)
 from crawl4ai.async_webcrawler import AsyncWebCrawler
 from crawl4ai.types import AsyncLoggerBase
 from loguru import logger
@@ -46,6 +51,25 @@ class MtBrowseruseContext(BrowserContext):
         # 这行没实际生效, 原因未知
         logger.info(f"on_page_created: {page}")
 
+    async def save_cookies(self):
+        """Save current cookies to file"""
+        if self.session and self.session.context and self.config.cookies_file:
+            try:
+                cookies = await self.session.context.cookies()
+                logger.debug(
+                    f"Saving {len(cookies)} cookies to {self.config.cookies_file}"
+                )
+
+                # Check if the path is a directory and create it if necessary
+                dirname = os.path.dirname(self.config.cookies_file)
+                if dirname:
+                    os.makedirs(dirname, exist_ok=True)
+
+                with open(self.config.cookies_file, "w") as f:
+                    json.dump(cookies, f)
+            except Exception as e:
+                logger.warning(f"Failed to save cookies: {str(e)}")
+
 
 class MtBrowserManager(AsyncWebCrawler):
     """
@@ -79,6 +103,16 @@ class MtBrowserManager(AsyncWebCrawler):
             # 提示: 如果use_managed_browser=False, debugging_port= 这个参数不会打开cdp端口,
             # 如果要打开cdp端口就额外添加启动参数
             extra_args=[f"--remote-debugging-port={settings.BROWSER_DEBUG_PORT}"],
+            # use_persistent_context=True,  # 提示: 会强制 use_managed_browser = True
+            cookies=[
+                {
+                    "name": "cookiesEnabled2222detector",
+                    "value": "true",
+                    "url": "https://bot-detector.rebrowser.net",
+                    # if crawlerRunConfig
+                    # else "https://crawl4ai.com/",
+                }
+            ],
         )
         super().__init__(
             crawler_strategy=crawler_strategy,
@@ -88,24 +122,12 @@ class MtBrowserManager(AsyncWebCrawler):
             logger=logger,
         )
 
-    # async def start(self):
-    #     await super().start()
-    #     # _self.browseruse_browser = await self.get_browseruse_browser()
-    #     browser_manager = cast(
-    #         AsyncPlaywrightCrawlerStrategy, self.crawler_strategy
-    #     ).browser_manager
-
-    #     # from playwright.async_api import BrowserContext as PlaywrightBrowserContext
-
-    #     # old_setup_context = browser_manager.setup_context
-
-    #     # async def new_setup_context(_self, context: PlaywrightBrowserContext):
-    #     #     await old_setup_context(context)
-    #     #     context.add_init_script("console.log('hello add_init_script 11112222')")
-
-    #     # browser_manager.setup_context = new_setup_context
-
-    #     return self
+    async def get_playwright_browser_strategy(self):
+        playwright_strategy = cast(
+            AsyncPlaywrightCrawlerStrategy, self.crawler_strategy
+        )
+        # playwright_strategy.browser_manager.setup_context()
+        return playwright_strategy
 
     async def get_browseruse_browser(self):
         # browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器

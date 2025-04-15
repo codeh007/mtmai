@@ -2,6 +2,7 @@ import asyncio
 
 from browser_use import Agent as BrowserUserAgent
 from browser_use.agent.views import AgentHistoryList
+from crawl4ai.async_configs import BrowserConfig
 from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -10,6 +11,33 @@ from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
 from pydantic import SecretStr
+
+STATE_KEY_BROWSER_CONFIG = "browser_config"
+
+
+def get_default_browser_config():
+    BrowserConfig(
+        browser_mode="dedicated",
+        browser_type="chromium",
+        chrome_channel="chrome",  # msedge
+        channel="chrome",
+        # use_managed_browser=True,
+        headless=False,
+        debugging_port=settings.BROWSER_DEBUG_PORT,
+        # 提示: 如果use_managed_browser=False, debugging_port= 这个参数不会打开cdp端口,
+        # 如果要打开cdp端口就额外添加启动参数
+        extra_args=[f"--remote-debugging-port={settings.BROWSER_DEBUG_PORT}"],
+        # use_persistent_context=True,  # 提示: 会强制 use_managed_browser = True
+        cookies=[
+            {
+                "name": "cookiesEnabled2222detector",
+                "value": "true",
+                "url": "https://bot-detector.rebrowser.net",
+                # if crawlerRunConfig
+                # else "https://crawl4ai.com/",
+            }
+        ],
+    )
 
 
 # 通用任务
@@ -66,10 +94,12 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
     Returns:
         操作的最终结果
     """
-
-    browser_state_config = tool_context.state.get("browser_config222", {})
-
-    async with MtBrowserManager() as browser_manager:
+    browser_config = tool_context.state.get(
+        STATE_KEY_BROWSER_CONFIG, get_default_browser_config()
+    )
+    async with MtBrowserManager(
+        config=browser_config,
+    ) as browser_manager:
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.0-flash-exp",
             api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
@@ -92,15 +122,10 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
 
         steal_history = await steal_agent.run(max_steps=3)
         tool_context.state.update(
-            {
-                "browser_config": jsonable_encoder(
-                    {
-                        "hello": "value",
-                    }
-                )
-            }
+            {STATE_KEY_BROWSER_CONFIG: jsonable_encoder(browser_config)}
         )
 
+        a = await browser_manager.get_playwright_browser_strategy()
         await asyncio.sleep(10)
 
         final_result = steal_history.final_result()
