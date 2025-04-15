@@ -20,7 +20,7 @@ const opts = {
     renderer: "Intel Iris OpenGL Engine",
   },
   navigator: {
-
+    language: "us-US",
   },
 }
 const utils = {};
