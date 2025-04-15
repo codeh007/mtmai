@@ -32,7 +32,6 @@ from google.adk.cli.cli_eval import (
 from google.adk.cli.utils import create_empty_state, envs, evals
 from google.adk.events.event import Event
 from google.adk.runners import Runner
-from google.adk.sessions.database_session_service import DatabaseSessionService
 from google.adk.sessions.in_memory_session_service import InMemorySessionService
 from google.adk.sessions.session import Session
 from google.adk.sessions.vertex_ai_session_service import VertexAiSessionService
@@ -168,7 +167,12 @@ def get_fast_api_app(
                 os.environ["GOOGLE_CLOUD_LOCATION"],
             )
         else:
-            session_service = DatabaseSessionService(db_url=session_db_url)
+            # session_service = DatabaseSessionService(db_url=session_db_url)
+            from mtmai.services.gomtm_db_session_service import (
+                GomtmDatabaseSessionService,
+            )
+
+            session_service = GomtmDatabaseSessionService(db_url=session_db_url)
     else:
         session_service = InMemorySessionService()
 

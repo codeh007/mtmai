@@ -9,27 +9,29 @@ import time
 from typing import List, Optional
 
 from playwright.async_api import BrowserContext
-from playwright_stealth import StealthConfig
 
 from .async_configs import BrowserConfig, CrawlerRunConfig
 from .config import DOWNLOAD_PAGE_TIMEOUT
 from .js_snippet import load_js_script
 from .utils import get_chromium_path
 
-stealth_config = StealthConfig(
-    webdriver=True,
-    chrome_app=True,
-    chrome_csi=True,
-    chrome_load_times=True,
-    chrome_runtime=True,
-    navigator_languages=True,
-    navigator_plugins=True,
-    navigator_permissions=True,
-    webgl_vendor=True,
-    outerdimensions=True,
-    navigator_hardware_concurrency=True,
-    media_codecs=True,
-)
+# from playwright_stealth import StealthConfig
+
+
+# stealth_config = StealthConfig(
+#     webdriver=True,
+#     chrome_app=True,
+#     chrome_csi=True,
+#     chrome_load_times=True,
+#     chrome_runtime=True,
+#     navigator_languages=True,
+#     navigator_plugins=True,
+#     navigator_permissions=True,
+#     webgl_vendor=True,
+#     outerdimensions=True,
+#     navigator_hardware_concurrency=True,
+#     media_codecs=True,
+# )
 
 BROWSER_DISABLE_OPTIONS = [
     "--disable-background-networking",

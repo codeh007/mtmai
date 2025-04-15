@@ -67,6 +67,8 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
         操作的最终结果
     """
 
+    browser_state_config = tool_context.state.get("browser_config222", {})
+
     async with MtBrowserManager() as browser_manager:
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.0-flash-exp",

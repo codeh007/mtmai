@@ -61,9 +61,9 @@ class Settings(BaseSettings):
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
     MTM_DATABASE_URL: str | None = os.environ.get("MTM_DATABASE_URL", "development")
 
-    @property
-    def SESSION_DB_URL(self) -> str:
-        return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
+    # @property
+    # def SESSION_DB_URL(self) -> str:
+    #     return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
 
     API_V1_STR: str = "/api/v1"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"

@@ -1,13 +1,15 @@
 from autogen_core import tool_agent
 from google.adk.agents import Agent
-from google.adk.agents.invocation_context import InvocationContext
+from google.adk.agents.callback_context import CallbackContext
 from loguru import logger
 from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.model_client.utils import get_default_litellm_model
 
 
-def before_agent_callback(callback_context: InvocationContext):
+def before_agent_callback(callback_context: CallbackContext):
     logger.info("before_agent_callback ")
+
+    user_input = callback_context.user_content
 
     return None
 

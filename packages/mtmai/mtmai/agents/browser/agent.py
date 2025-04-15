@@ -1,9 +1,15 @@
 import os
 from dataclasses import dataclass
 from textwrap import dedent
+from typing import Any, Dict
 
 from google.adk.agents import Agent
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.events import Event, EventActions
+from google.adk.tools import BaseTool, ToolContext
+from google.genai import types
 from mtmai.model_client.utils import get_default_litellm_model
+from pydantic import BaseModel
 
 
 # ============ Configuration Section ============
@@ -32,6 +38,100 @@ config = TwitterConfig(
 )
 
 
+class HelloModel1(BaseModel):
+    name: str
+    age: int
+
+
+def before_agent_callback(callback_context: CallbackContext):
+    """
+    在 agent 执行前, 设置获取或者初始化浏览器配置
+    """
+    # callback_context.state.update(
+    #     {
+    #         "browser_config": {
+    #             "browser_type": "chrome",
+    #             "browser_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    #         }
+    #     }
+    # )
+    # return None
+    agent_name = callback_context.agent_name
+    invocation_id = callback_context.invocation_id
+    print(f"[Callback] Entering agent: {agent_name} (Invocation: {invocation_id})")
+
+    # Example: Check a condition in state
+    if callback_context.state.get("skip_agent", False):
+        print(f"[Callback] Condition met: Skipping agent {agent_name}.")
+        # Return Content to skip the agent's run
+        return types.Content(
+            parts=[types.Part(text=f"Agent {agent_name} was skipped by callback.")]
+        )
+    else:
+        print(f"[Callback] Condition not met: Proceeding with agent {agent_name}.")
+        # Return None to allow the agent's run to execute
+
+        # callback_context.state.update(
+        #     {
+        #         "browser_config": {
+        #             "browser_type": "chrome",
+        #             "browser_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        #         }
+        #     }
+        # )
+        state_changes = {
+            "task_status": "active",  # Update session state
+            # "user:login_count": session.state.get("user:login_count", 0) + 1, # Update user state
+            # "user:last_login_ts": current_time,   # Add user state
+            # "temp:validation_needed": True        # Add temporary state (will be discarded)
+        }
+
+        # --- Create Event with Actions ---
+        actions_with_update = EventActions(state_delta=state_changes)
+        # This event might represent an internal system action, not just an agent response
+        system_event = Event(
+            invocation_id="inv_login_update",
+            author="system",  # Or 'agent', 'tool' etc.
+            actions=actions_with_update,
+            # timestamp=current_time
+            # content might be None or represent the action taken
+        )
+
+        # --- Append the Event (This updates the state) ---
+        # callback_context.
+        # callback_context.session_service.append_event(session, system_event)
+
+        return None
+
+
+def before_tool_callback(
+    tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext
+):
+    """
+    在 tool 执行前, 设置获取或者初始化浏览器配置
+    """
+    agent_name = tool_context.agent_name
+    tool_name = tool.name
+    # print(f"[Callback] Before tool call for tool '{tool_name}' in agent '{agent_name}'")
+    # print(f"[Callback] Original args: {args}")
+
+    if tool_name == "get_capital_city" and args.get("country", "").lower() == "canada":
+        print("[Callback] Detected 'Canada'. Modifying args to 'France'.")
+        args["country"] = "France"
+        print(f"[Callback] Modified args: {args}")
+        return None
+
+    # If the tool is 'get_capital_city' and country is 'BLOCK'
+    if tool_name == "get_capital_city" and args.get("country", "").upper() == "BLOCK":
+        print("[Callback] Detected 'BLOCK'. Skipping tool execution.")
+        return {"result": "Tool execution was blocked by before_tool_callback."}
+
+    # print("[Callback] Proceeding with original or previously modified args.")
+
+    tool_context.state.update({"browser_config222": {"browser_type": "chrome"}})
+    return None
+
+
 def create_browser_agent():
     from mtmai.tools.browser_tool import browser_use_steal_tool, browser_use_tool
 
@@ -55,4 +155,6 @@ def create_browser_agent():
 """
         ),
         tools=[browser_use_tool, browser_use_steal_tool],
+        before_agent_callback=before_agent_callback,
+        before_tool_callback=before_tool_callback,
     )
