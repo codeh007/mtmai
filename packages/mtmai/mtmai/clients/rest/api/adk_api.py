@@ -51,6 +51,7 @@ class AdkApi:
     @validate_call
     async def adk_app_get(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         app: Annotated[StrictStr, Field(description="The app id")],
         _request_timeout: Union[
             None,
@@ -69,6 +70,8 @@ class AdkApi:
 
         获取adk应用
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param app: The app id (required)
         :type app: str
         :param _request_timeout: timeout setting for this request. If one
@@ -94,6 +97,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_get_serialize(
+            tenant=tenant,
             app=app,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -121,6 +125,7 @@ class AdkApi:
     @validate_call
     async def adk_app_get_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         app: Annotated[StrictStr, Field(description="The app id")],
         _request_timeout: Union[
             None,
@@ -139,6 +144,8 @@ class AdkApi:
 
         获取adk应用
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param app: The app id (required)
         :type app: str
         :param _request_timeout: timeout setting for this request. If one
@@ -164,6 +171,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_get_serialize(
+            tenant=tenant,
             app=app,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -191,6 +199,7 @@ class AdkApi:
     @validate_call
     async def adk_app_get_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         app: Annotated[StrictStr, Field(description="The app id")],
         _request_timeout: Union[
             None,
@@ -209,6 +218,8 @@ class AdkApi:
 
         获取adk应用
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param app: The app id (required)
         :type app: str
         :param _request_timeout: timeout setting for this request. If one
@@ -234,6 +245,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_get_serialize(
+            tenant=tenant,
             app=app,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -256,6 +268,7 @@ class AdkApi:
 
     def _adk_app_get_serialize(
         self,
+        tenant,
         app,
         _request_auth,
         _content_type,
@@ -278,6 +291,8 @@ class AdkApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if app is not None:
             _path_params['app'] = app
         # process the query parameters
@@ -304,7 +319,7 @@ class AdkApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/adk/app/{app}',
+            resource_path='/api/v1/tenants/{tenant}/adk/app/{app}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -323,6 +338,7 @@ class AdkApi:
     @validate_call
     async def adk_app_list(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -340,6 +356,8 @@ class AdkApi:
 
         获取adk事件列表
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -363,6 +381,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -389,6 +408,7 @@ class AdkApi:
     @validate_call
     async def adk_app_list_with_http_info(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -406,6 +426,8 @@ class AdkApi:
 
         获取adk事件列表
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -429,6 +451,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -455,6 +478,7 @@ class AdkApi:
     @validate_call
     async def adk_app_list_without_preload_content(
         self,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -472,6 +496,8 @@ class AdkApi:
 
         获取adk事件列表
 
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -495,6 +521,7 @@ class AdkApi:
         """ # noqa: E501
 
         _param = self._adk_app_list_serialize(
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -516,6 +543,7 @@ class AdkApi:
 
     def _adk_app_list_serialize(
         self,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -537,6 +565,8 @@ class AdkApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -561,7 +591,7 @@ class AdkApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/adk/app',
+            resource_path='/api/v1/tenants/{tenant}/adk/app',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -581,6 +611,7 @@ class AdkApi:
     async def adk_app_upsert(
         self,
         adk_app_upsert: AdkAppUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -600,6 +631,8 @@ class AdkApi:
 
         :param adk_app_upsert: (required)
         :type adk_app_upsert: AdkAppUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -624,6 +657,7 @@ class AdkApi:
 
         _param = self._adk_app_upsert_serialize(
             adk_app_upsert=adk_app_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -650,6 +684,7 @@ class AdkApi:
     async def adk_app_upsert_with_http_info(
         self,
         adk_app_upsert: AdkAppUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -669,6 +704,8 @@ class AdkApi:
 
         :param adk_app_upsert: (required)
         :type adk_app_upsert: AdkAppUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -693,6 +730,7 @@ class AdkApi:
 
         _param = self._adk_app_upsert_serialize(
             adk_app_upsert=adk_app_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -719,6 +757,7 @@ class AdkApi:
     async def adk_app_upsert_without_preload_content(
         self,
         adk_app_upsert: AdkAppUpsert,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -738,6 +777,8 @@ class AdkApi:
 
         :param adk_app_upsert: (required)
         :type adk_app_upsert: AdkAppUpsert
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -762,6 +803,7 @@ class AdkApi:
 
         _param = self._adk_app_upsert_serialize(
             adk_app_upsert=adk_app_upsert,
+            tenant=tenant,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -783,6 +825,7 @@ class AdkApi:
     def _adk_app_upsert_serialize(
         self,
         adk_app_upsert,
+        tenant,
         _request_auth,
         _content_type,
         _headers,
@@ -804,6 +847,8 @@ class AdkApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -843,7 +888,7 @@ class AdkApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/adk/app',
+            resource_path='/api/v1/tenants/{tenant}/adk/app',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
