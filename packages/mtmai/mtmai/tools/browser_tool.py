@@ -105,13 +105,15 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
             api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
         )
 
-        steal_agent = BrowserUserAgent(
-            task="""
-                访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
-            """,
-            llm=llm,
-            browser_context=await browser_manager.get_browseruse_context(),
-        )
+        browseruse_context = await browser_manager.get_browseruse_context()
+        with browseruse_context:
+            steal_agent = BrowserUserAgent(
+                task="""
+                    访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?
+                """,
+                llm=llm,
+                browser_context=browseruse_context,
+            )
         # steal_agent = BrowserUserAgent(
         #     task="""
         #         访问: https://bot.sannysoft.com/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?

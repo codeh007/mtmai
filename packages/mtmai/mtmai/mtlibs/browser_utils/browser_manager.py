@@ -1,4 +1,4 @@
-import json
+import asyncio
 import os
 from pathlib import Path
 from typing import cast
@@ -7,6 +7,8 @@ from browser_use import Browser as BrowserUseBrowser
 from browser_use import BrowserConfig as BrowseruseBrowserConfig
 from browser_use import BrowserContextConfig
 from browser_use.browser.context import BrowserContext
+from browser_use.browser.views import BrowserState
+from browser_use.utils import time_execution_sync
 from crawl4ai.async_configs import BrowserConfig
 from crawl4ai.async_crawler_strategy import (
     AsyncCrawlerStrategy,
@@ -40,10 +42,17 @@ class MtBrowseruseContext(BrowserContext):
             return undetect_script
 
         await playwright_context.add_init_script(await load_undetect_script())
-        playwright_context.on(
-            "page",
-            self.on_page_created,
+
+        await playwright_context.add_cookies(
+            [
+                {
+                    "name": "cookiesEnabled2222detector",
+                    "value": "true",
+                    "url": "https://bot-detector.rebrowser.net",
+                }
+            ]
         )
+        playwright_context.on("page", self.on_page_created)
 
         return playwright_context
 
@@ -51,24 +60,35 @@ class MtBrowseruseContext(BrowserContext):
         # 这行没实际生效, 原因未知
         logger.info(f"on_page_created: {page}")
 
+    @time_execution_sync(
+        "--get_state"
+    )  # This decorator might need to be updated to handle async
+    async def get_state(self) -> BrowserState:
+        """Get the current state of the browser"""
+        await self._wait_for_page_and_frames_load()
+        session = await self.get_session()
+        session.cached_state = await self._update_state()
+
+        # Save cookies if a file is specified
+        # if self.config.cookies_file:
+        asyncio.create_task(self.save_cookies())
+
     async def save_cookies(self):
         """Save current cookies to file"""
-        if self.session and self.session.context and self.config.cookies_file:
-            try:
-                cookies = await self.session.context.cookies()
-                logger.debug(
-                    f"Saving {len(cookies)} cookies to {self.config.cookies_file}"
-                )
+        # if self.session and self.session.context and self.config.cookies_file:
+        try:
+            cookies = await self.session.context.cookies()
+            logger.debug(f"Saving {len(cookies)} cookies to {self.config.cookies_file}")
 
-                # Check if the path is a directory and create it if necessary
-                dirname = os.path.dirname(self.config.cookies_file)
-                if dirname:
-                    os.makedirs(dirname, exist_ok=True)
+            # Check if the path is a directory and create it if necessary
+            # dirname = os.path.dirname(self.config.cookies_file)
+            # if dirname:
+            #     os.makedirs(dirname, exist_ok=True)
 
-                with open(self.config.cookies_file, "w") as f:
-                    json.dump(cookies, f)
-            except Exception as e:
-                logger.warning(f"Failed to save cookies: {str(e)}")
+            # with open(self.config.cookies_file, "w") as f:
+            #     json.dump(cookies, f)
+        except Exception as e:
+            logger.warning(f"Failed to save cookies: {str(e)}")
 
 
 class MtBrowserManager(AsyncWebCrawler):
@@ -149,7 +169,7 @@ class MtBrowserManager(AsyncWebCrawler):
             browser=await self.get_browseruse_browser(),
             config=BrowserContextConfig(
                 # user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-                _force_keep_context_alive=True,
+                # _force_keep_context_alive=True,
             ),
         )
         return browser_context
