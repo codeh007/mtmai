@@ -2,6 +2,7 @@ from autogen_core import tool_agent
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
 from loguru import logger
+from mtmai.agents.adk_writer.writer_agent import WriterAgent
 from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.model_client.utils import get_default_litellm_model
 from pydantic import BaseModel
@@ -57,6 +58,18 @@ root_agent = Agent(
         # get_agent_by_name("content_writer_agent"),
         # get_agent_by_name("instagram_agent"),
         get_agent_by_name("browser_agent"),
+        WriterAgent(
+            name="writer_agent",
+            model=get_default_litellm_model(),
+            description="专业的博客文章撰写助手",
+            instruction=(
+                """你是专业的博客文章撰写助手, 根据用户的需求, 撰写博客文章.
+重要:
+    文章应该包含标题和正文.
+    语气应该是调皮的, 轻松的, 有趣的.
+"""
+            ),
+        ),
     ],
     before_agent_callback=before_agent_callback,
     tools=[

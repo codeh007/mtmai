@@ -75,6 +75,55 @@ class MtBrowserManager(AsyncWebCrawler):
         # playwright_strategy.browser_manager.setup_context()
         return playwright_strategy
 
+    # async def get_browseruse_browser(self):
+    #     # 方式1: browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器
+    #     from browser_use import Browser as BrowserUseBrowser  # noqa
+
+    #     # cdp_url = (
+    #     #     self.browser_config.cdp_url
+    #     #     if self.browser_config.cdp_url
+    #     #     else f"http://{self.browser_config.host}:{self.browser_config.debugging_port}"
+    #     # )
+    #     # self.browseruse_browser = BrowserUseBrowser(
+    #     #     config=BrowseruseBrowserConfig(
+    #     #         headless=False,
+    #     #         cdp_url=cdp_url,
+    #     #     )
+    #     # )
+    #     # 方式2: browseruse 自托管
+    #     browseruse_browser = BrowserUseBrowser(
+    #         config=BrowseruseBrowserConfig(
+    #             headless=False,
+    #             disable_security=False,
+    #             chrome_instance_path="/opt/google/chrome/chrome",
+    #             extra_chromium_args=[
+    #                 "--disable-dev-shm-usage",
+    #                 "--no-first-run",
+    #                 "--no-default-browser-check",
+    #                 "--disable-infobars",
+    #                 "--window-position=0,0",
+    #                 "--disable-session-crashed-bubble",  # 关闭崩溃提示
+    #                 "--hide-crash-restore-bubble",  # 关闭崩溃恢复提示
+    #             ],
+    #             new_context_config=BrowserContextConfig(
+    #                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    #             ),
+    #         )
+    #     )
+    #     return browseruse_browser
+
+    # async def get_browseruse_context(self):
+    #     browser_context = BrowseruseBrowserContext(
+    #         browser=await self.get_browseruse_browser(),
+    #         config=BrowserContextConfig(
+    #             # user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    #             # _force_keep_context_alive=True,
+    #         ),
+    #     )
+    #     return browser_context
+
+
+class BrowseruseHelper:
     async def get_browseruse_browser(self):
         # 方式1: browser use 的浏览器通过 cdp 连接到 crawl4ai 的浏览器
         from browser_use import Browser as BrowserUseBrowser  # noqa
@@ -91,7 +140,7 @@ class MtBrowserManager(AsyncWebCrawler):
         #     )
         # )
         # 方式2: browseruse 自托管
-        self.browseruse_browser = BrowserUseBrowser(
+        browseruse_browser = BrowserUseBrowser(
             config=BrowseruseBrowserConfig(
                 headless=False,
                 disable_security=False,
@@ -105,16 +154,9 @@ class MtBrowserManager(AsyncWebCrawler):
                     "--disable-session-crashed-bubble",  # 关闭崩溃提示
                     "--hide-crash-restore-bubble",  # 关闭崩溃恢复提示
                 ],
+                new_context_config=BrowserContextConfig(
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+                ),
             )
         )
-        return self.browseruse_browser
-
-    async def get_browseruse_context(self):
-        browser_context = BrowseruseBrowserContext(
-            browser=await self.get_browseruse_browser(),
-            config=BrowserContextConfig(
-                # user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-                # _force_keep_context_alive=True,
-            ),
-        )
-        return browser_context
+        return browseruse_browser

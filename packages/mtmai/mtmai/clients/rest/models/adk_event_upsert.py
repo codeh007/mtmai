@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,7 +32,7 @@ class AdkEventUpsert(BaseModel):
     session_id: StrictStr
     invocation_id: StrictStr
     author: StrictStr
-    branch: StrictStr
+    branch: Optional[StrictStr] = None
     timestamp: StrictStr
     content: Dict[str, Any]
     actions: Dict[str, Any]

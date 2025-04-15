@@ -12,7 +12,7 @@ https://github.com/tinyfish-io/tf-playwright-stealth
     本质依然是 执行一段 js 脚本来设置页面的一些特定变量
  *
  */
-console.log("设置额外的 反检测脚本");
+console.log("开始设置反人机检测脚本");
 
 const opts = {
   webgl: {

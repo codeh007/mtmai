@@ -41,6 +41,8 @@ from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 
+from mtmai.core.config import settings
+
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
 
 
@@ -99,7 +101,7 @@ def get_fast_api_app(
     *,
     agent_dir: str,
     session_db_url: str = "",
-    allow_origins: Optional[list[str]] = None,
+    # allow_origins: Optional[list[str]] = ["*", "localhost", "127.0.0.1"],
     web: bool,
     trace_to_cloud: bool = False,
     lifespan: Optional[Lifespan[FastAPI]] = None,
@@ -133,14 +135,24 @@ def get_fast_api_app(
     # Run the FastAPI server.
     app = FastAPI(lifespan=lifespan)
 
-    if allow_origins:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=allow_origins,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+    # if allow_origins:
+    #     app.add_middleware(
+    #         CORSMiddleware,
+    #         allow_origins=allow_origins,
+    #         allow_credentials=True,
+    #         allow_methods=["*"],
+    #         allow_headers=["*"],
+    #     )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"]
+        if settings.BACKEND_CORS_ORIGINS == "*"
+        else [str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*", "x-chainlit-client-type"],
+    )
 
     if agent_dir not in sys.path:
         sys.path.append(agent_dir)

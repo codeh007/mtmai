@@ -1,7 +1,9 @@
 import asyncio
 
 from browser_use import Agent as BrowserUserAgent
+from browser_use import BrowserContextConfig
 from browser_use.agent.views import AgentHistoryList
+from browser_use.browser.context import BrowserContext as BrowseruseBrowserContext
 from crawl4ai.async_configs import BrowserConfig
 from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
@@ -9,7 +11,10 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
-from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
+from mtmai.mtlibs.browser_utils.browser_manager import (
+    BrowseruseHelper,
+    MtBrowserManager,
+)
 from playwright.async_api import BrowserContext
 from pydantic import SecretStr
 
@@ -97,25 +102,38 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
     )
 
-    async with MtBrowserManager() as browser_manager:
-        async with await browser_manager.get_browseruse_context() as browseruse_context:
-            await setup_context(browseruse_context.session.context)
+    # async with MtBrowserManager() as browser_manager:
+    helper = BrowseruseHelper()
+    browser = await helper.get_browseruse_browser()
+    # async with await browser_manager.get_browseruse_context() as browseruse_context:
+    # await setup_context(mtbrowseruse_context.session.context)
 
-            browser_user_agent = BrowserUserAgent(
-                task=task,
-                llm=llm,
-                use_vision=False,
-                browser_context=browseruse_context,
-                max_actions_per_step=4,
-            )
+    # browser_context = await browser.new_context()
+    browser_context = BrowseruseBrowserContext(
+        browser=browser,
+        config=BrowserContextConfig(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+        ),
+    )
+    async with browser_context as context:
+        await setup_context(context.session.context)
+        browser_user_agent = BrowserUserAgent(
+            task=task,
+            llm=llm,
+            use_vision=False,
+            browser_context=context,
+            # browser=browser,
+            max_actions_per_step=4,
+        )
+        # browser.playwright_browser.contexts
 
-            # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
-            #      其他有用信息保存到 state 即可
-            history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
-            tool_context.state.update({"browser_history": jsonable_encoder(history)})
+        # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
+        #      其他有用信息保存到 state 即可
+        history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
+        tool_context.state.update({"browser_history": jsonable_encoder(history)})
 
-        final_result = history.final_result()
-        return tool_success(final_result)
+    final_result = history.final_result()
+    return tool_success(final_result)
 
 
 # 创建独立的指纹环境

@@ -31,14 +31,10 @@ class AdkSession(BaseModel):
     id: StrictStr
     app_name: StrictStr
     user_id: StrictStr
-    session_id: StrictStr
-    invocation_id: StrictStr
-    author: StrictStr
-    branch: StrictStr
-    timestamp: StrictStr
-    content: Dict[str, Any]
-    actions: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "id", "app_name", "user_id", "session_id", "invocation_id", "author", "branch", "timestamp", "content", "actions"]
+    state: Dict[str, Any]
+    create_time: StrictStr
+    update_time: StrictStr
+    __properties: ClassVar[List[str]] = ["metadata", "id", "app_name", "user_id", "state", "create_time", "update_time"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -103,13 +99,9 @@ class AdkSession(BaseModel):
             "id": obj.get("id"),
             "app_name": obj.get("app_name"),
             "user_id": obj.get("user_id"),
-            "session_id": obj.get("session_id"),
-            "invocation_id": obj.get("invocation_id"),
-            "author": obj.get("author"),
-            "branch": obj.get("branch"),
-            "timestamp": obj.get("timestamp"),
-            "content": obj.get("content"),
-            "actions": obj.get("actions")
+            "state": obj.get("state"),
+            "create_time": obj.get("create_time"),
+            "update_time": obj.get("update_time")
         })
         return _obj
 

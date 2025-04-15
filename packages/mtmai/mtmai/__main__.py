@@ -75,7 +75,7 @@ def web(
     app = get_fast_api_app(
         agent_dir=agents_dir,
         session_db_url=session_db_url,
-        allow_origins=allow_origins,
+        # allow_origins=allow_origins,
         web=True,
         trace_to_cloud=trace_to_cloud,
         lifespan=_lifespan,
