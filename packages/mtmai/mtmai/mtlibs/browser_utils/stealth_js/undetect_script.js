@@ -18,7 +18,10 @@ const opts = {
   webgl: {
     vendor: "Intel Inc.",
     renderer: "Intel Iris OpenGL Engine",
-  }
+  },
+  navigator: {
+
+  },
 }
 const utils = {};
 

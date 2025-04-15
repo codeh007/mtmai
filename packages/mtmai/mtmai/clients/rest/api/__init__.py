@@ -15,6 +15,7 @@ from mtmai.clients.rest.api.user_api import UserApi
 from mtmai.clients.rest.api.worker_api import WorkerApi
 from mtmai.clients.rest.api.workflow_api import WorkflowApi
 from mtmai.clients.rest.api.workflow_run_api import WorkflowRunApi
+from mtmai.clients.rest.api.adk_api import AdkApi
 from mtmai.clients.rest.api.admin_api import AdminApi
 from mtmai.clients.rest.api.ag_events_api import AgEventsApi
 from mtmai.clients.rest.api.ag_state_api import AgStateApi

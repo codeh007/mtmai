@@ -4,7 +4,9 @@ from typing import cast
 
 from browser_use import BrowserConfig as BrowseruseBrowserConfig  # noqa
 from browser_use import BrowserContextConfig
-from browser_use.browser.context import BrowserContext
+from browser_use.browser.context import (
+    BrowserContext as BrowseruseBrowserContext,  # noqa
+)
 from crawl4ai.async_configs import BrowserConfig
 from crawl4ai.async_crawler_strategy import (
     AsyncCrawlerStrategy,
@@ -12,47 +14,7 @@ from crawl4ai.async_crawler_strategy import (
 )
 from crawl4ai.async_webcrawler import AsyncWebCrawler
 from crawl4ai.types import AsyncLoggerBase
-from loguru import logger
 from mtmai.core.config import settings
-from playwright.async_api import Browser as PlaywrightBrowser
-from playwright.async_api import Page
-
-# class MtBrowserConfig(BrowseruseBrowserConfig):
-#     pass
-
-
-class MtBrowseruseContext(BrowserContext):
-    async def _create_context(self, browser: PlaywrightBrowser):
-        playwright_context = await super()._create_context(browser)
-        # from undetected_playwright import Malenia
-
-        # await Malenia.apply_stealth(playwright_context)
-
-        # 额外的反检测脚本
-        async def load_undetect_script():
-            undetect_script = open(
-                "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js",
-                "r",
-            ).read()
-            return undetect_script
-
-        await playwright_context.add_init_script(await load_undetect_script())
-
-        await playwright_context.add_cookies(
-            [
-                {
-                    "name": "cookiesExampleEnabled2222detector",
-                    "value": "true",
-                    "url": "https://bot-detector.rebrowser.net",
-                }
-            ]
-        )
-        playwright_context.on("page", self.on_page_created)
-
-        return playwright_context
-
-    async def on_page_created(self, page: Page):
-        logger.info(f"browser use : on_page_created: {page}")
 
 
 class MtBrowserManager(AsyncWebCrawler):
@@ -140,16 +102,15 @@ class MtBrowserManager(AsyncWebCrawler):
                     "--no-default-browser-check",
                     "--disable-infobars",
                     "--window-position=0,0",
-                    "--ignore-certificate-errors",
-                    "--ignore-certificate-errors-spki-list",
                     "--disable-session-crashed-bubble",  # 关闭崩溃提示
+                    "--hide-crash-restore-bubble",  # 关闭崩溃恢复提示
                 ],
             )
         )
         return self.browseruse_browser
 
     async def get_browseruse_context(self):
-        browser_context = MtBrowseruseContext(
+        browser_context = BrowseruseBrowserContext(
             browser=await self.get_browseruse_browser(),
             config=BrowserContextConfig(
                 # user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",

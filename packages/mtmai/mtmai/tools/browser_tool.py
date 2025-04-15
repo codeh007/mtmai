@@ -10,6 +10,7 @@ from loguru import logger
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.browser_utils.browser_manager import MtBrowserManager
+from playwright.async_api import BrowserContext
 from pydantic import SecretStr
 
 STATE_KEY_BROWSER_CONFIG = "browser_config"
@@ -41,6 +42,44 @@ def get_default_browser_config():
     )
 
 
+async def setup_context(browseruse_context: BrowserContext):
+    await browseruse_context.add_init_script(
+        """
+        console.log("hello world===============@ browser_use_tool")
+        """
+    )
+
+    # 额外的反检测脚本
+    async def load_undetect_script():
+        undetect_script = open(
+            "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js",
+            "r",
+        ).read()
+        return undetect_script
+
+    await browseruse_context.add_init_script(await load_undetect_script())
+
+    await browseruse_context.add_cookies(
+        [
+            {
+                "name": "cookiesExampleEnabled2222detector",
+                "value": "true",
+                "url": "https://bot-detector.rebrowser.net",
+            }
+        ]
+    )
+    # 添加 cookies(演示)
+    await browseruse_context.add_cookies(
+        [
+            {
+                "name": "cookiesExampleEnabled2222detector",
+                "value": "true",
+                "url": "https://bot-detector.rebrowser.net",
+            }
+        ]
+    )
+
+
 # 通用任务
 async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, str]:
     """基于 browser use 的浏览器自动化工具, 可以根据任务的描述,自动完成多个步骤的浏览器操作,并最终返回操作的结果.
@@ -60,6 +99,8 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
 
     async with MtBrowserManager() as browser_manager:
         async with await browser_manager.get_browseruse_context() as browseruse_context:
+            await setup_context(browseruse_context.session.context)
+
             browser_user_agent = BrowserUserAgent(
                 task=task,
                 llm=llm,
@@ -102,6 +143,8 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
             browser_cookies = tool_context.state.get(STATE_KEY_BROWSER_COOKIES, None)
             if browser_cookies:
                 browseruse_context.session.context.add_cookies(browser_cookies)
+
+            await setup_context(browseruse_context.session.context)
 
             steal_agent = BrowserUserAgent(
                 # 其他 人机检测网站: https://bot.sannysoft.com/
