@@ -147,6 +147,12 @@ dependencies = [
     "aiohttp>=3.11.11",
     "humanize>=4.10.0",
     "helium>=5.1.1",
+    "pathvalidate>=3.2.3",
+    "serpapi>=0.1.5",
+    "google-search-results>=2.4.2",
+    "mammoth>=1.9.0",
+    "youtube-transcript-api>=1.0.3",
+    "speechrecognition>=3.14.2",
 ]
 name = "mtxai"
 version = "0.0.269"

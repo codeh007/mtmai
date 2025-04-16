@@ -1,12 +1,10 @@
+from agents.open_deep_research.open_deep_research import adk_open_deep_research_tool
 from autogen_core import tool_agent
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
 from loguru import logger
 from mtmai.agents.adk_smolagent.adk_smolagent import (
     adk_smolagent_browser_automation_tool,  # noqa: F401
-)
-from mtmai.agents.adk_smolagent_blogwriter.adk_smolagent_blogwriter import (
-    adk_smolagent_blogwriter_tool,
 )
 
 # from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
@@ -88,7 +86,8 @@ root_agent = Agent(
     before_agent_callback=before_agent_callback,
     tools=[
         # adk_smolagent_browser_automation_tool
-        adk_smolagent_blogwriter_tool,
+        # adk_smolagent_blogwriter_tool,
+        adk_open_deep_research_tool,
         # 学习: fetch_page_tool + ExtractPageDataAgent 获取网页内容原代码 +
         # 智能提取所需的数据及格式放到聊天上下文中,
         # 进而后续的对话上下文中正确保存了所需的关键信息,同时又保留对话上下文的整洁

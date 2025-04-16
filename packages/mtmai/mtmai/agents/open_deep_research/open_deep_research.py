@@ -1,11 +1,16 @@
 import argparse
 import os
 import threading
+from sys import argv
 
 from dotenv import load_dotenv
+from google.adk.tools import ToolContext
 from huggingface_hub import login
-from scripts.text_inspector_tool import TextInspectorTool
-from scripts.text_web_browser import (
+from model_client.utils import get_default_smolagents_model
+from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent  # HfApiModel,
+
+from .scripts.text_inspector_tool import TextInspectorTool
+from .scripts.text_web_browser import (
     ArchiveSearchTool,
     FinderTool,
     FindNextTool,
@@ -14,13 +19,7 @@ from scripts.text_web_browser import (
     SimpleTextBrowser,
     VisitTool,
 )
-from scripts.visual_qa import visualizer
-from smolagents import (  # HfApiModel,
-    CodeAgent,
-    GoogleSearchTool,
-    LiteLLMModel,
-    ToolCallingAgent,
-)
+from .scripts.visual_qa import visualizer
 
 load_dotenv(override=True)
 login(os.getenv("HF_TOKEN"))
@@ -56,16 +55,16 @@ BROWSER_CONFIG = {
 os.makedirs(f"./{BROWSER_CONFIG['downloads_folder']}", exist_ok=True)
 
 
-def create_agent(model_id="o1"):
-    model_params = {
-        "model_id": model_id,
-        "custom_role_conversions": custom_role_conversions,
-        "max_completion_tokens": 8192,
-    }
-    if model_id == "o1":
-        model_params["reasoning_effort"] = "high"
-    model = LiteLLMModel(**model_params)
-
+def create_agent():
+    # model_params = {
+    #     "model_id": model3d,
+    #     "custom_role_conversions": custom_role_conversions,
+    #     "max_completion_tokens": 8192,
+    # }
+    # if model_id == "o1":
+    #     model_params["reasoning_effort"] = "high"
+    # model = LiteLLMModel(**model_param)
+    model = get_default_smolagents_model()
     text_limit = 100000
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
     WEB_TOOLS = [
@@ -112,15 +111,16 @@ def create_agent(model_id="o1"):
     return manager_agent
 
 
-def main():
-    args = parse_args()
-
-    agent = create_agent(model_id=args.model_id)
-
-    answer = agent.run(args.question)
-
-    print(f"Got this answer: {answer}")
-
-
-if __name__ == "__main__":
-    main()
+async def adk_open_deep_research_tool(
+    question: str, tool_context: ToolContext
+) -> dict[str, str]:
+    """执行自主多步骤任务, 并返回最终结果,
+        例如: question: 小牛电动车怎么样?
+    Args:
+        question: 问题描述
+    Returns:
+        最终答案
+    """
+    agent = create_agent(model_id=argv.model_id)
+    answer = agent.run(question)
+    return {"answer": answer}

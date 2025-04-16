@@ -1061,6 +1061,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cobble"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/7a/a507c709be2c96e1bb6102eb7b7f4026c5e5e223ef7d745a17d239e9d844/cobble-0.1.4.tar.gz", hash = "sha256:de38be1539992c8a06e569630717c485a5f91be2192c461ea2b220607dfa78aa", size = 3805 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/e1/3714a2f371985215c219c2a70953d38e3eed81ef165aed061d21de0e998b/cobble-0.1.4-py3-none-any.whl", hash = "sha256:36c91b1655e599fd428e2b95fdd5f0da1ca2e9f1abb0bc871dec21a0e78a2b44", size = 3984 },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1991,6 +2000,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/58/5a/0efdc02665dca14e0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/35/b8d3baf8c46695858cb9d8835a53baa1eeb9906ddaf2f728a5f5b640fd1e/google_resumable_media-2.7.2-py2.py3-none-any.whl", hash = "sha256:3ce7551e9fe6d99e9a126101d2536612bb73486721951e9562fee0f90c6ababa", size = 81251 },
 ]
+
+[[package]]
+name = "google-search-results"
+version = "2.4.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/77/30/b3a6f6a2e00f8153549c2fa345c58ae1ce8e5f3153c2fe0484d444c3abcb/google_search_results-2.4.2.tar.gz", hash = "sha256:603a30ecae2af8e600b22635757a6df275dad4b934f975e67878ccd640b78245", size = 18818 }
 
 [[package]]
 name = "googleapis-common-protos"
@@ -3153,6 +3171,18 @@ wheels = [
 ]
 
 [[package]]
+name = "mammoth"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cobble" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d6/a6/27a13ba068cf3ff764d631b8dd71dee1b33040aa8c143f66ce902b7d1da0/mammoth-1.9.0.tar.gz", hash = "sha256:74f5dae10ca240fd9b7a0e1a6deaebe0aad23bc590633ef6f5e868aa9b7042a6", size = 50906 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/ab/f8e63fcabc127c6efd68b03633c189ee799a5304fa96c036a325a2894bcb/mammoth-1.9.0-py2.py3-none-any.whl", hash = "sha256:0eea277316586f0ca65d86834aec4de5a0572c83ec54b4991f9bb520a891150f", size = 52901 },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3508,6 +3538,7 @@ dependencies = [
     { name = "faust-cchardet" },
     { name = "free-proxy" },
     { name = "google-adk" },
+    { name = "google-search-results" },
     { name = "googlesearch-python" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
@@ -3533,6 +3564,7 @@ dependencies = [
     { name = "loguru" },
     { name = "lxml" },
     { name = "lxml-html-clean" },
+    { name = "mammoth" },
     { name = "markdownify" },
     { name = "markitdown" },
     { name = "mcp-server-fetch" },
@@ -3548,6 +3580,7 @@ dependencies = [
     { name = "orjson" },
     { name = "pandas" },
     { name = "passlib" },
+    { name = "pathvalidate" },
     { name = "pdfplumber" },
     { name = "pgvector" },
     { name = "playwright" },
@@ -3569,10 +3602,12 @@ dependencies = [
     { name = "scrapegraph-py" },
     { name = "selenium" },
     { name = "semchunk" },
+    { name = "serpapi" },
     { name = "simpleeval" },
     { name = "slugify" },
     { name = "smolagents", extra = ["telemetry"] },
     { name = "snowballstemmer" },
+    { name = "speechrecognition" },
     { name = "sqlalchemy" },
     { name = "sqlmodel" },
     { name = "structlog" },
@@ -3584,6 +3619,7 @@ dependencies = [
     { name = "undetected-playwright" },
     { name = "xxhash" },
     { name = "yfinance" },
+    { name = "youtube-transcript-api" },
 ]
 
 [package.dev-dependencies]
@@ -3653,6 +3689,7 @@ requires-dist = [
     { name = "faust-cchardet", specifier = ">=2.1.19" },
     { name = "free-proxy", specifier = ">=1.1.1" },
     { name = "google-adk", directory = "../adk-python" },
+    { name = "google-search-results", specifier = ">=2.4.2" },
     { name = "googlesearch-python", specifier = ">=1.2.5" },
     { name = "grpcio", specifier = ">=1.70.0" },
     { name = "grpcio-tools", specifier = ">=1.70.0" },
@@ -3680,6 +3717,7 @@ requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "lxml", specifier = "~=5.3" },
     { name = "lxml-html-clean", specifier = ">=0.4.1" },
+    { name = "mammoth", specifier = ">=1.9.0" },
     { name = "markdownify", specifier = "==0.14.1" },
     { name = "markitdown", specifier = ">=0.1.1" },
     { name = "mcp-server-fetch", specifier = ">=2025.1.17" },
@@ -3695,6 +3733,7 @@ requires-dist = [
     { name = "orjson", specifier = ">=3.10.1" },
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "passlib", specifier = ">=1.7.4" },
+    { name = "pathvalidate", specifier = ">=3.2.3" },
     { name = "pdfplumber", specifier = ">=0.11.6" },
     { name = "pgvector", specifier = ">=0.3.6" },
     { name = "playwright" },
@@ -3718,10 +3757,12 @@ requires-dist = [
     { name = "scrapegraph-py", specifier = ">=1.7.0" },
     { name = "selenium", specifier = ">=4.31.0" },
     { name = "semchunk", specifier = ">=2.2.0" },
+    { name = "serpapi", specifier = ">=0.1.5" },
     { name = "simpleeval", specifier = ">=1.0.0" },
     { name = "slugify", specifier = ">=0.0.1" },
     { name = "smolagents", extras = ["telemetry"], specifier = ">=1.13.0" },
     { name = "snowballstemmer", specifier = "~=2.2" },
+    { name = "speechrecognition", specifier = ">=3.14.2" },
     { name = "sqlalchemy", specifier = ">=2.0.37" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
     { name = "structlog", specifier = ">=24.4.0" },
@@ -3734,6 +3775,7 @@ requires-dist = [
     { name = "xxhash", specifier = "~=3.4" },
     { name = "xxhash", specifier = ">=3.5.0" },
     { name = "yfinance", specifier = ">=0.2.52" },
+    { name = "youtube-transcript-api", specifier = ">=1.0.3" },
 ]
 
 [package.metadata.requires-dev]
@@ -4531,6 +4573,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/76/f1/4594f5e0fcddb6953e5b8fe00da8c317b8b41b547e2b3ae2da7512943c62/pastel-0.2.1.tar.gz", hash = "sha256:e6581ac04e973cac858828c6202c1e1e81fee1dc7de7683f3e1ffe0bfd8a573d", size = 7555 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/aa/18/a8444036c6dd65ba3624c63b734d3ba95ba63ace513078e1580590075d21/pastel-0.2.1-py2.py3-none-any.whl", hash = "sha256:4349225fcdf6c2bb34d483e523475de5bb04a5c10ef711263452cb37d7dd4364", size = 5955 },
+]
+
+[[package]]
+name = "pathvalidate"
+version = "3.2.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/87/c7a2f51cc62df0495acb0ed2533a7c74cc895e569a1b020ee5f6e9fa4e21/pathvalidate-3.2.3.tar.gz", hash = "sha256:59b5b9278e30382d6d213497623043ebe63f10e29055be4419a9c04c721739cb", size = 61717 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/14/c5a0e1a947909810fc4c043b84cac472b70e438148d34f5393be1bac663f/pathvalidate-3.2.3-py3-none-any.whl", hash = "sha256:5eaf0562e345d4b6d0c0239d0f690c3bd84d2a9a3c4c73b99ea667401b27bee1", size = 24130 },
 ]
 
 [[package]]
@@ -5828,6 +5879,18 @@ wheels = [
 ]
 
 [[package]]
+name = "serpapi"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/fa/3fd8809287f3977a3e752bb88610e918d49cb1038b14f4bc51e13e594197/serpapi-0.1.5.tar.gz", hash = "sha256:b9707ed54750fdd2f62dc3a17c6a3fb7fa421dc37902fd65b2263c0ac765a1a5", size = 14191 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/6a/21deade04100d64844e494353a5d65e7971fbdfddf78eb1f248423593ad0/serpapi-0.1.5-py2.py3-none-any.whl", hash = "sha256:6467b6adec1231059f754ccaa952b229efeaa8b9cae6e71f879703ec9e5bb3d1", size = 10966 },
+]
+
+[[package]]
 name = "setuptools"
 version = "75.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -5980,6 +6043,20 @@ wheels = [
 ]
 
 [[package]]
+name = "speechrecognition"
+version = "3.14.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "audioop-lts", marker = "python_full_version >= '3.13'" },
+    { name = "standard-aifc", marker = "python_full_version >= '3.13'" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a3/81/2f98238647f409d8faa209a0cbe9a1e2be74eeca5f739971698a2b54b12d/speechrecognition-3.14.2.tar.gz", hash = "sha256:2daa467f0b5686017ff3f9a64dcfa1a789ee10d1b0ada3be74bfad10eaef5f49", size = 32857832 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/7a/ef9a0a3ddd7e8b304906bf0d7b1f3cd92759d7ea8be10d284183b2e8f47c/speechrecognition-3.14.2-py3-none-any.whl", hash = "sha256:42940b95295b358fdd7415daa01260c8b20025d6b4000fbbaa3458f005d912b7", size = 32853272 },
+]
+
+[[package]]
 name = "sqlalchemy"
 version = "2.0.37"
 source = { registry = "https://pypi.org/simple" }
@@ -6071,6 +6148,28 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521 },
+]
+
+[[package]]
+name = "standard-aifc"
+version = "3.13.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "audioop-lts", marker = "python_full_version >= '3.13'" },
+    { name = "standard-chunk", marker = "python_full_version >= '3.13'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c4/53/6050dc3dde1671eb3db592c13b55a8005e5040131f7509cef0215212cb84/standard_aifc-3.13.0.tar.gz", hash = "sha256:64e249c7cb4b3daf2fdba4e95721f811bde8bdfc43ad9f936589b7bb2fae2e43", size = 15240 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/52/5fbb203394cc852334d1575cc020f6bcec768d2265355984dfd361968f36/standard_aifc-3.13.0-py3-none-any.whl", hash = "sha256:f7ae09cc57de1224a0dd8e3eb8f73830be7c3d0bc485de4c1f82b4a7f645ac66", size = 10492 },
+]
+
+[[package]]
+name = "standard-chunk"
+version = "3.13.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/06/ce1bb165c1f111c7d23a1ad17204d67224baa69725bb6857a264db61beaf/standard_chunk-3.13.0.tar.gz", hash = "sha256:4ac345d37d7e686d2755e01836b8d98eda0d1a3ee90375e597ae43aaf064d654", size = 4672 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/90/a5c1084d87767d787a6caba615aa50dc587229646308d9420c960cb5e4c0/standard_chunk-3.13.0-py3-none-any.whl", hash = "sha256:17880a26c285189c644bd5bd8f8ed2bdb795d216e3293e6dbe55bbd848e2982c", size = 4944 },
 ]
 
 [[package]]
@@ -6884,6 +6983,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/26/97/68270531d9f1bc62a50970f8860633baa013ac2fe9464c9ae5b3be675ddb/yfinance-0.2.52.tar.gz", hash = "sha256:d2c2ed9bc935596934cba99fca0f05beaa8384648f78105c77754e92f11bf72f", size = 117683 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8d/51/9f26741aeeb149fe75b30bceee389cf9920f9458d0f213539398aa217b99/yfinance-0.2.52-py2.py3-none-any.whl", hash = "sha256:3ca150da85f56b999687e13b72304338499a417d5bad6af9da2aa13821992bd7", size = 108479 },
+]
+
+[[package]]
+name = "youtube-transcript-api"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "defusedxml" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b0/32/f60d87a99c05a53604c58f20f670c7ea6262b55e0bbeb836ffe4550b248b/youtube_transcript_api-1.0.3.tar.gz", hash = "sha256:902baf90e7840a42e1e148335e09fe5575dbff64c81414957aea7038e8a4db46", size = 2153252 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f0/44/40c03bb0f8bddfb9d2beff2ed31641f52d96c287ba881d20e0c074784ac2/youtube_transcript_api-1.0.3-py3-none-any.whl", hash = "sha256:d1874e57de65cf14c9d7d09b2b37c814d6287fa0e770d4922c4cd32a5b3f6c47", size = 2169911 },
 ]
 
 [[package]]
