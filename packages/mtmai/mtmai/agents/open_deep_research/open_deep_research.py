@@ -1,8 +1,4 @@
-# import os
-
 from google.adk.tools import ToolContext
-
-# from huggingface_hub import login
 from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_smolagents_model
 from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent
@@ -18,8 +14,6 @@ from .scripts.text_web_browser import (
     VisitTool,
 )
 from .scripts.visual_qa import visualizer
-
-# login(os.getenv(settings.HF_TOKEN))
 
 
 async def adk_open_deep_research_tool(

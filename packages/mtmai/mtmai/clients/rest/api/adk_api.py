@@ -1197,6 +1197,8 @@ class AdkApi:
     async def adk_events_list(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app_name: Optional[StrictStr] = None,
+        session: Optional[StrictStr] = None,
         limit: Optional[StrictInt] = None,
         offset: Optional[StrictInt] = None,
         order_by_field: Optional[AdkEventOrderByField] = None,
@@ -1219,6 +1221,10 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app_name:
+        :type app_name: str
+        :param session:
+        :type session: str
         :param limit:
         :type limit: int
         :param offset:
@@ -1249,6 +1255,8 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            app_name=app_name,
+            session=session,
             limit=limit,
             offset=offset,
             order_by_field=order_by_field,
@@ -1279,6 +1287,8 @@ class AdkApi:
     async def adk_events_list_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app_name: Optional[StrictStr] = None,
+        session: Optional[StrictStr] = None,
         limit: Optional[StrictInt] = None,
         offset: Optional[StrictInt] = None,
         order_by_field: Optional[AdkEventOrderByField] = None,
@@ -1301,6 +1311,10 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app_name:
+        :type app_name: str
+        :param session:
+        :type session: str
         :param limit:
         :type limit: int
         :param offset:
@@ -1331,6 +1345,8 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            app_name=app_name,
+            session=session,
             limit=limit,
             offset=offset,
             order_by_field=order_by_field,
@@ -1361,6 +1377,8 @@ class AdkApi:
     async def adk_events_list_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app_name: Optional[StrictStr] = None,
+        session: Optional[StrictStr] = None,
         limit: Optional[StrictInt] = None,
         offset: Optional[StrictInt] = None,
         order_by_field: Optional[AdkEventOrderByField] = None,
@@ -1383,6 +1401,10 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app_name:
+        :type app_name: str
+        :param session:
+        :type session: str
         :param limit:
         :type limit: int
         :param offset:
@@ -1413,6 +1435,8 @@ class AdkApi:
 
         _param = self._adk_events_list_serialize(
             tenant=tenant,
+            app_name=app_name,
+            session=session,
             limit=limit,
             offset=offset,
             order_by_field=order_by_field,
@@ -1438,6 +1462,8 @@ class AdkApi:
     def _adk_events_list_serialize(
         self,
         tenant,
+        app_name,
+        session,
         limit,
         offset,
         order_by_field,
@@ -1465,6 +1491,14 @@ class AdkApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
+        if app_name is not None:
+            
+            _query_params.append(('app_name', app_name))
+            
+        if session is not None:
+            
+            _query_params.append(('session', session))
+            
         if limit is not None:
             
             _query_params.append(('limit', limit))

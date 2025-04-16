@@ -16,24 +16,14 @@ async def run_worker():
 
     worker = mtmapp.worker(settings.WORKER_NAME)
 
-    # from mtmai.teams.team_social import FlowSocial
-
-    # worker.register_workflow(FlowSocial())
-    # logger.info("register social workflow")
-
-    # from mtmai.teams.team_tooluse import FlowTooluse
-
-    # worker.register_workflow(FlowTooluse())
-    # logger.info("register tooluse workflow")
-
-    # from mtmai.teams.team_tenant import FlowTenant
-
-    # worker.register_workflow(FlowTenant())
-    # logger.info("register tenant workflow")
-
     from mtmai.flows.flow_team import FlowTeam
 
     worker.register_workflow(FlowTeam())
     logger.info("register team workflow")
+
+    from mtmai.flows.flow_adk import FlowAdk
+
+    worker.register_workflow(FlowAdk())
+    logger.info("register adk workflow")
 
     await worker.async_start()

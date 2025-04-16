@@ -13,21 +13,14 @@ import subprocess
 import sys
 import tempfile
 import traceback
-
-# import zipfile
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import parse_qs, quote, unquote, urlparse, urlunparse
 
-# import mammoth
 import markdownify
 import pandas as pd
 
-# import pdfminer.high_level
-import pptx
-
 # File-format detection
 import puremagic
-import pydub
 import requests
 import speech_recognition as sr
 from bs4 import BeautifulSoup
@@ -458,6 +451,8 @@ class PptxConverter(HtmlConverter):
 
     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
         # Bail if not a PPTX
+        import pptx
+
         extension = kwargs.get("file_extension", "")
         if extension.lower() != ".pptx":
             return None
@@ -532,6 +527,8 @@ class PptxConverter(HtmlConverter):
         )
 
     def _is_picture(self, shape):
+        import pptx
+
         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.PICTURE:
             return True
         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.PLACEHOLDER:
@@ -540,6 +537,8 @@ class PptxConverter(HtmlConverter):
         return False
 
     def _is_table(self, shape):
+        import pptx
+
         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.TABLE:
             return True
         return False
@@ -652,6 +651,8 @@ class Mp3Converter(WavConverter):
         # Transcribe
         handle, temp_path = tempfile.mkstemp(suffix=".wav")
         os.close(handle)
+        import pydub
+
         try:
             if extension.lower() == ".mp3":
                 sound = pydub.AudioSegment.from_mp3(local_path)

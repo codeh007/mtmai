@@ -1,3 +1,4 @@
+import asyncio
 import os
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -50,23 +51,27 @@ def web(
 ):
     @asynccontextmanager
     async def _lifespan(app: FastAPI):
+        # Start worker in background
+        from mtmai.worker_app import run_worker
+
+        worker_task = asyncio.create_task(run_worker())
+
         click.secho(
-            f"""\
-    +-----------------------------------------------------------------------------+
-    | ADK Web Server started                                                      |
-    |                                                                             |
-    | For local testing, access at http://localhost:{port}.{" "*(29 - len(str(port)))}|
-    +-----------------------------------------------------------------------------+
-    """,
+            f"""ADK Web Server started at http://localhost:{port}.{" "*(29 - len(str(port)))}""",
             fg="green",
         )
         yield  # Startup is done, now app is running
+
+        # Cleanup worker on shutdown
+        if not worker_task.done():
+            worker_task.cancel()
+            try:
+                await worker_task
+            except asyncio.CancelledError:
+                pass
+
         click.secho(
-            """\
-    +-----------------------------------------------------------------------------+
-    | ADK Web Server shutting down...                                             |
-    +-----------------------------------------------------------------------------+
-    """,
+            """ADK Web Server shutting down... """,
             fg="green",
         )
 

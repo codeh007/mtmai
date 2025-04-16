@@ -14,7 +14,8 @@ from mtmai.clients.rest.models.mt_task_result import MtTaskResult
 from mtmai.context.ctx import get_step_run_id
 from mtmai.core.config import settings
 from mtmai.mtlibs.hatchet_utils import tenacity_retry
-from mtmai.mtlibs.typing import get_type_name
+
+# from mtmai.mtlibs.typing import get_type_name
 from mtmai.mtmpb import agent_worker_pb2, events_connecpy
 from mtmai.mtmpb.events_pb2 import (
     BulkPushEventRequest,
@@ -179,7 +180,7 @@ class EventClient:
     async def emit(self, event: Any):
         step_run_id = get_step_run_id()
         json_bytes = None
-        result_type = get_type_name(event)
+        # result_type = type(event).__name__
         # if isinstance(event, str) or isinstance(event, bytes):
         #     await self.stream(event, step_run_id)
         obj_dict = {}
