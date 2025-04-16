@@ -247,5 +247,9 @@ class Settings(BaseSettings):
     def SERPAPI_API_KEY(self) -> str | None:
         return os.environ.get("SERPAPI_API_KEY", "serpapi_api_key_not_set")
 
+    @property
+    def AGENT_DIR(self) -> str | None:
+        return os.environ.get("MTM_AGENT_DIR", "./mtmai/agents")
+
 
 settings = Settings()  # type: ignore

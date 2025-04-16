@@ -1,12 +1,9 @@
-from loguru import logger
-
-from mtmai.core.config import settings
-from mtmai.hatchet import Hatchet
-
-mtmapp = Hatchet()
-
-
 async def run_worker():
+    from loguru import logger
+
+    from mtmai.core.config import settings
+    from mtmai.mtm_engine import mtmapp
+
     logger.info("booting worker")
     await mtmapp.boot()
 
