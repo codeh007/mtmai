@@ -14,6 +14,12 @@ mtmapp = Hatchet()
     on_events=[FlowNames.TEAM],
 )
 class FlowTeam:
+    # @mtmapp.step(timeout="60m")
+    # async def step0(self, hatctx: Context):
+    #     input = FlowTeamInput.from_dict(hatctx.input)
+    #     team = ComponentLoader.load_component(input.component, expected=Team)
+    #     # task = TextMessage.model_validate(input.task.model_dump())
+    #     return await team.run(task=input, cancellation_token=MtCancelToken())
     @mtmapp.step(timeout="60m")
     async def step0(self, hatctx: Context):
         input = FlowTeamInput.from_dict(hatctx.input)

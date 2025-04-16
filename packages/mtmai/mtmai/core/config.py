@@ -35,8 +35,6 @@ class Settings(BaseSettings):
     items_per_user: int = 50
     SECRET_KEY: str = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
     COOKIE_ACCESS_TOKEN: str | None = "access_token"
-    # MEMBER_USER_DEFAULT_PASSWORD: str | None = "8888888@#@#123123"
-
     # oauth
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
@@ -60,10 +58,6 @@ class Settings(BaseSettings):
     # db
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
     MTM_DATABASE_URL: str | None = os.environ.get("MTM_DATABASE_URL", "development")
-
-    # @property
-    # def SESSION_DB_URL(self) -> str:
-    #     return os.environ.get("SESSION_DB_URL", "sqlite:///./session_db.sqlite")
 
     API_V1_STR: str = "/api/v1"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"

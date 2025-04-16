@@ -14,24 +14,6 @@ from mtmai import tools as tools
 
 
 class MtSmolRouterLiteLLMModel(ApiModel):
-    """Model to use [LiteLLM Python SDK](https://docs.litellm.ai/docs/#litellm-python-sdk) to access hundreds of LLMs.
-
-    Parameters:
-        model_id (`str`):
-            The model identifier to use on the server (e.g. "gpt-3.5-turbo").
-        api_base (`str`, *optional*):
-            The base URL of the provider API to call the model.
-        api_key (`str`, *optional*):
-            The API key to use for authentication.
-        custom_role_conversions (`dict[str, str]`, *optional*):
-            Custom role conversion mapping to convert message roles in others.
-            Useful for specific models that do not support specific message roles like "system".
-        flatten_messages_as_text (`bool`, *optional*): Whether to flatten messages as text.
-            Defaults to `True` for models that start with "ollama", "groq", "cerebras".
-        **kwargs:
-            Additional keyword arguments to pass to the OpenAI API.
-    """
-
     def __init__(
         self,
         model_id: Optional[str] = None,
@@ -81,8 +63,8 @@ class MtSmolRouterLiteLLMModel(ApiModel):
             grammar=grammar,
             tools_to_call_from=tools_to_call_from,
             model=self.model_id,
-            api_base=self.api_base,
-            api_key=self.api_key,
+            # api_base=self.api_base,
+            # api_key=self.api_key,
             convert_images_to_image_urls=True,
             custom_role_conversions=self.custom_role_conversions,
             **kwargs,
