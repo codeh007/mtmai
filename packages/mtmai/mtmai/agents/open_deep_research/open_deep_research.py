@@ -1,12 +1,10 @@
-import argparse
 import os
-import threading
 
-from dotenv import load_dotenv
 from google.adk.tools import ToolContext
 from huggingface_hub import login
+from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_smolagents_model
-from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent  # HfApiModel,
+from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent
 
 from .scripts.text_inspector_tool import TextInspectorTool
 from .scripts.text_web_browser import (
@@ -20,57 +18,47 @@ from .scripts.text_web_browser import (
 )
 from .scripts.visual_qa import visualizer
 
-load_dotenv(override=True)
-login(os.getenv("HF_TOKEN"))
-
-append_answer_lock = threading.Lock()
+login(os.getenv(settings.HF_TOKEN))
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "question",
-        type=str,
-        help="for example: 'How many studio albums did Mercedes Sosa release before 2007?'",
-    )
-    parser.add_argument("--model-id", type=str, default="o1")
-    return parser.parse_args()
-
-
-custom_role_conversions = {"tool-call": "assistant", "tool-response": "user"}
-
-user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0"
-
-BROWSER_CONFIG = {
-    "viewport_size": 1024 * 5,
-    "downloads_folder": "downloads_folder",
-    "request_kwargs": {
-        "headers": {"User-Agent": user_agent},
-        "timeout": 300,
-    },
-    "serpapi_key": os.getenv("SERPAPI_API_KEY"),
-}
-
-os.makedirs(f"./{BROWSER_CONFIG['downloads_folder']}", exist_ok=True)
-
-
-def create_agent():
+async def adk_open_deep_research_tool(
+    question: str, tool_context: ToolContext
+) -> dict[str, str]:
+    """执行自主多步骤任务, 并返回最终结果,
+        例如: question: 小牛电动车怎么样?
+    Args:
+        question: 问题描述
+    Returns:
+        最终答案
+    """
     model = get_default_smolagents_model()
     text_limit = 100000
+
+    BROWSER_CONFIG = {
+        "viewport_size": 1024 * 5,
+        "downloads_folder": "downloads_folder",
+        "serpapi_key": settings.SERPAPI_API_KEY,
+        "request_kwargs": {
+            "headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0"
+            },
+            "timeout": 300,
+        },
+    }
+
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
-    WEB_TOOLS = [
-        GoogleSearchTool(provider="serper"),
-        VisitTool(browser),
-        PageUpTool(browser),
-        PageDownTool(browser),
-        FinderTool(browser),
-        FindNextTool(browser),
-        ArchiveSearchTool(browser),
-        TextInspectorTool(model, text_limit),
-    ]
     text_webbrowser_agent = ToolCallingAgent(
         model=model,
-        tools=WEB_TOOLS,
+        tools=[
+            GoogleSearchTool(provider="serper"),
+            VisitTool(browser),
+            PageUpTool(browser),
+            PageDownTool(browser),
+            FinderTool(browser),
+            FindNextTool(browser),
+            ArchiveSearchTool(browser),
+            TextInspectorTool(model, text_limit),
+        ],
         max_steps=20,
         verbosity_level=2,
         planning_interval=4,
@@ -99,19 +87,5 @@ def create_agent():
         managed_agents=[text_webbrowser_agent],
     )
 
-    return manager_agent
-
-
-async def adk_open_deep_research_tool(
-    question: str, tool_context: ToolContext
-) -> dict[str, str]:
-    """执行自主多步骤任务, 并返回最终结果,
-        例如: question: 小牛电动车怎么样?
-    Args:
-        question: 问题描述
-    Returns:
-        最终答案
-    """
-    agent = create_agent()
-    answer = agent.run(question)
+    answer = manager_agent.run(question)
     return {"answer": answer}

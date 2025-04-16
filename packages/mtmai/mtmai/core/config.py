@@ -243,5 +243,9 @@ class Settings(BaseSettings):
     def JINA_API_KEY(self) -> str | None:
         return os.environ.get("JINA_API_KEY", "jina_api_key_not_set")
 
+    @property
+    def SERPAPI_API_KEY(self) -> str | None:
+        return os.environ.get("SERPAPI_API_KEY", "serpapi_api_key_not_set")
+
 
 settings = Settings()  # type: ignore
