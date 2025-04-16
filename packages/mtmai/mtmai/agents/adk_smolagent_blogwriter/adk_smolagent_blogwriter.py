@@ -57,27 +57,6 @@ blog_manager = CodeAgent(
 )
 
 
-def write_blog_post(topic, output_file="blog_post.md"):
-    """
-    Creates a blog post on the given topic using multiple agents
-
-    Args:
-        topic (str): The blog post topic or title
-        output_file (str): The filename to save the markdown post
-    """
-    result = blog_manager.run(f"""Create a blog post about: {topic}
-    1. First, research the topic thoroughly, focus on specific products and sources
-    2. Then, write an engaging blog post not just a list
-    3. Finally, edit and polish the content
-    """)
-
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(result)
-    print(f"Blog post has been saved to {output_file}")
-
-    return result
-
-
 async def adk_smolagent_blogwriter_tool(
     topic: str, tool_context: ToolContext
 ) -> dict[str, str]:
@@ -86,8 +65,13 @@ async def adk_smolagent_blogwriter_tool(
 
     Args:
         topic: 博客主题
-        tool_context: ToolContext object.
     Returns:
         操作的最终结果
     """
-    write_blog_post(topic)
+    result = blog_manager.run(f"""Create a blog post about: {topic}
+    1. First, research the topic thoroughly, focus on specific products and sources
+    2. Then, write an engaging blog post not just a list
+    3. Finally, edit and polish the content
+    """)
+
+    return result

@@ -1,14 +1,19 @@
 import warnings
 from typing import Dict, List, Optional
 
-from model_client import litellm_router
+from model_client.litellm_router import litellm_router
 from smolagents.models import ApiModel, ChatMessage
 from smolagents.tools import Tool
 
 from mtmai import tools as tools
 
+## ####################################################################
+## 改版: smolagent llm 模型, 原因是,添加基于 litellm 的 router 支持
+##      功能还需要完善(有多余代码)
+## ####################################################################
 
-class MtSmolAgentLiteLLMModel(ApiModel):
+
+class MtSmolRouterLiteLLMModel(ApiModel):
     """Model to use [LiteLLM Python SDK](https://docs.litellm.ai/docs/#litellm-python-sdk) to access hundreds of LLMs.
 
     Parameters:

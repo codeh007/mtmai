@@ -1,11 +1,11 @@
 from autogen_core.models import ModelFamily, ModelInfo
+from model_client.mtadk_router_litellm_model import MtAdkLiteRouterLlm
 from smolagents import LiteLLMModel
 
 from mtmai import tools as tools
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
-from mtmai.model_client.mtlitellm import MtLiteLlm
-from mtmai.model_client.smolagent_model import MtSmolAgentLiteLLMModel
+from mtmai.model_client.smolagent_model import MtSmolRouterLiteLLMModel
 
 
 def get_default_model_client():
@@ -99,16 +99,17 @@ def get_default_litellm_model():
     #     # tool_choice="auto",
     # )
 
-    return MtLiteLlm(
+    return MtAdkLiteRouterLlm(
         # model="gemini/gemini-2.5-pro-exp-03-25",
-        model="gemini/gemini-2.0-flash-exp",
-        api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
+        # model="gemini/gemini-2.0-flash-exp",
+        model="gemini-2.0-flash-exp",
+        # api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
     )
 
 
 def get_default_smolagents_model():
-    return MtSmolAgentLiteLLMModel(
-        model_id="gemini/gemini-2.0-flash-exp",
-        api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
+    return MtSmolRouterLiteLLMModel(
+        model_id="gemini-2.0-flash-exp",
+        # api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
         # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/google-ai-studio/",
     )

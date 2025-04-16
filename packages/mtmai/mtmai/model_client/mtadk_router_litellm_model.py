@@ -1,7 +1,5 @@
-import logging
 from typing import Any, AsyncGenerator, Dict
 
-# import litellm
 from google.adk.models.base_llm import BaseLlm
 from google.adk.models.lite_llm import (
     FunctionChunk,
@@ -20,19 +18,15 @@ from litellm import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from loguru import logger
 from pydantic import Field
 from typing_extensions import override
 
-# litellm._turn_on_debug()
+from mtmai.model_client.litellm_router import litellm_router
 
 
-logger = logging.getLogger(__name__)
-
-_NEW_LINE = "\n"
-_EXCLUDED_PART_FIELD = {"inline_data": {"data"}}
-
-
-class MtLiteLlm(BaseLlm):
+## 主要改变: 使用了 litellm router
+class MtAdkLiteRouterLlm(BaseLlm):
     """
     改写 adk 内置的 LiteLlm, 增加自动 重试等功能.
     """
@@ -58,6 +52,9 @@ class MtLiteLlm(BaseLlm):
         self._additional_args.pop("tools", None)
         # public api called from runner determines to stream or not
         self._additional_args.pop("stream", None)
+
+        ## !!! 关键修改
+        self.llm_client = litellm_router
 
     async def generate_content_async(
         self, llm_request: LlmRequest, stream: bool = False
@@ -148,7 +145,7 @@ class MtLiteLlm(BaseLlm):
         these models here. So we return an empty list.
 
         Returns:
-          A list of supported models.
+            A list of supported models.
         """
 
         return []
