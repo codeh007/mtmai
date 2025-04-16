@@ -1,63 +1,49 @@
-# from dotenv import load_dotenv
 from google.adk.tools import ToolContext
+from model_client.utils import get_default_smolagents_model
 from mtmai.tools.jinaai import scrape_page_with_jina_ai, search_facts_with_jina_ai
-from smolagents import CodeAgent, DuckDuckGoSearchTool, LiteLLMModel, ToolCallingAgent
-
-# from smolagents.agents import ManagedAgent
-# load_dotenv()
-
-# Initialize the model
-model = LiteLLMModel(model_id="gpt-4o-mini")
+from smolagents import CodeAgent, DuckDuckGoSearchTool, ToolCallingAgent
 
 # Research Agent
 research_agent = ToolCallingAgent(
-    tools=[scrape_page_with_jina_ai, search_facts_with_jina_ai, DuckDuckGoSearchTool()],
-    model=model,
-    max_steps=10,
-)
-
-managed_research_agent = ToolCallingAgent(
-    agent=research_agent,
     name="super_researcher",
     description="Researches topics thoroughly using web searches and content scraping. Provide the research topic as input.",
+    tools=[scrape_page_with_jina_ai, search_facts_with_jina_ai, DuckDuckGoSearchTool()],
+    model=get_default_smolagents_model(),
+    max_steps=10,
 )
-
 # Research Checker Agent
-research_checker_agent = ToolCallingAgent(tools=[], model=model)
-
-managed_research_checker_agent = ToolCallingAgent(
-    agent=research_checker_agent,
+research_checker_agent = ToolCallingAgent(
     name="research_checker",
     description="Checks the research for relevance to the original task request. If the research is not relevant, it will ask for more research.",
+    tools=[],
+    model=get_default_smolagents_model(),
 )
 
 # Writer Agent
-writer_agent = ToolCallingAgent(tools=[], model=model)
-
-managed_writer_agent = ToolCallingAgent(
-    agent=writer_agent,
+writer_agent = ToolCallingAgent(
     name="writer",
     description="Writes blog posts based on the checkedresearch. Provide the research findings and desired tone/style.",
+    tools=[],
+    model=get_default_smolagents_model(),
 )
 
 # Copy Editor Agent
-copy_editor_agent = ToolCallingAgent(tools=[], model=model)
-
-managed_copy_editor = ToolCallingAgent(
-    agent=copy_editor_agent,
+copy_editor_agent = ToolCallingAgent(
     name="editor",
     description="Reviews and polishes the blog post based on the research and original task request. Order the final blog post and any lists in a way that is most engaging to someone working in AI. Provides the final, edited version in markdown.",
+    tools=[],
+    model=get_default_smolagents_model(),
 )
 
 # Main Blog Writer Manager
 blog_manager = CodeAgent(
     tools=[],
-    model=model,
+    model=get_default_smolagents_model(),
     managed_agents=[
-        managed_research_agent,
-        managed_research_checker_agent,
-        managed_writer_agent,
-        managed_copy_editor,
+        research_agent,
+        research_checker_agent,
+        writer_agent,
+        copy_editor_agent,
     ],
     additional_authorized_imports=["re"],
     # system_prompt="""You are a blog post creation manager. Coordinate between research, writing, and editing teams.
@@ -92,7 +78,6 @@ def write_blog_post(topic, output_file="blog_post.md"):
     return result
 
 
-# 创建独立的指纹环境
 async def adk_smolagent_blogwriter_tool(
     topic: str, tool_context: ToolContext
 ) -> dict[str, str]:
@@ -105,5 +90,4 @@ async def adk_smolagent_blogwriter_tool(
     Returns:
         操作的最终结果
     """
-    # topic = "Create a blog post about the top 5 products released at CES 2025 so far. Please include specific product names and sources"
     write_blog_post(topic)

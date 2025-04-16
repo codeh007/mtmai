@@ -5,6 +5,7 @@ from mtmai import tools as tools
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
 from mtmai.model_client.mtlitellm import MtLiteLlm
+from mtmai.model_client.smolagent_model import MtSmolAgentLiteLLMModel
 
 
 def get_default_model_client():
@@ -24,7 +25,7 @@ def get_default_model_client():
 
 def get_custom_model():
     from huggingface_hub import login
-    from smolagents import LiteLLMModel, OpenAIServerModel
+    from smolagents import OpenAIServerModel
 
     login(settings.HF_TOKEN)
 
@@ -106,8 +107,8 @@ def get_default_litellm_model():
 
 
 def get_default_smolagents_model():
-    return LiteLLMModel(
-        # model_id="nvidia_nim/deepseek-ai/deepseek-r1",
+    return MtSmolAgentLiteLLMModel(
         model_id="gemini/gemini-2.0-flash-exp",
         api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
+        # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/google-ai-studio/",
     )

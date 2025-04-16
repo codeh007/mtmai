@@ -230,6 +230,12 @@ class Settings(BaseSettings):
         )
 
     @property
+    def GOOGLE_AI_STUDIO_API_KEY_2(self) -> str | None:
+        return os.environ.get(
+            "GOOGLE_AI_STUDIO_API_KEY_2", "google_ai_studio_api_key_not_set"
+        )
+
+    @property
     def HF_TOKEN(self) -> str | None:
         return os.environ.get("HF_TOKEN", "nvidia_api_key_not_set")
 
