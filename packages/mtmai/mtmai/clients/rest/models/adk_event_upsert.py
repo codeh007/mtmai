@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.content import Content
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +35,7 @@ class AdkEventUpsert(BaseModel):
     author: StrictStr
     branch: Optional[StrictStr] = None
     timestamp: StrictStr
-    content: Dict[str, Any]
+    content: Content
     actions: Dict[str, Any]
     __properties: ClassVar[List[str]] = ["id", "app_name", "user_id", "session_id", "invocation_id", "author", "branch", "timestamp", "content", "actions"]
 
@@ -77,6 +78,9 @@ class AdkEventUpsert(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
@@ -102,7 +106,7 @@ class AdkEventUpsert(BaseModel):
             "author": obj.get("author"),
             "branch": obj.get("branch"),
             "timestamp": obj.get("timestamp"),
-            "content": obj.get("content"),
+            "content": Content.from_dict(obj["content"]) if obj.get("content") is not None else None,
             "actions": obj.get("actions")
         })
         return _obj

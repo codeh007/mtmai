@@ -119,6 +119,7 @@ from mtmai.clients.rest.models.component_properties import ComponentProperties
 from mtmai.clients.rest.models.component_types import ComponentTypes
 from mtmai.clients.rest.models.component_upsert import ComponentUpsert
 from mtmai.clients.rest.models.components import Components
+from mtmai.clients.rest.models.content import Content
 from mtmai.clients.rest.models.create_api_token_request import CreateAPITokenRequest
 from mtmai.clients.rest.models.create_api_token_response import CreateAPITokenResponse
 from mtmai.clients.rest.models.create_arguments_config_model import CreateArgumentsConfigModel
@@ -205,6 +206,7 @@ from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByFiel
 from mtmai.clients.rest.models.max_message_termination import MaxMessageTermination
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
 from mtmai.clients.rest.models.model import Model
+from mtmai.clients.rest.models.model_content import ModelContent
 from mtmai.clients.rest.models.model_family import ModelFamily
 from mtmai.clients.rest.models.model_info import ModelInfo
 from mtmai.clients.rest.models.model_list import ModelList
@@ -221,6 +223,7 @@ from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatC
 from mtmai.clients.rest.models.open_ai_client_configuration_config_model import OpenAIClientConfigurationConfigModel
 from mtmai.clients.rest.models.outline import Outline
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
+from mtmai.clients.rest.models.part import Part
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
 from mtmai.clients.rest.models.platform_account_create import PlatformAccountCreate
@@ -360,6 +363,7 @@ from mtmai.clients.rest.models.update_worker_request import UpdateWorkerRequest
 from mtmai.clients.rest.models.upsert_model import UpsertModel
 from mtmai.clients.rest.models.user import User
 from mtmai.clients.rest.models.user_change_password_request import UserChangePasswordRequest
+from mtmai.clients.rest.models.user_content import UserContent
 from mtmai.clients.rest.models.user_input_requested_event import UserInputRequestedEvent
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.clients.rest.models.user_message import UserMessage

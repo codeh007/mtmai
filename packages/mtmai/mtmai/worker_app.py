@@ -21,9 +21,4 @@ async def run_worker():
     worker.register_workflow(FlowTeam())
     logger.info("register team workflow")
 
-    from mtmai.flows.flow_adk import FlowAdk
-
-    worker.register_workflow(FlowAdk())
-    logger.info("register adk workflow")
-
     await worker.async_start()

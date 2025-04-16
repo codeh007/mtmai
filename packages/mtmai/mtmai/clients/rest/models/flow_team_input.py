@@ -29,11 +29,12 @@ class FlowTeamInput(BaseModel):
     """
     FlowTeamInput
     """ # noqa: E501
+    app_name: StrictStr
     session_id: StrictStr
     component: TeamComponent
     task: AgEvents
     init_state: Optional[AgentStates] = None
-    __properties: ClassVar[List[str]] = ["session_id", "component", "task", "init_state"]
+    __properties: ClassVar[List[str]] = ["app_name", "session_id", "component", "task", "init_state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,6 +101,7 @@ class FlowTeamInput(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in FlowTeamInput) in the input: " + _key)
 
         _obj = cls.model_validate({
+            "app_name": obj.get("app_name"),
             "session_id": obj.get("session_id"),
             "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None,
             "task": AgEvents.from_dict(obj["task"]) if obj.get("task") is not None else None,

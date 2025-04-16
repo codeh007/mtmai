@@ -17,7 +17,7 @@ from mtmai.context.context import Context
 from mtmai.core.loader import ClientConfig
 from mtmai.mtlibs.callable import HatchetCallable
 from mtmai.mtlibs.types import WorkflowValidator
-from mtmai.mtlibs.typing import is_basemodel_subclass
+from mtmai.mtlibs.utils import is_basemodel_subclass
 from mtmai.mtmpb.workflows_pb2 import CreateWorkflowVersionOpts
 from mtmai.worker.action_listener_process import worker_action_listener_process
 from mtmai.worker.runner.run_loop_manager import WorkerActionRunLoopManager

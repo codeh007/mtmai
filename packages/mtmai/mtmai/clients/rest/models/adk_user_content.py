@@ -17,29 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.content import Content
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
+from mtmai.clients.rest.models.adk_content_part import AdkContentPart
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AdkEvent(BaseModel):
+class AdkUserContent(BaseModel):
     """
-    AdkEvent
+    AdkUserContent
     """ # noqa: E501
-    metadata: APIResourceMeta
-    id: StrictStr
-    app_name: StrictStr
-    user_id: StrictStr
-    session_id: StrictStr
-    invocation_id: StrictStr
-    author: StrictStr
-    branch: Optional[StrictStr] = None
-    timestamp: StrictStr
-    content: Content
-    actions: Dict[str, Any]
-    __properties: ClassVar[List[str]] = ["metadata", "id", "app_name", "user_id", "session_id", "invocation_id", "author", "branch", "timestamp", "content", "actions"]
+    role: StrictStr
+    parts: List[AdkContentPart]
+    __properties: ClassVar[List[str]] = ["role", "parts"]
+
+    @field_validator('role')
+    def role_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['user']):
+            raise ValueError("must be one of enum values ('user')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -59,7 +56,7 @@ class AdkEvent(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AdkEvent from a JSON string"""
+        """Create an instance of AdkUserContent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,17 +77,18 @@ class AdkEvent(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of content
-        if self.content:
-            _dict['content'] = self.content.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in parts (list)
+        _items = []
+        if self.parts:
+            for _item_parts in self.parts:
+                if _item_parts:
+                    _items.append(_item_parts.to_dict())
+            _dict['parts'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AdkEvent from a dict"""
+        """Create an instance of AdkUserContent from a dict"""
         if obj is None:
             return None
 
@@ -100,20 +98,11 @@ class AdkEvent(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AdkEvent) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in AdkUserContent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "id": obj.get("id"),
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
-            "session_id": obj.get("session_id"),
-            "invocation_id": obj.get("invocation_id"),
-            "author": obj.get("author"),
-            "branch": obj.get("branch"),
-            "timestamp": obj.get("timestamp"),
-            "content": Content.from_dict(obj["content"]) if obj.get("content") is not None else None,
-            "actions": obj.get("actions")
+            "role": obj.get("role"),
+            "parts": [AdkContentPart.from_dict(_item) for _item in obj["parts"]] if obj.get("parts") is not None else None
         })
         return _obj
 
