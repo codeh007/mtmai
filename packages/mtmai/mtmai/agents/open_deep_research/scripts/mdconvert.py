@@ -13,15 +13,16 @@ import subprocess
 import sys
 import tempfile
 import traceback
-import zipfile
+
+# import zipfile
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import parse_qs, quote, unquote, urlparse, urlunparse
 
-import mammoth
+# import mammoth
 import markdownify
 import pandas as pd
-import pdfminer
-import pdfminer.high_level
+
+# import pdfminer.high_level
 import pptx
 
 # File-format detection
@@ -391,6 +392,9 @@ class PdfConverter(DocumentConverter):
 
     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
         # Bail if not a PDF
+        import pdfminer
+        import pdfminer.high_level
+
         extension = kwargs.get("file_extension", "")
         if extension.lower() != ".pdf":
             return None
@@ -408,6 +412,8 @@ class DocxConverter(HtmlConverter):
 
     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
         # Bail if not a DOCX
+        import mammoth
+
         extension = kwargs.get("file_extension", "")
         if extension.lower() != ".docx":
             return None
@@ -697,6 +703,8 @@ class ZipConverter(DocumentConverter):
         self, local_path: str, **kwargs: Any
     ) -> Union[None, DocumentConverterResult]:
         # Bail if not a ZIP file
+        import zipfile
+
         extension = kwargs.get("file_extension", "")
         if extension.lower() != ".zip":
             return None

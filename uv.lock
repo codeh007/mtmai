@@ -3581,19 +3581,23 @@ dependencies = [
     { name = "pandas" },
     { name = "passlib" },
     { name = "pathvalidate" },
+    { name = "pdfminer-six" },
     { name = "pdfplumber" },
     { name = "pgvector" },
     { name = "playwright" },
     { name = "psutil" },
     { name = "psycopg2-binary" },
+    { name = "puremagic" },
     { name = "pycryptodomex" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pyopenssl" },
     { name = "pyotp" },
+    { name = "pypdf" },
     { name = "pyperclip" },
     { name = "python-dateutil" },
     { name = "python-dotenv" },
+    { name = "python-pptx" },
     { name = "pyyaml" },
     { name = "quantstats" },
     { name = "rank-bm25" },
@@ -3617,6 +3621,7 @@ dependencies = [
     { name = "transformers" },
     { name = "typer" },
     { name = "undetected-playwright" },
+    { name = "xlrd" },
     { name = "xxhash" },
     { name = "yfinance" },
     { name = "youtube-transcript-api" },
@@ -3734,21 +3739,25 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "pathvalidate", specifier = ">=3.2.3" },
+    { name = "pdfminer-six", specifier = ">=20250327" },
     { name = "pdfplumber", specifier = ">=0.11.6" },
     { name = "pgvector", specifier = ">=0.3.6" },
     { name = "playwright" },
     { name = "psutil", specifier = ">=6.1.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "puremagic", specifier = ">=1.28" },
     { name = "pycryptodomex", specifier = ">=3.22.0" },
     { name = "pydantic", specifier = ">=2.10" },
     { name = "pydantic", specifier = ">=2.10.5" },
     { name = "pydantic-settings" },
     { name = "pyopenssl", specifier = ">=24.3.0" },
     { name = "pyotp", specifier = ">=2.9.0" },
+    { name = "pypdf", specifier = ">=5.4.0" },
     { name = "pyperclip", specifier = ">=1.8.2" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "python-pptx", specifier = ">=1.0.2" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "quantstats", git = "https://github.com/PowerInsight/quantstats.git" },
     { name = "rank-bm25", specifier = "~=0.2" },
@@ -3772,6 +3781,7 @@ requires-dist = [
     { name = "transformers", specifier = ">=4.44.2" },
     { name = "typer", specifier = ">=0.13.1" },
     { name = "undetected-playwright", specifier = ">=0.3.0" },
+    { name = "xlrd", specifier = ">=2.0.1" },
     { name = "xxhash", specifier = "~=3.4" },
     { name = "xxhash", specifier = ">=3.5.0" },
     { name = "yfinance", specifier = ">=0.2.52" },
@@ -4961,6 +4971,15 @@ wheels = [
 ]
 
 [[package]]
+name = "puremagic"
+version = "1.28"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/2d/40599f25667733e41bbc3d7e4c7c36d5e7860874aa5fe9c584e90b34954d/puremagic-1.28.tar.gz", hash = "sha256:195893fc129657f611b86b959aab337207d6df7f25372209269ed9e303c1a8c0", size = 314945 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c5/53/200a97332d10ed3edd7afcbc5f5543920ac59badfe5762598327999f012e/puremagic-1.28-py3-none-any.whl", hash = "sha256:e16cb9708ee2007142c37931c58f07f7eca956b3472489106a7245e5c3aa1241", size = 43241 },
+]
+
+[[package]]
 name = "pyarrow"
 version = "19.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -5209,6 +5228,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pypdf"
+version = "5.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/43/4026f6ee056306d0e0eb04fcb9f2122a0f1a5c57ad9dc5e0d67399e47194/pypdf-5.4.0.tar.gz", hash = "sha256:9af476a9dc30fcb137659b0dec747ea94aa954933c52cf02ee33e39a16fe9175", size = 5012492 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/27/d83f8f2a03ca5408dc2cc84b49c0bf3fbf059398a6a2ea7c10acfe28859f/pypdf-5.4.0-py3-none-any.whl", hash = "sha256:db994ab47cadc81057ea1591b90e5b543e2b7ef2d0e31ef41a9bfe763c119dab", size = 302306 },
+]
+
+[[package]]
 name = "pypdfium2"
 version = "4.30.1"
 source = { registry = "https://pypi.org/simple" }
@@ -5385,6 +5413,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b4/86/b6b38677dec2e2e7898fc5b6f7e42c2d011919a92d25339451892f27b89c/python_multipart-0.0.18.tar.gz", hash = "sha256:7a68db60c8bfb82e460637fa4750727b45af1d5e2ed215593f917f64694d34fe", size = 36622 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/6b/b60f47101ba2cac66b4a83246630e68ae9bbe2e614cbae5f4465f46dee13/python_multipart-0.0.18-py3-none-any.whl", hash = "sha256:efe91480f485f6a361427a541db4796f9e1591afc0fb8e7a4ba06bfbc6708996", size = 24389 },
+]
+
+[[package]]
+name = "python-pptx"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml" },
+    { name = "pillow" },
+    { name = "typing-extensions" },
+    { name = "xlsxwriter" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/a9/0c0db8d37b2b8a645666f7fd8accea4c6224e013c42b1d5c17c93590cd06/python_pptx-1.0.2.tar.gz", hash = "sha256:479a8af0eaf0f0d76b6f00b0887732874ad2e3188230315290cd1f9dd9cc7095", size = 10109297 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d9/4f/00be2196329ebbff56ce564aa94efb0fbc828d00de250b1980de1a34ab49/python_pptx-1.0.2-py3-none-any.whl", hash = "sha256:160838e0b8565a8b1f67947675886e9fea18aa5e795db7ae531606d68e785cba", size = 472788 },
 ]
 
 [[package]]
@@ -6877,6 +6920,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c9/4a/44d3c295350d776427904d73c189e10aeae66d7f555bb2feee16d1e4ba5a/wsproto-1.2.0.tar.gz", hash = "sha256:ad565f26ecb92588a3e43bc3d96164de84cd9902482b130d0ddbaa9664a85065", size = 53425 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/58/e860788190eba3bcce367f74d29c4675466ce8dddfba85f7827588416f01/wsproto-1.2.0-py3-none-any.whl", hash = "sha256:b9acddd652b585d75b20477888c56642fdade28bdfd3579aa24a4d2c037dd736", size = 24226 },
+]
+
+[[package]]
+name = "xlrd"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/b3/19a2540d21dea5f908304375bd43f5ed7a4c28a370dc9122c565423e6b44/xlrd-2.0.1.tar.gz", hash = "sha256:f72f148f54442c6b056bf931dbc34f986fd0c3b0b6b5a58d013c9aef274d0c88", size = 100259 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/0c/c2a72d51fe56e08a08acc85d13013558a2d793028ae7385448a6ccdfae64/xlrd-2.0.1-py2.py3-none-any.whl", hash = "sha256:6a33ee89877bd9abc1158129f6e94be74e2679636b8a205b43b85206c3f0bbdd", size = 96531 },
+]
+
+[[package]]
+name = "xlsxwriter"
+version = "3.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/08/26f69d1e9264e8107253018de9fc6b96f9219817d01c5f021e927384a8d1/xlsxwriter-3.2.2.tar.gz", hash = "sha256:befc7f92578a85fed261639fb6cde1fd51b79c5e854040847dde59d4317077dc", size = 205202 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9b/07/df054f7413bdfff5e98f75056e4ed0977d0c8716424011fac2587864d1d3/XlsxWriter-3.2.2-py3-none-any.whl", hash = "sha256:272ce861e7fa5e82a4a6ebc24511f2cb952fde3461f6c6e1a1e81d3272db1471", size = 165121 },
 ]
 
 [[package]]

@@ -1,12 +1,11 @@
 import argparse
 import os
 import threading
-from sys import argv
 
 from dotenv import load_dotenv
 from google.adk.tools import ToolContext
 from huggingface_hub import login
-from model_client.utils import get_default_smolagents_model
+from mtmai.model_client.utils import get_default_smolagents_model
 from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent  # HfApiModel,
 
 from .scripts.text_inspector_tool import TextInspectorTool
@@ -56,14 +55,6 @@ os.makedirs(f"./{BROWSER_CONFIG['downloads_folder']}", exist_ok=True)
 
 
 def create_agent():
-    # model_params = {
-    #     "model_id": model3d,
-    #     "custom_role_conversions": custom_role_conversions,
-    #     "max_completion_tokens": 8192,
-    # }
-    # if model_id == "o1":
-    #     model_params["reasoning_effort"] = "high"
-    # model = LiteLLMModel(**model_param)
     model = get_default_smolagents_model()
     text_limit = 100000
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
@@ -121,6 +112,6 @@ async def adk_open_deep_research_tool(
     Returns:
         最终答案
     """
-    agent = create_agent(model_id=argv.model_id)
+    agent = create_agent()
     answer = agent.run(question)
     return {"answer": answer}

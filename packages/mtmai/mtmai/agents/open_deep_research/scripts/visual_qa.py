@@ -8,12 +8,8 @@ from typing import Optional
 
 import PIL.Image
 import requests
-
-# from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 from smolagents import Tool, tool
-
-# load_dotenv(override=True)
 
 
 def process_images_and_text(image_path, query, client):
