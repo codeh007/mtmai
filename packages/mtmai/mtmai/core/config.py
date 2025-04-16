@@ -239,5 +239,9 @@ class Settings(BaseSettings):
     def BROWSER_DEBUG_PORT(self) -> int:
         return os.environ.get("BROWSER_DEBUG_PORT", 19222)
 
+    @property
+    def JINA_API_KEY(self) -> str | None:
+        return os.environ.get("JINA_API_KEY", "jina_api_key_not_set")
+
 
 settings = Settings()  # type: ignore
