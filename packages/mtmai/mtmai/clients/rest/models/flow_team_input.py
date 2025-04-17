@@ -17,10 +17,11 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.ag_events import AgEvents
 from mtmai.clients.rest.models.agent_states import AgentStates
+from mtmai.clients.rest.models.content import Content
 from mtmai.clients.rest.models.team_component import TeamComponent
 from typing import Optional, Set
 from typing_extensions import Self
@@ -31,10 +32,11 @@ class FlowTeamInput(BaseModel):
     """ # noqa: E501
     app_name: StrictStr
     session_id: StrictStr
-    component: TeamComponent
-    task: AgEvents
+    component: TeamComponent = Field(description="deprecated")
+    task: AgEvents = Field(description="deprecated")
     init_state: Optional[AgentStates] = None
-    __properties: ClassVar[List[str]] = ["app_name", "session_id", "component", "task", "init_state"]
+    content: Optional[Content] = None
+    __properties: ClassVar[List[str]] = ["app_name", "session_id", "component", "task", "init_state", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,6 +86,9 @@ class FlowTeamInput(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of init_state
         if self.init_state:
             _dict['init_state'] = self.init_state.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
@@ -105,7 +110,8 @@ class FlowTeamInput(BaseModel):
             "session_id": obj.get("session_id"),
             "component": TeamComponent.from_dict(obj["component"]) if obj.get("component") is not None else None,
             "task": AgEvents.from_dict(obj["task"]) if obj.get("task") is not None else None,
-            "init_state": AgentStates.from_dict(obj["init_state"]) if obj.get("init_state") is not None else None
+            "init_state": AgentStates.from_dict(obj["init_state"]) if obj.get("init_state") is not None else None,
+            "content": Content.from_dict(obj["content"]) if obj.get("content") is not None else None
         })
         return _obj
 

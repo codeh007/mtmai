@@ -8,7 +8,6 @@ from google.adk.agents.run_config import StreamingMode
 from google.adk.artifacts import InMemoryArtifactService
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
-from google.genai import types
 from loguru import logger
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
@@ -57,7 +56,6 @@ class FlowTeam:
                     return runner_dict[app_name]
                 root_agent = _get_root_agent(app_name)
                 runner = Runner(
-                    # app_name=agent_engine_id if agent_engines else app_name,
                     app_name=app_name,
                     agent=root_agent,
                     artifact_service=artifact_service,
@@ -83,49 +81,24 @@ class FlowTeam:
                 session_service.create_session(
                     app_name=app_name, user_id=user_id, state={}, session_id=session_id
                 )
-
-            # session = session_service.get_session(
-            #     app_name=app_name, user_id=user_id, session_id=session_id
-            # )
             if not session:
-                raise Exception("Session not found")
+                logger.warning("Session not found: %s", session_id)
+                return {"ok": False, "error": f"Session not found: {session_id}"}
 
             # 开始运行
-            async def event_generator():
-                try:
-                    # stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
-                    runner = _get_runner(app_name)
-                    async for event in runner.run_async(
-                        user_id=user_id,
-                        session_id=session_id,
-                        new_message=types.Content(
-                            role="user", parts=[types.TextPart(text="")]
-                        ),
-                        run_config=RunConfig(streaming_mode=StreamingMode.SSE),
-                    ):
-                        # Format as SSE data
-                        sse_event = event.model_dump_json(
-                            exclude_none=True, by_alias=True
-                        )
-                        logger.info(
-                            "Generated event in agent run streaming: %s", sse_event
-                        )
-                        yield f"data: {sse_event}\n\n"
-                except Exception as e:
-                    logger.exception("Error in event_generator: %s", e)
-                    # You might want to yield an error event here
-                    yield f'data: {{"error": "{str(e)}"}}\n\n'
+            # stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
+            runner = _get_runner(app_name)
+            async for event in runner.run_async(
+                user_id=user_id,
+                session_id=session_id,
+                new_message=input.content.actual_instance,
+                run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+            ):
+                sse_event = event.model_dump_json(exclude_none=True, by_alias=True)
+                logger.info("Generated event in agent run streaming: %s", sse_event)
+                tenant_client.emit(sse_event)
 
-            async for event in event_generator():
-                yield event
-            return {
-                "ok": True,
-            }
-            # Returns a streaming response with the proper media type for SSE
-            # return StreamingResponse(
-            #     event_generator(),
-            #     media_type="text/event-stream",
-            # )
+            return {"ok": True}
 
         else:
             # 旧版 使用 autogen
