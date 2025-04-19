@@ -454,7 +454,7 @@ wheels = [
 
 [[package]]
 name = "autogen-agentchat"
-version = "0.5.2"
+version = "0.5.4"
 source = { directory = "../autogen/python/packages/autogen-agentchat" }
 dependencies = [
     { name = "autogen-core" },
@@ -465,7 +465,7 @@ requires-dist = [{ name = "autogen-core", editable = "../autogen/python/packages
 
 [[package]]
 name = "autogen-core"
-version = "0.5.2"
+version = "0.5.4"
 source = { editable = "../autogen/python/packages/autogen-core" }
 dependencies = [
     { name = "jsonref" },
@@ -536,7 +536,7 @@ dev = [
 
 [[package]]
 name = "autogen-ext"
-version = "0.5.2"
+version = "0.5.4"
 source = { directory = "../autogen/python/packages/autogen-ext" }
 dependencies = [
     { name = "autogen-core" },
@@ -545,8 +545,10 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", marker = "extra == 'openai'" },
+    { name = "aiohttp", marker = "extra == 'docker-jupyter-executor'", specifier = ">=3.11.16" },
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.48" },
     { name = "asyncio-atexit", marker = "extra == 'docker'", specifier = ">=1.0.1" },
+    { name = "asyncio-atexit", marker = "extra == 'docker-jupyter-executor'", specifier = ">=1.0.1" },
     { name = "autogen-agentchat", marker = "extra == 'file-surfer'", editable = "../autogen/python/packages/autogen-agentchat" },
     { name = "autogen-agentchat", marker = "extra == 'magentic-one'", editable = "../autogen/python/packages/autogen-agentchat" },
     { name = "autogen-agentchat", marker = "extra == 'video-surfer'", editable = "../autogen/python/packages/autogen-agentchat" },
@@ -560,6 +562,7 @@ requires-dist = [
     { name = "chromadb", marker = "extra == 'task-centric-memory'", specifier = ">=1.0.0" },
     { name = "diskcache", marker = "extra == 'diskcache'", specifier = ">=5.6.3" },
     { name = "docker", marker = "extra == 'docker'", specifier = "~=7.0" },
+    { name = "docker", marker = "extra == 'docker-jupyter-executor'", specifier = "~=7.0" },
     { name = "ffmpeg-python", marker = "extra == 'video-surfer'" },
     { name = "google-genai", marker = "extra == 'gemini'", specifier = ">=1.0.0" },
     { name = "graphrag", marker = "extra == 'graphrag'", specifier = ">=1.0.1" },
@@ -567,7 +570,6 @@ requires-dist = [
     { name = "httpx", marker = "extra == 'http-tool'", specifier = ">=0.27.0" },
     { name = "ipykernel", marker = "extra == 'jupyter-executor'", specifier = ">=6.29.5" },
     { name = "json-schema-to-pydantic", marker = "extra == 'http-tool'", specifier = ">=0.2.0" },
-    { name = "json-schema-to-pydantic", marker = "extra == 'mcp'", specifier = ">=0.2.4" },
     { name = "langchain-core", marker = "extra == 'langchain'", specifier = "~=0.3.3" },
     { name = "llama-cpp-python", marker = "extra == 'llama-cpp'", specifier = ">=0.3.8" },
     { name = "magika", marker = "extra == 'file-surfer'", specifier = ">=0.6.1rc2" },
@@ -587,6 +589,7 @@ requires-dist = [
     { name = "playwright", marker = "extra == 'magentic-one'", specifier = ">=1.48.0" },
     { name = "playwright", marker = "extra == 'web-surfer'", specifier = ">=1.48.0" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=5.2.1" },
+    { name = "requests", marker = "extra == 'docker-jupyter-executor'", specifier = ">=2.32.3" },
     { name = "rich", marker = "extra == 'rich'", specifier = ">=13.9.4" },
     { name = "semantic-kernel", marker = "extra == 'semantic-kernel-core'", specifier = ">=1.17.1" },
     { name = "semantic-kernel", extras = ["anthropic"], marker = "extra == 'semantic-kernel-anthropic'", specifier = ">=1.17.1" },
@@ -601,8 +604,9 @@ requires-dist = [
     { name = "semantic-kernel", extras = ["pandas"], marker = "extra == 'semantic-kernel-pandas'", specifier = ">=1.17.1" },
     { name = "tiktoken", marker = "extra == 'ollama'", specifier = ">=0.8.0" },
     { name = "tiktoken", marker = "extra == 'openai'", specifier = ">=0.8.0" },
+    { name = "websockets", marker = "extra == 'docker-jupyter-executor'", specifier = ">=15.0.1" },
 ]
-provides-extras = ["anthropic", "langchain", "azure", "docker", "ollama", "openai", "file-surfer", "llama-cpp", "graphrag", "chromadb", "web-surfer", "magentic-one", "video-surfer", "diskcache", "redis", "grpc", "jupyter-executor", "task-centric-memory", "semantic-kernel-core", "gemini", "semantic-kernel-google", "semantic-kernel-hugging-face", "semantic-kernel-mistralai", "semantic-kernel-ollama", "semantic-kernel-onnx", "semantic-kernel-anthropic", "semantic-kernel-pandas", "semantic-kernel-aws", "semantic-kernel-dapr", "http-tool", "semantic-kernel-all", "rich", "mcp"]
+provides-extras = ["anthropic", "langchain", "azure", "docker", "ollama", "openai", "file-surfer", "llama-cpp", "graphrag", "chromadb", "web-surfer", "magentic-one", "video-surfer", "diskcache", "redis", "grpc", "jupyter-executor", "docker-jupyter-executor", "task-centric-memory", "semantic-kernel-core", "gemini", "semantic-kernel-google", "semantic-kernel-hugging-face", "semantic-kernel-mistralai", "semantic-kernel-ollama", "semantic-kernel-onnx", "semantic-kernel-anthropic", "semantic-kernel-pandas", "semantic-kernel-aws", "semantic-kernel-dapr", "http-tool", "semantic-kernel-all", "rich", "mcp"]
 
 [package.metadata.requires-dev]
 dev = [
