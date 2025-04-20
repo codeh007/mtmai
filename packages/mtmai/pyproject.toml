@@ -153,6 +153,7 @@ dependencies = [
     "puremagic>=1.28",
     "xlrd>=2.0.1",
     "pdfminer-six>=20250327",
+    "fastapi-mcp>=0.3.0",
 ]
 name = "mtxai"
 version = "0.0.269"

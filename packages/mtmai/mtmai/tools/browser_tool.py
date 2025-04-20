@@ -130,6 +130,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
         # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
         #      其他有用信息保存到 state 即可
         history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
+        # browser_user_agent.
         tool_context.state.update({"browser_history": jsonable_encoder(history)})
 
     final_result = history.final_result()

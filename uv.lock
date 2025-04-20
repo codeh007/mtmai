@@ -1470,6 +1470,27 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi-mcp"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "mcp" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "tomli" },
+    { name = "typer" },
+    { name = "uvicorn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e2/e3/2eba923b30139fdf3de92f7a1a7b28c59f1de238844251db20b1a6075528/fastapi_mcp-0.3.0.tar.gz", hash = "sha256:0ffffcb6707704a3137b3ed61abd3422dbc10e627477ea49e62ac273a692951c", size = 80486 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/81/1268fd78cad1059c0cdaf79c0dd9de3347ae88152ad37cdba2d08026edc0/fastapi_mcp-0.3.0-py3-none-any.whl", hash = "sha256:aee659b309b602e3a21b178a52498caaaa29167581e24ef247e784f48fe8dbad", size = 17314 },
+]
+
+[[package]]
 name = "fastapi-pagination"
 version = "0.12.34"
 source = { registry = "https://pypi.org/simple" }
@@ -3540,6 +3561,7 @@ dependencies = [
     { name = "exa-py" },
     { name = "fake-useragent" },
     { name = "fastapi" },
+    { name = "fastapi-mcp" },
     { name = "faust-cchardet" },
     { name = "free-proxy" },
     { name = "google-adk" },
@@ -3696,6 +3718,7 @@ requires-dist = [
     { name = "exa-py", specifier = ">=1.7.2" },
     { name = "fake-useragent", specifier = ">=2.0.3" },
     { name = "fastapi", specifier = ">=0.115.7" },
+    { name = "fastapi-mcp", specifier = ">=0.3.0" },
     { name = "faust-cchardet", specifier = ">=2.1.19" },
     { name = "free-proxy", specifier = ">=1.1.1" },
     { name = "google-adk", directory = "../adk-python" },

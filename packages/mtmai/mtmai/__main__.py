@@ -1,10 +1,10 @@
+import asyncio
 import os
 from contextlib import asynccontextmanager
 from typing import Optional
 
 import click
 import typer
-import uvicorn
 from fastapi import FastAPI
 from loguru import logger
 
@@ -68,25 +68,36 @@ def web(
             fg="green",
         )
 
-    from mtmai.api.adk_fast_api import get_fast_api_app
+    # from mtmai.api.adk_fast_api import get_fast_api_app
 
-    app = get_fast_api_app(
-        agent_dir=agents_dir,
-        session_db_url=session_db_url,
-        # allow_origins=allow_origins,
-        web=True,
-        trace_to_cloud=trace_to_cloud,
-        lifespan=_lifespan,
-    )
-    config = uvicorn.Config(
-        app,
-        host="0.0.0.0",
-        port=port,
-        reload=True,
-    )
+    # app = get_fast_api_app(
+    #     agent_dir=agents_dir,
+    #     # session_db_url=session_db_url,
+    #     session_db_url="",
+    #     # allow_origins=allow_origins,
+    #     web=True,
+    #     trace_to_cloud=trace_to_cloud,
+    #     lifespan=_lifespan,
+    # )
+    # app = FastAPI()
 
-    server = uvicorn.Server(config)
-    server.run()
+    # Add MCP server to the FastAPI app
+    # mcp = FastApiMCP(app)
+    # mcp.mount()
+
+    # config = uvicorn.Config(
+    #     app,
+    #     host="0.0.0.0",
+    #     port=port,
+    #     reload=True,
+    # )
+
+    # server = uvicorn.Server(config)
+    # server.run()
+
+    from mtmai.server import serve
+
+    asyncio.run(serve())
 
 
 if __name__ == "__main__":

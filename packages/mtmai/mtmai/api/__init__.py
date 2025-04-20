@@ -8,8 +8,13 @@ def mount_api_routes(app: FastAPI, prefix=""):
     from mtmai.api import auth
 
     api_router.include_router(auth.router, tags=["auth"])
-    logger.info("api chat")
-    from mtmai.api import chat
+    logger.info("api auth")
+    # from mtmai.api import chat
 
-    api_router.include_router(chat.router, tags=["chat"])
+    # api_router.include_router(chat.router, tags=["chat"])
+    # app.include_router(api_router, prefix=prefix)
+
+    from mtmai.api import browser_use
+
+    api_router.include_router(browser_use.router, tags=["browser_use"])
     app.include_router(api_router, prefix=prefix)
