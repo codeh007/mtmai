@@ -9,9 +9,26 @@ from mtmai._version import version
 from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
 
-# from mcp.server.lowlevel import Server
-
 # from mtmai.middleware import AuthMiddleware
+
+
+def setup_main_routes(target_app: FastAPI):
+    # 设置基于 fastapi_mcp 的 routes
+    # 注意: fastapi_mcp 应该优先设置, 应该后续的路由可能影响导致不能正常工作
+    from mtmai.fast_mcp.shared.apps import items
+
+    target_app.include_router(items.router)
+
+    from fastapi_mcp import FastApiMCP
+
+    mcp = FastApiMCP(target_app)
+    mcp.mount()
+
+    # 设置基于 fastapi 的 routes 结束
+    # from mtmai.api import home
+
+    # target_app.include_router(home.router)
+    mount_api_routes(target_app, prefix=settings.API_PREFIX)
 
 
 def build_app():
@@ -61,13 +78,14 @@ def build_app():
         version=version,
         lifespan=lifespan,
         generate_unique_id_function=custom_generate_unique_id,
-        openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        openapi_url=f"{settings.API_PREFIX}/openapi.json",
         swagger_ui_parameters={
             "syntaxHighlight": True,
             "syntaxHighlight.theme": "obsidian",
         },
         # openapi_tags=openapi_tags,
     )
+    setup_main_routes(app)
 
     # templates = Jinja2Templates(directory="templates")
 
@@ -97,27 +115,6 @@ def build_app():
     @app.exception_handler(Exception)
     async def generic_exception_handler(request: Request, exc: Exception):  # noqa: ARG001
         return JSONResponse(status_code=500, content={"detail": str(exc)})
-
-    def setup_main_routes(target_app: FastAPI):
-        # 设置基于 fastapi_mcp 的 routes
-        # 注意: fastapi_mcp 应该优先设置, 应该后续的路由可能影响导致不能正常工作
-        from mtmai.fast_mcp.shared.apps import items
-
-        app.include_router(items.router)
-
-        from fastapi_mcp import FastApiMCP
-
-        mcp = FastApiMCP(app)
-        mcp.mount()
-
-        # 设置基于 fastapi 的 routes 结束
-        from mtmai.api import home
-
-        target_app.include_router(home.router)
-        # app.include_router(api_router, prefix=settings.API_V1_STR)
-        mount_api_routes(target_app, prefix=settings.API_V1_STR)
-
-    setup_main_routes(app)
 
     if settings.OTEL_ENABLED:
         from mtmai.mtlibs import otel
@@ -209,35 +206,24 @@ def build_app():
 
 async def serve():
     app = build_app()
-    # app = FastAPI()
-
     config = uvicorn.Config(
         app,
         host=settings.SERVE_IP,
         port=settings.PORT,
         log_level="info",
     )
-
     host = (
         "127.0.0.1"
         if settings.SERVE_IP == "0.0.0.0"
         else settings.server_host.split("://")[-1]
     )
-    server_url = f"{settings.server_host.split('://')[0]}://{host}:{settings.PORT}"
 
-    logger.info(
-        "server config.", host="0.0.0.0", port=settings.PORT, server_url=server_url
-    )
     server = uvicorn.Server(config)
 
-    try:
-        logger.info(
-            "server starting",
-            host="0.0.0.0",
-            port=settings.PORT,
-            server_url=server_url,
-        )
-        await server.serve()
-    except Exception as e:
-        logger.error("Error in uvicorn server:", exc_info=e)
-        raise
+    logger.info(
+        "server starting",
+        host="0.0.0.0",
+        port=settings.PORT,
+        server_url=f"{settings.server_host.split('://')[0]}://{host}:{settings.PORT}",
+    )
+    await server.serve()

@@ -3,7 +3,6 @@ import logging
 import re
 
 import fastapi
-
 from mtmai.core.config import settings
 
 router = fastapi.APIRouter()
@@ -15,7 +14,7 @@ def register_api_router(app: fastapi.FastAPI):
 
 
 @router.get(
-    settings.API_V1_STR + "/tools/together_demo",
+    settings.API_PREFIX + "/tools/together_demo",
 )
 async def tools_together_hello():
     # 学习： 根据 together ai 官方文档 llama3.1 模型不直接支持 tools 调用，

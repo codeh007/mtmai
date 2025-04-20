@@ -5,7 +5,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState, tools_condition
-
 from mtmai.agents.graphchatdemo.tools.search_tools import search_tool
 from mtmai.core.config import settings
 from mtmai.core.logging import get_logger
@@ -62,7 +61,7 @@ def show_workflow_image():
         {
             "artifaceType": "Image",
             "props": {
-                "src": f"{settings.API_V1_STR}/agent/image/mtmaibot",
+                "src": f"{settings.API_PREFIX}/agent/image/mtmaibot",
                 "title": "流程图",
             },
         },

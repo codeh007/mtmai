@@ -21,7 +21,7 @@ user_context: ContextVar[User] = ContextVar("user", default=None)
 
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    tokenUrl=f"{settings.API_PREFIX}/login/access-token",
     auto_error=False,  # 没有 token header 时不触发异常
 )
 
