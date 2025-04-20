@@ -18,7 +18,7 @@ class SmolAgentRequest(BaseModel):
 
 @router.post("/smolagent", include_in_schema=False)
 async def smolagent(request: SmolAgentRequest):
-    def step_callback(step_context):
+    async def step_callback(step_context):
         if isinstance(step_context, ActionStep):
             logger.info(step_context)
             if request.master_agent_id:
@@ -26,17 +26,18 @@ async def smolagent(request: SmolAgentRequest):
 
                 step_cb_url = f"{agent_gateway_url}/agents/step_cb"
                 try:
-                    response = httpx.post(
-                        step_cb_url,
-                        headers={"Content-Type": "application/json"},
-                        json={
-                            "agent_id": request.master_agent_id,
-                            "data": jsonable_encoder(step_context),
-                        },
-                    )
-                    logger.info(
-                        f"step_cb_url: {step_cb_url} response: {response.json()}"
-                    )
+                    async with httpx.AsyncClient() as client:
+                        response = await client.post(
+                            step_cb_url,
+                            headers={"Content-Type": "application/json"},
+                            json={
+                                "agent_id": request.master_agent_id,
+                                "data": jsonable_encoder(step_context),
+                            },
+                        )
+                        logger.info(
+                            f"step_cb_url: {step_cb_url} response: {response.json()}"
+                        )
                 except Exception as e:
                     logger.error(f"step_cb_url: {step_cb_url} error: {e}")
 
