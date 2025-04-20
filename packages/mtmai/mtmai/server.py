@@ -15,7 +15,7 @@ from mtmai.core.config import settings
 def setup_main_routes(target_app: FastAPI):
     # 设置基于 fastapi_mcp 的 routes
     # 注意: fastapi_mcp 应该优先设置, 应该后续的路由可能影响导致不能正常工作
-    from mtmai.fast_mcp.shared.apps import items
+    from mtmai.api import items
 
     target_app.include_router(items.router)
 

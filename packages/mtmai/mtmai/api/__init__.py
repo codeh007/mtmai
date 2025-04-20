@@ -5,10 +5,10 @@ from loguru import logger
 def mount_api_routes(app: FastAPI, prefix=""):
     api_router = APIRouter()
 
-    from mtmai.api import auth
+    # from mtmai.api import auth
 
-    api_router.include_router(auth.router, tags=["auth"])
-    logger.info("api auth")
+    # api_router.include_router(auth.router, tags=["auth"])
+    # logger.info("api auth")
     # from mtmai.api import chat
 
     # api_router.include_router(chat.router, tags=["chat"])
@@ -17,4 +17,9 @@ def mount_api_routes(app: FastAPI, prefix=""):
     from mtmai.api import browser_use
 
     api_router.include_router(browser_use.router, tags=["browser_use"])
+    app.include_router(api_router, prefix=prefix)
+
+    from mtmai.api import smolagent
+
+    api_router.include_router(smolagent.router, tags=["smolagent"])
     app.include_router(api_router, prefix=prefix)
