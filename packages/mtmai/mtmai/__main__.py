@@ -79,11 +79,6 @@ def web(
     #     trace_to_cloud=trace_to_cloud,
     #     lifespan=_lifespan,
     # )
-    # app = FastAPI()
-
-    # Add MCP server to the FastAPI app
-    # mcp = FastApiMCP(app)
-    # mcp.mount()
 
     # config = uvicorn.Config(
     #     app,
