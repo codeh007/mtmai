@@ -23,3 +23,7 @@ def mount_api_routes(app: FastAPI, prefix=""):
 
     api_router.include_router(agent_runner.router, tags=["smolagent"])
     app.include_router(api_router, prefix=prefix)
+
+    from mtmai.api import dev_ui
+
+    dev_ui.configure_dev_web_ui(app)
