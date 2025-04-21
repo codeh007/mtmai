@@ -3,16 +3,13 @@ import importlib
 import json
 import os
 import re
-import sys
 import traceback
 import typing
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
-import click
 import graphviz
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.websockets import WebSocket, WebSocketDisconnect
@@ -20,7 +17,7 @@ from google.adk.agents import RunConfig
 from google.adk.agents.live_request_queue import LiveRequest, LiveRequestQueue
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
-from google.adk.artifacts import InMemoryArtifactService
+from google.adk.artifacts import BaseArtifactService, InMemoryArtifactService
 from google.adk.cli.cli_eval import (
     EVAL_SESSION_ID_PREFIX,
     EvalMetric,
@@ -30,19 +27,14 @@ from google.adk.cli.cli_eval import (
 from google.adk.cli.utils import create_empty_state, envs, evals
 from google.adk.events.event import Event
 from google.adk.runners import Runner
-from google.adk.sessions import DatabaseSessionService
-from google.adk.sessions.in_memory_session_service import InMemorySessionService
+from google.adk.sessions import BaseSessionService
 from google.adk.sessions.session import Session
-from google.adk.sessions.vertex_ai_session_service import VertexAiSessionService
 from google.genai import types
 from loguru import logger
-from opentelemetry import trace
-from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
-
-from mtmai.core.config import settings
+from structlog.threadlocal import wrap_dict
 
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
 
@@ -98,93 +90,90 @@ class RunEvalResult(BaseModel):
     session_id: str
 
 
-def get_fast_api_app(
+default_agents_dir = str(Path(os.path.dirname(__file__), "..", "agents").resolve())
+
+
+def configure_adk_web_api(
     *,
-    agent_dir: str,
-    session_db_url: str = "",
-    web: bool,
+    app: FastAPI,
+    session_service: BaseSessionService,
+    artifact_service: BaseArtifactService,
+    agent_dir: str = "",
+    session_db_url: str = default_agents_dir,
+    web: bool = True,
     trace_to_cloud: bool = False,
     lifespan: Optional[Lifespan[FastAPI]] = None,
 ) -> FastAPI:
     # InMemory tracing dict.
     trace_dict: dict[str, Any] = {}
 
-    # Set up tracing in the FastAPI server.
+    # # Set up tracing in the FastAPI server.
     provider = TracerProvider()
     provider.add_span_processor(
         export.SimpleSpanProcessor(ApiServerSpanExporter(trace_dict))
     )
-    envs.load_dotenv()
-    enable_cloud_tracing = trace_to_cloud or os.environ.get(
-        "ADK_TRACE_TO_CLOUD", "0"
-    ).lower() in ["1", "true"]
-    if enable_cloud_tracing:
-        if project_id := os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-            processor = export.BatchSpanProcessor(
-                CloudTraceSpanExporter(project_id=project_id)
-            )
-            provider.add_span_processor(processor)
-        else:
-            logger.warning(
-                "GOOGLE_CLOUD_PROJECT environment variable is not set. Tracing will"
-                " not be enabled."
-            )
+    # envs.load_dotenv()
+    # enable_cloud_tracing = trace_to_cloud or os.environ.get(
+    #     "ADK_TRACE_TO_CLOUD", "0"
+    # ).lower() in ["1", "true"]
+    # if enable_cloud_tracing:
+    #     if project_id := os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+    #         processor = export.BatchSpanProcessor(
+    #             CloudTraceSpanExporter(project_id=project_id)
+    #         )
+    #         provider.add_span_processor(processor)
+    #     else:
+    #         logger.warning(
+    #             "GOOGLE_CLOUD_PROJECT environment variable is not set. Tracing will"
+    #             " not be enabled."
+    #         )
 
-    trace.set_tracer_provider(provider)
+    # trace.set_tracer_provider(provider)
 
-    # Run the FastAPI server.
-    app = FastAPI(lifespan=lifespan)
+    # # Run the FastAPI server.
+    # app = FastAPI(lifespan=lifespan)
 
-    # if allow_origins:
-    #     app.add_middleware(
-    #         CORSMiddleware,
-    #         allow_origins=allow_origins,
-    #         allow_credentials=True,
-    #         allow_methods=["*"],
-    #         allow_headers=["*"],
-    #     )
+    # app.add_middleware(
+    #     CORSMiddleware,
+    #     allow_origins=["*"]
+    #     if settings.BACKEND_CORS_ORIGINS == "*"
+    #     else [str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS],
+    #     allow_credentials=True,
+    #     allow_methods=["*"],
+    #     allow_headers=["*", "x-chainlit-client-type"],
+    # )
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"]
-        if settings.BACKEND_CORS_ORIGINS == "*"
-        else [str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*", "x-chainlit-client-type"],
-    )
-
-    if agent_dir not in sys.path:
-        sys.path.append(agent_dir)
+    # if agent_dir not in sys.path:
+    #     sys.path.append(agent_dir)
 
     runner_dict = {}
     root_agent_dict = {}
 
-    # Build the Artifact service
+    # # Build the Artifact service
     artifact_service = InMemoryArtifactService()
 
-    # Build the Session service
+    # # Build the Session service
     agent_engine_id = ""
-    if session_db_url:
-        if session_db_url.startswith("agentengine://"):
-            # Create vertex session service
-            agent_engine_id = session_db_url.split("://")[1]
-            if not agent_engine_id:
-                raise click.ClickException("Agent engine id can not be empty.")
-            envs.load_dotenv_for_agent("", agent_dir)
-            session_service = VertexAiSessionService(
-                os.environ["GOOGLE_CLOUD_PROJECT"],
-                os.environ["GOOGLE_CLOUD_LOCATION"],
-            )
-        else:
-            session_service = DatabaseSessionService(db_url=session_db_url)
-            # from mtmai.services.gomtm_db_session_service import (
-            #     GomtmDatabaseSessionService,
-            # )
+    # if session_db_url:
+    #     if session_db_url.startswith("agentengine://"):
+    #         # Create vertex session service
+    #         agent_engine_id = session_db_url.split("://")[1]
+    #         if not agent_engine_id:
+    #             raise click.ClickException("Agent engine id can not be empty.")
+    #         envs.load_dotenv_for_agent("", agent_dir)
+    #         session_service = VertexAiSessionService(
+    #             os.environ["GOOGLE_CLOUD_PROJECT"],
+    #             os.environ["GOOGLE_CLOUD_LOCATION"],
+    #         )
+    #     else:
+    #         session_service = DatabaseSessionService(db_url=session_db_url)
+    #         # from mtmai.services.gomtm_db_session_service import (
+    #         #     GomtmDatabaseSessionService,
+    #         # )
 
-            # session_service = GomtmDatabaseSessionService(db_url=session_db_url)
-    else:
-        session_service = InMemorySessionService()
+    #         # session_service = GomtmDatabaseSessionService(db_url=session_db_url)
+    # else:
+    #     session_service = InMemorySessionService()
 
     @app.get("/list-apps")
     def list_apps() -> list[str]:
@@ -205,7 +194,7 @@ def get_fast_api_app(
 
     @app.get("/debug/trace/{event_id}")
     def get_trace_dict(event_id: str) -> Any:
-        event_dict = trace_dict.get(event_id, None)
+        event_dict = wrap_dict.get(event_id, None)
         if event_dict is None:
             raise HTTPException(status_code=404, detail="Trace not found")
         return event_dict

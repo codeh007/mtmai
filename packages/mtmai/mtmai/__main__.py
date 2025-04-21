@@ -82,9 +82,9 @@ def adkweb(
             fg="green",
         )
 
-    from mtmai.api.adk_fast_api import get_fast_api_app
+    from mtmai.api.adk_web_api import configure_adk_web_api
 
-    app = get_fast_api_app(
+    app = configure_adk_web_api(
         agent_dir=agents_dir,
         # session_db_url=session_db_url,
         session_db_url="",
