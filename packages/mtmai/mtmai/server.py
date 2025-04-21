@@ -135,9 +135,10 @@ def build_app():
         )
         # app.add_middleware(AuthMiddleware)
 
-    from .gradio_app import mount_gradio_app
+    # 配置 dev 的 web ui
+    # from mtmai.api import dev_ui
 
-    mount_gradio_app(app)
+    # dev_ui.configure_dev_web_ui(app)
 
     # 配置 ADK 的 web api
     from google.adk.artifacts import InMemoryArtifactService
@@ -154,10 +155,9 @@ def build_app():
         session_service=session_service,
     )
 
-    # 配置 dev 的 web ui
-    from mtmai.api import dev_ui
+    # from .gradio_app import mount_gradio_app
 
-    dev_ui.configure_dev_web_ui(app)
+    # mount_gradio_app(app)
 
     # app.add_middleware(
     #     RawContextMiddleware,

@@ -36,6 +36,10 @@ from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
 
+BASE_DIR = Path(__file__).parent.resolve()
+ANGULAR_DIST_PATH = BASE_DIR / "browser"
+
+
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
 
 
@@ -98,10 +102,10 @@ def configure_adk_web_api(
     app: FastAPI,
     session_service: BaseSessionService,
     artifact_service: BaseArtifactService,
-    agent_dir: str = "",
-    session_db_url: str = default_agents_dir,
+    agent_dir: str = default_agents_dir,
+    # session_db_url: str = "",
     web: bool = True,
-    trace_to_cloud: bool = False,
+    # trace_to_cloud: bool = False,
     lifespan: Optional[Lifespan[FastAPI]] = None,
 ) -> FastAPI:
     # InMemory tracing dict.
