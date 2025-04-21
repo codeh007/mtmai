@@ -1,1 +1,1 @@
-from mtmai.agents import root_agent as agent  # noqa
+from mtmai.agents.root import root_agent as agent  # noqa
