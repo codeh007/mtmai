@@ -24,7 +24,7 @@
 	"python.analysis.inlayHints.functionReturnTypes": true,
 	"python.analysis.autoSearchPaths": true,
 	"python.analysis.extraPaths": [
-		"${workspaceFolder}/packages/mtmai/mtmai"
+		"${workspaceFolder}/packages/mtmai"
 	],
 	"[python]": {
 		"editor.defaultFormatter": "charliermarsh.ruff",
@@ -33,11 +33,14 @@
 		"editor.formatOnType": true,
 		"editor.tabSize": 4,
 		"editor.codeActionsOnSave": {
-			"source.fixAll": "explicit",
+			// "source.fixAll": "explicit",
+			"source.fixAll": "always",
 			"source.organizeImports": "explicit",
 			"editor.formatOnType": "explicit",
 			"source.fixAll.ruff": "explicit",
-			"source.organizeImports.ruff": "explicit"
+			"source.organizeImports.ruff": "explicit",
+			"source.fixAll.black": "explicit",
+			"source.addMissingImports": "always",
 		}
 	},
 	"ruff.organizeImports": true,

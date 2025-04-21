@@ -102,7 +102,6 @@ def get_fast_api_app(
     *,
     agent_dir: str,
     session_db_url: str = "",
-    # allow_origins: Optional[list[str]] = ["*", "localhost", "127.0.0.1"],
     web: bool,
     trace_to_cloud: bool = False,
     lifespan: Optional[Lifespan[FastAPI]] = None,

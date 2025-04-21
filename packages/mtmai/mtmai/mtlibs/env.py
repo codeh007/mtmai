@@ -46,6 +46,6 @@ def is_in_testing() -> bool:
     return "pytest" in sys.modules or os.getenv("PYTEST_CURRENT_TEST")
 
 
-def init_env():
-    sys.path.insert(0, str(Path("./mtmlib").absolute()))
-    sys.path.insert(0, str(Path("./mtmtrain").absolute()))
+# def init_env():
+#     sys.path.insert(0, str(Path("./mtmlib").absolute()))
+#     sys.path.insert(0, str(Path("./mtmtrain").absolute()))

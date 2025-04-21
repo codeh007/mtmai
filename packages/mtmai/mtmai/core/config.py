@@ -58,6 +58,7 @@ class Settings(BaseSettings):
     # db
     MTMAI_DATABASE_URL: str | None = os.environ.get("MTMAI_DATABASE_URL", "development")
     MTM_DATABASE_URL: str | None = os.environ.get("MTM_DATABASE_URL", "development")
+    MTMAG_DATABASE_URL: str | None = os.environ.get("MTMAG_DATABASE_URL", "development")
 
     API_PREFIX: str = "/api/v1"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
@@ -250,6 +251,10 @@ class Settings(BaseSettings):
     @property
     def AGENT_DIR(self) -> str | None:
         return os.environ.get("MTM_AGENT_DIR", "./mtmai/agents")
+
+    @property
+    def WORKER_GATEWAY_URL(self) -> str | None:
+        return os.environ.get("WORKER_GATEWAY_URL", "http://localhost:6111")
 
 
 settings = Settings()  # type: ignore

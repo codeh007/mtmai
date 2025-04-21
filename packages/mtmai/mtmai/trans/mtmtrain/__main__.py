@@ -1,14 +1,13 @@
 import argparse
 import logging
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from mtmtrain.core.config import settings
-
-sys.path.insert(0, str(Path("mtmlib").resolve()))
+# sys.path.insert(0, str(Path("mtmlib").resolve()))
 from mtmlib.logging import LoggingOptions, setup_logging
+
+from mtmtrain.core.config import settings
 
 load_dotenv()
 

@@ -5,6 +5,7 @@ from typing import Optional
 
 import click
 import typer
+import uvicorn
 from fastapi import FastAPI
 from loguru import logger
 
@@ -15,14 +16,12 @@ bootstraps.bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
 
 
-os.environ["DISPLAY"] = ":1"
-
-
+# os.environ["DISPLAY"] = ":1"
 @app.callback()
 def main(ctx: typer.Context):
-    # 如果没有指定子命令，默认执行 serve 命令
+    # 默认执行 serve 命令
     if ctx.invoked_subcommand is None:
-        ctx.invoke(run)
+        ctx.invoke(serve)
 
 
 @app.command()
@@ -30,11 +29,26 @@ def run():
     logger.info("mtm app starting ...")
     pwd = os.path.dirname(os.path.abspath(__file__))
     agents_dir = os.path.join(pwd, "agents")
-    web(agents_dir)
+    adkweb(agents_dir)
 
 
 @app.command()
-def web(
+def serve():
+    from mtmai.server import serve
+
+    asyncio.run(serve())
+
+
+@app.command()
+def wsagentworker():
+    from mtmai.ws_worker import WSAgentWorker
+
+    ws_worker = WSAgentWorker()
+    ws_worker.start()
+
+
+@app.command()
+def adkweb(
     agents_dir: str,
     log_to_tmp: bool = True,
     # session_db_url: str = settings.SESSION_DB_URL,
@@ -68,31 +82,31 @@ def web(
             fg="green",
         )
 
-    # from mtmai.api.adk_fast_api import get_fast_api_app
+    from mtmai.api.adk_fast_api import get_fast_api_app
 
-    # app = get_fast_api_app(
-    #     agent_dir=agents_dir,
-    #     # session_db_url=session_db_url,
-    #     session_db_url="",
-    #     # allow_origins=allow_origins,
-    #     web=True,
-    #     trace_to_cloud=trace_to_cloud,
-    #     lifespan=_lifespan,
-    # )
+    app = get_fast_api_app(
+        agent_dir=agents_dir,
+        # session_db_url=session_db_url,
+        session_db_url="",
+        # allow_origins=allow_origins,
+        web=True,
+        trace_to_cloud=trace_to_cloud,
+        lifespan=_lifespan,
+    )
 
-    # config = uvicorn.Config(
-    #     app,
-    #     host="0.0.0.0",
-    #     port=port,
-    #     reload=True,
-    # )
+    config = uvicorn.Config(
+        app,
+        host="0.0.0.0",
+        port=port,
+        reload=True,
+    )
 
-    # server = uvicorn.Server(config)
-    # server.run()
+    server = uvicorn.Server(config)
+    server.run()
 
-    from mtmai.server import serve
+    # from mtmai.server import serve
 
-    asyncio.run(serve())
+    # asyncio.run(serve())
 
 
 if __name__ == "__main__":

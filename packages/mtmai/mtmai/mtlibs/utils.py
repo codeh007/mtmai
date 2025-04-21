@@ -166,3 +166,12 @@ def get_type_name(cls: type[Any] | Any) -> str:
         return cls.__name__
     else:
         return cast(str, cls.__class__.__name__)
+
+
+def http_url_ws(url: str) -> str:
+    if url.startswith("http"):
+        return url.replace("http", "ws")
+    elif url.startswith("https"):
+        return url.replace("https", "wss")
+    else:
+        raise ValueError(f"Invalid URL: {url}")
