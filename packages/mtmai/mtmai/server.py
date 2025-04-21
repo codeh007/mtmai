@@ -142,12 +142,16 @@ def build_app():
 
     # 配置 ADK 的 web api
     from google.adk.artifacts import InMemoryArtifactService
-    from google.adk.sessions import InMemorySessionService
 
     from mtmai.api import adk_web_api
 
     artifact_service = InMemoryArtifactService()
-    session_service = InMemorySessionService()
+    # session_service = InMemorySessionService()
+    from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
+
+    session_service = GomtmDatabaseSessionService(
+        db_url=settings.MTMAG_DATABASE_URL,
+    )
 
     adk_web_api.configure_adk_web_api(
         app=app,
