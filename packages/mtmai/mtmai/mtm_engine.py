@@ -4,9 +4,6 @@ from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
 
 class MtmEngine:
-    def __init__(self):
-        pass
-
     def get_session(self):
         if not hasattr(self, "_session_service"):
             self._session_service = GomtmDatabaseSessionService(
