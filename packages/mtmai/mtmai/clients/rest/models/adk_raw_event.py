@@ -18,21 +18,32 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.content import Content
+from mtmai.clients.rest.models.part import Part
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentRunRequest(BaseModel):
+class AdkRawEvent(BaseModel):
     """
-    AgentRunRequest
+    AdkRawEvent
     """ # noqa: E501
-    app_name: StrictStr
-    user_id: StrictStr
-    session_id: StrictStr
-    new_message: Content
-    streaming: StrictBool
-    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "new_message", "streaming"]
+    invocation_id: StrictStr
+    author: StrictStr
+    actions: Dict[str, Any]
+    long_running_tool_ids: List[StrictStr]
+    branch: StrictStr
+    partial: Optional[StrictBool] = None
+    role: StrictStr
+    parts: List[Part]
+    grounding_metadata: Dict[str, Any]
+    turn_complete: StrictBool
+    error_code: StrictStr
+    error_message: StrictStr
+    interrupted: StrictBool
+    custom_metadata: Dict[str, Any]
+    content: Optional[Content] = None
+    __properties: ClassVar[List[str]] = ["role", "parts", "grounding_metadata", "partial", "turn_complete", "error_code", "error_message", "interrupted", "custom_metadata", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +63,7 @@ class AgentRunRequest(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentRunRequest from a JSON string"""
+        """Create an instance of AdkRawEvent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +84,21 @@ class AgentRunRequest(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of new_message
-        if self.new_message:
-            _dict['new_message'] = self.new_message.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in parts (list)
+        _items = []
+        if self.parts:
+            for _item_parts in self.parts:
+                if _item_parts:
+                    _items.append(_item_parts.to_dict())
+            _dict['parts'] = _items
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict['content'] = self.content.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentRunRequest from a dict"""
+        """Create an instance of AdkRawEvent from a dict"""
         if obj is None:
             return None
 
@@ -90,14 +108,19 @@ class AgentRunRequest(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AgentRunRequest) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in AdkRawEvent) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
-            "session_id": obj.get("session_id"),
-            "new_message": Content.from_dict(obj["new_message"]) if obj.get("new_message") is not None else None,
-            "streaming": obj.get("streaming") if obj.get("streaming") is not None else False
+            "role": obj.get("role"),
+            "parts": [Part.from_dict(_item) for _item in obj["parts"]] if obj.get("parts") is not None else None,
+            "grounding_metadata": obj.get("grounding_metadata"),
+            "partial": obj.get("partial"),
+            "turn_complete": obj.get("turn_complete"),
+            "error_code": obj.get("error_code"),
+            "error_message": obj.get("error_message"),
+            "interrupted": obj.get("interrupted"),
+            "custom_metadata": obj.get("custom_metadata"),
+            "content": Content.from_dict(obj["content"]) if obj.get("content") is not None else None
         })
         return _obj
 

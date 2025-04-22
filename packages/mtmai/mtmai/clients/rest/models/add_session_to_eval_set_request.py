@@ -17,22 +17,19 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.content import Content
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AgentRunRequest(BaseModel):
+class AddSessionToEvalSetRequest(BaseModel):
     """
-    AgentRunRequest
+    AddSessionToEvalSetRequest
     """ # noqa: E501
-    app_name: StrictStr
-    user_id: StrictStr
+    eval_id: StrictStr
     session_id: StrictStr
-    new_message: Content
-    streaming: StrictBool
-    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "new_message", "streaming"]
+    user_id: StrictStr
+    __properties: ClassVar[List[str]] = ["eval_id", "session_id", "user_id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -52,7 +49,7 @@ class AgentRunRequest(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AgentRunRequest from a JSON string"""
+        """Create an instance of AddSessionToEvalSetRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,14 +70,11 @@ class AgentRunRequest(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of new_message
-        if self.new_message:
-            _dict['new_message'] = self.new_message.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AgentRunRequest from a dict"""
+        """Create an instance of AddSessionToEvalSetRequest from a dict"""
         if obj is None:
             return None
 
@@ -90,14 +84,12 @@ class AgentRunRequest(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AgentRunRequest) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in AddSessionToEvalSetRequest) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
+            "eval_id": obj.get("eval_id"),
             "session_id": obj.get("session_id"),
-            "new_message": Content.from_dict(obj["new_message"]) if obj.get("new_message") is not None else None,
-            "streaming": obj.get("streaming") if obj.get("streaming") is not None else False
+            "user_id": obj.get("user_id")
         })
         return _obj
 

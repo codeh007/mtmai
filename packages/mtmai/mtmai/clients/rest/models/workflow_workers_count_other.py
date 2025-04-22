@@ -19,6 +19,9 @@ import pprint
 import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
+from mtmai.clients.rest.models.add_session_to_eval_set_request import AddSessionToEvalSetRequest
+from mtmai.clients.rest.models.adk_llm_response import AdkLlmResponse
+from mtmai.clients.rest.models.adk_raw_event import AdkRawEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_incoming_event import AgentIncomingEvent
 from mtmai.clients.rest.models.agent_outgoing_event import AgentOutgoingEvent
@@ -43,7 +46,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AddSessionToEvalSetRequest", "AdkLlmResponse", "AdkRawEvent", "AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -90,11 +93,17 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_19_validator: Optional[AgentIncomingEvent] = None
     # data type: AgentOutgoingEvent
     anyof_schema_20_validator: Optional[AgentOutgoingEvent] = None
+    # data type: AddSessionToEvalSetRequest
+    anyof_schema_21_validator: Optional[AddSessionToEvalSetRequest] = None
+    # data type: AdkRawEvent
+    anyof_schema_22_validator: Optional[AdkRawEvent] = None
+    # data type: AdkLlmResponse
+    anyof_schema_23_validator: Optional[AdkLlmResponse] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
+        actual_instance: Optional[Union[AddSessionToEvalSetRequest, AdkLlmResponse, AdkRawEvent, AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
+    any_of_schemas: Set[str] = { "AddSessionToEvalSetRequest", "AdkLlmResponse", "AdkRawEvent", "AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
 
     model_config = {
         "validate_assignment": True,
@@ -235,9 +244,27 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
+        # validate data type: AddSessionToEvalSetRequest
+        if not isinstance(v, AddSessionToEvalSetRequest):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AddSessionToEvalSetRequest`")
+        else:
+            return v
+
+        # validate data type: AdkRawEvent
+        if not isinstance(v, AdkRawEvent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AdkRawEvent`")
+        else:
+            return v
+
+        # validate data type: AdkLlmResponse
+        if not isinstance(v, AdkLlmResponse):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AdkLlmResponse`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkLlmResponse, AdkRawEvent, AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -370,10 +397,28 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_21_validator: Optional[AddSessionToEvalSetRequest] = None
+        try:
+            instance.actual_instance = AddSessionToEvalSetRequest.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_22_validator: Optional[AdkRawEvent] = None
+        try:
+            instance.actual_instance = AdkRawEvent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_23_validator: Optional[AdkLlmResponse] = None
+        try:
+            instance.actual_instance = AdkLlmResponse.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkLlmResponse, AdkRawEvent, AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -387,7 +432,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AddSessionToEvalSetRequest, AdkLlmResponse, AdkRawEvent, AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

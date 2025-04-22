@@ -24,6 +24,7 @@ from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.api_resource_meta_properties import APIResourceMetaProperties
 from mtmai.clients.rest.models.api_token import APIToken
 from mtmai.clients.rest.models.accept_invite_request import AcceptInviteRequest
+from mtmai.clients.rest.models.add_session_to_eval_set_request import AddSessionToEvalSetRequest
 from mtmai.clients.rest.models.adk_app import AdkApp
 from mtmai.clients.rest.models.adk_app_list import AdkAppList
 from mtmai.clients.rest.models.adk_app_properties import AdkAppProperties
@@ -33,6 +34,8 @@ from mtmai.clients.rest.models.adk_event_list import AdkEventList
 from mtmai.clients.rest.models.adk_event_order_by_field import AdkEventOrderByField
 from mtmai.clients.rest.models.adk_event_properties import AdkEventProperties
 from mtmai.clients.rest.models.adk_event_upsert import AdkEventUpsert
+from mtmai.clients.rest.models.adk_llm_response import AdkLlmResponse
+from mtmai.clients.rest.models.adk_raw_event import AdkRawEvent
 from mtmai.clients.rest.models.adk_session import AdkSession
 from mtmai.clients.rest.models.adk_session_list import AdkSessionList
 from mtmai.clients.rest.models.adk_session_properties import AdkSessionProperties

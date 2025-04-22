@@ -36,8 +36,6 @@ from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
 
-from mtmai.clients.rest.models.agent_run_request import AgentRunRequest
-
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
 
@@ -69,12 +67,12 @@ class ApiServerSpanExporter(export.SpanExporter):
         return True
 
 
-# class AgentRunRequest(BaseModel):
-#     app_name: str
-#     user_id: str
-#     session_id: str
-#     new_message: types.Content
-#     streaming: bool = False
+class AgentRunRequest(BaseModel):
+    app_name: str
+    user_id: str
+    session_id: str
+    new_message: types.Content
+    streaming: bool = False
 
 
 class AddSessionToEvalSetRequest(BaseModel):
