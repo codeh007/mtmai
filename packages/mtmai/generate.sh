@@ -10,7 +10,7 @@ python_client_gen(){
     tmp_dir=./tmp
     version=7.3.0
     echo "生成 mtm python sdk \nPROJECT_DIR:${PROJECT_DIR}===>\nGEN_DIR:${GEN_DIR}\n dst_dir:${dst_dir}\n"
-    command -v openapi-generator-cli || npm install @openapitools/openapi-generator-cli -g
+    command -v openapi-generator-cli || bun install @openapitools/openapi-generator-cli -g
     mkdir -p $dst_dir
 
     openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ./tmp \
