@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.content import Content
-from mtmai.clients.rest.models.part import Part
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,17 +27,15 @@ class AdkLlmResponse(BaseModel):
     """
     AdkLlmResponse
     """ # noqa: E501
-    role: StrictStr
-    parts: List[Part]
-    grounding_metadata: Dict[str, Any]
+    grounding_metadata: Optional[Dict[str, Any]] = None
     partial: StrictBool
-    turn_complete: StrictBool
-    error_code: StrictStr
-    error_message: StrictStr
-    interrupted: StrictBool
-    custom_metadata: Dict[str, Any]
+    turn_complete: Optional[StrictBool] = False
+    error_code: Optional[StrictStr] = None
+    error_message: Optional[StrictStr] = None
+    interrupted: Optional[StrictBool] = None
+    custom_metadata: Optional[Dict[str, Any]] = None
     content: Optional[Content] = None
-    __properties: ClassVar[List[str]] = ["role", "parts", "grounding_metadata", "partial", "turn_complete", "error_code", "error_message", "interrupted", "custom_metadata", "content"]
+    __properties: ClassVar[List[str]] = ["grounding_metadata", "partial", "turn_complete", "error_code", "error_message", "interrupted", "custom_metadata", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -79,13 +76,6 @@ class AdkLlmResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in parts (list)
-        _items = []
-        if self.parts:
-            for _item_parts in self.parts:
-                if _item_parts:
-                    _items.append(_item_parts.to_dict())
-            _dict['parts'] = _items
         # override the default output from pydantic by calling `to_dict()` of content
         if self.content:
             _dict['content'] = self.content.to_dict()
@@ -106,11 +96,9 @@ class AdkLlmResponse(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in AdkLlmResponse) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "role": obj.get("role"),
-            "parts": [Part.from_dict(_item) for _item in obj["parts"]] if obj.get("parts") is not None else None,
             "grounding_metadata": obj.get("grounding_metadata"),
-            "partial": obj.get("partial"),
-            "turn_complete": obj.get("turn_complete"),
+            "partial": obj.get("partial") if obj.get("partial") is not None else False,
+            "turn_complete": obj.get("turn_complete") if obj.get("turn_complete") is not None else False,
             "error_code": obj.get("error_code"),
             "error_message": obj.get("error_message"),
             "interrupted": obj.get("interrupted"),
