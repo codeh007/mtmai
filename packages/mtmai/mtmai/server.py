@@ -1,5 +1,3 @@
-import asyncio
-
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -37,17 +35,17 @@ def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         try:
-            from mtmai.worker_app import run_worker
+            # from mtmai.worker_app import run_worker
 
-            worker_task = asyncio.create_task(run_worker())
+            # worker_task = asyncio.create_task(run_worker())
             yield
             # Cleanup worker on shutdown
-            if not worker_task.done():
-                worker_task.cancel()
-                try:
-                    await worker_task
-                except asyncio.CancelledError:
-                    pass
+            # if not worker_task.done():
+            #     worker_task.cancel()
+            #     try:
+            #         await worker_task
+            #     except asyncio.CancelledError:
+            #         pass
         except Exception as e:
             logger.exception(f"failed to setup worker: {e}")
         finally:

@@ -22,4 +22,5 @@ async def run_worker():
         await worker.async_start()
     except Exception as e:
         logger.error(f"worker error: {e}")
+
         raise e

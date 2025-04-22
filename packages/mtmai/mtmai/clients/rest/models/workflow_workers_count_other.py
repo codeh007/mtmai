@@ -20,6 +20,9 @@ import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
+from mtmai.clients.rest.models.agent_incoming_event import AgentIncomingEvent
+from mtmai.clients.rest.models.agent_outgoing_event import AgentOutgoingEvent
+from mtmai.clients.rest.models.agent_run_request import AgentRunRequest
 from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
@@ -31,7 +34,7 @@ from mtmai.clients.rest.models.flow_result import FlowResult
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.mt_browser_config import MtBrowserConfig
 from mtmai.clients.rest.models.provider_types import ProviderTypes
-from mtmai.clients.rest.models.root_state import RootState
+from mtmai.clients.rest.models.root_agent_state import RootAgentState
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
@@ -40,7 +43,7 @@ from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -79,13 +82,19 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_15_validator: Optional[SocialTeam] = None
     # data type: MtBrowserConfig
     anyof_schema_16_validator: Optional[MtBrowserConfig] = None
-    # data type: RootState
-    anyof_schema_17_validator: Optional[RootState] = None
+    # data type: RootAgentState
+    anyof_schema_17_validator: Optional[RootAgentState] = None
+    # data type: AgentRunRequest
+    anyof_schema_18_validator: Optional[AgentRunRequest] = None
+    # data type: AgentIncomingEvent
+    anyof_schema_19_validator: Optional[AgentIncomingEvent] = None
+    # data type: AgentOutgoingEvent
+    anyof_schema_20_validator: Optional[AgentOutgoingEvent] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
+        actual_instance: Optional[Union[AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AgentEventType", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
+    any_of_schemas: Set[str] = { "AgentEventType", "AgentIncomingEvent", "AgentOutgoingEvent", "AgentRunRequest", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "MtBrowserConfig", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
 
     model_config = {
         "validate_assignment": True,
@@ -202,15 +211,33 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
-        # validate data type: RootState
-        if not isinstance(v, RootState):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `RootState`")
+        # validate data type: RootAgentState
+        if not isinstance(v, RootAgentState):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `RootAgentState`")
+        else:
+            return v
+
+        # validate data type: AgentRunRequest
+        if not isinstance(v, AgentRunRequest):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentRunRequest`")
+        else:
+            return v
+
+        # validate data type: AgentIncomingEvent
+        if not isinstance(v, AgentIncomingEvent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentIncomingEvent`")
+        else:
+            return v
+
+        # validate data type: AgentOutgoingEvent
+        if not isinstance(v, AgentOutgoingEvent):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentOutgoingEvent`")
         else:
             return v
 
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -319,16 +346,34 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
-        # anyof_schema_17_validator: Optional[RootState] = None
+        # anyof_schema_17_validator: Optional[RootAgentState] = None
         try:
-            instance.actual_instance = RootState.from_json(json_str)
+            instance.actual_instance = RootAgentState.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_18_validator: Optional[AgentRunRequest] = None
+        try:
+            instance.actual_instance = AgentRunRequest.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_19_validator: Optional[AgentIncomingEvent] = None
+        try:
+            instance.actual_instance = AgentIncomingEvent.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
+        # anyof_schema_20_validator: Optional[AgentOutgoingEvent] = None
+        try:
+            instance.actual_instance = AgentOutgoingEvent.from_json(json_str)
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -342,7 +387,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AgentEventType, AgentIncomingEvent, AgentOutgoingEvent, AgentRunRequest, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, FlowError, FlowNames, FlowResult, FlowTeamInput, MtBrowserConfig, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

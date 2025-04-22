@@ -36,6 +36,7 @@ from mtmai.clients.rest.models.adk_event_upsert import AdkEventUpsert
 from mtmai.clients.rest.models.adk_session import AdkSession
 from mtmai.clients.rest.models.adk_session_list import AdkSessionList
 from mtmai.clients.rest.models.adk_session_properties import AdkSessionProperties
+from mtmai.clients.rest.models.adk_session_state import AdkSessionState
 from mtmai.clients.rest.models.adk_session_upsert import AdkSessionUpsert
 from mtmai.clients.rest.models.adk_user_state import AdkUserState
 from mtmai.clients.rest.models.adk_user_state_list import AdkUserStateList
@@ -49,11 +50,20 @@ from mtmai.clients.rest.models.ag_state_list import AgStateList
 from mtmai.clients.rest.models.ag_state_properties import AgStateProperties
 from mtmai.clients.rest.models.ag_state_upsert import AgStateUpsert
 from mtmai.clients.rest.models.agent import Agent
+from mtmai.clients.rest.models.agent_approval_event import AgentApprovalEvent
+from mtmai.clients.rest.models.agent_connected_event import AgentConnectedEvent
+from mtmai.clients.rest.models.agent_error_event import AgentErrorEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
+from mtmai.clients.rest.models.agent_incoming_event import AgentIncomingEvent
 from mtmai.clients.rest.models.agent_list import AgentList
+from mtmai.clients.rest.models.agent_outgoing_event import AgentOutgoingEvent
 from mtmai.clients.rest.models.agent_properties import AgentProperties
+from mtmai.clients.rest.models.agent_run_request import AgentRunRequest
+from mtmai.clients.rest.models.agent_run_scheduled_event import AgentRunScheduledEvent
+from mtmai.clients.rest.models.agent_scheduled_event import AgentScheduledEvent
 from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
 from mtmai.clients.rest.models.agent_states import AgentStates
+from mtmai.clients.rest.models.agent_toast_event import AgentToastEvent
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.agent_types import AgentTypes
 from mtmai.clients.rest.models.agents import Agents
@@ -205,6 +215,7 @@ from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderBy
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
 from mtmai.clients.rest.models.max_message_termination import MaxMessageTermination
 from mtmai.clients.rest.models.max_message_termination_config import MaxMessageTerminationConfig
+from mtmai.clients.rest.models.mcp_server import McpServer
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_content import ModelContent
 from mtmai.clients.rest.models.model_family import ModelFamily
@@ -262,8 +273,9 @@ from mtmai.clients.rest.models.resource import Resource
 from mtmai.clients.rest.models.resource_list import ResourceList
 from mtmai.clients.rest.models.resource_properties import ResourceProperties
 from mtmai.clients.rest.models.resource_upsert import ResourceUpsert
-from mtmai.clients.rest.models.root_state import RootState
+from mtmai.clients.rest.models.root_agent_state import RootAgentState
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
+from mtmai.clients.rest.models.scheduled_item import ScheduledItem
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
 from mtmai.clients.rest.models.scheduled_workflows import ScheduledWorkflows
 from mtmai.clients.rest.models.scheduled_workflows_list import ScheduledWorkflowsList

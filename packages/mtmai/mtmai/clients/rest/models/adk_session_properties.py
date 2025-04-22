@@ -18,7 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.adk_session_state import AdkSessionState
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,10 +30,11 @@ class AdkSessionProperties(BaseModel):
     id: StrictStr
     app_name: StrictStr
     user_id: StrictStr
-    state: Dict[str, Any]
+    state: AdkSessionState
+    title: Optional[StrictStr] = None
     create_time: StrictStr
     update_time: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "app_name", "user_id", "state", "create_time", "update_time"]
+    __properties: ClassVar[List[str]] = ["id", "app_name", "user_id", "state", "title", "create_time", "update_time"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -73,6 +75,9 @@ class AdkSessionProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of state
+        if self.state:
+            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
@@ -93,7 +98,8 @@ class AdkSessionProperties(BaseModel):
             "id": obj.get("id"),
             "app_name": obj.get("app_name"),
             "user_id": obj.get("user_id"),
-            "state": obj.get("state"),
+            "state": AdkSessionState.from_dict(obj["state"]) if obj.get("state") is not None else None,
+            "title": obj.get("title"),
             "create_time": obj.get("create_time"),
             "update_time": obj.get("update_time")
         })
