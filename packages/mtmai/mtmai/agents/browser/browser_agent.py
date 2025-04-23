@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import os
 from dataclasses import dataclass
 from textwrap import dedent
@@ -24,8 +23,6 @@ from typing_extensions import override
 from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.mtlibs.browser_utils.browser_manager import BrowseruseHelper
-
-# from tools.browser_tool import browser_human_interaction_tool
 
 
 # ============ Configuration Section ============
@@ -184,18 +181,6 @@ def create_browser_agent():
 
 
 # 新代码开始 -----------------------------------------------------------------------------------------------
-
-
-# --- Constants ---
-APP_NAME = "story_app"
-USER_ID = "12345"
-SESSION_ID = "123344"
-
-# --- Configure Logging ---
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 async def setup_playwright_context(browseruse_context: PlaywrightBrowserContext):
     await browseruse_context.add_init_script(
         """
@@ -256,28 +241,12 @@ class AdkBrowserAgent(BaseAgent):
         Uses the instance attributes assigned by Pydantic (e.g., self.story_generator).
         """
 
-        user_input_task = ctx.user_content.parts[0].text
-        logger.info(f"[{self.name}] Starting story generation workflow.")
-
-        browseruse_task = dedent(
-            f"""
-            用户输入了:
-                {user_input_task}
-
-            请使用浏览器完成用户输入的任务
-            **重要**
-            搜索引擎应使用 "必应" "ddg" 等, 而不要用google,因为google 在当前环境下不可用.
-            """
-        )
-        # async for event in self._run_browseruse_agent(browseruse_task):
-        #     yield event
         try:
             llm = ChatGoogleGenerativeAI(
                 model="gemini-2.0-flash-exp",
                 api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
             )
-
-            # Create an event queue to store events from callbacks
+            user_input_task = ctx.user_content.parts[0].text
             event_queue = []
 
             # Create an async event generator
@@ -332,9 +301,8 @@ class AdkBrowserAgent(BaseAgent):
                         parts=[types.Part(text="开始使用浏览器")],
                     ),
                 )
-
                 browser_user_agent = BrowseruseAgent(
-                    task=browseruse_task,
+                    task=user_input_task,
                     llm=llm,
                     use_vision=False,
                     browser_context=context,
@@ -345,7 +313,6 @@ class AdkBrowserAgent(BaseAgent):
 
                 # Start browser operations in the background
                 browser_task = asyncio.create_task(browser_user_agent.run(max_steps=25))
-
                 try:
                     # Yield events as they come in
                     while not browser_task.done():
