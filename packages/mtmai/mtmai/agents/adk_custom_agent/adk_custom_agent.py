@@ -1,23 +1,15 @@
-# StoryFlowAgent 示例的完整可运行代码
 import logging
 from typing import AsyncGenerator
 
-from browser_use import Agent as BrowseruseAgent
-from browser_use import BrowserContextConfig
-from browser_use.agent.views import AgentHistoryList
-from browser_use.browser.context import BrowserContext as BrowseruseBrowserContext
 from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, SequentialAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa: F401
-from langchain_google_genai import ChatGoogleGenerativeAI
-from playwright.async_api import BrowserContext
-from pydantic import SecretStr
+from playwright.async_api import BrowserContext as PlaywrightBrowserContext
 from typing_extensions import override
 
-from mtmai.core.config import settings
+from mtmai.agents.browser.browser_agent import AdkBrowserAgent
 from mtmai.model_client.utils import get_default_litellm_model
-from mtmai.mtlibs.browser_utils.browser_manager import BrowseruseHelper
 
 # --- Constants ---
 APP_NAME = "story_app"
@@ -29,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def setup_context(browseruse_context: BrowserContext):
+async def setup_playwright_context(browseruse_context: PlaywrightBrowserContext):
     await browseruse_context.add_init_script(
         """
         console.log("hello world===============@ browser_use_tool")
@@ -143,74 +135,12 @@ class CustomStoryFlowAgent(BaseAgent):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        """
-        Implements the custom orchestration logic for the story workflow.
-        Uses the instance attributes assigned by Pydantic (e.g., self.story_generator).
-        """
         logger.info(f"[{self.name}] Starting story generation workflow.")
-
-        # 试试随意输出一个事件
-        # yield Event(
-        #     author="system",
-        #     content=types.Content(
-        #         role="user",
-        #         parts=[types.Part(text="Hello, world! custom agent start")],
-        #     ),
-        # )
-
-        # logger.info(f"browser_use_tool: {task}")
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash-exp",
-            api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
+        browser_agent = AdkBrowserAgent(
+            name="BrowserAgent",
         )
-
-        # async with MtBrowserManager() as browser_manager:
-        helper = BrowseruseHelper()
-        browser = await helper.get_browseruse_browser()
-        # async with await browser_manager.get_browseruse_context() as browseruse_context:
-        # await setup_context(mtbrowseruse_context.session.context)
-
-        # browser_context = await browser.new_context()
-        browser_context = BrowseruseBrowserContext(
-            browser=browser,
-            config=BrowserContextConfig(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-            ),
-        )
-        async with browser_context as context:
-            await setup_context(context.session.context)
-
-            yield Event(
-                author="browser",
-                content=types.Content(
-                    role="user",
-                    parts=[types.Part(text="开始使用浏览器")],
-                ),
-            )
-
-            browser_user_agent = BrowseruseAgent(
-                task="打开搜索页面,看看最新的信息",
-                llm=llm,
-                use_vision=False,
-                browser_context=context,
-                # browser=browser,
-                max_actions_per_step=4,
-            )
-            # browser.playwright_browser.contexts
-
-            # 提示: 仅返回最终的任务结果, 因此返回的结果太大会导致主线程的上下文过大
-            #      其他有用信息保存到 state 即可
-            history: AgentHistoryList = await browser_user_agent.run(max_steps=25)
-            # browser_user_agent.
-            # tool_context.state.update({"browser_history": jsonable_encoder(history)})
-            final_result = history.final_result()
-            yield Event(
-                author="browser",
-                content=types.Content(
-                    role="user",
-                    parts=[types.Part(text=final_result)],
-                ),
-            )
+        async for event in browser_agent.run_async(ctx):
+            yield event
 
         # 1. Initial Story Generation
         logger.info(f"[{self.name}] Running StoryGenerator...")
@@ -325,6 +255,7 @@ otherwise.""",
     output_key="tone_check_result",  # This agent's output determines the conditional flow
 )
 
+
 # --- Create the custom agent instance ---
 custom_story_flow_agent = CustomStoryFlowAgent(
     name="CustomStoryFlowAgent",
@@ -334,67 +265,3 @@ custom_story_flow_agent = CustomStoryFlowAgent(
     grammar_check=grammar_check,
     tone_check=tone_check,
 )
-
-# --- Setup Runner and Session ---
-# session_service = InMemorySessionService()
-# initial_state = {"topic": "a brave kitten exploring a haunted house"}
-# session = session_service.create_session(
-#     app_name=APP_NAME,
-#     user_id=USER_ID,
-#     session_id=SESSION_ID,
-#     state=initial_state,  # Pass initial state here
-# )
-# logger.info(f"Initial session state: {session.state}")
-
-# runner = Runner(
-#     agent=story_flow_agent,  # Pass the custom orchestrator agent
-#     app_name=APP_NAME,
-#     session_service=session_service,
-# )
-
-
-# --- Function to Interact with the Agent ---
-# def call_agent(user_input_topic: str):
-#     """
-#     Sends a new topic to the agent (overwriting the initial one if needed)
-#     and runs the workflow.
-#     """
-#     current_session = session_service.get_session(
-#         app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-#     )
-#     if not current_session:
-#         logger.error("Session not found!")
-#         return
-
-#     current_session.state["topic"] = user_input_topic
-#     logger.info(f"Updated session state topic to: {user_input_topic}")
-
-#     content = types.Content(
-#         role="user",
-#         parts=[types.Part(text=f"Generate a story about: {user_input_topic}")],
-#     )
-#     events = runner.run(user_id=USER_ID, session_id=SESSION_ID, new_message=content)
-
-#     final_response = "No final response captured."
-#     for event in events:
-#         if event.is_final_response() and event.content and event.content.parts:
-#             logger.info(
-#                 f"Potential final response from [{event.author}]: {event.content.parts[0].text}"
-#             )
-#             final_response = event.content.parts[0].text
-
-#     print("\n--- Agent Interaction Result ---")
-#     print("Agent Final Response: ", final_response)
-
-#     final_session = session_service.get_session(
-#         app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-#     )
-#     print("Final Session State:")
-#     import json
-
-#     print(json.dumps(final_session.state, indent=2))
-#     print("-------------------------------\n")
-
-
-# # --- Run the Agent ---
-# call_agent("a lonely robot finding a friend in a junkyard")

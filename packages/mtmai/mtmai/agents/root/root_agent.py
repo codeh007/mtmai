@@ -2,9 +2,11 @@ from autogen_core import tool_agent
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
 from loguru import logger
+from pydantic import BaseModel
+
 from mtmai.agents.adk_smolagent.adk_smolagent import (
-    adk_smolagent_browser_automation_tool,  # noqa: F401
-)
+    adk_smolagent_browser_automation_tool,
+)  # noqa: F401
 from mtmai.agents.open_deep_research.open_deep_research import (
     adk_open_deep_research_tool,
 )
@@ -12,7 +14,6 @@ from mtmai.agents.open_deep_research.open_deep_research import (
 # from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.agents.root.prompt import return_instructions_root
 from mtmai.model_client.utils import get_default_litellm_model
-from pydantic import BaseModel
 
 
 class HelloState1(BaseModel):
@@ -42,7 +43,7 @@ def get_agent_by_name(name: str) -> Agent:
         return new_content_writer_agent()
     elif name == "browser_agent":
         # return new_search_results_agent()
-        from mtmai.agents.browser.agent import create_browser_agent
+        from mtmai.agents.browser.browser_agent import create_browser_agent
 
         return create_browser_agent()
     elif name == "browser_automation_agent":
