@@ -17,8 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.function_call_dict import FunctionCallDict
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +27,16 @@ class Part(BaseModel):
     """
     Part
     """ # noqa: E501
-    text: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["text"]
+    text: Optional[StrictStr] = Field(default=None, description="Optional. Text part (can be code)..")
+    video_metadata: Optional[Dict[str, Any]] = Field(default=None, description="Metadata for a given video..")
+    thought: Optional[StrictBool] = Field(default=None, description="Indicates if the part is thought from the model..")
+    code_execution_result: Optional[Dict[str, Any]] = None
+    executable_code: Optional[StrictStr] = Field(default=None, description="Optional. Executable code..")
+    file_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. File data..")
+    function_call: Optional[FunctionCallDict] = Field(default=None, alias="functionCall")
+    function_response: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Function response..", alias="functionResponse")
+    inline_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Inlined bytes data..", alias="inlineData")
+    __properties: ClassVar[List[str]] = ["text", "video_metadata", "thought", "code_execution_result", "executable_code", "file_data", "functionCall", "functionResponse", "inlineData"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,6 +77,9 @@ class Part(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of function_call
+        if self.function_call:
+            _dict['functionCall'] = self.function_call.to_dict()
         return _dict
 
     @classmethod
@@ -85,7 +97,15 @@ class Part(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in Part) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "text": obj.get("text")
+            "text": obj.get("text"),
+            "video_metadata": obj.get("video_metadata"),
+            "thought": obj.get("thought"),
+            "code_execution_result": obj.get("code_execution_result"),
+            "executable_code": obj.get("executable_code"),
+            "file_data": obj.get("file_data"),
+            "functionCall": FunctionCallDict.from_dict(obj["functionCall"]) if obj.get("functionCall") is not None else None,
+            "functionResponse": obj.get("functionResponse"),
+            "inlineData": obj.get("inlineData")
         })
         return _obj
 

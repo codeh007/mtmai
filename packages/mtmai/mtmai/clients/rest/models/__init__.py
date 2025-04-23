@@ -178,6 +178,7 @@ from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
 from mtmai.clients.rest.models.form_field import FormField
 from mtmai.clients.rest.models.frontend_config import FrontendConfig
 from mtmai.clients.rest.models.function_call import FunctionCall
+from mtmai.clients.rest.models.function_call_dict import FunctionCallDict
 from mtmai.clients.rest.models.function_call_termination import FunctionCallTermination
 from mtmai.clients.rest.models.function_call_termination_config import FunctionCallTerminationConfig
 from mtmai.clients.rest.models.function_execution_result import FunctionExecutionResult
