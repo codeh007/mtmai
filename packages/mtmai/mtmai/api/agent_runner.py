@@ -4,7 +4,7 @@ import pathlib
 import sys
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 from google.adk.agents import RunConfig
@@ -148,52 +148,6 @@ async def smolagent(req: SmolAgentRequest):
             # You might want to yield an error event here
             yield f'data: {{"error": "{str(e)}"}}\n\n'
 
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-    )
-
-
-@router.post("/run_sse_v2")
-async def agent_run_sse_v2(req: AgentRunRequest) -> StreamingResponse:
-    # Connect to managed session if agent_engine_id is set.
-    app_id = agent_engine_id if agent_engine_id else req.app_name
-    # SSE endpoint
-    session = session_service.get_session(
-        app_name=app_id, user_id=req.user_id, session_id=req.session_id
-    )
-    if not session:
-        logger.info("New session created: %s", req.session_id)
-        session = session_service.create_session(
-            app_name=app_id,
-            user_id=req.user_id,
-            state={},
-            session_id=req.session_id,
-        )
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    # Convert the events to properly formatted SSE
-    async def event_generator():
-        try:
-            stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
-            runner = _get_runner(req.app_name)
-            async for event in runner.run_async(
-                user_id=req.user_id,
-                session_id=req.session_id,
-                new_message=req.new_message,
-                run_config=RunConfig(streaming_mode=stream_mode),
-            ):
-                # Format as SSE data
-                sse_event = event.model_dump_json(exclude_none=True, by_alias=True)
-                logger.info("Generated event in agent run streaming: %s", sse_event)
-                yield f"data: {sse_event}\n\n"
-        except Exception as e:
-            logger.exception("Error in event_generator: %s", e)
-            # You might want to yield an error event here
-            yield f'data: {{"error": "{str(e)}"}}\n\n'
-
-    # Returns a streaming response with the proper media type for SSE
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream",
