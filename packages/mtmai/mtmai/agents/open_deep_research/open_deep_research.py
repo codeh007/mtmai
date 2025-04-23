@@ -32,7 +32,7 @@ class AdkOpenDeepResearch(BaseAgent):
     max_steps: int = Field(default=20, description="最大步骤")
     verbosity_level: int = Field(default=2, description="日志级别")
     additional_authorized_imports: list[str] = Field(
-        default=["re", "httpx"], description="授权导入"
+        default=["*"], description="授权导入"
     )
     model: Union[str, BaseLlm] | None = None
     description: str = (
@@ -67,8 +67,8 @@ class AdkOpenDeepResearch(BaseAgent):
                 ArchiveSearchTool(browser),
                 TextInspectorTool(self.model, self.text_limit),
             ],
-            max_steps=20,
-            verbosity_level=2,
+            max_steps=self.max_steps,
+            verbosity_level=self.verbosity_level,
             planning_interval=4,
             name="search_agent",
             description="""A team member that will search the internet to answer your question.
@@ -88,9 +88,9 @@ class AdkOpenDeepResearch(BaseAgent):
         manager_agent = CodeAgent(
             model=self.model or get_default_smolagents_model(),
             tools=[visualizer, TextInspectorTool(self.model, self.text_limit)],
-            max_steps=12,
-            verbosity_level=2,
-            additional_authorized_imports=["*"],
+            max_steps=self.max_steps,
+            verbosity_level=self.verbosity_level,
+            additional_authorized_imports=self.additional_authorized_imports,
             planning_interval=4,
             managed_agents=[text_webbrowser_agent],
         )

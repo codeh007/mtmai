@@ -21,7 +21,7 @@ class AdkSmolAgent(BaseAgent):
     model_config = {"arbitrary_types_allowed": True}
     max_steps: int = 20
     verbosity_level: int = 2
-    additional_authorized_imports: list[str] = ["re", "httpx"]
+    additional_authorized_imports: list[str] = ["*"]
     model: Union[str, BaseLlm] | None = None
 
     def __init__(
@@ -30,7 +30,7 @@ class AdkSmolAgent(BaseAgent):
         description: str = "擅长使用 python 编程解决复杂任务",
         max_steps: int = 20,
         verbosity_level: int = 2,
-        additional_authorized_imports: list[str] = ["re", "httpx"],
+        additional_authorized_imports: list[str] = ["*"],
         model: Union[str, BaseLlm] | None = None,
     ):
         super().__init__(

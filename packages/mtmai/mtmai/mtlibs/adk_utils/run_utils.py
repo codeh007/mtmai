@@ -58,10 +58,12 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
 
     agent.step_callbacks = [*agent.step_callbacks, step_callback]
     # Start agent operations in the background
-    agent_task = asyncio.get_event_loop().run_in_executor(
-        None,
-        agent.run,
-        user_input_task,
+    agent_task = asyncio.create_task(
+        asyncio.get_event_loop().run_in_executor(
+            None,
+            agent.run,
+            user_input_task,
+        )
     )
 
     try:
@@ -72,20 +74,25 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
 
         # Get the final result
         result = await agent_task
-        yield Event(
+        completion_event = Event(
             author=ctx.agent.name,
             content=types.Content(
                 role="assistant",
                 parts=[types.Part(text=f"执行完成: {result}")],
             ),
         )
+        event_queue.append(completion_event)
+        yield completion_event
+
     except Exception as e:
         logger.error(f"Error during agent execution: {str(e)}")
-        yield Event(
+        error_event = Event(
             author=ctx.agent.name,
             content=types.Content(
                 role="assistant",
                 parts=[types.Part(text=f"执行出错: {str(e)}")],
             ),
         )
+        event_queue.append(error_event)
+        yield error_event
         raise
