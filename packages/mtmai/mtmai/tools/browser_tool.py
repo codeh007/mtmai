@@ -1,6 +1,6 @@
 import asyncio
 
-from browser_use import Agent as BrowserUserAgent
+from browser_use import Agent as BrowseruseAgent
 from browser_use import BrowserContextConfig
 from browser_use.agent.views import AgentHistoryList
 from browser_use.browser.context import BrowserContext as BrowseruseBrowserContext
@@ -9,14 +9,15 @@ from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
+from playwright.async_api import BrowserContext
+from pydantic import SecretStr
+
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.browser_utils.browser_manager import (
     BrowseruseHelper,
     MtBrowserManager,
 )
-from playwright.async_api import BrowserContext
-from pydantic import SecretStr
 
 STATE_KEY_BROWSER_CONFIG = "browser_config"
 STATE_KEY_BROWSER_COOKIES = "browser_cookies"
@@ -117,7 +118,7 @@ async def browser_use_tool(task: str, tool_context: ToolContext) -> dict[str, st
     )
     async with browser_context as context:
         await setup_context(context.session.context)
-        browser_user_agent = BrowserUserAgent(
+        browser_user_agent = BrowseruseAgent(
             task=task,
             llm=llm,
             use_vision=False,
