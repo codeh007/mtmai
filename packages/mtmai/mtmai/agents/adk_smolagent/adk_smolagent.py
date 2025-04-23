@@ -1,8 +1,9 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Union
 
 from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
+from google.adk.models import BaseLlm
 from google.genai import types  # noqa: F401
 from smolagents import CodeAgent
 from typing_extensions import override
@@ -20,24 +21,26 @@ class AdkSmolAgent(BaseAgent):
     model_config = {"arbitrary_types_allowed": True}
     max_steps: int = 20
     verbosity_level: int = 2
+    additional_authorized_imports: list[str] = ["re", "httpx"]
+    model: Union[str, BaseLlm] = get_default_smolagents_model()
 
     def __init__(
         self,
         name: str,
-        description: str = "擅长使用 python 解决复杂任务",
+        description: str = "擅长使用 python 编程解决复杂任务",
         max_steps: int = 20,
         verbosity_level: int = 2,
         additional_authorized_imports: list[str] = ["re", "httpx"],
-        model: str = get_default_smolagents_model(),
+        model: Union[str, BaseLlm] = get_default_smolagents_model(),
     ):
         super().__init__(
             name=name,
             description=description,
             max_steps=max_steps,
             verbosity_level=verbosity_level,
+            additional_authorized_imports=additional_authorized_imports,
+            model=model,
         )
-        self.additional_authorized_imports = additional_authorized_imports
-        self.model = model
 
     @override
     async def _run_async_impl(
