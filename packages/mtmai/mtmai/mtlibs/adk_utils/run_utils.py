@@ -1,4 +1,5 @@
 import asyncio
+from textwrap import dedent
 
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
@@ -29,7 +30,7 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
     user_input_task = ctx.user_content.parts[0].text
     event_queue = asyncio.Queue()
 
-    def step_callback(step: ActionStep) -> None:
+    def step_callback(step: ActionStep, agent: CodeAgent) -> None:
         # TODO: 消息格式转换需要更加深入
         smolagent_messages = step.to_messages()
         for message in smolagent_messages:
@@ -38,13 +39,32 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
                 author=ctx.agent.name,
                 content=types.Content(
                     role=message["role"],
-                    parts=[types.Part(text=f"执行步骤: {step.step_number}: {text}")],
+                    parts=[
+                        types.Part(
+                            text=dedent(
+                                f"""🔄 {step.step_number},
+                                **{agent.agent_name}**
+
+                                {step.model_output}
+                                {text}"""
+                            )
+                        )
+                    ],
                 ),
             )
             # 直接将事件放入队列,不创建新的事件循环
             event_queue.put_nowait(event)
 
+    # 主 agent 的 step_callback
     agent.step_callbacks = [*agent.step_callbacks, step_callback]
+
+    # 子 agent 的 step_callback
+    if agent.managed_agents:
+        for managed_agent in agent.managed_agents.values():
+            managed_agent.step_callbacks = [
+                *managed_agent.step_callbacks,
+                step_callback,
+            ]
 
     try:
         # Start agent operations in the background
@@ -69,7 +89,7 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
             author=ctx.agent.name,
             content=types.Content(
                 role="assistant",
-                parts=[types.Part(text=f"执行完成: {result}")],
+                parts=[types.Part(text=f"**✅ 最终答案**\n{result}")],
             ),
         )
         yield completion_event
@@ -80,7 +100,7 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
             author=ctx.agent.name,
             content=types.Content(
                 role="assistant",
-                parts=[types.Part(text=f"执行出错: {str(e)}")],
+                parts=[types.Part(text=f"**❌** \n{str(e)}")],
             ),
         )
         yield error_event

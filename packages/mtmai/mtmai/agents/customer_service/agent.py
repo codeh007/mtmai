@@ -4,11 +4,13 @@ import logging
 import warnings
 
 from google.adk import Agent
+
 from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 
 from .config import Config
 from .prompts import GLOBAL_INSTRUCTION, INSTRUCTION
-from .shared_libraries.callbacks import before_agent, before_tool, rate_limit_callback
+from .shared_libraries.callbacks import before_agent, before_tool
 from .tools.tools import (
     access_cart_information,
     approve_discount,
