@@ -220,6 +220,11 @@ async def setup_playwright_context(browseruse_context: PlaywrightBrowserContext)
 
 
 class AdkBrowserAgent(BaseAgent):
+    """
+    使用 adk agent 封装 browser use 的 agent
+    1: browser use 的步骤可以同步转换为 adk 的 event 事件
+    """
+
     model_config = {"arbitrary_types_allowed": True}
 
     def __init__(
