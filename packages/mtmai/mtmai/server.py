@@ -160,7 +160,7 @@ def build_app():
     from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
     session_service = GomtmDatabaseSessionService(
-        db_url=settings.MTMAG_DATABASE_URL,
+        db_url=settings.MTM_DATABASE_URL,
     )
 
     adk_web_api.configure_adk_web_api(

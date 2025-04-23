@@ -31,7 +31,7 @@ root_agent_dict = {}
 agent_engine_id = ""
 
 # session_service = InMemorySessionService()
-session_service = GomtmDatabaseSessionService(settings.MTMAG_DATABASE_URL)
+session_service = GomtmDatabaseSessionService(settings.MTM_DATABASE_URL)
 artifact_service = InMemoryArtifactService()
 
 
