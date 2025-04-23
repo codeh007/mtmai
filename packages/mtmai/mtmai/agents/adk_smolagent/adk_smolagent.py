@@ -1,39 +1,115 @@
+import asyncio
+from typing import AsyncGenerator
+
+from google.adk.agents import BaseAgent
+from google.adk.agents.invocation_context import InvocationContext
+from google.adk.events import Event
 from google.adk.tools import ToolContext
-from model_client.utils import get_default_smolagents_model
-from smolagents import CodeAgent
+from google.genai import types  # noqa: F401
+from loguru import logger
+from smolagents import ActionStep, CodeAgent
+from typing_extensions import override
 
-# search_request = """
-# Please navigate to https://en.wikipedia.org/wiki/Chicago and give me a sentence containing the word "1992" that mentions a construction accident.
-# """
-
-
-# agent_output = agent.run(search_request + helium_instructions)
-# print("Final output:")
-# print(agent_output)
+from mtmai.model_client.utils import get_default_smolagents_model
 
 
-# def create_adk_smolagent():
-#     # Configure Chrome options
-#     chrome_options = webdriver.ChromeOptions()
-#     chrome_options.add_argument("--force-device-scale-factor=1")
-#     chrome_options.add_argument("--window-size=1000,1350")
-#     chrome_options.add_argument("--disable-pdf-viewer")
-#     chrome_options.add_argument("--window-position=0,0")
+class AdkSmolAgent(BaseAgent):
+    """
+    用 adk agent 封装 smolagent 的 CodeAgent
 
-#     # Initialize the browser
-#     driver = helium.start_chrome(headless=False, options=chrome_options)
+    """
 
-#     adk_smolagent = LlmAgent(
-#         name="browser_automation_agent",
-#         description="浏览器自动化操作",
-#         model=get_default_litellm_model(),
-#         instructions=search_request + helium_instructions,
-#         tools=[go_back, close_popups, search_item_ctrl_f],
-#     )
-#     return adk_smolagent
+    model_config = {"arbitrary_types_allowed": True}
+
+    def __init__(
+        self,
+        name: str,
+        description: str = "擅长使用 python 解决复杂任务",
+    ):
+        super().__init__(
+            name=name,
+            description=description,
+        )
+
+    @override
+    async def _run_async_impl(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        logger.info(f"[{self.name}] Starting story generation workflow.")
+        user_input_task = ctx.user_content.parts[0].text
+        event_queue = []
+
+        # Create an async event generator
+        async def event_generator():
+            while True:
+                if event_queue:
+                    yield event_queue.pop(0)
+                else:
+                    await asyncio.sleep(0.1)  # Small delay to prevent busy waiting
+
+        event_gen = event_generator()
+
+        def step_callback(step: ActionStep) -> None:
+            # TODO: 消息格式转换需要更加深入
+            smolagent_messages = step.to_messages()
+            for message in smolagent_messages:
+                text = message["content"][0]["text"]
+                event_queue.append(
+                    Event(
+                        author=self.name,
+                        content=types.Content(
+                            role=message["role"],
+                            parts=[
+                                types.Part(text=f"执行步骤: {step.step_number}: {text}")
+                            ],
+                        ),
+                    )
+                )
+
+        agent = CodeAgent(
+            tools=[],
+            model=get_default_smolagents_model(),
+            additional_authorized_imports=["helium", "re", "httpx"],
+            max_steps=20,
+            verbosity_level=2,
+            step_callbacks=[step_callback],
+        )
+
+        # Start agent operations in the background
+        agent_task = asyncio.get_event_loop().run_in_executor(
+            None,
+            agent.run,
+            user_input_task,
+        )
+
+        try:
+            while not agent_task.done():
+                async for event in event_gen:
+                    yield event
+                await asyncio.sleep(0.1)
+
+            # Get the final result
+            result = await agent_task
+            yield Event(
+                author=self.name,
+                content=types.Content(
+                    role="assistant",
+                    parts=[types.Part(text=f"执行完成: {result}")],
+                ),
+            )
+        except Exception as e:
+            logger.error(f"Error during agent execution: {str(e)}")
+            yield Event(
+                author=self.name,
+                content=types.Content(
+                    role="assistant",
+                    parts=[types.Part(text=f"执行出错: {str(e)}")],
+                ),
+            )
+            raise
 
 
-# 创建独立的指纹环境
+# @deprecated 应优先 以 agent 的方式实现.
 async def adk_smolagent_browser_automation_tool(
     task: str, tool_context: ToolContext
 ) -> dict[str, str]:

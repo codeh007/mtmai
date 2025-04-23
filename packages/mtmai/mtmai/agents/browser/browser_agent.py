@@ -268,9 +268,9 @@ class AdkBrowserAgent(BaseAgent):
             def browseruse_new_step_cb(state, step, step_index):
                 event_queue.append(
                     Event(
-                        author="browser",
+                        author=self.name,
                         content=types.Content(
-                            role="user",
+                            role="assistant",
                             parts=[types.Part(text=f"浏览器步骤{step_index}: {step}")],
                         ),
                     )
@@ -279,9 +279,9 @@ class AdkBrowserAgent(BaseAgent):
             def browseruse_done_cb(history):
                 event_queue.append(
                     Event(
-                        author="browser",
+                        author=self.name,
                         content=types.Content(
-                            role="user",
+                            role="assistant",
                             parts=[types.Part(text=f"浏览器步骤完成: {history}")],
                         ),
                     )
@@ -302,7 +302,7 @@ class AdkBrowserAgent(BaseAgent):
                 yield Event(
                     author="browser",
                     content=types.Content(
-                        role="user",
+                        role="assistant",
                         parts=[types.Part(text="开始使用浏览器")],
                     ),
                 )
@@ -329,18 +329,18 @@ class AdkBrowserAgent(BaseAgent):
                     history: AgentHistoryList = await browser_task
                     final_result = history.final_result()
                     yield Event(
-                        author="browser",
+                        author=self.name,
                         content=types.Content(
-                            role="user",
+                            role="assistant",
                             parts=[types.Part(text=final_result)],
                         ),
                     )
                 except Exception as e:
                     logger.error(f"Error during browser operations: {str(e)}")
                     yield Event(
-                        author="browser",
+                        author=self.name,
                         content=types.Content(
-                            role="user",
+                            role="assistant",
                             parts=[types.Part(text=f"浏览器操作出错: {str(e)}")],
                         ),
                     )
@@ -348,9 +348,9 @@ class AdkBrowserAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Error in _run_browseruse_agent: {str(e)}")
             yield Event(
-                author="browser",
+                author=self.name,
                 content=types.Content(
-                    role="user",
+                    role="assistant",
                     parts=[types.Part(text=f"浏览器代理运行出错: {str(e)}")],
                 ),
             )

@@ -1,72 +1,20 @@
-import logging
 from typing import AsyncGenerator
 
 from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, SequentialAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa: F401
-from playwright.async_api import BrowserContext as PlaywrightBrowserContext
+from loguru import logger
 from typing_extensions import override
 
 from mtmai.agents.browser.browser_agent import AdkBrowserAgent
 from mtmai.model_client.utils import get_default_litellm_model
 
-# --- Constants ---
-APP_NAME = "story_app"
-USER_ID = "12345"
-SESSION_ID = "123344"
 
-# --- Configure Logging ---
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
-async def setup_playwright_context(browseruse_context: PlaywrightBrowserContext):
-    await browseruse_context.add_init_script(
-        """
-        console.log("hello world===============@ browser_use_tool")
-        """
-    )
-
-    # 额外的反检测脚本
-    async def load_undetect_script():
-        undetect_script = open(
-            "packages/mtmai/mtmai/mtlibs/browser_utils/stealth_js/undetect_script.js",
-            "r",
-        ).read()
-        return undetect_script
-
-    await browseruse_context.add_init_script(await load_undetect_script())
-
-    await browseruse_context.add_cookies(
-        [
-            {
-                "name": "cookiesExampleEnabled2222detector",
-                "value": "true",
-                "url": "https://bot-detector.rebrowser.net",
-            }
-        ]
-    )
-    # 添加 cookies(演示)
-    await browseruse_context.add_cookies(
-        [
-            {
-                "name": "cookiesExampleEnabled2222detector",
-                "value": "true",
-                "url": "https://bot-detector.rebrowser.net",
-            }
-        ]
-    )
-
-
-# --- Custom Orchestrator Agent ---
 class CustomStoryFlowAgent(BaseAgent):
     """
-    Custom agent for a story generation and refinement workflow.
-
-    This agent orchestrates a sequence of LLM agents to generate a story,
-    critique it, revise it, check grammar and tone, and potentially
-    regenerate the story if the tone is negative.
+    练习:
+        使用自定义 agent 实现明确 和 复杂的任务编排流程
     """
 
     # --- Field Declarations for Pydantic ---
