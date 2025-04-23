@@ -22,7 +22,7 @@ class AdkSmolAgent(BaseAgent):
     max_steps: int = 20
     verbosity_level: int = 2
     additional_authorized_imports: list[str] = ["re", "httpx"]
-    model: Union[str, BaseLlm] = get_default_smolagents_model()
+    model: Union[str, BaseLlm] | None = None
 
     def __init__(
         self,
@@ -31,7 +31,7 @@ class AdkSmolAgent(BaseAgent):
         max_steps: int = 20,
         verbosity_level: int = 2,
         additional_authorized_imports: list[str] = ["re", "httpx"],
-        model: Union[str, BaseLlm] = get_default_smolagents_model(),
+        model: Union[str, BaseLlm] | None = None,
     ):
         super().__init__(
             name=name,
@@ -48,7 +48,7 @@ class AdkSmolAgent(BaseAgent):
     ) -> AsyncGenerator[Event, None]:
         agent = CodeAgent(
             tools=[],
-            model=self.model,
+            model=self.model or get_default_smolagents_model(),
             additional_authorized_imports=self.additional_authorized_imports,
             max_steps=self.max_steps,
             verbosity_level=self.verbosity_level,
