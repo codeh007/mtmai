@@ -33,6 +33,7 @@ class AdkRawEvent(BaseModel):
     long_running_tool_ids: Optional[List[StrictStr]] = None
     branch: Optional[StrictStr] = None
     partial: Optional[StrictBool] = None
+    timestamp: Optional[StrictStr] = None
     grounding_metadata: Optional[Dict[str, Any]] = None
     turn_complete: Optional[StrictBool] = False
     error_code: Optional[StrictStr] = None

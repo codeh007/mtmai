@@ -28,7 +28,7 @@ class AdkLlmResponse(BaseModel):
     AdkLlmResponse
     """ # noqa: E501
     grounding_metadata: Optional[Dict[str, Any]] = None
-    partial: StrictBool
+    partial: Optional[StrictBool] = False
     turn_complete: Optional[StrictBool] = False
     error_code: Optional[StrictStr] = None
     error_message: Optional[StrictStr] = None
