@@ -1,9 +1,12 @@
 from typing import Any, Optional
 
 from google.adk.agents import LlmAgent
+from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools import BaseTool
 from google.adk.tools.tool_context import ToolContext
+from google.genai import types
 from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.mtlibs.id import generate_uuid
 from mtmai.tools.instagram_tool import (
     instagram_account_info,
     instagram_follow_user,
@@ -31,6 +34,36 @@ def after_tool_callback(
     return None
 
 
+def before_agent_callback(callback_context: CallbackContext):
+    current_state = callback_context.state.to_dict()
+    callback_context.state["root_agent_init123444555"] = "root_agent_init456"
+    instagram_username = current_state.get("inst:username")
+    instagram_password = current_state.get("inst:password")
+
+    if callback_context.user_content.parts[0].function_response:
+        # 用户提交的登录凭据
+        return callback_context.user_form
+    # 确保 instagram 登录凭据
+    elif not instagram_username or not instagram_password:
+        return types.Content(
+            role="model",
+            parts=[
+                types.Part(
+                    text="请登录",
+                    function_call=types.FunctionCall(
+                        id=generate_uuid(),
+                        name="instagram_login",
+                        args={
+                            "username": instagram_username,
+                            "password": instagram_password,
+                        },
+                    ),
+                )
+            ],
+        )
+    return None
+
+
 def new_instagram_agent():
     return LlmAgent(
         model=get_default_litellm_model(),
@@ -44,4 +77,5 @@ def new_instagram_agent():
             instagram_follow_user,
         ],
         after_tool_callback=after_tool_callback,
+        before_agent_callback=before_agent_callback,
     )

@@ -28,6 +28,7 @@ from mtmai.clients.rest.models.add_session_to_eval_set_request import AddSession
 from mtmai.clients.rest.models.adk_app import AdkApp
 from mtmai.clients.rest.models.adk_app_list import AdkAppList
 from mtmai.clients.rest.models.adk_app_properties import AdkAppProperties
+from mtmai.clients.rest.models.adk_app_types import AdkAppTypes
 from mtmai.clients.rest.models.adk_app_upsert import AdkAppUpsert
 from mtmai.clients.rest.models.adk_event import AdkEvent
 from mtmai.clients.rest.models.adk_event_list import AdkEventList
@@ -183,6 +184,7 @@ from mtmai.clients.rest.models.function_call_termination import FunctionCallTerm
 from mtmai.clients.rest.models.function_call_termination_config import FunctionCallTerminationConfig
 from mtmai.clients.rest.models.function_execution_result import FunctionExecutionResult
 from mtmai.clients.rest.models.function_execution_result_message import FunctionExecutionResultMessage
+from mtmai.clients.rest.models.function_response import FunctionResponse
 from mtmai.clients.rest.models.gallery import Gallery
 from mtmai.clients.rest.models.gallery_components import GalleryComponents
 from mtmai.clients.rest.models.gallery_items import GalleryItems

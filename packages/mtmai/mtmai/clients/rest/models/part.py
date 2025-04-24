@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.function_call_dict import FunctionCallDict
+from mtmai.clients.rest.models.function_response import FunctionResponse
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -31,12 +32,12 @@ class Part(BaseModel):
     video_metadata: Optional[Dict[str, Any]] = Field(default=None, description="Metadata for a given video..")
     thought: Optional[StrictBool] = Field(default=None, description="Indicates if the part is thought from the model..")
     code_execution_result: Optional[Dict[str, Any]] = None
-    executable_code: Optional[StrictStr] = Field(default=None, description="Optional. Executable code..")
-    file_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. File data..")
+    executable_code: Optional[StrictStr] = Field(default=None, description="Optional. Executable code..", alias="executableCode")
+    file_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. File data..", alias="fileData")
     function_call: Optional[FunctionCallDict] = Field(default=None, alias="functionCall")
-    function_response: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Function response..", alias="functionResponse")
+    function_response: Optional[FunctionResponse] = Field(default=None, alias="functionResponse")
     inline_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Inlined bytes data..", alias="inlineData")
-    __properties: ClassVar[List[str]] = ["text", "video_metadata", "thought", "code_execution_result", "executable_code", "file_data", "functionCall", "functionResponse", "inlineData"]
+    __properties: ClassVar[List[str]] = ["text", "video_metadata", "thought", "code_execution_result", "executableCode", "fileData", "functionCall", "functionResponse", "inlineData"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,6 +81,9 @@ class Part(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of function_call
         if self.function_call:
             _dict['functionCall'] = self.function_call.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of function_response
+        if self.function_response:
+            _dict['functionResponse'] = self.function_response.to_dict()
         return _dict
 
     @classmethod
@@ -101,10 +105,10 @@ class Part(BaseModel):
             "video_metadata": obj.get("video_metadata"),
             "thought": obj.get("thought"),
             "code_execution_result": obj.get("code_execution_result"),
-            "executable_code": obj.get("executable_code"),
-            "file_data": obj.get("file_data"),
+            "executableCode": obj.get("executableCode"),
+            "fileData": obj.get("fileData"),
             "functionCall": FunctionCallDict.from_dict(obj["functionCall"]) if obj.get("functionCall") is not None else None,
-            "functionResponse": obj.get("functionResponse"),
+            "functionResponse": FunctionResponse.from_dict(obj["functionResponse"]) if obj.get("functionResponse") is not None else None,
             "inlineData": obj.get("inlineData")
         })
         return _obj

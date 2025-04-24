@@ -1,10 +1,10 @@
 from autogen_core.models import ModelFamily, ModelInfo
-from model_client.mtadk_router_litellm_model import MtAdkLiteRouterLlm
 from smolagents import LiteLLMModel
 
 from mtmai import tools as tools
 from mtmai.core.config import settings
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
+from mtmai.model_client.mtadk_router_litellm_model import MtAdkLiteRouterLlm
 from mtmai.model_client.smolagent_model import MtSmolRouterLiteLLMModel
 
 
