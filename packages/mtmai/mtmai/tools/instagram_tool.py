@@ -1,6 +1,5 @@
 import pyotp
 from google.adk.tools import ToolContext
-
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.instagrapi import Client
@@ -28,20 +27,6 @@ def instagram_login(
     Returns:
         string: The instagram login result.
     """
-    # def forward(self, task: str):
-    #     # SLEEP_TIME = "600"  # in seconds
-
-    #     ig_client = Client()
-    #     ig_client.login(IG_USERNAME, IG_PASSWORD)
-    #     ig_client.dump_settings(IG_CREDENTIAL_PATH)
-
-    #     userid = ig_client.user_id_from_username("hello")
-    #     ig_client.user_follow(userid)
-    #     ig_client.user_unfollow(userid)
-    #     ig_client.user_followers(userid, amount=10)
-    #     ig_client.user_following(userid, amount=10)
-    #     ig_client.user_followers_full(userid, amount=10)
-
     username = username.strip()
     password = password.strip()
     otp_key = otp_key.strip().replace(" ", "")

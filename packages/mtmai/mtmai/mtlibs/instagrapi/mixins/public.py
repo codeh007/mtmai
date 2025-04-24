@@ -45,7 +45,7 @@ class PublicRequestMixin:
                 total=3,
                 status_forcelist=[429, 500, 502, 503, 504],
                 allowed_methods=["GET", "POST"],
-                backoff_factor=2,
+                backoff_factor=4,
             )
         except TypeError:
             retry_strategy = Retry(
