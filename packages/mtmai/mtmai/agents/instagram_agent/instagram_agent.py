@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Any, Optional, cast
 
 import pyotp
@@ -7,8 +8,6 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools import BaseTool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
-from loguru import logger
-from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtlibs.instagrapi import Client
@@ -43,6 +42,13 @@ def before_agent_callback(callback_context: CallbackContext):
     current_state = callback_context.state.to_dict()
     instagram_username = current_state.get("inst:username")
     instagram_password = current_state.get("inst:password")
+    ig_settings = current_state.get("ig_settings")
+
+    if not current_state:
+        if os.path.exists(f".vol/ig_settings_{instagram_username}.json"):
+            with open(f".vol/ig_settings_{instagram_username}.json", "r") as f:
+                login_result = json.load(f)
+                current_state.update({"ig_settings": login_result})
 
     if callback_context.user_content.parts[0].function_response:
         function_response = cast(
@@ -51,59 +57,69 @@ def before_agent_callback(callback_context: CallbackContext):
         )
         if function_response.name == "instagram_login":
             ig_client = Client(
-                # proxy=settings.default_proxy_url,
-                proxy="socks5://US-Illinois-pbfBnijAfc-172.59.190.194:myb398a6ewyqcc5w@172.235.39.216:8000",
-                request_timeout=3,
+                # proxy="socks5://US-Illinois-pbfBnijAfc-172.59.190.194:myb398a6ewyqcc5w@172.235.39.216:8000",
+                # proxy=proxy_url,
             )
             # 临时代码,用户注册
-            signup_result = ig_client.signup(
-                username=function_response.response.get("zhangxiaobin888"),
-                password=function_response.response.get("ff12Abc4"),
-                email=function_response.response.get("zhangxiaobin888@gmail.com"),
-                phone_number=function_response.response.get("18810781012"),
-                full_name="zhangxiaobin",
-                year=1990,
-                month=1,
-                day=17,
-            )
-            logger.info(f"signup_result: {signup_result}")
+            # signup_result = ig_client.signup(
+            #     username=function_response.response.get("zhangxiaobin888"),
+            #     password=function_response.response.get("ff12Abc4"),
+            #     email=function_response.response.get("zhangxiaobin888@gmail.com"),
+            #     phone_number=function_response.response.get("18810781012"),
+            #     full_name="zhangxiaobin",
+            #     year=1990,
+            #     month=1,
+            #     day=17,
+            # )
+            # logger.info(f"signup_result: {signup_result}")
 
-            # 用户提交的登录凭据
-            username = function_response.response.get("username")
-            password = function_response.response.get("password")
-            otp_key = function_response.response.get("otp_key")
-            ig_client = Client(
-                proxy=settings.default_proxy_url,
-            )
-            login_result = ig_client.login(
-                username=username.strip(),
-                password=password.strip(),
-                verification_code=pyotp.TOTP(otp_key.strip().replace(" ", "")).now()
-                if function_response.response.get("otp_key")
-                else None,
-                relogin=False,
-            )
+            # 如果本机已经存在 login settings
+            if os.path.exists(f".vol/ig_settings_{instagram_username}.json"):
+                with open(f".vol/ig_settings_{instagram_username}.json", "r") as f:
+                    login_result = json.load(f)
+                    current_state.update({"ig_settings": login_result})
 
-            if login_result:
-                local_settings_file = f".vol/ig_settings_{username}.json"
-                with open(local_settings_file, "w") as f:
-                    f.write(json.dumps(login_result))
-                login_data = ig_client.get_settings()
-                callback_context.state.update({"ig_settings": login_data})
-                ig_client.dump_settings(local_settings_file)
+                ig_client.load_settings(login_result)
                 return None
+            else:
+                # 用户提交的登录凭据
+                username = function_response.response.get("username")
+                password = function_response.response.get("password")
+                otp_key = function_response.response.get("otp_key")
+                proxy_url = function_response.response.get("proxy_url")
+                if proxy_url:
+                    ig_client.proxy = proxy_url
 
-            return types.Content(
-                role="assistant",
-                parts=[
-                    types.Part(
-                        text="instagram 登录失败",
-                    )
-                ],
-            )
+                two_fa_code = None
+                if otp_key:
+                    two_fa_code = pyotp.TOTP(otp_key.strip().replace(" ", "")).now()
+                login_result = ig_client.login(
+                    username=username.strip(),
+                    password=password.strip(),
+                    verification_code=two_fa_code,
+                    relogin=False,
+                )
 
-    # 确保 instagram 登录凭据
-    elif not instagram_username or not instagram_password:
+                if login_result:
+                    local_settings_file = f".vol/ig_settings_{username}.json"
+                    with open(local_settings_file, "w") as f:
+                        f.write(json.dumps(login_result))
+                    login_data = ig_client.get_settings()
+                    callback_context.state.update({"ig_settings": login_data})
+                    ig_client.dump_settings(local_settings_file)
+                    return None
+
+                return types.Content(
+                    role="assistant",
+                    parts=[
+                        types.Part(
+                            text="instagram 登录失败",
+                        )
+                    ],
+                )
+
+    # 要求登录
+    elif not ig_settings:  # not instagram_username or not instagram_password:
         return types.Content(
             role="model",
             parts=[
