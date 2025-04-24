@@ -41,8 +41,18 @@ def before_agent_callback(callback_context: CallbackContext):
     instagram_password = current_state.get("inst:password")
 
     if callback_context.user_content.parts[0].function_response:
-        # 用户提交的登录凭据
-        return callback_context.user_form
+        if callback_context.user_form.parts[0].function_call.name == "instagram_login":
+            # logger.info(f"instagram_login: {callback_context.user_form.parts[0].function_call.args}")
+            # 用户提交的登录凭据
+            return types.Content(
+                role="assistant",
+                parts=[
+                    types.Part(
+                        text="(后台运行) 正在登录 instagram 账号",
+                    )
+                ],
+            )
+
     # 确保 instagram 登录凭据
     elif not instagram_username or not instagram_password:
         return types.Content(
