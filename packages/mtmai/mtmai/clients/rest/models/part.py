@@ -32,12 +32,12 @@ class Part(BaseModel):
     video_metadata: Optional[Dict[str, Any]] = Field(default=None, description="Metadata for a given video..")
     thought: Optional[StrictBool] = Field(default=None, description="Indicates if the part is thought from the model..")
     code_execution_result: Optional[Dict[str, Any]] = None
-    executable_code: Optional[StrictStr] = Field(default=None, description="Optional. Executable code..", alias="executableCode")
-    file_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. File data..", alias="fileData")
-    function_call: Optional[FunctionCallDict] = Field(default=None, alias="functionCall")
-    function_response: Optional[FunctionResponse] = Field(default=None, alias="functionResponse")
-    inline_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Inlined bytes data..", alias="inlineData")
-    __properties: ClassVar[List[str]] = ["text", "video_metadata", "thought", "code_execution_result", "executableCode", "fileData", "functionCall", "functionResponse", "inlineData"]
+    executable_code: Optional[StrictStr] = Field(default=None, description="Optional. Executable code..")
+    file_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. File data..")
+    function_call: Optional[FunctionCallDict] = None
+    function_response: Optional[FunctionResponse] = None
+    inline_data: Optional[Dict[str, Any]] = Field(default=None, description="Optional. Inlined bytes data..")
+    __properties: ClassVar[List[str]] = ["text", "video_metadata", "thought", "code_execution_result", "executable_code", "file_data", "function_call", "function_response", "inline_data"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,10 +80,10 @@ class Part(BaseModel):
         )
         # override the default output from pydantic by calling `to_dict()` of function_call
         if self.function_call:
-            _dict['functionCall'] = self.function_call.to_dict()
+            _dict['function_call'] = self.function_call.to_dict()
         # override the default output from pydantic by calling `to_dict()` of function_response
         if self.function_response:
-            _dict['functionResponse'] = self.function_response.to_dict()
+            _dict['function_response'] = self.function_response.to_dict()
         return _dict
 
     @classmethod
@@ -105,11 +105,11 @@ class Part(BaseModel):
             "video_metadata": obj.get("video_metadata"),
             "thought": obj.get("thought"),
             "code_execution_result": obj.get("code_execution_result"),
-            "executableCode": obj.get("executableCode"),
-            "fileData": obj.get("fileData"),
-            "functionCall": FunctionCallDict.from_dict(obj["functionCall"]) if obj.get("functionCall") is not None else None,
-            "functionResponse": FunctionResponse.from_dict(obj["functionResponse"]) if obj.get("functionResponse") is not None else None,
-            "inlineData": obj.get("inlineData")
+            "executable_code": obj.get("executable_code"),
+            "file_data": obj.get("file_data"),
+            "function_call": FunctionCallDict.from_dict(obj["function_call"]) if obj.get("function_call") is not None else None,
+            "function_response": FunctionResponse.from_dict(obj["function_response"]) if obj.get("function_response") is not None else None,
+            "inline_data": obj.get("inline_data")
         })
         return _obj
 

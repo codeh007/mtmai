@@ -62,7 +62,7 @@ from mtmai.clients.rest.models.agent_incoming_event import AgentIncomingEvent
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_outgoing_event import AgentOutgoingEvent
 from mtmai.clients.rest.models.agent_properties import AgentProperties
-from mtmai.clients.rest.models.agent_run_request import AgentRunRequest
+from mtmai.clients.rest.models.agent_run_request_v3 import AgentRunRequestV3
 from mtmai.clients.rest.models.agent_run_scheduled_event import AgentRunScheduledEvent
 from mtmai.clients.rest.models.agent_scheduled_event import AgentScheduledEvent
 from mtmai.clients.rest.models.agent_state_types import AgentStateTypes
@@ -233,7 +233,6 @@ from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
-from mtmai.clients.rest.models.mt_browser_config import MtBrowserConfig
 from mtmai.clients.rest.models.multi_modal_message import MultiModalMessage
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient

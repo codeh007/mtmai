@@ -13,153 +13,90 @@
 
 
 from __future__ import annotations
-import json
 import pprint
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
-from typing import Any, List, Optional
-from mtmai.clients.rest.models.model_content import ModelContent
-from mtmai.clients.rest.models.user_content import UserContent
-from pydantic import StrictStr, Field
-from typing import Union, List, Set, Optional, Dict
-from typing_extensions import Literal, Self
+import re  # noqa: F401
+import json
 
-CONTENT_ONE_OF_SCHEMAS = ["ModelContent", "UserContent"]
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.part import Part
+from typing import Optional, Set
+from typing_extensions import Self
 
 class Content(BaseModel):
     """
     Content
-    """
-    # data type: UserContent
-    oneof_schema_1_validator: Optional[UserContent] = None
-    # data type: ModelContent
-    oneof_schema_2_validator: Optional[ModelContent] = None
-    actual_instance: Optional[Union[ModelContent, UserContent]] = None
-    one_of_schemas: Set[str] = { "ModelContent", "UserContent" }
+    """ # noqa: E501
+    role: Optional[StrictStr] = None
+    parts: Optional[List[Part]] = None
+    __properties: ClassVar[List[str]] = ["role", "parts"]
 
     model_config = ConfigDict(
+        populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
 
 
-    discriminator_value_class_map: Dict[str, str] = {
-    }
-
-    def __init__(self, *args, **kwargs) -> None:
-        if args:
-            if len(args) > 1:
-                raise ValueError("If a position argument is used, only 1 is allowed to set `actual_instance`")
-            if kwargs:
-                raise ValueError("If a position argument is used, keyword arguments cannot be used.")
-            super().__init__(actual_instance=args[0])
-        else:
-            super().__init__(**kwargs)
-
-    @field_validator('actual_instance')
-    def actual_instance_must_validate_oneof(cls, v):
-        instance = Content.model_construct()
-        error_messages = []
-        match = 0
-        # validate data type: UserContent
-        if not isinstance(v, UserContent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `UserContent`")
-        else:
-            match += 1
-        # validate data type: ModelContent
-        if not isinstance(v, ModelContent):
-            error_messages.append(f"Error! Input type `{type(v)}` is not `ModelContent`")
-        else:
-            match += 1
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in Content with oneOf schemas: ModelContent, UserContent. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when setting `actual_instance` in Content with oneOf schemas: ModelContent, UserContent. Details: " + ", ".join(error_messages))
-        else:
-            return v
-
-    @classmethod
-    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
-        return cls.from_json(json.dumps(obj))
-
-    @classmethod
-    def from_json(cls, json_str: str) -> Self:
-        """Returns the object represented by the json string"""
-        instance = cls.model_construct()
-        error_messages = []
-        match = 0
-
-        # use oneOf discriminator to lookup the data type
-        _data_type = json.loads(json_str).get("role")
-        if not _data_type:
-            raise ValueError("Failed to lookup data type from the field `role` in the input.")
-
-        # check if data type is `ModelContent`
-        if _data_type == "model":
-            instance.actual_instance = ModelContent.from_json(json_str)
-            return instance
-
-        # check if data type is `UserContent`
-        if _data_type == "user":
-            instance.actual_instance = UserContent.from_json(json_str)
-            return instance
-
-        # check if data type is `ModelContent`
-        if _data_type == "ModelContent":
-            instance.actual_instance = ModelContent.from_json(json_str)
-            return instance
-
-        # check if data type is `UserContent`
-        if _data_type == "UserContent":
-            instance.actual_instance = UserContent.from_json(json_str)
-            return instance
-
-        # deserialize data into UserContent
-        try:
-            instance.actual_instance = UserContent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-        # deserialize data into ModelContent
-        try:
-            instance.actual_instance = ModelContent.from_json(json_str)
-            match += 1
-        except (ValidationError, ValueError) as e:
-            error_messages.append(str(e))
-
-        if match > 1:
-            # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into Content with oneOf schemas: ModelContent, UserContent. Details: " + ", ".join(error_messages))
-        elif match == 0:
-            # no match
-            raise ValueError("No match found when deserializing the JSON string into Content with oneOf schemas: ModelContent, UserContent. Details: " + ", ".join(error_messages))
-        else:
-            return instance
+    def to_str(self) -> str:
+        """Returns the string representation of the model using alias"""
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
-        """Returns the JSON representation of the actual instance"""
-        if self.actual_instance is None:
-            return "null"
+        """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
+        return json.dumps(self.to_dict())
 
-        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
-            return self.actual_instance.to_json()
-        else:
-            return json.dumps(self.actual_instance)
+    @classmethod
+    def from_json(cls, json_str: str) -> Optional[Self]:
+        """Create an instance of Content from a JSON string"""
+        return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], ModelContent, UserContent]]:
-        """Returns the dict representation of the actual instance"""
-        if self.actual_instance is None:
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([
+        ])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
+        # override the default output from pydantic by calling `to_dict()` of each item in parts (list)
+        _items = []
+        if self.parts:
+            for _item_parts in self.parts:
+                if _item_parts:
+                    _items.append(_item_parts.to_dict())
+            _dict['parts'] = _items
+        return _dict
+
+    @classmethod
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+        """Create an instance of Content from a dict"""
+        if obj is None:
             return None
 
-        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
-            return self.actual_instance.to_dict()
-        else:
-            # primitive type
-            return self.actual_instance
+        if not isinstance(obj, dict):
+            return cls.model_validate(obj)
 
-    def to_str(self) -> str:
-        """Returns the string representation of the actual instance"""
-        return pprint.pformat(self.model_dump())
+        # raise errors for additional fields in the input
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                raise ValueError("Error due to additional fields (not defined in Content) in the input: " + _key)
+
+        _obj = cls.model_validate({
+            "role": obj.get("role"),
+            "parts": [Part.from_dict(_item) for _item in obj["parts"]] if obj.get("parts") is not None else None
+        })
+        return _obj
 
 

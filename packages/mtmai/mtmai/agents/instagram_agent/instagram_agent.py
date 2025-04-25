@@ -85,22 +85,6 @@ def before_agent_callback(callback_context: CallbackContext):
                     login_result = json.loads(f.read())
                     # （callback_context.state['key'] = value）会被跟踪并与回调后框架生成的事件相关联。
                     state["ig_settings"] = login_result
-                    # actions_with_update = EventActions(
-                    #     state_delta={"ig_settings": login_result}
-                    # )
-                    # # 此事件可能代表内部系统操作，而不仅仅是智能体响应
-                    # system_event = Event(
-                    #     invocation_id="inv_login_update",
-                    #     author="system",  # 或 'agent', 'tool' 等
-                    #     actions=actions_with_update,
-                    #     timestamp=time.time(),
-                    #     # content 可能为 None 或表示所采取的操作
-                    # )
-                    # # --- 追加事件（这会更新状态） ---
-                    # callback_context._invocation_context.session_service.append_event(
-                    #     callback_context._invocation_context.session,
-                    #     system_event,
-                    # )
                     return types.Content(
                         role="assistant",
                         parts=[

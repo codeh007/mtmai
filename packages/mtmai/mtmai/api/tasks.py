@@ -1,6 +1,6 @@
 from typing import Annotated
 
-import structlog
+# import structlog
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import ORJSONResponse
@@ -19,7 +19,7 @@ from mtmai.forge.sdk.schemas.tasks import OrderBy, SortDirection, TaskStatus
 from mtmai.models.base_model import CommonResultResponse
 from mtmai.models.task import MtTask, MtTaskStatus
 
-LOG = structlog.get_logger()
+# LOG = structlog.get_logger()
 websocket_router = APIRouter()
 router = APIRouter()
 

@@ -18,6 +18,37 @@ from mtmai.mtlibs.autogen_utils.cancel_token import MtCancelToken
 from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.mtm_engine import mtm_engine, mtmapp
 
+artifact_service = InMemoryArtifactService()
+session_service = mtm_engine.get_session()
+runner_dict = {}
+root_agent_dict = {}
+
+
+def _get_root_agent(app_name: str) -> Agent:
+    """Returns the root agent for the given app."""
+    if app_name in root_agent_dict:
+        return root_agent_dict[app_name]
+    envs.load_dotenv_for_agent(os.path.basename(app_name), settings.AGENT_DIR)
+    agent_module = importlib.import_module(app_name)
+    root_agent: Agent = agent_module.agent.root_agent
+    root_agent_dict[app_name] = root_agent
+    return root_agent
+
+
+def _get_runner(app_name: str) -> Runner:
+    """Returns the runner for the given app."""
+    if app_name in runner_dict:
+        return runner_dict[app_name]
+    root_agent = _get_root_agent(app_name)
+    runner = Runner(
+        app_name=app_name,
+        agent=root_agent,
+        artifact_service=artifact_service,
+        session_service=session_service,
+    )
+    runner_dict[app_name] = runner
+    return runner
+
 
 @mtmapp.workflow(
     name=FlowNames.TEAM,
@@ -33,37 +64,6 @@ class FlowTeam:
         app_name = input.app_name
         user_id = tenant_client.tenant_id
         if app_name == "root":
-            session_service = mtm_engine.get_session()
-            artifact_service = InMemoryArtifactService()
-            runner_dict = {}
-            root_agent_dict = {}
-
-            def _get_root_agent(app_name: str) -> Agent:
-                """Returns the root agent for the given app."""
-                if app_name in root_agent_dict:
-                    return root_agent_dict[app_name]
-                envs.load_dotenv_for_agent(
-                    os.path.basename(app_name), settings.AGENT_DIR
-                )
-                agent_module = importlib.import_module(app_name)
-                root_agent: Agent = agent_module.agent.root_agent
-                root_agent_dict[app_name] = root_agent
-                return root_agent
-
-            def _get_runner(app_name: str) -> Runner:
-                """Returns the runner for the given app."""
-                if app_name in runner_dict:
-                    return runner_dict[app_name]
-                root_agent = _get_root_agent(app_name)
-                runner = Runner(
-                    app_name=app_name,
-                    agent=root_agent,
-                    artifact_service=artifact_service,
-                    session_service=session_service,
-                )
-                runner_dict[app_name] = runner
-                return runner
-
             # 自动创建session
             session = session_service.get_session(
                 app_name=app_name, user_id=user_id, session_id=session_id
@@ -71,12 +71,6 @@ class FlowTeam:
             if session:
                 logger.info("Session already exists: %s", session_id)
             else:
-                # logger.warning("Session already exists: %s", session_id)
-                # raise HTTPException(
-                #     status_code=400, detail=f"Session already exists: {session_id}"
-                # )
-
-                # else:
                 logger.info("New session created: %s", session_id)
                 session_service.create_session(
                     app_name=app_name, user_id=user_id, state={}, session_id=session_id

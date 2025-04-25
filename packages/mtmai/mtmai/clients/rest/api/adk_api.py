@@ -1851,6 +1851,7 @@ class AdkApi:
     async def adk_session_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app: Annotated[StrictStr, Field(description="The app name")],
         session: Annotated[StrictStr, Field(description="The session id")],
         _request_timeout: Union[
             None,
@@ -1871,6 +1872,8 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app: The app name (required)
+        :type app: str
         :param session: The session id (required)
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1897,6 +1900,7 @@ class AdkApi:
 
         _param = self._adk_session_get_serialize(
             tenant=tenant,
+            app=app,
             session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1925,6 +1929,7 @@ class AdkApi:
     async def adk_session_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app: Annotated[StrictStr, Field(description="The app name")],
         session: Annotated[StrictStr, Field(description="The session id")],
         _request_timeout: Union[
             None,
@@ -1945,6 +1950,8 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app: The app name (required)
+        :type app: str
         :param session: The session id (required)
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1971,6 +1978,7 @@ class AdkApi:
 
         _param = self._adk_session_get_serialize(
             tenant=tenant,
+            app=app,
             session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1999,6 +2007,7 @@ class AdkApi:
     async def adk_session_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        app: Annotated[StrictStr, Field(description="The app name")],
         session: Annotated[StrictStr, Field(description="The session id")],
         _request_timeout: Union[
             None,
@@ -2019,6 +2028,8 @@ class AdkApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param app: The app name (required)
+        :type app: str
         :param session: The session id (required)
         :type session: str
         :param _request_timeout: timeout setting for this request. If one
@@ -2045,6 +2056,7 @@ class AdkApi:
 
         _param = self._adk_session_get_serialize(
             tenant=tenant,
+            app=app,
             session=session,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -2068,6 +2080,7 @@ class AdkApi:
     def _adk_session_get_serialize(
         self,
         tenant,
+        app,
         session,
         _request_auth,
         _content_type,
@@ -2092,6 +2105,8 @@ class AdkApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if app is not None:
+            _path_params['app'] = app
         if session is not None:
             _path_params['session'] = session
         # process the query parameters
@@ -2118,7 +2133,7 @@ class AdkApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/adk/session/{session}',
+            resource_path='/api/v1/tenants/{tenant}/adk/app/{app}/session/{session}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

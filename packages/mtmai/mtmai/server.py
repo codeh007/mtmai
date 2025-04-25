@@ -1,3 +1,5 @@
+import asyncio
+
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -8,6 +10,7 @@ from loguru import logger
 from mtmai._version import version
 from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
+from mtmai.worker_app import run_worker
 
 # from mtmai.middleware import AuthMiddleware
 
@@ -37,15 +40,15 @@ def build_app():
         try:
             # from mtmai.worker_app import run_worker
 
-            # worker_task = asyncio.create_task(run_worker())
+            worker_task = asyncio.create_task(run_worker())
             yield
             # Cleanup worker on shutdown
-            # if not worker_task.done():
-            #     worker_task.cancel()
-            #     try:
-            #         await worker_task
-            #     except asyncio.CancelledError:
-            #         pass
+            if not worker_task.done():
+                worker_task.cancel()
+                try:
+                    await worker_task
+                except asyncio.CancelledError:
+                    pass
         except Exception as e:
             logger.exception(f"failed to setup worker: {e}")
         finally:
