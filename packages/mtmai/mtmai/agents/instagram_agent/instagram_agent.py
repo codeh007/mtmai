@@ -5,6 +5,7 @@ from typing import Any, Optional, cast
 import pyotp
 from google.adk.agents import LlmAgent
 from google.adk.agents.callback_context import CallbackContext
+from google.adk.models import LlmRequest
 from google.adk.tools import BaseTool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
@@ -15,7 +16,6 @@ from mtmai.tools.instagram_tool import (
     instagram_account_info,
     instagram_follow_user,
     instagram_login,
-    instagram_write_post,
 )
 
 from .instagram_prompts import get_instagram_instructions
@@ -163,6 +163,10 @@ def before_agent_callback(callback_context: CallbackContext):
     return None
 
 
+def before_model_callback(callback_context: CallbackContext, llm_request: LlmRequest):
+    pass
+
+
 def new_instagram_agent():
     return LlmAgent(
         model=get_default_litellm_model(),
@@ -171,10 +175,12 @@ def new_instagram_agent():
         instruction=get_instagram_instructions(),
         tools=[
             instagram_login,
-            instagram_write_post,
+            # instagram_write_post,
             instagram_account_info,
             instagram_follow_user,
         ],
         after_tool_callback=after_tool_callback,
         before_agent_callback=before_agent_callback,
+        before_model_callback=before_model_callback,
+        output_key="last_instagram_agent_output",
     )
