@@ -63,7 +63,7 @@ def adkweb(
         # worker_task = asyncio.create_task(run_worker())
 
         click.secho(
-            f"""ADK Web Server started at http://localhost:{port}.{" "*(29 - len(str(port)))}""",
+            f"""ADK Web Server started at http://localhost:{port}.{" " * (29 - len(str(port)))}""",
             fg="green",
         )
         yield  # Startup is done, now app is running

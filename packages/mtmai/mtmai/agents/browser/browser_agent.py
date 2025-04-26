@@ -16,13 +16,12 @@ from google.adk.tools import BaseTool, ToolContext
 from google.genai import types
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
-from playwright.async_api import BrowserContext as PlaywrightBrowserContext
-from pydantic import BaseModel, SecretStr
-from typing_extensions import override
-
 from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.mtlibs.browser_utils.browser_manager import BrowseruseHelper
+from playwright.async_api import BrowserContext as PlaywrightBrowserContext
+from pydantic import SecretStr
+from typing_extensions import override
 
 
 # ============ Configuration Section ============
@@ -51,9 +50,9 @@ config = TwitterConfig(
 )
 
 
-class HelloModel1(BaseModel):
-    name: str
-    age: int
+# class HelloModel1(BaseModel):
+#     name: str
+#     age: int
 
 
 def before_agent_callback(callback_context: CallbackContext):

@@ -3,6 +3,7 @@ import os
 from typing import Any, Optional, cast
 
 import pyotp
+from fastapi.encoders import jsonable_encoder
 from google.adk.agents import LlmAgent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest
@@ -44,11 +45,44 @@ def before_agent_callback(callback_context: CallbackContext):
     instagram_password = state.get("inst:password")
     ig_settings = state.get("ig_settings")
 
-    if not ig_settings:
-        if os.path.exists(f".vol/ig_settings_{instagram_username}.json"):
-            with open(f".vol/ig_settings_{instagram_username}.json", "r") as f:
-                login_result = json.loads(f.read())
-                state.update({"ig_settings": login_result})
+    user_content = callback_context.user_content
+    user_input_text = user_content.parts[0].text
+    if user_input_text.startswith("/info"):
+        proxy_url = callback_context.state.get("proxy_url")
+        ig_client = Client()
+        ig_settings = callback_context.state.get("ig_settings")
+        if ig_settings:
+            ig_client.set_settings(ig_settings)
+        if proxy_url:
+            ig_client.proxy = proxy_url
+        account = ig_client.account_info()
+        if account:
+            callback_context.state["instagram_user_info"] = jsonable_encoder(
+                account.model_dump()
+            )
+            return types.Content(
+                role="assistant",
+                parts=[
+                    types.Part(
+                        text=f"instagram 用户信息: {account.username}",
+                    )
+                ],
+            )
+
+    if user_input_text.startswith("/follow"):
+        proxy_url = callback_context.state.get("proxy_url")
+        ig_client = Client()
+        ig_settings = callback_context.state.get("ig_settings")
+        if ig_settings:
+            ig_client.set_settings(ig_settings)
+        if proxy_url:
+            ig_client.proxy = proxy_url
+        username = user_input_text.split(" ")[1]
+        ig_client.dir()(username)
+        return types.Content(
+            role="assistant",
+            parts=[types.Part(text=f"关注 {username} 成功")],
+        )
 
     if callback_context.user_content.parts[0].function_response:
         function_response = cast(

@@ -9,15 +9,14 @@ from fastapi.encoders import jsonable_encoder
 from google.adk.tools import ToolContext
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
-from playwright.async_api import BrowserContext
-from pydantic import SecretStr
-
 from mtmai.core.config import settings
 from mtmai.mtlibs.adk_utils.adk_utils import tool_success
 from mtmai.mtlibs.browser_utils.browser_manager import (
     BrowseruseHelper,
     MtBrowserManager,
 )
+from playwright.async_api import BrowserContext
+from pydantic import SecretStr
 
 STATE_KEY_BROWSER_CONFIG = "browser_config"
 STATE_KEY_BROWSER_COOKIES = "browser_cookies"
@@ -166,7 +165,7 @@ async def browser_use_steal_tool(tool_context: ToolContext) -> dict[str, str]:
 
             await setup_context(browseruse_context.session.context)
 
-            steal_agent = BrowserUserAgent(
+            steal_agent = BrowseruseAgent(
                 # 其他 人机检测网站: https://bot.sannysoft.com/
                 task="""
                     访问: https://bot-detector.rebrowser.net/ , 根据页面内容告我我是否已经通过了人机检测, 如果没有通过,具体原因是什么?

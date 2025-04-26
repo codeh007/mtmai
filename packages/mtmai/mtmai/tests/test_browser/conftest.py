@@ -1,0 +1,42 @@
+from unittest.mock import patch
+
+import pytest
+import pytest_asyncio
+
+from mtmai.core import loader
+from mtmai.hatchet import Hatchet
+
+
+@pytest.fixture(scope="session")
+def mock_config():
+    """模拟配置对象"""
+    return loader.CredentialsData(username="admin@example.com", password="Admin123!!")
+
+
+@pytest_asyncio.fixture(scope="session")
+async def mtmapp(mock_config):
+    """Session-wide mtmapp fixture"""
+
+    with patch(
+        "mtmai.core.loader.ConfigLoader.load_credentials", autospec=True
+    ) as mock_load:
+        mock_load.return_value = mock_config
+        # config_loader = loader.ConfigLoader()
+
+        # loaded_config = config_loader.load_client_config(
+        #     loader.ClientConfig(server_url=settings.GOMTM_URL)
+        # )
+        # assert loaded_config.credentials.username == "admin@example.com"
+        app = Hatchet()
+        await app.boot()
+        print("app boot 完成")
+        yield app
+
+
+@pytest_asyncio.fixture(scope="session")
+async def worker(mtmapp: Hatchet):
+    worker = mtmapp.worker("testing_worker")
+    yield worker
+    # await worker.async_start()
+
+    # await worker.close()
