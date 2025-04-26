@@ -7,14 +7,14 @@ from browser_use import BrowserContextConfig
 from browser_use.browser.context import (
     BrowserContext as BrowseruseBrowserContext,  # noqa
 )
-from crawl4ai.async_configs import BrowserConfig
-from crawl4ai.async_crawler_strategy import (
+from mtmai.core.config import settings
+from mtmai.crawl4ai.async_configs import BrowserConfig
+from mtmai.crawl4ai.async_crawler_strategy import (
     AsyncCrawlerStrategy,
     AsyncPlaywrightCrawlerStrategy,
 )
-from crawl4ai.async_webcrawler import AsyncWebCrawler
-from crawl4ai.types import AsyncLoggerBase
-from mtmai.core.config import settings
+from mtmai.crawl4ai.async_webcrawler import AsyncWebCrawler
+from mtmai.crawl4ai.types import AsyncLoggerBase
 
 
 class MtBrowserManager(AsyncWebCrawler):

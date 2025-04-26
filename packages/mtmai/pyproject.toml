@@ -154,6 +154,7 @@ dependencies = [
     "xlrd>=2.0.1",
     "pdfminer-six>=20250327",
     "fastapi-mcp>=0.3.0",
+    "playwright-stealth>=1.0.6",
 ]
 name = "mtxai"
 version = "0.0.269"
