@@ -1,8 +1,11 @@
 import asyncio
-import time
 
+import httpx
 import pytest
 from playwright.async_api import BrowserContext, async_playwright
+from urllib3.util import parse_url
+
+proxy_url = "http://mcj4hubox7-corp.mobile.res-country-JP-state-2112518-city-1907265-hold-hardsession-session-680e05c4abb26:2djXEAgx15LyN8pg@109.236.82.42:9999"
 
 
 async def setup_context(browseruse_context: BrowserContext):
@@ -119,18 +122,66 @@ async def test_playwright_browser1() -> None:
         await browser.close()
 
 
+async def get_ip_from_asock():
+    api_key = "MI1hffVbptDPIC1Rs4ray2PTDIt3g73F"
+    blance_url = f"https://api.asocks.com/v2/user/balance?apiKey={api_key}"
+
+    async with httpx.AsyncClient() as httpclient:
+        response = await httpclient.get(
+            blance_url, headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response_text = response.text
+        print(response_text)
+
+    postData = {
+        "country_code": "US",
+        "state": "New York",
+        "city": "New York",
+        "asn": 11,
+        "type_id": 1,
+        "proxy_type_id": 2,
+        "name": None,
+        "server_port_type_id": 1,
+        "count": 1,
+        "ttl": 1,
+    }
+    async with httpx.AsyncClient() as httpclient:
+        url2 = f"https://api.asocks.com/v2/proxy/create_port?apiKey={api_key}"
+        response = await httpclient.post(
+            url2, headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response_text = response.text
+        print(response_text)
+
+
 @pytest.mark.asyncio
 async def test_playwright_browser2() -> None:
     """
     他进程已经启动了一个chrome 调试端口是: 15001
     """
     # 创建独立的 chrome prefile 并且打开 bing.com
-
+    await get_ip_from_asock()
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp("http://localhost:15001")
 
-        context = await browser.new_context()
+        proxy_uri = parse_url(proxy_url)
+        context = await browser.new_context(
+            timezone_id="Asia/Tokyo",
+            locale="ja-JP",
+            color_scheme="light",
+            is_mobile=True,
+            has_touch=True,
+            viewport={"width": 1920, "height": 1080},
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            proxy={
+                "server": f"{proxy_uri.scheme}://{proxy_uri.netloc}",
+                "username": proxy_uri.auth.split(":")[0],
+                "password": proxy_uri.auth.split(":")[1],
+            },
+        )
 
         page = await context.new_page()
+
         await page.goto("https://bing.com")
-        time.sleep(30)
+        await page.wait_for_load_state("domcontentloaded")
+        await asyncio.sleep(300)
