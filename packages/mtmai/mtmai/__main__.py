@@ -108,5 +108,39 @@ def adkweb(
     # asyncio.run(serve())
 
 
+@app.command()
+def chrome():
+    asyncio.run(start_chrome_server())
+
+
+async def start_chrome_server():
+    cmd = "google-chrome "
+    "--remote-debugging-port=15001"
+    ("--disable-dev-shm-usage",)
+    ("--no-first-run",)
+    ("--no-default-browser-check",)
+    ("--disable-infobars",)
+    ("--window-position=0,0",)
+    ("--disable-session-crashed-bubble",)
+    ("--hide-crash-restore-bubble",)
+    ("--disable-blink-features=AutomationControlled",)
+    ("--disable-automation",)
+    ("--disable-webgl",)
+    ("--disable-webgl2",)
+    process = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    try:
+        print("Chrome debugging server started on port 15001. Press Ctrl+C to exit...")
+        await process.communicate()
+    except KeyboardInterrupt:
+        print("\nReceived Ctrl+C, shutting down Chrome...")
+        process.terminate()
+        await process.wait()
+
+
 if __name__ == "__main__":
     app()

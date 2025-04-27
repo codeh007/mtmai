@@ -50,6 +50,7 @@ async def setup_context(browseruse_context: BrowserContext):
 
 @pytest.mark.asyncio
 async def test_browser1() -> None:
+    # 这个不是正式的测试,可以删除.
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash-exp",
         api_key=SecretStr(settings.GOOGLE_AI_STUDIO_API_KEY),
