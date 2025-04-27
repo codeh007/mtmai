@@ -146,9 +146,14 @@ async def get_ip_from_asock():
         "ttl": 1,
     }
     async with httpx.AsyncClient() as httpclient:
-        url2 = f"https://api.asocks.com/v2/proxy/create_port?apiKey={api_key}"
+        url2 = f"https://api.asocks.com/v2/proxy/create-port?apiKey={api_key}"
         response = await httpclient.post(
-            url2, headers={"Authorization": f"Bearer {api_key}"}
+            url2,
+            json=postData,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
         )
         response_text = response.text
         print(response_text)
@@ -157,7 +162,7 @@ async def get_ip_from_asock():
 @pytest.mark.asyncio
 async def test_playwright_browser2() -> None:
     """
-    他进程已经启动了一个chrome 调试端口是: 15001
+    进程已经启动了一个chrome 调试端口是: 15001
     """
     # 创建独立的 chrome prefile 并且打开 bing.com
     await get_ip_from_asock()
