@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,8 @@ class BrowserOpenResult(BaseModel):
     """ # noqa: E501
     url: StrictStr
     title: StrictStr
-    __properties: ClassVar[List[str]] = ["url", "title"]
+    debug_port: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, alias="debugPort")
+    __properties: ClassVar[List[str]] = ["url", "title", "debugPort"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,7 +88,8 @@ class BrowserOpenResult(BaseModel):
 
         _obj = cls.model_validate({
             "url": obj.get("url"),
-            "title": obj.get("title")
+            "title": obj.get("title"),
+            "debugPort": obj.get("debugPort")
         })
         return _obj
 
