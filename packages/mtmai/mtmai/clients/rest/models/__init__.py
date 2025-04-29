@@ -98,7 +98,8 @@ from mtmai.clients.rest.models.browser import Browser
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_list import BrowserList
-from mtmai.clients.rest.models.browser_open_response import BrowserOpenResponse
+from mtmai.clients.rest.models.browser_open_request import BrowserOpenRequest
+from mtmai.clients.rest.models.browser_open_result import BrowserOpenResult
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.browser_update import BrowserUpdate

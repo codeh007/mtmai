@@ -16,11 +16,12 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictStr
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.browser import Browser
 from mtmai.clients.rest.models.browser_list import BrowserList
-from mtmai.clients.rest.models.browser_open_response import BrowserOpenResponse
+from mtmai.clients.rest.models.browser_open_request import BrowserOpenRequest
+from mtmai.clients.rest.models.browser_open_result import BrowserOpenResult
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -884,7 +885,9 @@ class BrowserApi:
     @validate_call
     async def browser_open(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, description="The browser id")],
+        browser_open_request: BrowserOpenRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[StrictStr, Field(description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -897,10 +900,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BrowserOpenResponse:
+    ) -> BrowserOpenResult:
         """browser_open
 
 
+        :param browser_open_request: (required)
+        :type browser_open_request: BrowserOpenRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
@@ -926,6 +933,8 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_open_serialize(
+            browser_open_request=browser_open_request,
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -934,7 +943,9 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserOpenResponse",
+            '200': "BrowserOpenResult",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -950,7 +961,9 @@ class BrowserApi:
     @validate_call
     async def browser_open_with_http_info(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, description="The browser id")],
+        browser_open_request: BrowserOpenRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[StrictStr, Field(description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -963,10 +976,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BrowserOpenResponse]:
+    ) -> ApiResponse[BrowserOpenResult]:
         """browser_open
 
 
+        :param browser_open_request: (required)
+        :type browser_open_request: BrowserOpenRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
@@ -992,6 +1009,8 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_open_serialize(
+            browser_open_request=browser_open_request,
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1000,7 +1019,9 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserOpenResponse",
+            '200': "BrowserOpenResult",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1016,7 +1037,9 @@ class BrowserApi:
     @validate_call
     async def browser_open_without_preload_content(
         self,
-        browser: Annotated[str, Field(min_length=36, strict=True, description="The browser id")],
+        browser_open_request: BrowserOpenRequest,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        browser: Annotated[StrictStr, Field(description="The browser id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1033,6 +1056,10 @@ class BrowserApi:
         """browser_open
 
 
+        :param browser_open_request: (required)
+        :type browser_open_request: BrowserOpenRequest
+        :param tenant: The tenant id (required)
+        :type tenant: str
         :param browser: The browser id (required)
         :type browser: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1058,6 +1085,8 @@ class BrowserApi:
         """ # noqa: E501
 
         _param = self._browser_open_serialize(
+            browser_open_request=browser_open_request,
+            tenant=tenant,
             browser=browser,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1066,7 +1095,9 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserOpenResponse",
+            '200': "BrowserOpenResult",
+            '400': "APIErrors",
+            '403': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1077,6 +1108,8 @@ class BrowserApi:
 
     def _browser_open_serialize(
         self,
+        browser_open_request,
+        tenant,
         browser,
         _request_auth,
         _content_type,
@@ -1099,12 +1132,16 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if tenant is not None:
+            _path_params['tenant'] = tenant
         if browser is not None:
             _path_params['browser'] = browser
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
+        if browser_open_request is not None:
+            _body_params = browser_open_request
 
 
         # set the HTTP header `Accept`
@@ -1115,6 +1152,19 @@ class BrowserApi:
                 ]
             )
 
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
 
         # authentication setting
         _auth_settings: List[str] = [
@@ -1124,8 +1174,8 @@ class BrowserApi:
         ]
 
         return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/api/v1/browsers/{browser}/open',
+            method='POST',
+            resource_path='/api/v1/tenants/{tenant}/browsers/{browser}/open',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
