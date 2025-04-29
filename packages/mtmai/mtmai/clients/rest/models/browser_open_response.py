@@ -19,22 +19,16 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.root_agent_state import RootAgentState
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AdkSessionProperties(BaseModel):
+class BrowserOpenResponse(BaseModel):
     """
-    AdkSessionProperties
+    BrowserOpenResponse
     """ # noqa: E501
-    id: StrictStr
-    app_name: StrictStr
-    user_id: StrictStr
-    state: RootAgentState
+    url: Optional[StrictStr] = None
     title: Optional[StrictStr] = None
-    create_time: StrictStr
-    update_time: StrictStr
-    __properties: ClassVar[List[str]] = ["id", "app_name", "user_id", "state", "title", "create_time", "update_time"]
+    __properties: ClassVar[List[str]] = ["url", "title"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +48,7 @@ class AdkSessionProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AdkSessionProperties from a JSON string"""
+        """Create an instance of BrowserOpenResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,14 +69,11 @@ class AdkSessionProperties(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of state
-        if self.state:
-            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AdkSessionProperties from a dict"""
+        """Create an instance of BrowserOpenResponse from a dict"""
         if obj is None:
             return None
 
@@ -92,16 +83,11 @@ class AdkSessionProperties(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AdkSessionProperties) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in BrowserOpenResponse) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
-            "state": RootAgentState.from_dict(obj["state"]) if obj.get("state") is not None else None,
-            "title": obj.get("title"),
-            "create_time": obj.get("create_time"),
-            "update_time": obj.get("update_time")
+            "url": obj.get("url"),
+            "title": obj.get("title")
         })
         return _obj
 

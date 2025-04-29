@@ -40,7 +40,6 @@ from mtmai.clients.rest.models.adk_raw_event import AdkRawEvent
 from mtmai.clients.rest.models.adk_session import AdkSession
 from mtmai.clients.rest.models.adk_session_list import AdkSessionList
 from mtmai.clients.rest.models.adk_session_properties import AdkSessionProperties
-from mtmai.clients.rest.models.adk_session_state import AdkSessionState
 from mtmai.clients.rest.models.adk_session_upsert import AdkSessionUpsert
 from mtmai.clients.rest.models.adk_user_state import AdkUserState
 from mtmai.clients.rest.models.adk_user_state_list import AdkUserStateList
@@ -58,7 +57,6 @@ from mtmai.clients.rest.models.agent_approval_event import AgentApprovalEvent
 from mtmai.clients.rest.models.agent_connected_event import AgentConnectedEvent
 from mtmai.clients.rest.models.agent_error_event import AgentErrorEvent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
-from mtmai.clients.rest.models.agent_incoming_event import AgentIncomingEvent
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_outgoing_event import AgentOutgoingEvent
 from mtmai.clients.rest.models.agent_properties import AgentProperties
@@ -100,6 +98,7 @@ from mtmai.clients.rest.models.browser import Browser
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_data import BrowserData
 from mtmai.clients.rest.models.browser_list import BrowserList
+from mtmai.clients.rest.models.browser_open_response import BrowserOpenResponse
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
 from mtmai.clients.rest.models.browser_update import BrowserUpdate
@@ -305,7 +304,6 @@ from mtmai.clients.rest.models.society_of_mind_agent_config import SocietyOfMind
 from mtmai.clients.rest.models.source_match_termination import SourceMatchTermination
 from mtmai.clients.rest.models.source_match_termination_config import SourceMatchTerminationConfig
 from mtmai.clients.rest.models.start_new_chat_input import StartNewChatInput
-from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
 from mtmai.clients.rest.models.step import Step
 from mtmai.clients.rest.models.step_run import StepRun
 from mtmai.clients.rest.models.step_run_archive import StepRunArchive

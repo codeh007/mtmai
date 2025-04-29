@@ -7,10 +7,8 @@ from loguru import logger
 from sqlalchemy import exc, inspect, text
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
-from mtmai.models.ag import Response
 from mtmai.clients.rest.models.team import Team
-
-# from ..teammanager import TeamManager
+from mtmai.models.ag import Response
 
 
 class DatabaseManager:
@@ -383,5 +381,7 @@ class DatabaseManager:
             self.engine.dispose()
             logger.info("Database connections closed successfully")
         except Exception as e:
+            logger.error(f"Error closing database connections: {str(e)}")
+            raise
             logger.error(f"Error closing database connections: {str(e)}")
             raise
