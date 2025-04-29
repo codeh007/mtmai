@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,9 +26,10 @@ class BrowserOpenRequest(BaseModel):
     """
     BrowserOpenRequest
     """ # noqa: E501
-    url: StrictStr
+    urls: List[StrictStr]
     title: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["url", "title"]
+    proxy_url: Optional[StrictStr] = Field(default=None, alias="proxyUrl")
+    __properties: ClassVar[List[str]] = ["urls", "title", "proxyUrl"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -86,8 +87,9 @@ class BrowserOpenRequest(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in BrowserOpenRequest) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "url": obj.get("url"),
-            "title": obj.get("title")
+            "urls": obj.get("urls"),
+            "title": obj.get("title"),
+            "proxyUrl": obj.get("proxyUrl")
         })
         return _obj
 

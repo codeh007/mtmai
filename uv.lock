@@ -3802,6 +3802,7 @@ dependencies = [
     { name = "sqlmodel" },
     { name = "structlog" },
     { name = "tenacity" },
+    { name = "tiktokapi" },
     { name = "tiktoken" },
     { name = "tqdm" },
     { name = "transformers" },
@@ -3964,6 +3965,7 @@ requires-dist = [
     { name = "sqlmodel", specifier = ">=0.0.22" },
     { name = "structlog", specifier = ">=24.4.0" },
     { name = "tenacity", specifier = ">=8.4.1" },
+    { name = "tiktokapi", specifier = ">=7.1.0" },
     { name = "tiktoken", specifier = ">=0.7" },
     { name = "tqdm", specifier = ">=4.66.4" },
     { name = "transformers", specifier = ">=4.44.2" },
@@ -9072,6 +9074,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/bd/55/b5148dcbf72f5cde221f8bfe3b6a540da7aa1842f6b491ad979a6c8b84af/threadpoolctl-3.5.0.tar.gz", hash = "sha256:082433502dd922bf738de0d8bcc4fdcbf0979ff44c42bd40f5af8a282f6fa107", size = 41936, upload_time = "2024-04-29T13:50:16.544Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4b/2c/ffbf7a134b9ab11a67b0cf0726453cedd9c5043a4fe7a35d1cefa9a1bcfb/threadpoolctl-3.5.0-py3-none-any.whl", hash = "sha256:56c1e26c150397e58c4926da8eeee87533b1e32bef131bd4bf6a2f45f3185467", size = 18414, upload_time = "2024-04-29T13:50:14.014Z" },
+]
+
+[[package]]
+name = "tiktokapi"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "playwright" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/22/ab/ca4457cbaee98fb4cef3cd6db44e7bec9aa6f129087cb033c4e61ac8f688/tiktokapi-7.1.0.tar.gz", hash = "sha256:9d98ef237419eaa0918986f85cfea755f2d8f9d7d0ef38f34693543670fcd435", size = 40492, upload_time = "2025-04-13T19:06:17.254Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/4a/0d63fab2d1cf9d943e9dbbb82d90aad4b9651b8cc40a70625a0ff4d7b648/tiktokapi-7.1.0-py3-none-any.whl", hash = "sha256:c39a339cff397687233d10a2625a525f2d588955ce8a9e5fb2561ca63605b3f3", size = 55779, upload_time = "2025-04-13T19:06:16.065Z" },
 ]
 
 [[package]]

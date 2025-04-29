@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,10 +26,9 @@ class BrowserOpenResult(BaseModel):
     """
     BrowserOpenResult
     """ # noqa: E501
-    url: StrictStr
-    title: StrictStr
-    debug_port: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, alias="debugPort")
-    __properties: ClassVar[List[str]] = ["url", "title", "debugPort"]
+    title: Optional[StrictStr] = None
+    debug_port: StrictInt = Field(alias="debugPort")
+    __properties: ClassVar[List[str]] = ["title", "debugPort"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,7 +86,6 @@ class BrowserOpenResult(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in BrowserOpenResult) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "url": obj.get("url"),
             "title": obj.get("title"),
             "debugPort": obj.get("debugPort")
         })
