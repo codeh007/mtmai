@@ -360,6 +360,8 @@ from mtmai.clients.rest.models.text_message_termination_config import TextMessag
 from mtmai.clients.rest.models.thought_event import ThoughtEvent
 from mtmai.clients.rest.models.timeout_termination import TimeoutTermination
 from mtmai.clients.rest.models.timeout_termination_config import TimeoutTerminationConfig
+from mtmai.clients.rest.models.tk_get_user_profile_request import TkGetUserProfileRequest
+from mtmai.clients.rest.models.tk_get_user_profile_response import TkGetUserProfileResponse
 from mtmai.clients.rest.models.token_usage_termination import TokenUsageTermination
 from mtmai.clients.rest.models.token_usage_termination_config import TokenUsageTerminationConfig
 from mtmai.clients.rest.models.tool_call_message_config import ToolCallMessageConfig
