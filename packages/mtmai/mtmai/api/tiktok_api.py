@@ -20,15 +20,10 @@ async def tk_hello_world():
     )
     uniqueId = "vantoan___"
     user = await TiktokHandler(kwargs).fetch_user_profile(secUid=secUid)
-    print("=================_to_raw================")
-    print(user._to_raw())
-    # print("=================_to_dict===============")
-    # print(user._to_dict())
-
+    # print("=================_to_raw================")
+    # print(user._to_raw())
     user = await TiktokHandler(kwargs).fetch_user_profile(uniqueId=uniqueId)
-    print("=================_to_raw================")
-    print(user._to_raw())
-    # print("=================_to_dict===============")
-    # print(user._to_dict())
+    # print("=================_to_raw================")
+    # print(user._to_raw())
 
-    return {"message": "Hello, World!"}
+    return user
