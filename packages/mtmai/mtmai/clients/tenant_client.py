@@ -4,6 +4,7 @@ from autogen_ext.tools.mcp import SseServerParams
 from mtmai.clients.ag import AgClient
 from mtmai.clients.events import EventClient
 from mtmai.clients.rest.api.ag_state_api import AgStateApi
+from mtmai.clients.rest.api.browser_api import BrowserApi
 from mtmai.clients.rest.api.chat_api import ChatApi
 from mtmai.clients.rest.api.coms_api import ComsApi
 from mtmai.clients.rest.api.flow_state_api import FlowStateApi
@@ -126,6 +127,13 @@ class TenantClient:
             return self._chat_api
         self._chat_api = ChatApi(self.api_client)
         return self._chat_api
+
+    @property
+    def browser_api(self):
+        if hasattr(self, "_browser_api"):
+            return self._browser_api
+        self._browser_api = BrowserApi(self.api_client)
+        return self._browser_api
 
     @property
     def event(self) -> EventClient:

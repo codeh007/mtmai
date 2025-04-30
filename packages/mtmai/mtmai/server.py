@@ -7,10 +7,10 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from loguru import logger
 
+from mtmai import worker_app
 from mtmai._version import version
 from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
-from mtmai.worker_app import run_worker
 
 # from mtmai.middleware import AuthMiddleware
 
@@ -38,7 +38,7 @@ def build_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         try:
-            # from mtmai.worker_app import run_worker
+            from mtmai.worker_app import run_worker
 
             worker_task = asyncio.create_task(run_worker())
             yield
@@ -52,12 +52,12 @@ def build_app():
         except Exception as e:
             logger.exception(f"failed to setup worker: {e}")
         finally:
-            # await worker_app.stop()
-            # worker_task.cancel()
-            # try:
-            #     await worker_task
-            # except asyncio.CancelledError:
-            pass
+            await worker_app.stop()
+            worker_task.cancel()
+            try:
+                await worker_task
+            except asyncio.CancelledError:
+                pass
 
     def custom_generate_unique_id(route: APIRoute) -> str:
         if len(route.tags) > 0:
