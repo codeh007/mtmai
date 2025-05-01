@@ -1,26 +1,27 @@
-from Components.YoutubeDownloader import download_youtube_video
-from Components.Edit import extractAudio, crop_video
-from Components.Transcription import transcribeAudio
+from Components.Edit import crop_video, extractAudio
+from Components.FaceCrop import combine_videos, crop_to_vertical
 from Components.LanguageTasks import GetHighlight
-from Components.FaceCrop import crop_to_vertical, combine_videos
+from Components.Transcription import transcribeAudio
+from Components.YoutubeDownloader import download_youtube_video
 
-url = input("Enter YouTube video URL: ")
-Vid= download_youtube_video(url)
+# url = input("Enter YouTube video URL: ")
+
+url = "https://www.youtube.com/shorts/HuoeOkoF3T0"
+Vid = download_youtube_video(url)
 if Vid:
     Vid = Vid.replace(".webm", ".mp4")
     print(f"Downloaded video and audio files successfully! at {Vid}")
 
     Audio = extractAudio(Vid)
     if Audio:
-
         transcriptions = transcribeAudio(Audio)
         if len(transcriptions) > 0:
             TransText = ""
 
             for text, start, end in transcriptions:
-                TransText += (f"{start} - {end}: {text}")
+                TransText += f"{start} - {end}: {text}"
 
-            start , stop = GetHighlight(TransText)
+            start, stop = GetHighlight(TransText)
             if start != 0 and stop != 0:
                 print(f"Start: {start} , End: {stop}")
 

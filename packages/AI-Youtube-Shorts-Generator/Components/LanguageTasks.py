@@ -1,14 +1,15 @@
+# import os
+import json
+
 import openai
 from dotenv import load_dotenv
-import os
-import json
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API")
+# openai.api_key = os.getenv("OPENAI_API")
 
-if not openai.api_key:
-    raise ValueError("API key not found. Make sure it is defined in the .env file.")
+# if not openai.api_key:
+#     raise ValueError("API key not found. Make sure it is defined in the .env file.")
 
 
 # Function to extract start and end times
@@ -34,7 +35,7 @@ system = """
 
 Baised on the Transcription user provides with start and end, Highilight the main parts in less then 1 min which can be directly converted into a short. highlight it such that its intresting and also keep the time staps for the clip to start and end. only select a continues Part of the video
 
-Follow this Format and return in valid json 
+Follow this Format and return in valid json
 [{
 start: "Start time of the clip",
 content: "Highlight Text",
@@ -56,7 +57,6 @@ Any Example
 def GetHighlight(Transcription):
     print("Getting Highlight from Transcription ")
     try:
-
         response = openai.ChatCompletion.create(
             model="gpt-4o-2024-05-13",
             temperature=0.7,
