@@ -13,7 +13,7 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
 from google.adk.tools import BaseTool, ToolContext
-from google.genai import types
+from google.genai import types  # noqa
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from mtmai.core.config import settings

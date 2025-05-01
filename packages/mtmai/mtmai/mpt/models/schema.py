@@ -59,7 +59,7 @@ class VideoParams(BaseModel):
       "video_subject": "",
       "video_aspect": "横屏 16:9（西瓜视频）",
       "voice_name": "女生-晓晓",
-      "bgm_name": "random",
+      "bgm_type": "random",
       "font_name": "STHeitiMedium 黑体-中",
       "text_color": "#FFFFFF",
       "font_size": 60,

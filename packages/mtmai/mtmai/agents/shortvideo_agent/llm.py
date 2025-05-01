@@ -3,7 +3,6 @@ import logging
 import re
 from typing import List
 
-# import g4f
 from loguru import logger
 from mtmai.mpt.config import config
 from openai import AzureOpenAI, OpenAI

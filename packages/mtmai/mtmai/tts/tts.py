@@ -20,12 +20,7 @@ async def generate_audio(task_id, params, video_script):
     )
     if sub_maker is None:
         # sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
-        logger.error(
-            """failed to generate audio:
-1. check if the language of the voice matches the language of the video script.
-2. check if the network is available. If you are in China, it is recommended to use a VPN and enable the global traffic mode.
-        """.strip()
-        )
+        logger.error("""failed to generate audio""".strip())
         return None, None, None
 
     audio_duration = math.ceil(voice.get_audio_duration(sub_maker))

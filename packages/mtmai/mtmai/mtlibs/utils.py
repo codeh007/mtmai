@@ -1,9 +1,8 @@
-import asyncio
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 import jwt
 from google.protobuf.message import Message
@@ -178,20 +177,20 @@ def http_url_ws(url: str) -> str:
         raise ValueError(f"Invalid URL: {url}")
 
 
-def run_async_function(func: Callable, *args: Any, **kwargs: Any) -> Any:
-    """
-    运行一个异步函数，并返回其结果。
+# def run_async_function(func: Callable, *args: Any, **kwargs: Any) -> Any:
+#     """
+#     运行一个异步函数，并返回其结果。
 
-    Args:
-        func: 要运行的异步函数。
-        *args: 传递给异步函数的参数。
-        **kwargs: 传递给异步函数的关键字参数。
+#     Args:
+#         func: 要运行的异步函数。
+#         *args: 传递给异步函数的参数。
+#         **kwargs: 传递给异步函数的关键字参数。
 
-    Returns:
-        Any: 异步函数的返回值。
-    """
-    loop = asyncio.get_event_loop()
-    # if loop.is_running():
-    #     loop = asyncio.new_event_loop()
-    #     asyncio.set_event_loop(loop)
-    return loop.run_until_complete(func(*args, **kwargs))
+#     Returns:
+#         Any: 异步函数的返回值。
+#     """
+#     loop = asyncio.get_event_loop()
+#     # if loop.is_running():
+#     #     loop = asyncio.new_event_loop()
+#     #     asyncio.set_event_loop(loop)
+#     return loop.run_until_complete(func(*args, **kwargs))

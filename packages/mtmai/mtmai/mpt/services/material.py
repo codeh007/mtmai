@@ -14,23 +14,6 @@ from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 requested_count = 0
 
 
-# def get_api_key(cfg_key: str):
-#     api_keys = config.app.get(cfg_key)
-#     if not api_keys:
-#         raise ValueError(
-#             f"\n\n##### {cfg_key} is not set #####\n\nPlease set it in the config.toml file: {config.config_file}\n\n"
-#             f"{utils.to_json(config.app)}"
-#         )
-
-#     # if only one key is provided, return it
-#     if isinstance(api_keys, str):
-#         return api_keys
-
-#     global requested_count
-#     requested_count += 1
-#     return api_keys[requested_count % len(api_keys)]
-
-
 def search_videos_pexels(
     search_term: str,
     minimum_duration: int,
@@ -263,7 +246,7 @@ def download_videos(
     return video_paths
 
 
-if __name__ == "__main__":
-    download_videos(
-        "test123", ["Money Exchange Medium"], audio_duration=100, source="pixabay"
-    )
+# if __name__ == "__main__":
+#     download_videos(
+#         "test123", ["Money Exchange Medium"], audio_duration=100, source="pixabay"
+#     )

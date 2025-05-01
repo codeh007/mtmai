@@ -1,4 +1,3 @@
-import asyncio
 import os
 import re
 from datetime import datetime
@@ -1074,39 +1073,39 @@ def convert_rate_to_percent(rate: float) -> str:
         return f"{percent}%"
 
 
-def azure_tts_v1(
-    text: str, voice_name: str, voice_rate: float, voice_file: str
-) -> Union[SubMaker, None]:
-    voice_name = parse_voice_name(voice_name)
-    text = text.strip()
-    rate_str = convert_rate_to_percent(voice_rate)
-    for i in range(3):
-        try:
-            logger.info(f"start, voice name: {voice_name}, try: {i + 1}")
+# def azure_tts_v1(
+#     text: str, voice_name: str, voice_rate: float, voice_file: str
+# ) -> Union[SubMaker, None]:
+#     voice_name = parse_voice_name(voice_name)
+#     text = text.strip()
+#     rate_str = convert_rate_to_percent(voice_rate)
+#     for i in range(3):
+#         try:
+#             logger.info(f"start, voice name: {voice_name}, try: {i + 1}")
 
-            async def _do() -> SubMaker:
-                communicate = edge_tts.Communicate(text, voice_name, rate=rate_str)
-                sub_maker = edge_tts.SubMaker()
-                with open(voice_file, "wb") as file:
-                    async for chunk in communicate.stream():
-                        if chunk["type"] == "audio":
-                            file.write(chunk["data"])
-                        elif chunk["type"] == "WordBoundary":
-                            sub_maker.create_sub(
-                                (chunk["offset"], chunk["duration"]), chunk["text"]
-                            )
-                return sub_maker
+#             async def _do() -> SubMaker:
+#                 communicate = edge_tts.Communicate(text, voice_name, rate=rate_str)
+#                 sub_maker = edge_tts.SubMaker()
+#                 with open(voice_file, "wb") as file:
+#                     async for chunk in communicate.stream():
+#                         if chunk["type"] == "audio":
+#                             file.write(chunk["data"])
+#                         elif chunk["type"] == "WordBoundary":
+#                             sub_maker.create_sub(
+#                                 (chunk["offset"], chunk["duration"]), chunk["text"]
+#                             )
+#                 return sub_maker
 
-            sub_maker = asyncio.run(_do())
-            if not sub_maker or not sub_maker.subs:
-                logger.warning("failed, sub_maker is None or sub_maker.subs is None")
-                continue
+#             sub_maker = asyncio.run(_do())
+#             if not sub_maker or not sub_maker.subs:
+#                 logger.warning("failed, sub_maker is None or sub_maker.subs is None")
+#                 continue
 
-            logger.info(f"completed, output file: {voice_file}")
-            return sub_maker
-        except Exception as e:
-            logger.error(f"failed, error: {str(e)}")
-    return None
+#             logger.info(f"completed, output file: {voice_file}")
+#             return sub_maker
+#         except Exception as e:
+#             logger.error(f"failed, error: {str(e)}")
+#     return None
 
 
 def azure_tts_v2(text: str, voice_name: str, voice_file: str) -> Union[SubMaker, None]:
@@ -1206,52 +1205,20 @@ async def tts_edgetts(
     """
     使用 edge_tts 库实现文本转语音,并生成字幕
     """
-    import edge_tts
-    from loguru import logger
+    sub_maker = edge_tts.SubMaker()
+    communicate = edge_tts.Communicate(text, voice_name)
 
-    try:
-        sub_maker = submaker.SubMaker()
-        communicate = edge_tts.Communicate(text, voice_name)
+    with open(voice_file, "wb") as file:
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                file.write(chunk["data"])
+            elif chunk["type"] == "WordBoundary":
+                sub_maker.create_sub(
+                    (chunk["offset"], chunk["duration"]), chunk["text"]
+                )
 
-        def word_boundary_cb(evt):
-            if evt.text:
-                duration = _format_duration_to_offset(evt.duration)
-                offset = _format_duration_to_offset(evt.audio_offset)
-                sub_maker.subs.append(evt.text)
-                sub_maker.offset.append((offset, offset + duration))
-
-        communicate.register_event("WordBoundary", word_boundary_cb)
-
-        with open(voice_file, "wb") as file:
-            async for chunk in communicate.stream():
-                if chunk["type"] == "audio":
-                    file.write(chunk["data"])
-
-        logger.success(f"edge tts speech synthesis succeeded: {voice_file}")
-        return sub_maker
-
-    except Exception as e:
-        logger.error(f"edge tts speech synthesis failed: {str(e)}")
-        return None
-
-
-def _format_duration_to_offset(duration_ms: int) -> tuple:
-    """
-    将毫秒时长转换为时间偏移量格式
-
-    参数:
-        duration_ms: 音频时长（毫秒）
-
-    返回:
-        tuple: (开始时间_微秒, 结束时间_微秒)
-    """
-    # 将毫秒转换为微秒（1毫秒 = 1000微秒）
-    duration_us = duration_ms * 1000
-
-    # 返回时间偏移量
-    # 开始时间总是从0开始
-    # 结束时间是开始时间加上时长
-    return (0, duration_us)
+    logger.success(f"edge tts speech synthesis succeeded: {voice_file}")
+    return sub_maker
 
 
 def _format_text(text: str) -> str:

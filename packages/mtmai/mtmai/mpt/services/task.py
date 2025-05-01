@@ -127,9 +127,7 @@ def get_video_materials(task_id, params, video_terms, audio_duration):
         )
         if not downloaded_videos:
             sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
-            logger.error(
-                "failed to download videos, maybe the network is not available. if you are in China, please use a VPN."
-            )
+            logger.error("failed to download videos")
             return None
         return downloaded_videos
 

@@ -1,15 +1,21 @@
 {
-    "script": "my 123",
+    "script": "还在犹豫买什么车？比亚迪告诉你，实惠才是王道！国民品牌，价格亲民，让您轻松拥有自己的座驾。\n\n配置高，空间大，油耗低！比亚迪汽车，用实在的品质，满足您对家用车的全部需求。告别高价车，享受高品质生活。\n\n比亚迪，真材实料，拒绝套路！买车就要买得值，比亚迪让您花小钱，办大事，开启您的美好车生活！",
     "search_terms": [
-        "video_terms123"
+        "boy",
+        "girl",
+        "gift"
     ],
     "params": {
-        "video_subject": "video_subject123",
-        "video_script": "my 123",
-        "video_terms": "video_terms123",
+        "video_subject": "汽车广告, 品牌名字是比亚迪, 特点是便宜",
+        "video_script": "还在犹豫买什么车？比亚迪告诉你，实惠才是王道！国民品牌，价格亲民，让您轻松拥有自己的座驾。\n\n配置高，空间大，油耗低！比亚迪汽车，用实在的品质，满足您对家用车的全部需求。告别高价车，享受高品质生活。\n\n比亚迪，真材实料，拒绝套路！买车就要买得值，比亚迪让您花小钱，办大事，开启您的美好车生活！\n",
+        "video_terms": [
+            "boy",
+            "girl",
+            "gift"
+        ],
         "video_aspect": "16:9",
         "video_concat_mode": "random",
-        "video_transition_mode": null,
+        "video_transition_mode": "Shuffle",
         "video_clip_duration": 5,
         "video_count": 1,
         "video_source": "pexels",
@@ -19,7 +25,7 @@
         "voice_volume": 1.0,
         "voice_rate": 1.0,
         "bgm_type": "random",
-        "bgm_file": "",
+        "bgm_file": "./mtmai/resources/songs/output001.mp3",
         "bgm_volume": 0.2,
         "subtitle_enabled": true,
         "subtitle_position": "bottom",
