@@ -6,9 +6,9 @@ from urllib.parse import urlencode
 import requests
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.models.schema import MaterialInfo, VideoAspect, VideoConcatMode
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.config import config
+from mtmai.mpt.models.schema import MaterialInfo, VideoAspect, VideoConcatMode
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 requested_count = 0
 

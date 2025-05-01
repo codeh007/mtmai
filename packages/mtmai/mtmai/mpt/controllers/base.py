@@ -1,8 +1,8 @@
 from uuid import uuid4
 
 from fastapi import Request
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.models.exception import HttpException
+from mtmai.mpt.config import config
+from mtmai.mpt.models.exception import HttpException
 
 
 def get_task_id(request: Request):

@@ -4,17 +4,27 @@ import pathlib
 import shutil
 from typing import Union
 
-from fastapi import BackgroundTasks, Depends, Path, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Path,
+    Query,
+    Request,
+    UploadFile,
+)
 from fastapi.params import File
 from fastapi.responses import FileResponse, StreamingResponse
 from loguru import logger
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.controllers import base
-from mtmai.mpt.app.controllers.manager.memory_manager import InMemoryTaskManager
-from mtmai.mpt.app.controllers.manager.redis_manager import RedisTaskManager
-from mtmai.mpt.app.controllers.v1.base import new_router
-from mtmai.mpt.app.models.exception import HttpException
-from mtmai.mpt.app.models.schema import (
+
+from mtmai.mpt.config import config
+from mtmai.mpt.controllers import base
+from mtmai.mpt.controllers.manager.memory_manager import InMemoryTaskManager
+from mtmai.mpt.controllers.manager.redis_manager import RedisTaskManager
+
+# from mtmai.mpt.controllers.v1.base import new_router
+from mtmai.mpt.models.exception import HttpException
+from mtmai.mpt.models.schema import (
     AudioRequest,
     BgmRetrieveResponse,
     BgmUploadResponse,
@@ -25,13 +35,14 @@ from mtmai.mpt.app.models.schema import (
     TaskResponse,
     TaskVideoRequest,
 )
-from mtmai.mpt.app.services import state as sm
-from mtmai.mpt.app.services import task as tm
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.services import state as sm
+from mtmai.mpt.services import task as tm
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 # 认证依赖项
 # router = new_router(dependencies=[Depends(base.verify_token)])
-router = new_router()
+# router = new_router()
+router = APIRouter()
 
 _enable_redis = config.app.get("enable_redis", False)
 _redis_host = config.app.get("redis_host", "localhost")
@@ -92,9 +103,6 @@ def create_task(
         raise HttpException(
             task_id=task_id, status_code=400, message=f"{request_id}: {str(e)}"
         )
-
-
-from fastapi import Query
 
 
 @router.get("/tasks", response_model=TaskQueryResponse, summary="Get all tasks")

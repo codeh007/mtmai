@@ -5,8 +5,8 @@ from timeit import default_timer as timer
 
 from faster_whisper import WhisperModel
 from loguru import logger
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.config import config
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 model_size = config.whisper.get("model_size", "large-v3")
 device = config.whisper.get("device", "cpu")

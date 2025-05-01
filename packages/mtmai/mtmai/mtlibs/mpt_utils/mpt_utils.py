@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import urllib3
 from loguru import logger
-from mtmai.mpt.app.models import const
+from mtmai.mpt.models import const
 
 urllib3.disable_warnings()
 

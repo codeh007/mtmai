@@ -1,7 +1,7 @@
 from queue import Queue
 from typing import Dict
 
-from mtmai.mpt.app.controllers.manager.base_manager import TaskManager
+from mtmai.mpt.controllers.manager.base_manager import TaskManager
 
 
 class InMemoryTaskManager(TaskManager):

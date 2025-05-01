@@ -4,12 +4,12 @@ import re
 from os import path
 
 from loguru import logger
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.models import const
-from mtmai.mpt.app.models.schema import VideoConcatMode, VideoParams
-from mtmai.mpt.app.services import llm, material, subtitle, video, voice
-from mtmai.mpt.app.services import state as sm
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.config import config
+from mtmai.mpt.models import const
+from mtmai.mpt.models.schema import VideoConcatMode, VideoParams
+from mtmai.mpt.services import llm, material, subtitle, video, voice
+from mtmai.mpt.services import state as sm
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 
 def generate_script(task_id, params):

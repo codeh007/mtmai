@@ -1,17 +1,18 @@
-from fastapi import Request
-from mtmai.mpt.app.controllers.v1.base import new_router
-from mtmai.mpt.app.models.schema import (
+from fastapi import APIRouter, Request
+
+# from mtmai.mpt.controllers.v1.base import new_router
+from mtmai.mpt.models.schema import (
     VideoScriptRequest,
     VideoScriptResponse,
     VideoTermsRequest,
     VideoTermsResponse,
 )
-from mtmai.mpt.app.services import llm
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.services import llm
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 # authentication dependency
 # router = new_router(dependencies=[Depends(base.verify_token)])
-router = new_router()
+router = APIRouter()
 
 
 @router.post(

@@ -26,7 +26,7 @@ def mount_api_routes(app: FastAPI, prefix=""):
     api_router.include_router(tiktok_api.router, tags=["tiktok_api"])
     app.include_router(api_router, prefix=prefix)
 
-    from mtmai.mpt.app.controllers.v1 import llm, video
+    from mtmai.api import llm, video
 
     api_router.include_router(llm.router, tags=["llm"])
     api_router.include_router(video.router, tags=["video"])

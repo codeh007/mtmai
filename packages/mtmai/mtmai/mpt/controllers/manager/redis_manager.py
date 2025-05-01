@@ -2,9 +2,9 @@ import json
 from typing import Dict
 
 import redis
-from mtmai.mpt.app.controllers.manager.base_manager import TaskManager
-from mtmai.mpt.app.models.schema import VideoParams
-from mtmai.mpt.app.services import task as tm
+from mtmai.mpt.controllers.manager.base_manager import TaskManager
+from mtmai.mpt.models.schema import VideoParams
+from mtmai.mpt.services import task as tm
 
 FUNC_MAP = {
     "start": tm.start,

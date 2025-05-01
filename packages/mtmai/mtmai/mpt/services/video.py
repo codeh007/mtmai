@@ -16,16 +16,16 @@ from moviepy import (
     concatenate_videoclips,
 )
 from moviepy.video.tools.subtitles import SubtitlesClip
-from mtmai.mpt.app.models import const
-from mtmai.mpt.app.models.schema import (
+from mtmai.mpt.models import const
+from mtmai.mpt.models.schema import (
     MaterialInfo,
     VideoAspect,
     VideoConcatMode,
     VideoParams,
     VideoTransitionMode,
 )
-from mtmai.mpt.app.services.utils import video_effects
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.services.utils import video_effects
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 from PIL import ImageFont
 
 

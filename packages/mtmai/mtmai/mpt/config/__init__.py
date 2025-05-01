@@ -2,9 +2,7 @@ import os
 import sys
 
 from loguru import logger
-from mtmai.mpt.app.config import config
-
-# from mtmai.mpt.app.utils import utils
+from mtmai.mpt.config import config
 
 
 def __init_logger():

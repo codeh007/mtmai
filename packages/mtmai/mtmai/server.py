@@ -174,10 +174,10 @@ def build_app():
     )
 
     async def mount_mpt_app():
-        from mtmai.mpt.app.router import root_api_router
+        from mtmai.mpt.router import root_api_router
 
         app.include_router(root_api_router)
-        from mtmai.mpt.app.utils import utils
+        from mtmai.mpt.utils import utils
 
         task_dir = utils.task_dir()
         app.mount(

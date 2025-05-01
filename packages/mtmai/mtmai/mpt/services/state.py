@@ -1,8 +1,7 @@
 import ast
 from abc import ABC, abstractmethod
 
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.models import const
+from mtmai.mpt.models import const
 
 
 # Base class for state management
@@ -144,16 +143,17 @@ class RedisState(BaseState):
 
 
 # Global state
-_enable_redis = config.app.get("enable_redis", False)
-_redis_host = config.app.get("redis_host", "localhost")
-_redis_port = config.app.get("redis_port", 6379)
-_redis_db = config.app.get("redis_db", 0)
-_redis_password = config.app.get("redis_password", None)
+# _enable_redis = config.app.get("enable_redis", False)
+# _redis_host = config.app.get("redis_host", "localhost")
+# _redis_port = config.app.get("redis_port", 6379)
+# _redis_db = config.app.get("redis_db", 0)
+# _redis_password = config.app.get("redis_password", None)
 
 state = (
-    RedisState(
-        host=_redis_host, port=_redis_port, db=_redis_db, password=_redis_password
-    )
-    if _enable_redis
-    else MemoryState()
+    # RedisState(
+    #     host=_redis_host, port=_redis_port, db=_redis_db, password=_redis_password
+    # )
+    # if _enable_redis
+    # else
+    MemoryState()
 )

@@ -5,7 +5,7 @@ from typing import List
 
 # import g4f
 from loguru import logger
-from mtmai.mpt.app.config import config
+from mtmai.mpt.config import config
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion
 

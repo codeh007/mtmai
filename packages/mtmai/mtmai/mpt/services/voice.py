@@ -10,8 +10,8 @@ from edge_tts import SubMaker, submaker
 from edge_tts.submaker import mktimestamp
 from loguru import logger
 from moviepy.video.tools import subtitles
-from mtmai.mpt.app.config import config
-from mtmai.mpt.app.utils import utils
+from mtmai.mpt.config import config
+from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 
 def get_all_azure_voices(filter_locals=None) -> list[str]:

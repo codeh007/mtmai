@@ -218,9 +218,7 @@ class Settings(BaseSettings):
 
     @property
     def GOOGLE_AI_STUDIO_API_KEY(self) -> str | None:
-        return os.environ.get(
-            "GOOGLE_AI_STUDIO_API_KEY", "google_ai_studio_api_key_not_set"
-        )
+        return os.environ.get("GEMINI_API_KEY", "google_ai_studio_api_key_not_set")
 
     @property
     def GOOGLE_AI_STUDIO_API_KEY_2(self) -> str | None:
