@@ -2,8 +2,9 @@ import math
 from os import path
 
 from loguru import logger
-from mtmai.mpt.models import const
-from mtmai.mpt.services import state as sm
+
+# from mtmai.mpt.models import const
+# from mtmai.mpt.services import state as sm
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 from mtmai.tts import voice
 
@@ -18,7 +19,7 @@ async def generate_audio(task_id, params, video_script):
         voice_file=audio_file,
     )
     if sub_maker is None:
-        sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
+        # sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
         logger.error(
             """failed to generate audio:
 1. check if the language of the voice matches the language of the video script.

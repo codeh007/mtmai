@@ -1,6 +1,7 @@
-
+storage/
 **/config.toml
 .env
+
 env/
 
 # Byte-compiled / optimized / DLL files

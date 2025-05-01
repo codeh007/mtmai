@@ -230,7 +230,7 @@ async def start_gen_video(task_id, params: VideoParams, stop_at: str = "video"):
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=20)
 
     # 3. Generate audio
-    audio_file, audio_duration, sub_maker = generate_audio(
+    audio_file, audio_duration, sub_maker = await generate_audio(
         task_id, params, video_script
     )
     if not audio_file:
