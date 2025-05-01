@@ -56,8 +56,14 @@ class CustomLogHandler(logging.StreamHandler):
         log_entry = self.format(record)
 
         # 获取当前事件循环并创建任务
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._log(log_entry, record.step_run_id))
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self._log(log_entry, record.step_run_id))
+        except RuntimeError:
+            # 如果没有事件循环，创建一个新的事件循环
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.create_task(self._log(log_entry, record.step_run_id))
 
 
 def capture_logs(

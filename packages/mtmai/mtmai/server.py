@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from fastapi.staticfiles import StaticFiles
 from loguru import logger
 
 from mtmai import worker_app
@@ -173,22 +172,22 @@ def build_app():
         session_service=session_service,
     )
 
-    async def mount_mpt_app():
-        from mtmai.mpt.router import root_api_router
+    # async def mount_mpt_app():
+    #     from mtmai.mpt.router import root_api_router
 
-        app.include_router(root_api_router)
-        from mtmai.mpt.utils import utils
+    #     app.include_router(root_api_router)
+    #     from mtmai.mpt.utils import utils
 
-        task_dir = utils.task_dir()
-        app.mount(
-            "/tasks",
-            StaticFiles(directory=task_dir, html=True, follow_symlink=True),
-            name="",
-        )
-        public_dir = utils.public_dir()
-        app.mount("/", StaticFiles(directory=public_dir, html=True), name="")
+    #     task_dir = utils.task_dir()
+    #     app.mount(
+    #         "/tasks",
+    #         StaticFiles(directory=task_dir, html=True, follow_symlink=True),
+    #         name="",
+    #     )
+    #     public_dir = utils.public_dir()
+    #     app.mount("/", StaticFiles(directory=public_dir, html=True), name="")
 
-    mount_mpt_app()
+    # mount_mpt_app()
 
     # from .gradio_app import mount_gradio_app
 
