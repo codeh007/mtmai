@@ -1,4 +1,4 @@
-import ast
+# import ast
 from abc import ABC, abstractmethod
 
 from mtmai.mpt.models import const
@@ -58,88 +58,88 @@ class MemoryState(BaseState):
 
 
 # Redis state management
-class RedisState(BaseState):
-    def __init__(self, host="localhost", port=6379, db=0, password=None):
-        import redis
+# class RedisState(BaseState):
+#     def __init__(self, host="localhost", port=6379, db=0, password=None):
+#         import redis
 
-        self._redis = redis.StrictRedis(host=host, port=port, db=db, password=password)
+#         self._redis = redis.StrictRedis(host=host, port=port, db=db, password=password)
 
-    def get_all_tasks(self, page: int, page_size: int):
-        start = (page - 1) * page_size
-        end = start + page_size
-        tasks = []
-        cursor = 0
-        total = 0
-        while True:
-            cursor, keys = self._redis.scan(cursor, count=page_size)
-            total += len(keys)
-            if total > start:
-                for key in keys[max(0, start - total) : end - total]:
-                    task_data = self._redis.hgetall(key)
-                    task = {
-                        k.decode("utf-8"): self._convert_to_original_type(v)
-                        for k, v in task_data.items()
-                    }
-                    tasks.append(task)
-                    if len(tasks) >= page_size:
-                        break
-            if cursor == 0 or len(tasks) >= page_size:
-                break
-        return tasks, total
+#     def get_all_tasks(self, page: int, page_size: int):
+#         start = (page - 1) * page_size
+#         end = start + page_size
+#         tasks = []
+#         cursor = 0
+#         total = 0
+#         while True:
+#             cursor, keys = self._redis.scan(cursor, count=page_size)
+#             total += len(keys)
+#             if total > start:
+#                 for key in keys[max(0, start - total) : end - total]:
+#                     task_data = self._redis.hgetall(key)
+#                     task = {
+#                         k.decode("utf-8"): self._convert_to_original_type(v)
+#                         for k, v in task_data.items()
+#                     }
+#                     tasks.append(task)
+#                     if len(tasks) >= page_size:
+#                         break
+#             if cursor == 0 or len(tasks) >= page_size:
+#                 break
+#         return tasks, total
 
-    def update_task(
-        self,
-        task_id: str,
-        state: int = const.TASK_STATE_PROCESSING,
-        progress: int = 0,
-        **kwargs,
-    ):
-        progress = int(progress)
-        if progress > 100:
-            progress = 100
+#     def update_task(
+#         self,
+#         task_id: str,
+#         state: int = const.TASK_STATE_PROCESSING,
+#         progress: int = 0,
+#         **kwargs,
+#     ):
+#         progress = int(progress)
+#         if progress > 100:
+#             progress = 100
 
-        fields = {
-            "task_id": task_id,
-            "state": state,
-            "progress": progress,
-            **kwargs,
-        }
+#         fields = {
+#             "task_id": task_id,
+#             "state": state,
+#             "progress": progress,
+#             **kwargs,
+#         }
 
-        for field, value in fields.items():
-            self._redis.hset(task_id, field, str(value))
+#         for field, value in fields.items():
+#             self._redis.hset(task_id, field, str(value))
 
-    def get_task(self, task_id: str):
-        task_data = self._redis.hgetall(task_id)
-        if not task_data:
-            return None
+#     def get_task(self, task_id: str):
+#         task_data = self._redis.hgetall(task_id)
+#         if not task_data:
+#             return None
 
-        task = {
-            key.decode("utf-8"): self._convert_to_original_type(value)
-            for key, value in task_data.items()
-        }
-        return task
+#         task = {
+#             key.decode("utf-8"): self._convert_to_original_type(value)
+#             for key, value in task_data.items()
+#         }
+#         return task
 
-    def delete_task(self, task_id: str):
-        self._redis.delete(task_id)
+#     def delete_task(self, task_id: str):
+#         self._redis.delete(task_id)
 
-    @staticmethod
-    def _convert_to_original_type(value):
-        """
-        Convert the value from byte string to its original data type.
-        You can extend this method to handle other data types as needed.
-        """
-        value_str = value.decode("utf-8")
+#     @staticmethod
+#     def _convert_to_original_type(value):
+#         """
+#         Convert the value from byte string to its original data type.
+#         You can extend this method to handle other data types as needed.
+#         """
+#         value_str = value.decode("utf-8")
 
-        try:
-            # try to convert byte string array to list
-            return ast.literal_eval(value_str)
-        except (ValueError, SyntaxError):
-            pass
+#         try:
+#             # try to convert byte string array to list
+#             return ast.literal_eval(value_str)
+#         except (ValueError, SyntaxError):
+#             pass
 
-        if value_str.isdigit():
-            return int(value_str)
-        # Add more conversions here if needed
-        return value_str
+#         if value_str.isdigit():
+#             return int(value_str)
+#         # Add more conversions here if needed
+#         return value_str
 
 
 # Global state

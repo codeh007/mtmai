@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 import requests
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from mtmai.core.config import settings
 from mtmai.mpt.config import config
 from mtmai.mpt.models.schema import MaterialInfo, VideoAspect, VideoConcatMode
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
@@ -13,21 +14,21 @@ from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 requested_count = 0
 
 
-def get_api_key(cfg_key: str):
-    api_keys = config.app.get(cfg_key)
-    if not api_keys:
-        raise ValueError(
-            f"\n\n##### {cfg_key} is not set #####\n\nPlease set it in the config.toml file: {config.config_file}\n\n"
-            f"{utils.to_json(config.app)}"
-        )
+# def get_api_key(cfg_key: str):
+#     api_keys = config.app.get(cfg_key)
+#     if not api_keys:
+#         raise ValueError(
+#             f"\n\n##### {cfg_key} is not set #####\n\nPlease set it in the config.toml file: {config.config_file}\n\n"
+#             f"{utils.to_json(config.app)}"
+#         )
 
-    # if only one key is provided, return it
-    if isinstance(api_keys, str):
-        return api_keys
+#     # if only one key is provided, return it
+#     if isinstance(api_keys, str):
+#         return api_keys
 
-    global requested_count
-    requested_count += 1
-    return api_keys[requested_count % len(api_keys)]
+#     global requested_count
+#     requested_count += 1
+#     return api_keys[requested_count % len(api_keys)]
 
 
 def search_videos_pexels(
@@ -38,7 +39,8 @@ def search_videos_pexels(
     aspect = VideoAspect(video_aspect)
     video_orientation = aspect.name
     video_width, video_height = aspect.to_resolution()
-    api_key = get_api_key("pexels_api_keys")
+    # api_key = get_api_key("pexels_api_keys")
+    api_key = settings.PEXELS_API_KEYS[0]
     headers = {
         "Authorization": api_key,
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
@@ -96,7 +98,8 @@ def search_videos_pixabay(
 
     video_width, video_height = aspect.to_resolution()
 
-    api_key = get_api_key("pixabay_api_keys")
+    # api_key = get_api_key("pixabay_api_keys")
+    api_key = settings.PIXABAY_API_KEYS[0]
     # Build URL
     params = {
         "q": search_term,

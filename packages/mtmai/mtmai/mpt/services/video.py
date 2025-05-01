@@ -24,7 +24,7 @@ from mtmai.mpt.models.schema import (
     VideoParams,
     VideoTransitionMode,
 )
-from mtmai.mpt.services.utils import video_effects
+from mtmai.mtlibs import video_effects
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 from PIL import ImageFont
 

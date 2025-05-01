@@ -1,15 +1,17 @@
-import math
 import os.path
 import re
 from os import path
 
 from loguru import logger
+from mtmai.agents.shortvideo_agent import llm
 from mtmai.mpt.config import config
 from mtmai.mpt.models import const
 from mtmai.mpt.models.schema import VideoConcatMode, VideoParams
-from mtmai.mpt.services import llm, material, subtitle, video, voice
+from mtmai.mpt.services import material, subtitle, video
 from mtmai.mpt.services import state as sm
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
+from mtmai.tts import voice
+from mtmai.tts.tts import generate_audio
 
 
 def generate_script(task_id, params):
@@ -67,29 +69,6 @@ def save_script_data(task_id, video_script, video_terms, params):
 
     with open(script_file, "w", encoding="utf-8") as f:
         f.write(utils.to_json(script_data))
-
-
-def generate_audio(task_id, params, video_script):
-    logger.info("\n\n## generating audio")
-    audio_file = path.join(utils.task_dir(task_id), "audio.mp3")
-    sub_maker = voice.tts(
-        text=video_script,
-        voice_name=voice.parse_voice_name(params.voice_name),
-        voice_rate=params.voice_rate,
-        voice_file=audio_file,
-    )
-    if sub_maker is None:
-        sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
-        logger.error(
-            """failed to generate audio:
-1. check if the language of the voice matches the language of the video script.
-2. check if the network is available. If you are in China, it is recommended to use a VPN and enable the global traffic mode.
-        """.strip()
-        )
-        return None, None, None
-
-    audio_duration = math.ceil(voice.get_audio_duration(sub_maker))
-    return audio_file, audio_duration, sub_maker
 
 
 def generate_subtitle(task_id, params, video_script, sub_maker, audio_file):
@@ -206,7 +185,7 @@ def generate_final_videos(
     return final_video_paths, combined_video_paths
 
 
-def start(task_id, params: VideoParams, stop_at: str = "video"):
+def start_gen_video(task_id, params: VideoParams, stop_at: str = "video"):
     logger.info(f"start task: {task_id}, stop_at: {stop_at}")
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=5)
 
@@ -326,13 +305,3 @@ def start(task_id, params: VideoParams, stop_at: str = "video"):
         task_id, state=const.TASK_STATE_COMPLETE, progress=100, **kwargs
     )
     return kwargs
-
-
-if __name__ == "__main__":
-    task_id = "task_id"
-    params = VideoParams(
-        video_subject="金钱的作用",
-        voice_name="zh-CN-XiaoyiNeural-Female",
-        voice_rate=1.0,
-    )
-    start(task_id, params, stop_at="video")

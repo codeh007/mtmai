@@ -42,11 +42,12 @@ from mtmai.clients.rest.models.social_login_input import SocialLoginInput
 from mtmai.clients.rest.models.social_login_result import SocialLoginResult
 from mtmai.clients.rest.models.social_team import SocialTeam
 from mtmai.clients.rest.models.tool_types import ToolTypes
+from mtmai.clients.rest.models.video_params import VideoParams
 from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field
 
-WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AddSessionToEvalSetRequest", "AdkAppTypes", "AdkRawEvent", "AgentApprovalEvent", "AgentEventType", "AgentOutgoingEvent", "AgentRunRequestV3", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "Content", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes"]
+WORKFLOWWORKERSCOUNTOTHER_ANY_OF_SCHEMAS = ["AddSessionToEvalSetRequest", "AdkAppTypes", "AdkRawEvent", "AgentApprovalEvent", "AgentEventType", "AgentOutgoingEvent", "AgentRunRequestV3", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "Content", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "VideoParams"]
 
 class WorkflowWorkersCountOther(BaseModel):
     """
@@ -99,11 +100,13 @@ class WorkflowWorkersCountOther(BaseModel):
     anyof_schema_22_validator: Optional[Content] = None
     # data type: AgentRunRequestV3
     anyof_schema_23_validator: Optional[AgentRunRequestV3] = None
+    # data type: VideoParams
+    anyof_schema_24_validator: Optional[VideoParams] = None
     if TYPE_CHECKING:
-        actual_instance: Optional[Union[AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]] = None
+        actual_instance: Optional[Union[AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, VideoParams]] = None
     else:
         actual_instance: Any = None
-    any_of_schemas: Set[str] = { "AddSessionToEvalSetRequest", "AdkAppTypes", "AdkRawEvent", "AgentApprovalEvent", "AgentEventType", "AgentOutgoingEvent", "AgentRunRequestV3", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "Content", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes" }
+    any_of_schemas: Set[str] = { "AddSessionToEvalSetRequest", "AdkAppTypes", "AdkRawEvent", "AgentApprovalEvent", "AgentEventType", "AgentOutgoingEvent", "AgentRunRequestV3", "AgentStateTypes", "AgentTopicTypes", "AgentTypes", "CodeExecutionResult", "ComponentTypes", "Content", "FlowError", "FlowNames", "FlowResult", "FlowTeamInput", "ProviderTypes", "RootAgentState", "SocialLoginInput", "SocialLoginResult", "SocialTeam", "ToolTypes", "VideoParams" }
 
     model_config = {
         "validate_assignment": True,
@@ -262,9 +265,15 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return v
 
+        # validate data type: VideoParams
+        if not isinstance(v, VideoParams):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `VideoParams`")
+        else:
+            return v
+
         if error_messages:
             # no match
-            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting the actual_instance in WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, VideoParams. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -415,10 +424,16 @@ class WorkflowWorkersCountOther(BaseModel):
             return instance
         except (ValidationError, ValueError) as e:
              error_messages.append(str(e))
+        # anyof_schema_24_validator: Optional[VideoParams] = None
+        try:
+            instance.actual_instance = VideoParams.from_json(json_str)
+            return instance
+        except (ValidationError, ValueError) as e:
+             error_messages.append(str(e))
 
         if error_messages:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into WorkflowWorkersCountOther with anyOf schemas: AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, VideoParams. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -432,7 +447,7 @@ class WorkflowWorkersCountOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AddSessionToEvalSetRequest, AdkAppTypes, AdkRawEvent, AgentApprovalEvent, AgentEventType, AgentOutgoingEvent, AgentRunRequestV3, AgentStateTypes, AgentTopicTypes, AgentTypes, CodeExecutionResult, ComponentTypes, Content, FlowError, FlowNames, FlowResult, FlowTeamInput, ProviderTypes, RootAgentState, SocialLoginInput, SocialLoginResult, SocialTeam, ToolTypes, VideoParams]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

@@ -392,6 +392,7 @@ from mtmai.clients.rest.models.user_proxy_agent_config import UserProxyAgentConf
 from mtmai.clients.rest.models.user_register_request import UserRegisterRequest
 from mtmai.clients.rest.models.user_tenant_memberships_list import UserTenantMembershipsList
 from mtmai.clients.rest.models.user_tenant_public import UserTenantPublic
+from mtmai.clients.rest.models.video_params import VideoParams
 from mtmai.clients.rest.models.webhook_worker import WebhookWorker
 from mtmai.clients.rest.models.webhook_worker_create_request import WebhookWorkerCreateRequest
 from mtmai.clients.rest.models.webhook_worker_create_response import WebhookWorkerCreateResponse

@@ -397,15 +397,15 @@ Please note that you must use English for generating video search terms; Chinese
     return search_terms
 
 
-if __name__ == "__main__":
-    video_subject = "生命的意义是什么"
-    script = generate_script(
-        video_subject=video_subject, language="zh-CN", paragraph_number=1
-    )
-    print("######################")
-    print(script)
-    search_terms = generate_terms(
-        video_subject=video_subject, video_script=script, amount=5
-    )
-    print("######################")
-    print(search_terms)
+# if __name__ == "__main__":
+#     video_subject = "生命的意义是什么"
+#     script = generate_script(
+#         video_subject=video_subject, language="zh-CN", paragraph_number=1
+#     )
+#     print("######################")
+#     print(script)
+#     search_terms = generate_terms(
+#         video_subject=video_subject, video_script=script, amount=5
+#     )
+#     print("######################")
+#     print(search_terms)

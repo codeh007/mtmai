@@ -252,5 +252,9 @@ class Settings(BaseSettings):
     def WORKER_GATEWAY_URL(self) -> str | None:
         return os.environ.get("WORKER_GATEWAY_URL", "http://localhost:6111")
 
+    @property
+    def PEXELS_API_KEYS(self) -> list[str]:
+        return os.environ.get("PEXELS_API_KEYS", "pexels_api_key_not_set").split(",")
+
 
 settings = Settings()  # type: ignore

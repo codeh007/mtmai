@@ -1046,12 +1046,21 @@ def is_azure_v2_voice(voice_name: str):
     return ""
 
 
-def tts(
+async def tts(
     text: str, voice_name: str, voice_rate: float, voice_file: str
 ) -> Union[SubMaker, None]:
-    if is_azure_v2_voice(voice_name):
-        return azure_tts_v2(text, voice_name, voice_file)
-    return azure_tts_v1(text, voice_name, voice_rate, voice_file)
+    # if is_azure_v2_voice(voice_name):
+    #     return azure_tts_v2(text, voice_name, voice_file)
+    # return azure_tts_v1(text, voice_name, voice_rate, voice_file)
+
+    # 暂时简单的使用 edgetts 库实现
+    import edge_tts
+
+    communicate = edge_tts.Communicate(text, voice_name, rate=voice_rate)
+    with open(voice_file, "wb") as file:
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                file.write(chunk["data"])
 
 
 def convert_rate_to_percent(rate: float) -> str:
