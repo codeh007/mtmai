@@ -185,7 +185,12 @@ def generate_final_videos(
     return final_video_paths, combined_video_paths
 
 
-def start_gen_video(task_id, params: VideoParams, stop_at: str = "video"):
+async def hello123333():
+    logger.info("hello123333")
+    return "hello123333"
+
+
+async def start_gen_video(task_id, params: VideoParams, stop_at: str = "video"):
     logger.info(f"start task: {task_id}, stop_at: {stop_at}")
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=5)
 
