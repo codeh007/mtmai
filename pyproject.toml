@@ -38,6 +38,8 @@ exclude = [
     "packages/mtmaiui-backup",
     "packages/mtxuilib-backup",
     "packages/mtmaiui",
+    "packages/AI-Youtube-Shorts-Generator",
+    "packages/momeryprinterplus",
 ]
 
 [tool.setuptools]

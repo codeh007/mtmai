@@ -1,11 +1,11 @@
 import warnings
 from typing import Dict, List, Optional
 
-from model_client.litellm_router import litellm_router
 from smolagents.models import ApiModel, ChatMessage
 from smolagents.tools import Tool
 
 from mtmai import tools as tools
+from mtmai.model_client.litellm_router import litellm_router
 
 ## ####################################################################
 ## 改版: smolagent llm 模型, 原因是,添加基于 litellm 的 router 支持

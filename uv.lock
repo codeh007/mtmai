@@ -453,173 +453,6 @@ wheels = [
 ]
 
 [[package]]
-name = "autogen-agentchat"
-version = "0.5.5"
-source = { directory = "../autogen/python/packages/autogen-agentchat" }
-dependencies = [
-    { name = "autogen-core" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "autogen-core", editable = "../autogen/python/packages/autogen-core" }]
-
-[[package]]
-name = "autogen-core"
-version = "0.5.5"
-source = { editable = "../autogen/python/packages/autogen-core" }
-dependencies = [
-    { name = "jsonref" },
-    { name = "opentelemetry-api" },
-    { name = "pillow" },
-    { name = "protobuf" },
-    { name = "pydantic" },
-    { name = "typing-extensions" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "jsonref", specifier = "~=1.1.0" },
-    { name = "opentelemetry-api", specifier = ">=1.27.0" },
-    { name = "pillow", specifier = ">=11.0.0" },
-    { name = "protobuf", specifier = "~=5.29.3" },
-    { name = "pydantic", specifier = ">=2.10.0,<3.0.0" },
-    { name = "typing-extensions", specifier = ">=4.0.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "aiofiles" },
-    { name = "asyncio-atexit" },
-    { name = "autodoc-pydantic", specifier = "~=2.2" },
-    { name = "autogen-ext", editable = "../autogen/python/packages/autogen-ext" },
-    { name = "autogen-test-utils", editable = "../autogen/python/packages/autogen-test-utils" },
-    { name = "azure-identity" },
-    { name = "chess" },
-    { name = "colorama" },
-    { name = "diskcache" },
-    { name = "langchain-openai" },
-    { name = "langgraph" },
-    { name = "llama-index" },
-    { name = "llama-index-embeddings-azure-openai" },
-    { name = "llama-index-llms-azure-openai" },
-    { name = "llama-index-readers-web" },
-    { name = "llama-index-readers-wikipedia" },
-    { name = "llama-index-tools-wikipedia" },
-    { name = "markdownify" },
-    { name = "myst-nb", specifier = "==1.1.2" },
-    { name = "nbqa" },
-    { name = "opentelemetry-sdk", specifier = ">=1.27.0" },
-    { name = "pip" },
-    { name = "polars" },
-    { name = "pydata-sphinx-theme", specifier = "==0.16.0" },
-    { name = "pygments" },
-    { name = "python-dotenv" },
-    { name = "redis" },
-    { name = "requests" },
-    { name = "sphinx" },
-    { name = "sphinx-autobuild" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-design" },
-    { name = "sphinxcontrib-apidoc" },
-    { name = "sphinxext-rediraffe" },
-    { name = "tavily-python" },
-    { name = "textual" },
-    { name = "textual-dev" },
-    { name = "textual-imageview" },
-    { name = "types-aiofiles" },
-    { name = "types-docker" },
-    { name = "types-pillow" },
-    { name = "types-protobuf" },
-    { name = "types-requests" },
-    { name = "wikipedia" },
-]
-
-[[package]]
-name = "autogen-ext"
-version = "0.5.5"
-source = { directory = "../autogen/python/packages/autogen-ext" }
-dependencies = [
-    { name = "autogen-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiofiles", marker = "extra == 'openai'" },
-    { name = "aiohttp", marker = "extra == 'docker-jupyter-executor'", specifier = ">=3.11.16" },
-    { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.48" },
-    { name = "asyncio-atexit", marker = "extra == 'docker'", specifier = ">=1.0.1" },
-    { name = "asyncio-atexit", marker = "extra == 'docker-jupyter-executor'", specifier = ">=1.0.1" },
-    { name = "autogen-agentchat", marker = "extra == 'file-surfer'", editable = "../autogen/python/packages/autogen-agentchat" },
-    { name = "autogen-agentchat", marker = "extra == 'magentic-one'", editable = "../autogen/python/packages/autogen-agentchat" },
-    { name = "autogen-agentchat", marker = "extra == 'video-surfer'", editable = "../autogen/python/packages/autogen-agentchat" },
-    { name = "autogen-agentchat", marker = "extra == 'web-surfer'", editable = "../autogen/python/packages/autogen-agentchat" },
-    { name = "autogen-core", editable = "../autogen/python/packages/autogen-core" },
-    { name = "azure-ai-inference", marker = "extra == 'azure'", specifier = ">=1.0.0b7" },
-    { name = "azure-ai-projects", marker = "extra == 'azure'", specifier = ">=1.0.0b8" },
-    { name = "azure-core", marker = "extra == 'azure'" },
-    { name = "azure-identity", marker = "extra == 'azure'" },
-    { name = "azure-search-documents", marker = "extra == 'azure'", specifier = ">=11.4.0" },
-    { name = "chromadb", marker = "extra == 'chromadb'", specifier = ">=1.0.0" },
-    { name = "chromadb", marker = "extra == 'task-centric-memory'", specifier = ">=1.0.0" },
-    { name = "diskcache", marker = "extra == 'diskcache'", specifier = ">=5.6.3" },
-    { name = "docker", marker = "extra == 'docker'", specifier = "~=7.0" },
-    { name = "docker", marker = "extra == 'docker-jupyter-executor'", specifier = "~=7.0" },
-    { name = "ffmpeg-python", marker = "extra == 'video-surfer'" },
-    { name = "google-genai", marker = "extra == 'gemini'", specifier = ">=1.0.0" },
-    { name = "graphrag", marker = "extra == 'graphrag'", specifier = ">=1.0.1" },
-    { name = "grpcio", marker = "extra == 'grpc'", specifier = "~=1.70.0" },
-    { name = "httpx", marker = "extra == 'http-tool'", specifier = ">=0.27.0" },
-    { name = "ipykernel", marker = "extra == 'jupyter-executor'", specifier = ">=6.29.5" },
-    { name = "json-schema-to-pydantic", marker = "extra == 'http-tool'", specifier = ">=0.2.0" },
-    { name = "langchain-core", marker = "extra == 'langchain'", specifier = "~=0.3.3" },
-    { name = "llama-cpp-python", marker = "extra == 'llama-cpp'", specifier = ">=0.3.8" },
-    { name = "magika", marker = "extra == 'file-surfer'", specifier = ">=0.6.1rc2" },
-    { name = "magika", marker = "extra == 'magentic-one'", specifier = ">=0.6.1rc2" },
-    { name = "magika", marker = "extra == 'web-surfer'", specifier = ">=0.6.1rc2" },
-    { name = "markitdown", extras = ["all"], marker = "extra == 'file-surfer'", specifier = "~=0.1.0a3" },
-    { name = "markitdown", extras = ["all"], marker = "extra == 'magentic-one'", specifier = "~=0.1.0a3" },
-    { name = "markitdown", extras = ["all"], marker = "extra == 'web-surfer'", specifier = "~=0.1.0a3" },
-    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.6.0" },
-    { name = "nbclient", marker = "extra == 'jupyter-executor'", specifier = ">=0.10.2" },
-    { name = "ollama", marker = "extra == 'ollama'", specifier = ">=0.4.7" },
-    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.66.5" },
-    { name = "openai-whisper", marker = "extra == 'video-surfer'" },
-    { name = "opencv-python", marker = "extra == 'video-surfer'", specifier = ">=4.5" },
-    { name = "pillow", marker = "extra == 'magentic-one'", specifier = ">=11.0.0" },
-    { name = "pillow", marker = "extra == 'web-surfer'", specifier = ">=11.0.0" },
-    { name = "playwright", marker = "extra == 'magentic-one'", specifier = ">=1.48.0" },
-    { name = "playwright", marker = "extra == 'web-surfer'", specifier = ">=1.48.0" },
-    { name = "redis", marker = "extra == 'redis'", specifier = ">=5.2.1" },
-    { name = "requests", marker = "extra == 'docker-jupyter-executor'", specifier = ">=2.32.3" },
-    { name = "rich", marker = "extra == 'rich'", specifier = ">=13.9.4" },
-    { name = "semantic-kernel", marker = "extra == 'semantic-kernel-core'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["anthropic"], marker = "extra == 'semantic-kernel-anthropic'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["aws"], marker = "extra == 'semantic-kernel-aws'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["dapr"], marker = "extra == 'semantic-kernel-dapr'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["google"], marker = "extra == 'semantic-kernel-google'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["google", "hugging-face", "mistralai", "ollama", "onnx", "anthropic", "usearch", "pandas", "aws", "dapr"], marker = "extra == 'semantic-kernel-all'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["hugging-face"], marker = "extra == 'semantic-kernel-hugging-face'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["mistralai"], marker = "extra == 'semantic-kernel-mistralai'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["ollama"], marker = "extra == 'semantic-kernel-ollama'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["onnx"], marker = "extra == 'semantic-kernel-onnx'", specifier = ">=1.17.1" },
-    { name = "semantic-kernel", extras = ["pandas"], marker = "extra == 'semantic-kernel-pandas'", specifier = ">=1.17.1" },
-    { name = "tiktoken", marker = "extra == 'ollama'", specifier = ">=0.8.0" },
-    { name = "tiktoken", marker = "extra == 'openai'", specifier = ">=0.8.0" },
-    { name = "unidiff", marker = "extra == 'canvas'", specifier = ">=0.7.5" },
-    { name = "websockets", marker = "extra == 'docker-jupyter-executor'", specifier = ">=15.0.1" },
-]
-provides-extras = ["anthropic", "langchain", "azure", "docker", "ollama", "openai", "file-surfer", "llama-cpp", "graphrag", "chromadb", "web-surfer", "magentic-one", "video-surfer", "diskcache", "redis", "grpc", "jupyter-executor", "docker-jupyter-executor", "task-centric-memory", "semantic-kernel-core", "gemini", "semantic-kernel-google", "semantic-kernel-hugging-face", "semantic-kernel-mistralai", "semantic-kernel-ollama", "semantic-kernel-onnx", "semantic-kernel-anthropic", "semantic-kernel-pandas", "semantic-kernel-aws", "semantic-kernel-dapr", "http-tool", "semantic-kernel-all", "rich", "mcp", "canvas"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "autogen-test-utils", editable = "../autogen/python/packages/autogen-test-utils" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "langchain-experimental" },
-    { name = "opentelemetry-proto", specifier = ">=1.28.0" },
-    { name = "pandas-stubs", specifier = ">=2.2.3.241126" },
-]
-
-[[package]]
 name = "azure-core"
 version = "1.32.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1360,11 +1193,11 @@ wheels = [
 
 [[package]]
 name = "decorator"
-version = "5.1.1"
+version = "4.4.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/66/0c/8d907af351aa16b42caae42f9d6aa37b900c67308052d10fdce809f8d952/decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330", size = 35016, upload_time = "2022-01-07T08:20:05.666Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/93/84fa12f2dc341f8cf5f022ee09e109961055749df2d0c75c5f98746cfe6c/decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7", size = 33629, upload_time = "2020-02-29T05:24:43.312Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d5/50/83c593b07763e1161326b3b8c6686f0f4b0f24d5526546bee538c89837d6/decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186", size = 9073, upload_time = "2022-01-07T08:20:03.734Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/1b/72a1821152d07cf1d8b6fce298aeb06a7eb90f4d6d41acec9861e7cc6df0/decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760", size = 9239, upload_time = "2020-02-29T05:24:45.993Z" },
 ]
 
 [[package]]
@@ -1468,6 +1301,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/31/e9/f49c4e7fccb77fa5c43c2480e09a857a78b41e7331a75e128ed5df45c56b/durationpy-0.9.tar.gz", hash = "sha256:fd3feb0a69a0057d582ef643c355c40d2fa1c942191f914d12203b1a01ac722a", size = 3186, upload_time = "2024-10-02T17:59:00.873Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4c/a3/ac312faeceffd2d8f86bc6dcb5c401188ba5a01bc88e69bed97578a0dfcd/durationpy-0.9-py3-none-any.whl", hash = "sha256:e65359a7af5cedad07fb77a2dd3f390f8eb0b74cb845589fa6c057086834dd38", size = 3461, upload_time = "2024-10-02T17:58:59.349Z" },
+]
+
+[[package]]
+name = "edge-tts"
+version = "6.1.19"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "certifi" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2b/81/58663476b9afe5ae7f28767d6cadffbf30ed99063a219e213edacecb841b/edge_tts-6.1.19.tar.gz", hash = "sha256:52fdfbaef2b3afee98bbba5e5c6365b5a6156fe78fe4e81e55749f7a563add38", size = 20131, upload_time = "2024-11-22T01:18:03.991Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/52/8d/6b91e2efa7e6f2438888142a66ff053e2bc301b8eddd3cb0fd2452644890/edge_tts-6.1.19-py3-none-any.whl", hash = "sha256:af49ea0539f54b0d76a73bc76cefd9deb2010a11c5ee2a189967e15830a6ba37", size = 22125, upload_time = "2024-11-22T01:18:01.14Z" },
 ]
 
 [[package]]
@@ -2800,15 +2646,6 @@ wheels = [
 ]
 
 [[package]]
-name = "jsonref"
-version = "1.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/aa/0d/c1f3277e90ccdb50d33ed5ba1ec5b3f0a242ed8c1b1a85d3afeb68464dca/jsonref-1.1.0.tar.gz", hash = "sha256:32fe8e1d85af0fdefbebce950af85590b22b60f9e95443176adbde4e1ecea552", size = 8814, upload_time = "2023-01-16T16:10:04.455Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0c/ec/e1db9922bceb168197a558a2b8c03a7963f1afe93517ddd3cf99f202f996/jsonref-1.1.0-py3-none-any.whl", hash = "sha256:590dc7773df6c21cbf948b5dac07a72a251db28b0238ceecce0a2abfa8ec30a9", size = 9425, upload_time = "2023-01-16T16:10:02.255Z" },
-]
-
-[[package]]
 name = "jsonschema"
 version = "4.23.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3769,9 +3606,6 @@ dependencies = [
     { name = "anthropic" },
     { name = "async-timeout" },
     { name = "asyncio-atexit" },
-    { name = "autogen-agentchat" },
-    { name = "autogen-core" },
-    { name = "autogen-ext" },
     { name = "azure-core" },
     { name = "azure-identity" },
     { name = "beautifulsoup4" },
@@ -3785,6 +3619,7 @@ dependencies = [
     { name = "cssselect" },
     { name = "diff-match-patch" },
     { name = "docker" },
+    { name = "edge-tts" },
     { name = "email-validator" },
     { name = "exa-py" },
     { name = "fake-useragent" },
@@ -3861,6 +3696,7 @@ dependencies = [
     { name = "quantstats" },
     { name = "rank-bm25" },
     { name = "rebrowser-playwright" },
+    { name = "redis" },
     { name = "rich" },
     { name = "scrapegraph-py" },
     { name = "selenium" },
@@ -3932,9 +3768,6 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.49.0" },
     { name = "async-timeout", specifier = ">=4.0.3" },
     { name = "asyncio-atexit", specifier = ">=1.0.1" },
-    { name = "autogen-agentchat", directory = "../autogen/python/packages/autogen-agentchat" },
-    { name = "autogen-core", directory = "../autogen/python/packages/autogen-core" },
-    { name = "autogen-ext", directory = "../autogen/python/packages/autogen-ext" },
     { name = "azure-core", specifier = ">=1.32.0" },
     { name = "azure-identity", specifier = ">=1.21.0" },
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
@@ -3949,6 +3782,7 @@ requires-dist = [
     { name = "cssselect", specifier = ">=1.2.0" },
     { name = "diff-match-patch", specifier = ">=20241021" },
     { name = "docker", specifier = ">=7.1.0" },
+    { name = "edge-tts", specifier = "==6.1.19" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "exa-py", specifier = ">=1.7.2" },
     { name = "fake-useragent", specifier = ">=2.0.3" },
@@ -4029,6 +3863,7 @@ requires-dist = [
     { name = "quantstats", git = "https://github.com/PowerInsight/quantstats.git" },
     { name = "rank-bm25", specifier = "~=0.2" },
     { name = "rebrowser-playwright", specifier = ">=1.49.1" },
+    { name = "redis", specifier = ">=6.0.0" },
     { name = "rich", specifier = ">=13.9.4" },
     { name = "scrapegraph-py", specifier = ">=1.7.0" },
     { name = "selenium", specifier = ">=4.31.0" },
@@ -4036,7 +3871,7 @@ requires-dist = [
     { name = "serpapi", specifier = ">=0.1.5" },
     { name = "simpleeval", specifier = ">=1.0.0" },
     { name = "slugify", specifier = ">=0.0.1" },
-    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.13.0" },
+    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.14.0" },
     { name = "snowballstemmer", specifier = "~=2.2" },
     { name = "speechrecognition", specifier = ">=3.14.2" },
     { name = "sqlalchemy", specifier = ">=2.0.37" },
@@ -8380,6 +8215,15 @@ wheels = [
 ]
 
 [[package]]
+name = "redis"
+version = "6.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/79/12/dffaaa4374b8d5f3b7ff5c40025c9db387e06264302d5a9da6043cd84e1f/redis-6.0.0.tar.gz", hash = "sha256:5446780d2425b787ed89c91ddbfa1be6d32370a636c8fdb687f11b1c26c1fa88", size = 4620969, upload_time = "2025-04-30T19:09:30.798Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/c8/68081c9d3531f7b2a4d663326b96a9dcbc2aef47df3c6b5c38dea90dff02/redis-6.0.0-py3-none-any.whl", hash = "sha256:a2e040aee2cdd947be1fa3a32e35a956cd839cc4c1dbbe4b2cdee5b9623fd27c", size = 268950, upload_time = "2025-04-30T19:09:28.432Z" },
+]
+
+[[package]]
 name = "referencing"
 version = "0.36.2"
 source = { registry = "https://pypi.org/simple" }
@@ -8891,7 +8735,7 @@ wheels = [
 
 [[package]]
 name = "smolagents"
-version = "1.13.0"
+version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "duckduckgo-search" },
@@ -8903,9 +8747,9 @@ dependencies = [
     { name = "requests" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/e7/ca6b45f15cd5228bbdcc2101f34235bbbb2bf16a60404554608b6c90e701/smolagents-1.13.0.tar.gz", hash = "sha256:42cd2835c143a8bd7063aa662e669a0791c1e0b0883931e386119742f0889f78", size = 147152, upload_time = "2025-04-02T15:03:24.878Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/5d/ddc672ec9ff6347080d13d291a6db5b8e76dd6603f5ec1265797e2781af4/smolagents-1.14.0.tar.gz", hash = "sha256:7d06237c56afa8f0ec95552832a7a368d4cbae2ea66bd217f0f0430241db7611", size = 157712, upload_time = "2025-04-18T09:58:20.26Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/fe/f124306da2abf74568a6b41a195ea4529a33d313c173943665348d930027/smolagents-1.13.0-py3-none-any.whl", hash = "sha256:7c0cfcb126ee732781e8ed8ad650d3f8f968f018f64bd1a432f2ac4082950d8c", size = 108161, upload_time = "2025-04-02T15:03:23.64Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/ce/dedad549d2b37e73d14c56aef25bd42a5f87fdb8e97bf2a78cac5aac8287/smolagents-1.14.0-py3-none-any.whl", hash = "sha256:3444a5231bf395ea8c8cc39905aaa17e9ef434b7f4a03bde91b83ea08dd0a856", size = 114488, upload_time = "2025-04-18T09:58:18.763Z" },
 ]
 
 [package.optional-dependencies]
