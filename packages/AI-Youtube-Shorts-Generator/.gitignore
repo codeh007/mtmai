@@ -1,0 +1,16 @@
+# Python-related
+*.pyc
+**/__pycache__/
+
+# Media Files
+*.wav
+*.mp3
+*.gif
+*.mp4
+*.webm
+
+# Virtual environment
+venv/
+
+# Environment variables
+.env
