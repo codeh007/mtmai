@@ -17,8 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
+from mtmai.clients.rest.models.material_info import MaterialInfo
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,10 +27,40 @@ class VideoParams(BaseModel):
     """
     VideoParams
     """ # noqa: E501
-    prompt: Optional[StrictStr] = None
-    style: Optional[StrictStr] = None
-    duration: Optional[Union[StrictFloat, StrictInt]] = None
-    __properties: ClassVar[List[str]] = ["prompt", "style", "duration"]
+    video_subject: Optional[StrictStr] = None
+    video_script: Optional[StrictStr] = Field(default=None, description="Script used to generate the video")
+    video_terms: Optional[StrictStr] = Field(default=None, description="Keywords used to generate the video")
+    video_aspect: Optional[StrictStr] = Field(default=None, description="Aspect ratio of the video")
+    video_concat_mode: Optional[StrictStr] = Field(default=None, description="Mode of concatenation of the video")
+    video_transition_mode: Optional[StrictStr] = Field(default=None, description="Mode of transition of the video")
+    video_clip_duration: Optional[StrictInt] = Field(default=5, description="Duration of the video clip")
+    video_count: Optional[StrictInt] = Field(default=1, description="Number of videos to generate")
+    video_source: Optional[StrictStr] = Field(default='pexels', description="Source of the video")
+    video_materials: Optional[List[MaterialInfo]] = Field(default=None, description="Materials used to generate the video")
+    video_style: Optional[StrictStr] = Field(default='', description="Style of the video")
+    video_language: Optional[StrictStr] = Field(default='', description="Language of the video")
+    voice_name: Optional[StrictStr] = Field(default='', description="Name of the voice")
+    voice_volume: Optional[Union[StrictFloat, StrictInt]] = Field(default=1, description="Volume of the voice")
+    voice_rate: Optional[Union[StrictFloat, StrictInt]] = Field(default=1, description="Rate of the voice")
+    bgm_type: Optional[StrictStr] = Field(default='random', description="Type of the background music")
+    bgm_file: Optional[StrictStr] = Field(default='', description="File of the background music")
+    bgm_volume: Optional[Union[StrictFloat, StrictInt]] = Field(default=1, description="Volume of the background music")
+    bgm_rate: Optional[Union[StrictFloat, StrictInt]] = Field(default=0.2, description="Rate of the background music")
+    bgm_start_time: Optional[Union[StrictFloat, StrictInt]] = Field(default=0, description="Start time of the background music")
+    bgm_end_time: Optional[Union[StrictFloat, StrictInt]] = Field(default=0, description="End time of the background music")
+    bgm_loop: Optional[StrictBool] = Field(default=False, description="Whether the background music is looped")
+    subtitle_enabled: Optional[StrictBool] = Field(default=True, description="Whether the subtitle is enabled")
+    subtitle_position: Optional[StrictStr] = Field(default='bottom', description="Position of the subtitle")
+    custom_position: Optional[Union[StrictFloat, StrictInt]] = Field(default=70, description="Custom position of the subtitle")
+    font_name: Optional[StrictStr] = Field(default='STHeitiMedium.ttc', description="Name of the font")
+    text_fore_color: Optional[StrictStr] = Field(default='#FFFFFF', description="Foreground color of the text")
+    text_background_color: Optional[StrictStr] = Field(default='#000000', description="Background color of the text")
+    font_size: Optional[StrictInt] = Field(default=60, description="Size of the font")
+    stroke_color: Optional[StrictStr] = Field(default='#000000', description="Color of the stroke")
+    stroke_width: Optional[StrictInt] = Field(default=1.5, description="Width of the stroke")
+    n_threads: Optional[StrictInt] = Field(default=2, description="Number of threads")
+    paragraph_number: Optional[StrictInt] = Field(default=1, description="Number of paragraphs")
+    __properties: ClassVar[List[str]] = ["video_subject", "video_script", "video_terms", "video_aspect", "video_concat_mode", "video_transition_mode", "video_clip_duration", "video_count", "video_source", "video_materials", "video_style", "video_language", "voice_name", "voice_volume", "voice_rate", "bgm_type", "bgm_file", "bgm_volume", "bgm_rate", "bgm_start_time", "bgm_end_time", "bgm_loop", "subtitle_enabled", "subtitle_position", "custom_position", "font_name", "text_fore_color", "text_background_color", "font_size", "stroke_color", "stroke_width", "n_threads", "paragraph_number"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -70,6 +101,13 @@ class VideoParams(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in video_materials (list)
+        _items = []
+        if self.video_materials:
+            for _item_video_materials in self.video_materials:
+                if _item_video_materials:
+                    _items.append(_item_video_materials.to_dict())
+            _dict['video_materials'] = _items
         return _dict
 
     @classmethod
@@ -87,9 +125,39 @@ class VideoParams(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in VideoParams) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "prompt": obj.get("prompt"),
-            "style": obj.get("style"),
-            "duration": obj.get("duration")
+            "video_subject": obj.get("video_subject"),
+            "video_script": obj.get("video_script"),
+            "video_terms": obj.get("video_terms"),
+            "video_aspect": obj.get("video_aspect"),
+            "video_concat_mode": obj.get("video_concat_mode"),
+            "video_transition_mode": obj.get("video_transition_mode"),
+            "video_clip_duration": obj.get("video_clip_duration") if obj.get("video_clip_duration") is not None else 5,
+            "video_count": obj.get("video_count") if obj.get("video_count") is not None else 1,
+            "video_source": obj.get("video_source") if obj.get("video_source") is not None else 'pexels',
+            "video_materials": [MaterialInfo.from_dict(_item) for _item in obj["video_materials"]] if obj.get("video_materials") is not None else None,
+            "video_style": obj.get("video_style") if obj.get("video_style") is not None else '',
+            "video_language": obj.get("video_language") if obj.get("video_language") is not None else '',
+            "voice_name": obj.get("voice_name") if obj.get("voice_name") is not None else '',
+            "voice_volume": obj.get("voice_volume") if obj.get("voice_volume") is not None else 1,
+            "voice_rate": obj.get("voice_rate") if obj.get("voice_rate") is not None else 1,
+            "bgm_type": obj.get("bgm_type") if obj.get("bgm_type") is not None else 'random',
+            "bgm_file": obj.get("bgm_file") if obj.get("bgm_file") is not None else '',
+            "bgm_volume": obj.get("bgm_volume") if obj.get("bgm_volume") is not None else 1,
+            "bgm_rate": obj.get("bgm_rate") if obj.get("bgm_rate") is not None else 0.2,
+            "bgm_start_time": obj.get("bgm_start_time") if obj.get("bgm_start_time") is not None else 0,
+            "bgm_end_time": obj.get("bgm_end_time") if obj.get("bgm_end_time") is not None else 0,
+            "bgm_loop": obj.get("bgm_loop") if obj.get("bgm_loop") is not None else False,
+            "subtitle_enabled": obj.get("subtitle_enabled") if obj.get("subtitle_enabled") is not None else True,
+            "subtitle_position": obj.get("subtitle_position") if obj.get("subtitle_position") is not None else 'bottom',
+            "custom_position": obj.get("custom_position") if obj.get("custom_position") is not None else 70,
+            "font_name": obj.get("font_name") if obj.get("font_name") is not None else 'STHeitiMedium.ttc',
+            "text_fore_color": obj.get("text_fore_color") if obj.get("text_fore_color") is not None else '#FFFFFF',
+            "text_background_color": obj.get("text_background_color") if obj.get("text_background_color") is not None else '#000000',
+            "font_size": obj.get("font_size") if obj.get("font_size") is not None else 60,
+            "stroke_color": obj.get("stroke_color") if obj.get("stroke_color") is not None else '#000000',
+            "stroke_width": obj.get("stroke_width") if obj.get("stroke_width") is not None else 1.5,
+            "n_threads": obj.get("n_threads") if obj.get("n_threads") is not None else 2,
+            "paragraph_number": obj.get("paragraph_number") if obj.get("paragraph_number") is not None else 1
         })
         return _obj
 

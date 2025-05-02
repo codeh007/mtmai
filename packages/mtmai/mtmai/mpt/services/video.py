@@ -260,7 +260,9 @@ def generate_video(
     # aspect = VideoAspect(params.video_aspect)
     video_width, video_height = video_aspect.to_resolution()
 
-    logger.info(f"start, video size: {video_width} x {video_height}, subtitle: {subtitle_path}")
+    logger.info(
+        f"start, video size: {video_width} x {video_height}, subtitle: {subtitle_path}"
+    )
     logger.info(f"  ① video: {video_path}")
     logger.info(f"  ② audio: {audio_path}")
     logger.info(f"  ④ output: {output_file}")
@@ -366,7 +368,6 @@ def generate_video(
     )
     video_clip.close()
     del video_clip
-    # logger.success("completed")
 
 
 def preprocess_video(materials: List[MaterialInfo], clip_duration=4):
@@ -415,63 +416,3 @@ def preprocess_video(materials: List[MaterialInfo], clip_duration=4):
             material.url = video_file
             logger.success(f"completed: {video_file}")
     return materials
-
-
-# if __name__ == "__main__":
-#     m = MaterialInfo()
-#     m.url = "/Users/harry/Downloads/IMG_2915.JPG"
-#     m.provider = "local"
-#     materials = preprocess_video([m], clip_duration=4)
-#     print(materials)
-
-#     # txt_en = "Here's your guide to travel hacks for budget-friendly adventures"
-#     # txt_zh = "测试长字段这是您的旅行技巧指南帮助您进行预算友好的冒险"
-#     # font = utils.resource_dir() + "/fonts/STHeitiMedium.ttc"
-#     # for txt in [txt_en, txt_zh]:
-#     #     t, h = wrap_text(text=txt, max_width=1000, font=font, fontsize=60)
-#     #     print(t)
-#     #
-#     # task_id = "aa563149-a7ea-49c2-b39f-8c32cc225baf"
-#     # task_dir = utils.task_dir(task_id)
-#     # video_file = f"{task_dir}/combined-1.mp4"
-#     # audio_file = f"{task_dir}/audio.mp3"
-#     # subtitle_file = f"{task_dir}/subtitle.srt"
-#     # output_file = f"{task_dir}/final.mp4"
-#     #
-#     # # video_paths = []
-#     # # for file in os.listdir(utils.storage_dir("test")):
-#     # #     if file.endswith(".mp4"):
-#     # #         video_paths.append(os.path.join(utils.storage_dir("test"), file))
-#     # #
-#     # # combine_videos(combined_video_path=video_file,
-#     # #                audio_file=audio_file,
-#     # #                video_paths=video_paths,
-#     # #                video_aspect=VideoAspect.portrait,
-#     # #                video_concat_mode=VideoConcatMode.random,
-#     # #                max_clip_duration=5,
-#     # #                threads=2)
-#     #
-#     # cfg = VideoParams()
-#     # cfg.video_aspect = VideoAspect.portrait
-#     # cfg.font_name = "STHeitiMedium.ttc"
-#     # cfg.font_size = 60
-#     # cfg.stroke_color = "#000000"
-#     # cfg.stroke_width = 1.5
-#     # cfg.text_fore_color = "#FFFFFF"
-#     # cfg.text_background_color = "transparent"
-#     # cfg.bgm_type = "random"
-#     # cfg.bgm_file = ""
-#     # cfg.bgm_volume = 1.0
-#     # cfg.subtitle_enabled = True
-#     # cfg.subtitle_position = "bottom"
-#     # cfg.n_threads = 2
-#     # cfg.paragraph_number = 1
-#     #
-#     # cfg.voice_volume = 1.0
-#     #
-#     # generate_video(video_path=video_file,
-#     #                audio_path=audio_file,
-#     #                subtitle_path=subtitle_file,
-#     #                output_file=output_file,
-#     #                params=cfg
-#     #                )

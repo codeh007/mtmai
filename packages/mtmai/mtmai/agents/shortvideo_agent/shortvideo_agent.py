@@ -159,17 +159,17 @@ Generate a subject for a video, depending on the user's input.
             subtitle_enabled=True,
         ).model_dump()
 
-        yield Event(
-            author=ctx.agent.name,
-            content=types.Content(
-                role="assistant",
-                parts=[
-                    types.Part(
-                        text="结束",
-                    ),
-                ],
-            ),
-        )
+        # yield Event(
+        #     author=ctx.agent.name,
+        #     content=types.Content(
+        #         role="assistant",
+        #         parts=[
+        #             types.Part(
+        #                 text="结束",
+        #             ),
+        #         ],
+        #     ),
+        # )
 
 
 def new_shortvideo_agent():

@@ -54,32 +54,32 @@ class MaterialsAgent(BaseAgent):
                 },
             },
         )
-        image_bytes = b"\x89PNG\r\n\x1a\n..."  # Placeholder for actual image bytes
-        image_artifact = types.Part(
-            inline_data=types.Blob(mime_type="image/png", data=image_bytes)
-        )
+        # image_bytes = b"\x89PNG\r\n\x1a\n..."  # Placeholder for actual image bytes
+        # image_artifact = types.Part(
+        #     inline_data=types.Blob(mime_type="image/png", data=image_bytes)
+        # )
 
-        for video_file in downloaded_videos:
-            with open(video_file, "rb") as f:
-                video_bytes = f.read()
-            video_artifact = types.Part(
-                inline_data=types.Blob(mime_type="video/mp4", data=video_bytes)
-            )
+        # for video_file in downloaded_videos:
+        #     with open(video_file, "rb") as f:
+        #         video_bytes = f.read()
+        #     # video_artifact = types.Part(
+        #     #     inline_data=types.Blob(mime_type="video/mp4", data=video_bytes)
+        #     # )
 
-            yield Event(
-                author=ctx.agent.name,
-                content=types.Content(
-                    role="assistant",
-                    parts=[video_artifact],
-                ),
-            )
-        yield Event(
-            author=ctx.agent.name,
-            content=types.Content(
-                role="assistant",
-                parts=[
-                    types.Part(text="素材: "),
-                    image_artifact,
-                ],
-            ),
-        )
+        #     # yield Event(
+        #     #     author=ctx.agent.name,
+        #     #     content=types.Content(
+        #     #         role="assistant",
+        #     #         parts=[video_artifact],
+        #     #     ),
+        #     # )
+        # yield Event(
+        #     author=ctx.agent.name,
+        #     content=types.Content(
+        #         role="assistant",
+        #         parts=[
+        #             # types.Part(text="素材: "),
+        #             image_artifact,
+        #         ],
+        #     ),
+        # )
