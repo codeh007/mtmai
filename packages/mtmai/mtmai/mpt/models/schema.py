@@ -249,17 +249,17 @@ class TaskDeletionResponse(BaseResponse):
         }
 
 
-class VideoScriptResponse(BaseResponse):
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "status": 200,
-                "message": "success",
-                "data": {
-                    "video_script": "春天的花海，是大自然的一幅美丽画卷。在这个季节里，大地复苏，万物生长，花朵争相绽放，形成了一片五彩斑斓的花海..."
-                },
-            },
-        }
+# class VideoScriptResponse(BaseResponse):
+#     class Config:
+#         json_schema_extra = {
+#             "example": {
+#                 "status": 200,
+#                 "message": "success",
+#                 "data": {
+#                     "video_script": "春天的花海，是大自然的一幅美丽画卷。在这个季节里，大地复苏，万物生长，花朵争相绽放，形成了一片五彩斑斓的花海..."
+#                 },
+#             },
+#         }
 
 
 class VideoTermsResponse(BaseResponse):

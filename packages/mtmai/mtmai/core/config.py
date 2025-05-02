@@ -256,5 +256,27 @@ class Settings(BaseSettings):
     def PEXELS_API_KEYS(self) -> list[str]:
         return os.environ.get("PEXELS_API_KEYS", "pexels_api_key_not_set").split(",")
 
+    @property
+    def CLOUDFLARE_R2_ENDPOINT(self) -> str | None:
+        return os.environ.get(
+            "CLOUDFLARE_R2_ENDPOINT", "cloudflare_r2_endpoint_not_set"
+        )
+
+    @property
+    def CLOUDFLARE_R2_ACCESS_KEY(self) -> str | None:
+        return os.environ.get(
+            "CLOUDFLARE_R2_ACCESS_KEY", "cloudflare_r2_access_key_not_set"
+        )
+
+    @property
+    def CLOUDFLARE_R2_SECRET_KEY(self) -> str | None:
+        return os.environ.get(
+            "CLOUDFLARE_R2_SECRET_KEY", "cloudflare_r2_secret_key_not_set"
+        )
+
+    @property
+    def CLOUDFLARE_R2_BUCKET(self) -> str | None:
+        return os.environ.get("CLOUDFLARE_R2_BUCKET", "default")
+
 
 settings = Settings()  # type: ignore

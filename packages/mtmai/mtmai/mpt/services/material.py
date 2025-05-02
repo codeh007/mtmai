@@ -180,7 +180,7 @@ def save_video(video_url: str, save_dir: str = "") -> str:
 
 
 def download_videos(
-    task_id: str,
+    output_dir: str,
     search_terms: List[str],
     source: str = "pexels",
     video_aspect: VideoAspect = VideoAspect.portrait,
@@ -216,7 +216,7 @@ def download_videos(
 
     material_directory = config.app.get("material_directory", "").strip()
     if material_directory == "task":
-        material_directory = utils.task_dir(task_id)
+        material_directory = output_dir
     elif material_directory and not os.path.isdir(material_directory):
         material_directory = ""
 
@@ -244,9 +244,3 @@ def download_videos(
             logger.error(f"failed to download video: {utils.to_json(item)} => {str(e)}")
     logger.success(f"downloaded {len(video_paths)} videos")
     return video_paths
-
-
-# if __name__ == "__main__":
-#     download_videos(
-#         "test123", ["Money Exchange Medium"], audio_duration=100, source="pixabay"
-#     )

@@ -1,21 +1,20 @@
+import os
 from typing import AsyncGenerator, override
 
 from google.adk.agents import BaseAgent, LlmAgent, SequentialAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
-from loguru import logger
+from mtmai.agents.shortvideo_agent.sub_agents.audio_agent import AudioGenAgent
+from mtmai.agents.shortvideo_agent.sub_agents.materials_agent import MaterialsAgent
 from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.mpt.models.schema import VideoAspect, VideoParams, VideoTransitionMode
-from mtmai.mpt.services.task import start_gen_video
+
+from .sub_agents.finnal_gen_video import FinalGenVideoAgent
 
 
 class ShortvideoAgent(BaseAgent):
     model_config = {"arbitrary_types_allowed": True}
-
-    video_subject_generator: LlmAgent
-    video_script_generator: LlmAgent
-    video_terms_generator: LlmAgent
 
     sequential_agent: SequentialAgent
 
@@ -24,7 +23,6 @@ class ShortvideoAgent(BaseAgent):
         name: str,
         description: str = "短视频生成专家",
         model: str = get_default_litellm_model(),
-        # video_script_generator: LlmAgent = video_script_generator,
         **kwargs,
     ):
         video_script_generator = LlmAgent(
@@ -105,15 +103,24 @@ Generate a subject for a video, depending on the user's input.
         super().__init__(
             name=name,
             description=description,
-            video_script_generator=video_script_generator,
-            video_terms_generator=video_terms_generator,
-            video_subject_generator=video_subject_generator,
             sequential_agent=SequentialAgent(
                 name="ShortvideoProcessing",
                 sub_agents=[
                     video_subject_generator,
                     video_script_generator,
                     video_terms_generator,
+                    AudioGenAgent(
+                        name="AudioGenAgent",
+                        description="生成音频",
+                    ),
+                    MaterialsAgent(
+                        name="MaterialsAgent",
+                        description="根据文案和字幕,通过 api 获取素材",
+                    ),
+                    FinalGenVideoAgent(
+                        name="FinalGenVideoAgent",
+                        description="根据最终的视频生成参数, 合并生成最终的视频",
+                    ),
                 ],
             ),
             **kwargs,
@@ -130,38 +137,27 @@ Generate a subject for a video, depending on the user's input.
         ctx.session.state["video_subject"] = user_input_text
         ctx.session.state["paragraph_number"] = 3
         ctx.session.state["video_terms_amount"] = 3
+        ctx.session.state["output_dir"] = f".vol/short_videos/{ctx.invocation_id}"
 
-        # 步骤1: 生成主题
-        async for event in self.video_subject_generator.run_async(ctx):
+        async for event in self.sequential_agent.run_async(ctx):
             yield event
+        os.makedirs(ctx.session.state["output_dir"], exist_ok=True)
 
-        # 步骤2: 生成故事脚本
-        async for event in self.video_script_generator.run_async(ctx):
-            yield event
-
-        # 步骤3: 生成素材
-        async for event in self.video_terms_generator.run_async(ctx):
-            yield event
-
-        video_script = ctx.session.state.get("video_script")
-        result = await start_gen_video(
-            "01",
-            VideoParams(
-                video_subject=ctx.session.state.get("video_subject"),
-                video_script=ctx.session.state.get("video_script"),
-                video_terms=ctx.session.state.get("video_terms"),
-                video_aspect=VideoAspect.landscape,
-                voice_name="zh-CN-XiaoxiaoNeural",
-                voice_rate="1.0",
-                bgm_type="random",
-                bgm_file="./mtmai/resources/songs/output001.mp3",
-                text_color="#FFFFFF",
-                font_size=60,
-                stroke_color="#000000",
-                video_transition_mode=VideoTransitionMode.shuffle,
-            ),
-        )
-        logger.info(f"result: {result}")
+        ctx.session.state["video_params"] = VideoParams(
+            video_subject=ctx.session.state.get("video_subject"),
+            video_script=ctx.session.state.get("video_script"),
+            video_terms=ctx.session.state.get("video_terms"),
+            video_aspect=VideoAspect.portrait,
+            voice_name="zh-CN-XiaoxiaoNeural",
+            voice_rate="1.0",
+            bgm_type="random",
+            bgm_file="./mtmai/resources/songs/output001.mp3",
+            text_color="#FFFFFF",
+            font_size=60,
+            stroke_color="#000000",
+            video_transition_mode=VideoTransitionMode.fade_in,
+            subtitle_enabled=True,
+        ).model_dump()
 
         yield Event(
             author=ctx.agent.name,
@@ -174,7 +170,6 @@ Generate a subject for a video, depending on the user's input.
                 ],
             ),
         )
-        return
 
 
 def new_shortvideo_agent():

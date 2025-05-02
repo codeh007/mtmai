@@ -156,6 +156,7 @@ dependencies = [
     # "edge-tts>=7.0.1",
     "edge-tts==6.1.19",
     "redis>=6.0.0",
+    "boto3>=1.38.2",
 ]
 name = "mtxai"
 version = "0.0.269"

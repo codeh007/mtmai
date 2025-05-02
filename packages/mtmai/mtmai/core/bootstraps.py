@@ -2,9 +2,18 @@ import asyncio
 import logging
 import os
 import sys
+import warnings
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+# 忽略 Pydantic 的特定警告
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    message="Field name.*shadows an attribute in parent.*",
+)
+
 
 is_bootstraped = False
 default_env_files = [

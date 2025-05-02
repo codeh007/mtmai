@@ -21,7 +21,6 @@ from mtmai.mpt.models.schema import (
     MaterialInfo,
     VideoAspect,
     VideoConcatMode,
-    VideoParams,
     VideoTransitionMode,
 )
 from mtmai.mtlibs import video_effects
@@ -244,15 +243,26 @@ def generate_video(
     audio_path: str,
     subtitle_path: str,
     output_file: str,
-    params: VideoParams,
+    video_aspect: VideoAspect = VideoAspect.portrait,
+    n_threads: int = 2,
+    bgm_volume: float = 1.0,
+    bgm_file: str = "",
+    font_size: int = 60,
+    voice_volume: float = 1.0,
+    custom_position: int = 0,
+    subtitle_position: str = "bottom",
+    stroke_width: float = 1.5,
+    text_fore_color: str = "#FFFFFF",
+    text_background_color: str | None = None,
+    stroke_color: str = "#000000",
+    font_name: str = "STHeitiMedium.ttc",
 ):
-    aspect = VideoAspect(params.video_aspect)
-    video_width, video_height = aspect.to_resolution()
+    # aspect = VideoAspect(params.video_aspect)
+    video_width, video_height = video_aspect.to_resolution()
 
-    logger.info(f"start, video size: {video_width} x {video_height}")
+    logger.info(f"start, video size: {video_width} x {video_height}, subtitle: {subtitle_path}")
     logger.info(f"  ① video: {video_path}")
     logger.info(f"  ② audio: {audio_path}")
-    logger.info(f"  ③ subtitle: {subtitle_path}")
     logger.info(f"  ④ output: {output_file}")
 
     # https://github.com/harry0703/MoneyPrinterTurbo/issues/217
@@ -261,46 +271,46 @@ def generate_video(
     output_dir = os.path.dirname(output_file)
 
     font_path = ""
-    if params.subtitle_enabled:
-        if not params.font_name:
-            params.font_name = "STHeitiMedium.ttc"
-        font_path = os.path.join(utils.font_dir(), params.font_name)
-        if os.name == "nt":
-            font_path = font_path.replace("\\", "/")
+    # if params.subtitle_enabled:
+    # if not params.font_name:
+    #     params.font_name = "STHeitiMedium.ttc"
+    font_path = os.path.join(utils.font_dir(), font_name)
+    if os.name == "nt":
+        font_path = font_path.replace("\\", "/")
 
-        logger.info(f"using font: {font_path}")
+    logger.info(f"using font: {font_path}")
 
     def create_text_clip(subtitle_item):
-        params.font_size = int(params.font_size)
-        params.stroke_width = int(params.stroke_width)
+        # font_size = int(font_size)
+        # stroke_width = int(stroke_width)
         phrase = subtitle_item[1]
         max_width = video_width * 0.9
         wrapped_txt, txt_height = wrap_text(
-            phrase, max_width=max_width, font=font_path, fontsize=params.font_size
+            phrase, max_width=max_width, font=font_path, fontsize=font_size
         )
         _clip = TextClip(
             text=wrapped_txt,
             font=font_path,
-            font_size=params.font_size,
-            color=params.text_fore_color,
-            bg_color=params.text_background_color,
-            stroke_color=params.stroke_color,
-            stroke_width=params.stroke_width,
+            font_size=font_size,
+            color=text_fore_color,
+            bg_color=text_background_color,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
         )
         duration = subtitle_item[0][1] - subtitle_item[0][0]
         _clip = _clip.with_start(subtitle_item[0][0])
         _clip = _clip.with_end(subtitle_item[0][1])
         _clip = _clip.with_duration(duration)
-        if params.subtitle_position == "bottom":
+        if subtitle_position == "bottom":
             _clip = _clip.with_position(("center", video_height * 0.95 - _clip.h))
-        elif params.subtitle_position == "top":
+        elif subtitle_position == "top":
             _clip = _clip.with_position(("center", video_height * 0.05))
-        elif params.subtitle_position == "custom":
+        elif subtitle_position == "custom":
             # Ensure the subtitle is fully within the screen bounds
             margin = 10  # Additional margin, in pixels
             max_y = video_height - _clip.h - margin
             min_y = margin
-            custom_y = (video_height - _clip.h) * (params.custom_position / 100)
+            custom_y = (video_height - _clip.h) * (custom_position / 100)
             custom_y = max(
                 min_y, min(custom_y, max_y)
             )  # Constrain the y value within the valid range
@@ -311,14 +321,14 @@ def generate_video(
 
     video_clip = VideoFileClip(video_path)
     audio_clip = AudioFileClip(audio_path).with_effects(
-        [afx.MultiplyVolume(params.voice_volume)]
+        [afx.MultiplyVolume(voice_volume)]
     )
 
     def make_textclip(text):
         return TextClip(
             text=text,
             font=font_path,
-            font_size=params.font_size,
+            font_size=font_size,
         )
 
     if subtitle_path and os.path.exists(subtitle_path):
@@ -331,12 +341,12 @@ def generate_video(
             text_clips.append(clip)
         video_clip = CompositeVideoClip([video_clip, *text_clips])
 
-    bgm_file = get_bgm_file(bgm_type=params.bgm_type, bgm_file=params.bgm_file)
+    # bgm_file = get_bgm_file(bgm_type=params.bgm_type, bgm_file=params.bgm_file)
     if bgm_file:
         try:
             bgm_clip = AudioFileClip(bgm_file).with_effects(
                 [
-                    afx.MultiplyVolume(params.bgm_volume),
+                    afx.MultiplyVolume(bgm_volume),
                     afx.AudioFadeOut(3),
                     afx.AudioLoop(duration=video_clip.duration),
                 ]
@@ -350,13 +360,13 @@ def generate_video(
         output_file,
         audio_codec="aac",
         temp_audiofile_path=output_dir,
-        threads=params.n_threads or 2,
+        threads=n_threads,
         logger=None,
         fps=30,
     )
     video_clip.close()
     del video_clip
-    logger.success("completed")
+    # logger.success("completed")
 
 
 def preprocess_video(materials: List[MaterialInfo], clip_duration=4):
@@ -407,61 +417,61 @@ def preprocess_video(materials: List[MaterialInfo], clip_duration=4):
     return materials
 
 
-if __name__ == "__main__":
-    m = MaterialInfo()
-    m.url = "/Users/harry/Downloads/IMG_2915.JPG"
-    m.provider = "local"
-    materials = preprocess_video([m], clip_duration=4)
-    print(materials)
+# if __name__ == "__main__":
+#     m = MaterialInfo()
+#     m.url = "/Users/harry/Downloads/IMG_2915.JPG"
+#     m.provider = "local"
+#     materials = preprocess_video([m], clip_duration=4)
+#     print(materials)
 
-    # txt_en = "Here's your guide to travel hacks for budget-friendly adventures"
-    # txt_zh = "测试长字段这是您的旅行技巧指南帮助您进行预算友好的冒险"
-    # font = utils.resource_dir() + "/fonts/STHeitiMedium.ttc"
-    # for txt in [txt_en, txt_zh]:
-    #     t, h = wrap_text(text=txt, max_width=1000, font=font, fontsize=60)
-    #     print(t)
-    #
-    # task_id = "aa563149-a7ea-49c2-b39f-8c32cc225baf"
-    # task_dir = utils.task_dir(task_id)
-    # video_file = f"{task_dir}/combined-1.mp4"
-    # audio_file = f"{task_dir}/audio.mp3"
-    # subtitle_file = f"{task_dir}/subtitle.srt"
-    # output_file = f"{task_dir}/final.mp4"
-    #
-    # # video_paths = []
-    # # for file in os.listdir(utils.storage_dir("test")):
-    # #     if file.endswith(".mp4"):
-    # #         video_paths.append(os.path.join(utils.storage_dir("test"), file))
-    # #
-    # # combine_videos(combined_video_path=video_file,
-    # #                audio_file=audio_file,
-    # #                video_paths=video_paths,
-    # #                video_aspect=VideoAspect.portrait,
-    # #                video_concat_mode=VideoConcatMode.random,
-    # #                max_clip_duration=5,
-    # #                threads=2)
-    #
-    # cfg = VideoParams()
-    # cfg.video_aspect = VideoAspect.portrait
-    # cfg.font_name = "STHeitiMedium.ttc"
-    # cfg.font_size = 60
-    # cfg.stroke_color = "#000000"
-    # cfg.stroke_width = 1.5
-    # cfg.text_fore_color = "#FFFFFF"
-    # cfg.text_background_color = "transparent"
-    # cfg.bgm_type = "random"
-    # cfg.bgm_file = ""
-    # cfg.bgm_volume = 1.0
-    # cfg.subtitle_enabled = True
-    # cfg.subtitle_position = "bottom"
-    # cfg.n_threads = 2
-    # cfg.paragraph_number = 1
-    #
-    # cfg.voice_volume = 1.0
-    #
-    # generate_video(video_path=video_file,
-    #                audio_path=audio_file,
-    #                subtitle_path=subtitle_file,
-    #                output_file=output_file,
-    #                params=cfg
-    #                )
+#     # txt_en = "Here's your guide to travel hacks for budget-friendly adventures"
+#     # txt_zh = "测试长字段这是您的旅行技巧指南帮助您进行预算友好的冒险"
+#     # font = utils.resource_dir() + "/fonts/STHeitiMedium.ttc"
+#     # for txt in [txt_en, txt_zh]:
+#     #     t, h = wrap_text(text=txt, max_width=1000, font=font, fontsize=60)
+#     #     print(t)
+#     #
+#     # task_id = "aa563149-a7ea-49c2-b39f-8c32cc225baf"
+#     # task_dir = utils.task_dir(task_id)
+#     # video_file = f"{task_dir}/combined-1.mp4"
+#     # audio_file = f"{task_dir}/audio.mp3"
+#     # subtitle_file = f"{task_dir}/subtitle.srt"
+#     # output_file = f"{task_dir}/final.mp4"
+#     #
+#     # # video_paths = []
+#     # # for file in os.listdir(utils.storage_dir("test")):
+#     # #     if file.endswith(".mp4"):
+#     # #         video_paths.append(os.path.join(utils.storage_dir("test"), file))
+#     # #
+#     # # combine_videos(combined_video_path=video_file,
+#     # #                audio_file=audio_file,
+#     # #                video_paths=video_paths,
+#     # #                video_aspect=VideoAspect.portrait,
+#     # #                video_concat_mode=VideoConcatMode.random,
+#     # #                max_clip_duration=5,
+#     # #                threads=2)
+#     #
+#     # cfg = VideoParams()
+#     # cfg.video_aspect = VideoAspect.portrait
+#     # cfg.font_name = "STHeitiMedium.ttc"
+#     # cfg.font_size = 60
+#     # cfg.stroke_color = "#000000"
+#     # cfg.stroke_width = 1.5
+#     # cfg.text_fore_color = "#FFFFFF"
+#     # cfg.text_background_color = "transparent"
+#     # cfg.bgm_type = "random"
+#     # cfg.bgm_file = ""
+#     # cfg.bgm_volume = 1.0
+#     # cfg.subtitle_enabled = True
+#     # cfg.subtitle_position = "bottom"
+#     # cfg.n_threads = 2
+#     # cfg.paragraph_number = 1
+#     #
+#     # cfg.voice_volume = 1.0
+#     #
+#     # generate_video(video_path=video_file,
+#     #                audio_path=audio_file,
+#     #                subtitle_path=subtitle_file,
+#     #                output_file=output_file,
+#     #                params=cfg
+#     #                )
