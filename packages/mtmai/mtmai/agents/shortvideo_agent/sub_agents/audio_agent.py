@@ -1,3 +1,4 @@
+import math
 import os.path
 from os import path
 from typing import AsyncGenerator, override
@@ -8,7 +9,25 @@ from google.adk.events import Event
 from google.genai import types  # noqa
 from mtmai.mpt.services import subtitle
 from mtmai.tts import voice
-from mtmai.tts.tts import generate_audio
+
+
+async def generate_audio(
+    output_audio_file,
+    voice_rate=1.0,
+    voice_name="zh-CN-XiaoxiaoNeural",
+    video_script="",
+):
+    sub_maker = await voice.tts_edgetts(
+        text=video_script,
+        voice_name=voice.parse_voice_name(voice_name),
+        # voice_rate=voice_rate,
+        voice_file=output_audio_file,
+    )
+    if sub_maker is None:
+        raise ValueError("failed to generate audio, sub_maker is None")
+
+    audio_duration = math.ceil(voice.get_audio_duration(sub_maker))
+    return output_audio_file, audio_duration, sub_maker
 
 
 def generate_subtitle(
@@ -47,7 +66,7 @@ class AudioGenAgent(BaseAgent):
         output_dir = ctx.session.state["output_dir"]
         # 生成 音频讲解
         audio_file, audio_duration, sub_maker = await generate_audio(
-            output_dir,
+            output_audio_file=path.join(output_dir, "audio.mp3"),
             video_script=ctx.session.state["video_script"],
         )
 
@@ -64,6 +83,10 @@ class AudioGenAgent(BaseAgent):
                 "state_delta": {
                     "audio_file": audio_file,
                     "audio_duration": audio_duration,
+                },
+                "artifact_delta": {
+                    "audio.mp3": 2,
+                    "subtitle.srt": 2,
                 },
             },
         )
