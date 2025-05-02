@@ -6,9 +6,9 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
 from loguru import logger
-from mtmai.agents.shortvideo_agent.utils import upload_video
 from mtmai.mpt.models.schema import VideoAspect, VideoConcatMode, VideoTransitionMode
 from mtmai.mpt.services import video
+from mtmai.mtlibs.mtfs import get_s3fs
 
 
 class FinalGenVideoAgent(BaseAgent):
@@ -55,9 +55,10 @@ class FinalGenVideoAgent(BaseAgent):
             combined_video_paths.append(combined_video_path)
 
         # 上传成品视频
-        upload_video(
+        get_s3fs().upload_file(
             final_video_paths[0],
-            f"short_videos/final-{ctx.invocation_id}.mp4",
+            f"short_videos/final-{ctx.session.id}.mp4",
+            "video/mp4",
         )
 
         yield Event(

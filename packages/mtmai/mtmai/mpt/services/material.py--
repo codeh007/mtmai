@@ -182,10 +182,12 @@ def save_video(video_url: str, save_dir: str = "") -> str:
 def download_videos(
     output_dir: str,
     search_terms: List[str],
+    # 音频时长
+    audio_duration: float,
     source: str = "pexels",
     video_aspect: VideoAspect = VideoAspect.portrait,
     video_contact_mode: VideoConcatMode = VideoConcatMode.random,
-    audio_duration: float = 0.0,
+    # 最大剪辑时长
     max_clip_duration: int = 5,
 ) -> List[str]:
     valid_video_items = []
@@ -194,6 +196,9 @@ def download_videos(
     search_videos = search_videos_pexels
     if source == "pixabay":
         search_videos = search_videos_pixabay
+
+    if audio_duration <= 0:
+        raise ValueError("audio_duration must be greater than 0")
 
     for search_term in search_terms:
         video_items = search_videos(
@@ -225,22 +230,16 @@ def download_videos(
 
     total_duration = 0.0
     for item in valid_video_items:
-        try:
-            logger.info(f"downloading video: {item.url}")
-            saved_video_path = save_video(
-                video_url=item.url, save_dir=material_directory
-            )
-            if saved_video_path:
-                logger.info(f"video saved: {saved_video_path}")
-                video_paths.append(saved_video_path)
-                seconds = min(max_clip_duration, item.duration)
-                total_duration += seconds
-                if total_duration > audio_duration:
-                    logger.info(
-                        f"total duration of downloaded videos: {total_duration} seconds, skip downloading more"
-                    )
-                    break
-        except Exception as e:
-            logger.error(f"failed to download video: {utils.to_json(item)} => {str(e)}")
-    logger.success(f"downloaded {len(video_paths)} videos")
+        logger.info(f"downloading video: {item.url}")
+        saved_video_path = save_video(video_url=item.url, save_dir=material_directory)
+        if saved_video_path:
+            logger.info(f"video saved: {saved_video_path}")
+            video_paths.append(saved_video_path)
+            seconds = min(max_clip_duration, item.duration)
+            total_duration += seconds
+            if total_duration > audio_duration:
+                logger.info(
+                    f"total duration of downloaded videos: {total_duration} seconds, skip downloading more"
+                )
+                break
     return video_paths

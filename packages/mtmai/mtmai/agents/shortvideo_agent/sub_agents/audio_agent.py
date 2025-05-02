@@ -8,6 +8,7 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
 from mtmai.mpt.services import subtitle
+from mtmai.mtlibs.mtfs import get_s3fs
 from mtmai.tts import voice
 
 
@@ -71,8 +72,17 @@ class AudioGenAgent(BaseAgent):
         )
 
         if not audio_file:
-            raise ValueError("failed to generate audio")
+            yield Event(
+                author=ctx.agent.name,
+                content=types.Content(
+                    role="assistant",
+                    parts=[types.Part(text="音频生成失败")],
+                ),
+            )
+            return
 
+        # 上传
+        get_s3fs().upload_file(audio_file, f"short_videos/audio-{ctx.session.id}.mp3")
         yield Event(
             author=ctx.agent.name,
             content=types.Content(
