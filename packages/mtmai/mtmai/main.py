@@ -42,8 +42,7 @@ def serve():
 def wsworker():
     from mtmai.ws_worker import WSAgentWorker
 
-    ws_worker = WSAgentWorker()
-    ws_worker.start()
+    asyncio.run(WSAgentWorker().start())
 
 
 @app.command()
