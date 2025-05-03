@@ -39,7 +39,7 @@ def serve():
 
 
 @app.command()
-def wsagentworker():
+def wsworker():
     from mtmai.ws_worker import WSAgentWorker
 
     ws_worker = WSAgentWorker()

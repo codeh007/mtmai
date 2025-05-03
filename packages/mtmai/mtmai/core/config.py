@@ -250,7 +250,7 @@ class Settings(BaseSettings):
 
     @property
     def WORKER_GATEWAY_URL(self) -> str | None:
-        return os.environ.get("WORKER_GATEWAY_URL", "http://localhost:6111")
+        return os.environ.get("WORKER_GATEWAY_URL", "https://mtmag.yuepa8.com")
 
     @property
     def PEXELS_API_KEYS(self) -> list[str]:

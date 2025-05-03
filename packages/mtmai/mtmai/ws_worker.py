@@ -18,8 +18,9 @@ class WSAgentWorker:
 
     def connect_root(self):
         self.root_ws_url = (
-            f"{http_url_ws(settings.WORKER_GATEWAY_URL)}/agents/root-ag/default"
+            f"{http_url_ws(settings.WORKER_GATEWAY_URL)}/api/agents/root-ag/default"
         )
+        logger.info(f"连接到 {self.root_ws_url}")
         with connect(self.root_ws_url) as websocket:
             message = websocket.recv()
             json_message = json.loads(message)
@@ -31,7 +32,9 @@ class WSAgentWorker:
                 logger.error(f"未知的消息类型: {msg_type}")
 
     def connect(self):
-        ws_url = f"{http_url_ws(settings.WORKER_GATEWAY_URL)}/agents/chat/chat-2"
+
+        ws_url = f"{http_url_ws(settings.WORKER_GATEWAY_URL)}/api/agents/chat/chat-2"
+        logger.info(f"连接到 {ws_url}")
         with connect(ws_url) as websocket:
             message = websocket.recv()
             # logger.info(f"收到消息: {message}")
