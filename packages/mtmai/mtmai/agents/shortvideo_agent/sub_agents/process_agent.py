@@ -14,6 +14,9 @@ from .video_terms_agent import new_video_terms_agent
 
 
 def new_video_process_agent():
+    """
+    按照顺序执行各个子任务, 完成视频的生成
+    """
     sequential_agent = SequentialAgent(
         name="ShortvideoProcessing",
         sub_agents=[
