@@ -3,6 +3,7 @@ import importlib
 import json
 import os
 import random
+import sys
 import traceback
 from pathlib import Path
 
@@ -20,6 +21,8 @@ from mtmai.mtlibs.utils import http_url_ws
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
 default_agents_dir = str(Path(os.path.dirname(__file__), "..", "agents").resolve())
+if default_agents_dir not in sys.path:
+    sys.path.append(default_agents_dir)
 artifact_service = InMemoryArtifactService()
 session_service = GomtmDatabaseSessionService(
     db_url=settings.MTM_DATABASE_URL,
@@ -77,16 +80,21 @@ class WSAgentWorker:
                     retry_count = 0  # 重置重试计数
                     while True:
                         try:
-                            message = websocket.recv()
-                            json_message = json.loads(message)
-                            msg_type = json_message["type"]
-                            if msg_type == "cf_agent_state":
-                                logger.info(json_message)
+                            message_data = websocket.recv()
+                            msg = json.loads(message_data)
+                            msg_type = msg["type"]
+                            if msg_type == "log":
+                                pass
+                            elif msg_type == "cf_agent_state":
+                                logger.info(msg)
+                            elif msg_type == "call_adk_agent":
+                                await self.on_call_agent(websocket, msg)
                             elif msg_type == "connected":
-                                self.on_connected(websocket, json_message)
+                                await self.on_connected(websocket, msg)
                             else:
                                 logger.error(f"未知的消息类型: {msg_type}")
                         except Exception as e:
+                            traceback.print_exc()
                             logger.error(f"处理消息时出错: {e}")
                             break
 
@@ -110,9 +118,9 @@ class WSAgentWorker:
 
     async def on_call_agent(self, ws: Connection, msg):
         logger.info(f"收到来自服务端的调用请求: {msg}")
-        agent_name = msg["agent_name"]
-        user_id = msg["user_id"] or "default_user"
-        session_id = msg["session_id"] or "default_session"
+        agent_name = msg.get("agent_name", "shortvideo_agent")
+        user_id = msg.get("user_id", "default_user")
+        session_id = msg.get("session_id", "default_session")
         # Connect to managed session if agent_engine_id is set.
         app_id = agent_name
         # SSE endpoint
@@ -139,14 +147,15 @@ class WSAgentWorker:
             async for event in runner.run_live(
                 session=session, live_request_queue=live_request_queue
             ):
-                await ws.send(
+                ws.send(
                     event.model_dump_json(exclude_none=True, by_alias=True), text=True
                 )
 
         async def process_messages():
             try:
                 while True:
-                    data = await ws.receive_text()
+                    data = ws.recv()
+                    logger.info(f"收到来自客户端的消息2: {data}")
                     # Validate and send the received message to the live queue.
                     live_request_queue.send(LiveRequest.model_validate_json(data))
             except ValidationError as ve:

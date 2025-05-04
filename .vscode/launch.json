@@ -13,24 +13,13 @@
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		},
 		{
-			"name": "adkweb",
+			"name": "wsworker",
 			"type": "debugpy",
 			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/main.py",
 			"cwd": "${workspaceFolder}",
 			"args": [
-				"adkweb"
-			],
-			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
-		},
-		{
-			"name": "wsagentworker",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/__main__.py",
-			"cwd": "${workspaceFolder}",
-			"args": [
-				"wsagentworker"
+				"wsworker"
 			],
 			"jinja": true,
 			"justMyCode": false,

@@ -31,3 +31,6 @@ def mount_api_routes(app: FastAPI, prefix=""):
     # api_router.include_router(llm.router, tags=["llm"])
     # api_router.include_router(video.router, tags=["video"])
     # app.include_router(api_router, prefix=prefix)
+    from mtmai.api import tts
+
+    app.include_router(tts.router, prefix=prefix, tags=["tts"])
