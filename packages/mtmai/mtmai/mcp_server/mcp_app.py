@@ -1,10 +1,9 @@
 from fastmcp import FastMCP
-
 from mtmai.core.config import settings
 
 mcpApp = FastMCP(
-    name="My MCP Server",
-    on_duplicate_tools="error",  # Set duplicate handling
+    name="Mtmai MCP Server",
+    on_duplicate_tools="error",
     on_duplicate_resources="error",
     on_duplicate_prompts="error",
     log_level="DEBUG",
@@ -12,7 +11,8 @@ mcpApp = FastMCP(
 )
 
 
-@mcpApp.tool()
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
-    return f"Hello, {name}!"
+def setup_tools():
+    from .tool_greet import greet  # noqa: F401
+
+
+setup_tools()

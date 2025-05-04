@@ -145,7 +145,7 @@ async def start_chrome_server():
 def mcpserve():
     import asyncio
 
-    from mtmai.mcp_app import mcpApp
+    from mtmai.mcp_server.mcp_app import mcpApp
 
     logger.info(f"Starting MCP server on http://localhost:{settings.PORT}")
     asyncio.run(
