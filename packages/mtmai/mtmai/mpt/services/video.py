@@ -4,15 +4,29 @@ import random
 from typing import List
 
 from loguru import logger
-from moviepy.editor import (AudioFileClip, ColorClip, CompositeAudioClip,
-                            CompositeVideoClip, ImageClip, TextClip,
-                            VideoFileClip, afx, concatenate_videoclips)
+from moviepy.editor import (
+    AudioFileClip,
+    ColorClip,
+    CompositeAudioClip,
+    CompositeVideoClip,
+    ImageClip,
+    TextClip,
+    VideoFileClip,
+    afx,
+    concatenate_videoclips,
+)
 from moviepy.video.tools.subtitles import SubtitlesClip
+
+# from moviepy import clip
 from PIL import ImageFont
 
 from mtmai.mpt.models import const
-from mtmai.mpt.models.schema import (MaterialInfo, VideoAspect,
-                                     VideoConcatMode, VideoTransitionMode)
+from mtmai.mpt.models.schema import (
+    MaterialInfo,
+    VideoAspect,
+    VideoConcatMode,
+    VideoTransitionMode,
+)
 from mtmai.mtlibs import video_effects
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
@@ -66,7 +80,11 @@ def combine_videos(
 
         while start_time < clip_duration:
             end_time = min(start_time + max_clip_duration, clip_duration)
-            split_clip = clip.subclipped(start_time, end_time)
+            # 旧代码
+            # split_clip = clip.subclipped(start_time, end_time)
+            # 新代码
+            split_clip = clip.subclip(start_time, end_time)
+
             raw_clips.append(split_clip)
             # logger.info(f"splitting from {start_time:.2f} to {end_time:.2f}, clip duration {clip_duration:.2f}, split_clip duration {split_clip.duration:.2f}")
             start_time = end_time

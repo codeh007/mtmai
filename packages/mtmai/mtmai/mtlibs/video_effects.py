@@ -1,4 +1,5 @@
-from moviepy import Clip, vfx
+from moviepy import Clip
+from moviepy.editor import vfx
 
 
 # FadeIn
