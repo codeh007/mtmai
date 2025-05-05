@@ -24,6 +24,17 @@
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		},
 		{
+			"name": "narratoai",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/main.py",
+			"cwd": "${workspaceFolder}",
+			"args": ["narratoai"],
+			"jinja": true,
+			"justMyCode": false,
+			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
+		},
+		{
 			"name": "wsworker",
 			"type": "debugpy",
 			"request": "launch",

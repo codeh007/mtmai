@@ -43,8 +43,10 @@ def render_tts_settings(tr):
     else:
         # 如果没有保存的设置，选择与UI语言匹配的第一个语音
         for i, v in enumerate(voices):
-            if (v.lower().startswith(st.session_state["ui_language"].lower())
-                    and "V2" not in v):
+            if (
+                v.lower().startswith(st.session_state["ui_language"].lower())
+                and "V2" not in v
+            ):
                 saved_voice_name_index = i
                 break
 
@@ -80,13 +82,10 @@ def render_azure_v2_settings(tr):
     saved_azure_speech_key = config.azure.get("speech_key", "")
 
     azure_speech_region = st.text_input(
-        tr("Speech Region"),
-        value=saved_azure_speech_region
+        tr("Speech Region"), value=saved_azure_speech_region
     )
     azure_speech_key = st.text_input(
-        tr("Speech Key"),
-        value=saved_azure_speech_key,
-        type="password"
+        tr("Speech Key"), value=saved_azure_speech_key, type="password"
     )
 
     config.azure["speech_region"] = azure_speech_region
@@ -102,10 +101,9 @@ def render_voice_parameters(tr):
         max_value=1.0,
         value=1.0,
         step=0.01,
-        help=tr("Adjust the volume of the original audio")
+        help=tr("Adjust the volume of the original audio"),
     )
-    st.session_state['voice_volume'] = voice_volume
-
+    st.session_state["voice_volume"] = voice_volume
 
     # 语速
     voice_rate = st.selectbox(
@@ -113,7 +111,7 @@ def render_voice_parameters(tr):
         options=[0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.8, 2.0],
         index=2,
     )
-    st.session_state['voice_rate'] = voice_rate
+    st.session_state["voice_rate"] = voice_rate
 
     # 音调
     voice_pitch = st.selectbox(
@@ -121,15 +119,17 @@ def render_voice_parameters(tr):
         options=[0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.8, 2.0],
         index=2,
     )
-    st.session_state['voice_pitch'] = voice_pitch
+    st.session_state["voice_pitch"] = voice_pitch
 
 
 def render_voice_preview(tr, voice_name):
     """渲染语音试听功能"""
     if st.button(tr("Play Voice")):
-        play_content = "感谢关注 NarratoAI，有任何问题或建议，可以关注微信公众号，求助或讨论"
+        play_content = (
+            "感谢关注 NarratoAI，有任何问题或建议，可以关注微信公众号，求助或讨论"
+        )
         if not play_content:
-            play_content = st.session_state.get('video_script', '')
+            play_content = st.session_state.get("video_script", "")
         if not play_content:
             play_content = tr("Voice Example")
 
@@ -140,8 +140,8 @@ def render_voice_preview(tr, voice_name):
             sub_maker = voice.tts(
                 text=play_content,
                 voice_name=voice_name,
-                voice_rate=st.session_state.get('voice_rate', 1.0),
-                voice_pitch=st.session_state.get('voice_pitch', 1.0),
+                voice_rate=st.session_state.get("voice_rate", 1.0),
+                voice_pitch=st.session_state.get("voice_pitch", 1.0),
                 voice_file=audio_file,
             )
 
@@ -151,8 +151,8 @@ def render_voice_preview(tr, voice_name):
                 sub_maker = voice.tts(
                     text=play_content,
                     voice_name=voice_name,
-                    voice_rate=st.session_state.get('voice_rate', 1.0),
-                    voice_pitch=st.session_state.get('voice_pitch', 1.0),
+                    voice_rate=st.session_state.get("voice_rate", 1.0),
+                    voice_pitch=st.session_state.get("voice_pitch", 1.0),
                     voice_file=audio_file,
                 )
 
@@ -180,13 +180,13 @@ def render_bgm_settings(tr):
 
     # 获取选择的背景音乐类型
     bgm_type = bgm_options[selected_index][1]
-    st.session_state['bgm_type'] = bgm_type
+    st.session_state["bgm_type"] = bgm_type
 
     # 自定义背景音乐处理
     if bgm_type == "custom":
         custom_bgm_file = st.text_input(tr("Custom Background Music File"))
         if custom_bgm_file and os.path.exists(custom_bgm_file):
-            st.session_state['bgm_file'] = custom_bgm_file
+            st.session_state["bgm_file"] = custom_bgm_file
 
     # 背景音乐音量
     bgm_volume = st.slider(
@@ -195,20 +195,19 @@ def render_bgm_settings(tr):
         max_value=1.0,
         value=0.3,
         step=0.01,
-        help=tr("Adjust the volume of the original audio")
+        help=tr("Adjust the volume of the original audio"),
     )
-    st.session_state['bgm_volume'] = bgm_volume
+    st.session_state["bgm_volume"] = bgm_volume
 
 
 def get_audio_params():
     """获取音频参数"""
     return {
-        'voice_name': config.ui.get("voice_name", ""),
-        'voice_volume': st.session_state.get('voice_volume', 1.0),
-        'voice_rate': st.session_state.get('voice_rate', 1.0),
-        'voice_pitch': st.session_state.get('voice_pitch', 1.0),
-        'bgm_type': st.session_state.get('bgm_type', 'random'),
-        'bgm_file': st.session_state.get('bgm_file', ''),
-        'bgm_volume': st.session_state.get('bgm_volume', 0.3),
-    }
+        "voice_name": config.ui.get("voice_name", ""),
+        "voice_volume": st.session_state.get("voice_volume", 1.0),
+        "voice_rate": st.session_state.get("voice_rate", 1.0),
+        "voice_pitch": st.session_state.get("voice_pitch", 1.0),
+        "bgm_type": st.session_state.get("bgm_type", "random"),
+        "bgm_file": st.session_state.get("bgm_file", ""),
+        "bgm_volume": st.session_state.get("bgm_volume", 0.3),
     }

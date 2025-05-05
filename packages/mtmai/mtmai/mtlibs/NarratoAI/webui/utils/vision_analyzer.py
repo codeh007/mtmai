@@ -5,6 +5,7 @@ from mtmai.mtlibs.NarratoAI.app.utils import gemini_analyzer, qwenvl_analyzer
 
 logger = logging.getLogger(__name__)
 
+
 class VisionAnalyzer:
     def __init__(self):
         self.provider = None
@@ -22,13 +23,12 @@ class VisionAnalyzer:
             model: 模型名称
             base_url: API基础URL
         """
-        self.provider = 'gemini'
+        self.provider = "gemini"
         self.api_key = api_key
         self.model = model
         self.base_url = base_url
         self.analyzer = gemini_analyzer.VisionAnalyzer(
-            model_name=model,
-            api_key=api_key
+            model_name=model, api_key=api_key
         )
 
     def initialize_qwenvl(self, api_key: str, model: str, base_url: str) -> None:
@@ -40,16 +40,15 @@ class VisionAnalyzer:
             model: 模型名称
             base_url: API基础URL
         """
-        self.provider = 'qwenvl'
+        self.provider = "qwenvl"
         self.api_key = api_key
         self.model = model
         self.base_url = base_url
-        self.analyzer = qwenvl_analyzer.QwenAnalyzer(
-            model_name=model,
-            api_key=api_key
-        )
+        self.analyzer = qwenvl_analyzer.QwenAnalyzer(model_name=model, api_key=api_key)
 
-    async def analyze_images(self, images: List[str], prompt: str, batch_size: int = 5) -> Dict[str, Any]:
+    async def analyze_images(
+        self, images: List[str], prompt: str, batch_size: int = 5
+    ) -> Dict[str, Any]:
         """
         分析图片内容
 
@@ -65,10 +64,9 @@ class VisionAnalyzer:
             raise ValueError("未初始化视觉分析器")
 
         return await self.analyzer.analyze_images(
-            images=images,
-            prompt=prompt,
-            batch_size=batch_size
+            images=images, prompt=prompt, batch_size=batch_size
         )
+
 
 def create_vision_analyzer(provider: str, **kwargs) -> VisionAnalyzer:
     """
@@ -83,19 +81,19 @@ def create_vision_analyzer(provider: str, **kwargs) -> VisionAnalyzer:
     """
     analyzer = VisionAnalyzer()
 
-    if provider.lower() == 'gemini':
+    if provider.lower() == "gemini":
         analyzer.initialize_gemini(
-            api_key=kwargs.get('api_key'),
-            model=kwargs.get('model'),
-            base_url=kwargs.get('base_url')
+            api_key=kwargs.get("api_key"),
+            model=kwargs.get("model"),
+            base_url=kwargs.get("base_url"),
         )
-    elif provider.lower() == 'qwenvl':
+    elif provider.lower() == "qwenvl":
         analyzer.initialize_qwenvl(
-            api_key=kwargs.get('api_key'),
-            model=kwargs.get('model'),
-            base_url=kwargs.get('base_url')
+            api_key=kwargs.get("api_key"),
+            model=kwargs.get("model"),
+            base_url=kwargs.get("base_url"),
         )
     else:
         raise ValueError(f"不支持的视觉分析提供商: {provider}")
 
-    return analyzer    return analyzer
+    return analyzer

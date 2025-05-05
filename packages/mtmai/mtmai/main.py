@@ -156,5 +156,12 @@ def mcpserver():
     )
 
 
+@app.command()
+def narratoai():
+    from mtmai.mtlibs.NarratoAI._webui import main
+
+    main()
+
+
 if __name__ == "__main__":
     app()

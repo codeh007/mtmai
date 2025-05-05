@@ -9,8 +9,13 @@ import google.generativeai as genai
 import PIL.Image
 from google.api_core import exceptions
 from loguru import logger
-from tenacity import (RetryError, retry, retry_if_exception_type,
-                      stop_after_attempt, wait_exponential)
+from tenacity import (
+    RetryError,
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 from tqdm import tqdm
 
 from mtmai.mtlibs.NarratoAI.app.utils import utils
@@ -35,18 +40,21 @@ class VisionAnalyzer:
         genai.configure(api_key=self.api_key)
         # 开放 Gemini 模型安全设置
         from google.generativeai.types import HarmBlockThreshold, HarmCategory
+
         safety_settings = {
             HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
             HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
             HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
             HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
         }
-        self.model = genai.GenerativeModel(self.model_name, safety_settings=safety_settings)
+        self.model = genai.GenerativeModel(
+            self.model_name, safety_settings=safety_settings
+        )
 
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=4, max=10),
-        retry=retry_if_exception_type(exceptions.ResourceExhausted)
+        retry=retry_if_exception_type(exceptions.ResourceExhausted),
     )
     async def _generate_content_with_retry(self, prompt, batch):
         """使用重试机制的内部方法来调用 generate_content_async"""
@@ -56,10 +64,12 @@ class VisionAnalyzer:
             print(f"API配额限制: {str(e)}")
             raise RetryError("API调用失败")
 
-    async def analyze_images(self,
-                           images: Union[List[str], List[PIL.Image.Image]],
-                           prompt: str,
-                           batch_size: int) -> List[Dict]:
+    async def analyze_images(
+        self,
+        images: Union[List[str], List[PIL.Image.Image]],
+        prompt: str,
+        batch_size: int,
+    ) -> List[Dict]:
         """批量分析多张图片"""
         try:
             # 加载图片
@@ -90,7 +100,7 @@ class VisionAnalyzer:
 
             with tqdm(total=total_batches, desc="分析进度") as pbar:
                 for i in range(0, len(images), batch_size):
-                    batch = images[i:i + batch_size]
+                    batch = images[i : i + batch_size]
                     retry_count = 0
 
                     while retry_count < 3:
@@ -100,17 +110,25 @@ class VisionAnalyzer:
                                 await asyncio.sleep(2)
 
                             # 确保每个批次的图片都是有效的
-                            valid_batch = [img for img in batch if isinstance(img, PIL.Image.Image)]
+                            valid_batch = [
+                                img for img in batch if isinstance(img, PIL.Image.Image)
+                            ]
                             if not valid_batch:
-                                raise ValueError(f"批次 {i // batch_size} 中没有有效的图片")
+                                raise ValueError(
+                                    f"批次 {i // batch_size} 中没有有效的图片"
+                                )
 
-                            response = await self._generate_content_with_retry(prompt, valid_batch)
-                            results.append({
-                                'batch_index': i // batch_size,
-                                'images_processed': len(valid_batch),
-                                'response': response.text,
-                                'model_used': self.model_name
-                            })
+                            response = await self._generate_content_with_retry(
+                                prompt, valid_batch
+                            )
+                            results.append(
+                                {
+                                    "batch_index": i // batch_size,
+                                    "images_processed": len(valid_batch),
+                                    "response": response.text,
+                                    "model_used": self.model_name,
+                                }
+                            )
                             break
 
                         except Exception as e:
@@ -119,14 +137,18 @@ class VisionAnalyzer:
                             logger.error(error_msg)
 
                             if retry_count >= 3:
-                                results.append({
-                                    'batch_index': i // batch_size,
-                                    'images_processed': len(batch),
-                                    'error': error_msg,
-                                    'model_used': self.model_name
-                                })
+                                results.append(
+                                    {
+                                        "batch_index": i // batch_size,
+                                        "images_processed": len(batch),
+                                        "error": error_msg,
+                                        "model_used": self.model_name,
+                                    }
+                                )
                             else:
-                                logger.info(f"批次 {i // batch_size} 处理失败，等待60秒后重试当前批次...")
+                                logger.info(
+                                    f"批次 {i // batch_size} 处理失败，等待60秒后重试当前批次..."
+                                )
                                 await asyncio.sleep(60)
 
                     pbar.update(1)
@@ -144,19 +166,19 @@ class VisionAnalyzer:
         os.makedirs(output_dir, exist_ok=True)
 
         for result in results:
-            if not result.get('image_paths'):
+            if not result.get("image_paths"):
                 continue
 
-            response_text = result['response']
-            image_paths = result['image_paths']
+            response_text = result["response"]
+            image_paths = result["image_paths"]
 
             # 从文件名中提取时间戳并转换为标准格式
             def format_timestamp(img_path):
                 # 从文件名中提取时间部分
-                timestamp = Path(img_path).stem.split('_')[-1]
+                timestamp = Path(img_path).stem.split("_")[-1]
                 try:
                     # 将时间转换为秒
-                    seconds = utils.time_to_seconds(timestamp.replace('_', ':'))
+                    seconds = utils.time_to_seconds(timestamp.replace("_", ":"))
                     # 转换为 HH:MM:SS,mmm 格式
                     hours = int(seconds // 3600)
                     minutes = int((seconds % 3600) // 60)
@@ -172,10 +194,12 @@ class VisionAnalyzer:
             start_timestamp = format_timestamp(image_paths[0])
             end_timestamp = format_timestamp(image_paths[-1])
 
-            txt_path = os.path.join(output_dir, f"frame_{start_timestamp}_{end_timestamp}.txt")
+            txt_path = os.path.join(
+                output_dir, f"frame_{start_timestamp}_{end_timestamp}.txt"
+            )
 
             # 保存结果到txt文件
-            with open(txt_path, 'w', encoding='utf-8') as f:
+            with open(txt_path, "w", encoding="utf-8") as f:
                 f.write(response_text.strip())
             logger.info(f"已保存分析结果到: {txt_path}")
 
@@ -201,8 +225,8 @@ class VisionAnalyzer:
                 # 确保图片被完全加载
                 img.load()
                 # 转换为RGB模式
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
                 images.append(img)
 
             except Exception as e:
@@ -210,13 +234,9 @@ class VisionAnalyzer:
                 failed_images.append(img_path)
 
         if failed_images:
-            logger.warning(f"以下图片加载失败:\n{json.dumps(failed_images, indent=2, ensure_ascii=False)}")
-
-        if not images:
-            raise ValueError("没有成功加载任何图片")
-
-        return images        if failed_images:
-            logger.warning(f"以下图片加载失败:\n{json.dumps(failed_images, indent=2, ensure_ascii=False)}")
+            logger.warning(
+                f"以下图片加载失败:\n{json.dumps(failed_images, indent=2, ensure_ascii=False)}"
+            )
 
         if not images:
             raise ValueError("没有成功加载任何图片")

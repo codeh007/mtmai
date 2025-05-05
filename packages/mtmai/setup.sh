@@ -14,6 +14,9 @@ function setup_mtmai_dev() {
 
     uv add playwright_stealth
 
+    uv pip install google-generativeai~=0.8.3
+    uv pip install torch
+
 }
 
 setup_mtmai_dev
