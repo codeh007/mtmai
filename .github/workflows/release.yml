@@ -68,7 +68,8 @@ jobs:
 
       - name: 更新版本号
         run: |
-          (cd packages/mtmai && gomtm tool patch-version)
+          # (cd packages/mtmai && gomtm tool patch-version)
+          echo "暂时跳过更新版本号的功能"
 
       - name: 发布 pipy 包
         run: |
