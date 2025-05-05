@@ -1,19 +1,22 @@
 # 纪录片脚本生成
-import os
-import json
-import time
 import asyncio
+import json
+import os
+import time
 import traceback
-import requests
+
 import streamlit as st
 from loguru import logger
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
-from app.config import config
-from app.utils.script_generator import ScriptProcessor
-from app.utils import utils, video_processor, video_processor_v2, qwenvl_analyzer
-from webui.tools.base import create_vision_analyzer, get_batch_files, get_batch_timestamps, chekc_video_config
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.utils import utils, video_processor, video_processor_v2
+from mtmai.mtlibs.NarratoAI.app.utils.script_generator import ScriptProcessor
+from mtmai.mtlibs.NarratoAI.webui.tools.base import (
+    chekc_video_config,
+    create_vision_analyzer,
+    get_batch_files,
+    get_batch_timestamps,
+)
 
 
 def generate_script_docu(tr, params):
@@ -41,7 +44,10 @@ def generate_script_docu(tr, params):
 
             # 创建临时目录用于存储关键帧
             keyframes_dir = os.path.join(utils.temp_dir(), "keyframes")
-            video_hash = utils.md5(params.video_origin_path + str(os.path.getmtime(params.video_origin_path)))
+            video_hash = utils.md5(
+                params.video_origin_path
+                + str(os.path.getmtime(params.video_origin_path))
+            )
             video_keyframes_dir = os.path.join(keyframes_dir, video_hash)
 
             # 检查是否已经提取过关键帧
@@ -49,13 +55,19 @@ def generate_script_docu(tr, params):
             if os.path.exists(video_keyframes_dir):
                 # 取已有的关键帧文件
                 for filename in sorted(os.listdir(video_keyframes_dir)):
-                    if filename.endswith('.jpg'):
-                        keyframe_files.append(os.path.join(video_keyframes_dir, filename))
+                    if filename.endswith(".jpg"):
+                        keyframe_files.append(
+                            os.path.join(video_keyframes_dir, filename)
+                        )
 
                 if keyframe_files:
                     logger.info(f"使用已缓存的关键帧: {video_keyframes_dir}")
-                    st.info(f"使用已缓存的关键帧，如需重新提取请删除目录: {video_keyframes_dir}")
-                    update_progress(20, f"使用已缓存关键帧，共 {len(keyframe_files)} 帧")
+                    st.info(
+                        f"使用已缓存的关键帧，如需重新提取请删除目录: {video_keyframes_dir}"
+                    )
+                    update_progress(
+                        20, f"使用已缓存关键帧，共 {len(keyframe_files)} 帧"
+                    )
 
             # 如果没有缓存的关键帧，则进行提取
             if not keyframe_files:
@@ -65,25 +77,30 @@ def generate_script_docu(tr, params):
 
                     # 初始化视频处理器
                     if config.frames.get("version") == "v2":
-                        processor = video_processor_v2.VideoProcessor(params.video_origin_path)
+                        processor = video_processor_v2.VideoProcessor(
+                            params.video_origin_path
+                        )
                         # 处理视频并提取关键帧
                         processor.process_video_pipeline(
                             output_dir=video_keyframes_dir,
-                            skip_seconds=st.session_state.get('skip_seconds'),
-                            threshold=st.session_state.get('threshold')
+                            skip_seconds=st.session_state.get("skip_seconds"),
+                            threshold=st.session_state.get("threshold"),
                         )
                     else:
-                        processor = video_processor.VideoProcessor(params.video_origin_path)
+                        processor = video_processor.VideoProcessor(
+                            params.video_origin_path
+                        )
                         # 处理视频并提取关键帧
                         processor.process_video(
-                            output_dir=video_keyframes_dir,
-                            skip_seconds=0
+                            output_dir=video_keyframes_dir, skip_seconds=0
                         )
 
                     # 获取所有关键文件路径
                     for filename in sorted(os.listdir(video_keyframes_dir)):
-                        if filename.endswith('.jpg'):
-                            keyframe_files.append(os.path.join(video_keyframes_dir, filename))
+                        if filename.endswith(".jpg"):
+                            keyframe_files.append(
+                                os.path.join(video_keyframes_dir, filename)
+                            )
 
                     if not keyframe_files:
                         raise Exception("未提取到任何关键帧")
@@ -95,6 +112,7 @@ def generate_script_docu(tr, params):
                     try:
                         if os.path.exists(video_keyframes_dir):
                             import shutil
+
                             shutil.rmtree(video_keyframes_dir)
                     except Exception as cleanup_err:
                         logger.error(f"清理失败的关键帧目录时出错: {cleanup_err}")
@@ -102,7 +120,7 @@ def generate_script_docu(tr, params):
                     raise Exception(f"关键帧提取失败: {str(e)}")
 
             # 根据不同的 LLM 提供商处理
-            vision_llm_provider = st.session_state.get('vision_llm_providers').lower()
+            vision_llm_provider = st.session_state.get("vision_llm_providers").lower()
             logger.debug(f"Vision LLM 提供商: {vision_llm_provider}")
 
             try:
@@ -110,14 +128,16 @@ def generate_script_docu(tr, params):
                 update_progress(30, "正在初始化视觉分析器...")
 
                 # 从配置中获取相关配置
-                if vision_llm_provider == 'gemini':
-                    vision_api_key = st.session_state.get('vision_gemini_api_key')
-                    vision_model = st.session_state.get('vision_gemini_model_name')
-                    vision_base_url = st.session_state.get('vision_gemini_base_url')
-                elif vision_llm_provider == 'qwenvl':
-                    vision_api_key = st.session_state.get('vision_qwenvl_api_key')
-                    vision_model = st.session_state.get('vision_qwenvl_model_name', 'qwen-vl-max-latest')
-                    vision_base_url = st.session_state.get('vision_qwenvl_base_url')
+                if vision_llm_provider == "gemini":
+                    vision_api_key = st.session_state.get("vision_gemini_api_key")
+                    vision_model = st.session_state.get("vision_gemini_model_name")
+                    vision_base_url = st.session_state.get("vision_gemini_base_url")
+                elif vision_llm_provider == "qwenvl":
+                    vision_api_key = st.session_state.get("vision_qwenvl_api_key")
+                    vision_model = st.session_state.get(
+                        "vision_qwenvl_model_name", "qwen-vl-max-latest"
+                    )
+                    vision_base_url = st.session_state.get("vision_qwenvl_base_url")
                 else:
                     raise ValueError(f"不支持的视觉分析提供商: {vision_llm_provider}")
 
@@ -126,7 +146,7 @@ def generate_script_docu(tr, params):
                     provider=vision_llm_provider,
                     api_key=vision_api_key,
                     model=vision_model,
-                    base_url=vision_base_url
+                    base_url=vision_base_url,
                 )
 
                 update_progress(40, "正在分析关键帧...")
@@ -136,12 +156,14 @@ def generate_script_docu(tr, params):
                 asyncio.set_event_loop(loop)
 
                 # 执行异步分析
-                vision_batch_size = st.session_state.get('vision_batch_size') or config.frames.get("vision_batch_size")
+                vision_batch_size = st.session_state.get(
+                    "vision_batch_size"
+                ) or config.frames.get("vision_batch_size")
                 results = loop.run_until_complete(
                     analyzer.analyze_images(
                         images=keyframe_files,
-                        prompt=config.app.get('vision_analysis_prompt'),
-                        batch_size=vision_batch_size
+                        prompt=config.app.get("vision_analysis_prompt"),
+                        batch_size=vision_batch_size,
                     )
                 )
                 loop.close()
@@ -154,20 +176,28 @@ def generate_script_docu(tr, params):
                 prev_batch_files = None
 
                 for result in results:
-                    if 'error' in result:
-                        logger.warning(f"批次 {result['batch_index']} 处理出现警告: {result['error']}")
+                    if "error" in result:
+                        logger.warning(
+                            f"批次 {result['batch_index']} 处理出现警告: {result['error']}"
+                        )
 
                     # 获取当前批次的文件列表 keyframe_001136_000045.jpg 将 000045 精度提升到 毫秒
-                    batch_files = get_batch_files(keyframe_files, result, vision_batch_size)
-                    logger.debug(f"批次 {result['batch_index']} 处理完成，共 {len(batch_files)} 张图片")
+                    batch_files = get_batch_files(
+                        keyframe_files, result, vision_batch_size
+                    )
+                    logger.debug(
+                        f"批次 {result['batch_index']} 处理完成，共 {len(batch_files)} 张图片"
+                    )
                     # logger.debug(batch_files)
 
-                    first_timestamp, last_timestamp, _ = get_batch_timestamps(batch_files, prev_batch_files)
+                    first_timestamp, last_timestamp, _ = get_batch_timestamps(
+                        batch_files, prev_batch_files
+                    )
                     logger.debug(f"处理时间戳: {first_timestamp}-{last_timestamp}")
 
                     # 添加带时间戳的分析结果
                     frame_analysis += f"\n=== {first_timestamp}-{last_timestamp} ===\n"
-                    frame_analysis += result['response']
+                    frame_analysis += result["response"]
                     frame_analysis += "\n"
 
                     # 更新上一个批次的文件
@@ -178,37 +208,43 @@ def generate_script_docu(tr, params):
 
                 # 保存分析结果
                 analysis_path = os.path.join(utils.temp_dir(), "frame_analysis.txt")
-                with open(analysis_path, 'w', encoding='utf-8') as f:
+                with open(analysis_path, "w", encoding="utf-8") as f:
                     f.write(frame_analysis)
 
                 update_progress(70, "正在生成脚本...")
 
                 # 从配置中获取文本生成相关配置
-                text_provider = config.app.get('text_llm_provider', 'gemini').lower()
-                text_api_key = config.app.get(f'text_{text_provider}_api_key')
-                text_model = config.app.get(f'text_{text_provider}_model_name')
-                text_base_url = config.app.get(f'text_{text_provider}_base_url')
+                text_provider = config.app.get("text_llm_provider", "gemini").lower()
+                text_api_key = config.app.get(f"text_{text_provider}_api_key")
+                text_model = config.app.get(f"text_{text_provider}_model_name")
+                text_base_url = config.app.get(f"text_{text_provider}_base_url")
 
                 # 构建帧内容列表
                 frame_content_list = []
                 prev_batch_files = None
 
                 for i, result in enumerate(results):
-                    if 'error' in result:
+                    if "error" in result:
                         continue
 
-                    batch_files = get_batch_files(keyframe_files, result, vision_batch_size)
-                    _, _, timestamp_range = get_batch_timestamps(batch_files, prev_batch_files)
+                    batch_files = get_batch_files(
+                        keyframe_files, result, vision_batch_size
+                    )
+                    _, _, timestamp_range = get_batch_timestamps(
+                        batch_files, prev_batch_files
+                    )
 
                     frame_content = {
                         "timestamp": timestamp_range,
-                        "picture": result['response'],
+                        "picture": result["response"],
                         "narration": "",
-                        "OST": 2
+                        "OST": 2,
                     }
                     frame_content_list.append(frame_content)
 
-                    logger.debug(f"添加帧内容: 时间范围={timestamp_range}, 分析结果长度={len(result['response'])}")
+                    logger.debug(
+                        f"添加帧内容: 时间范围={timestamp_range}, 分析结果长度={len(result['response'])}"
+                    )
 
                     # 更新上一个批次的文件
                     prev_batch_files = batch_files
@@ -225,16 +261,16 @@ def generate_script_docu(tr, params):
                     "vision_base_url": vision_base_url or "",
                     "text_api_key": text_api_key,
                     "text_model_name": text_model,
-                    "text_base_url": text_base_url or ""
+                    "text_base_url": text_base_url or "",
                 }
                 chekc_video_config(api_params)
-                custom_prompt = st.session_state.get('custom_prompt', '')
+                custom_prompt = st.session_state.get("custom_prompt", "")
                 processor = ScriptProcessor(
                     model_name=text_model,
                     api_key=text_api_key,
                     prompt=custom_prompt,
                     base_url=text_base_url or "",
-                    video_theme=st.session_state.get('video_theme', '')
+                    video_theme=st.session_state.get("video_theme", ""),
                 )
 
                 # 处理帧内容生成脚本
@@ -250,11 +286,11 @@ def generate_script_docu(tr, params):
             if script is None:
                 st.error("生成脚本失败，请检查日志")
                 st.stop()
-            logger.info(f"脚本生成完成")
+            logger.info("脚本生成完成")
             if isinstance(script, list):
-                st.session_state['video_clip_json'] = script
+                st.session_state["video_clip_json"] = script
             elif isinstance(script, str):
-                st.session_state['video_clip_json'] = json.loads(script)
+                st.session_state["video_clip_json"] = json.loads(script)
             update_progress(80, "脚本生成完成")
 
         time.sleep(0.1)
@@ -269,3 +305,4 @@ def generate_script_docu(tr, params):
         time.sleep(2)
         progress_bar.empty()
         status_text.empty()
+        logger.exception(f"生成脚本时发生错误\n{traceback.format_exc()}")

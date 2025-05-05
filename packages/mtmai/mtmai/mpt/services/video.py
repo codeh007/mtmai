@@ -1,3 +1,7 @@
+# 旧代码. 使用了新版 moviepy 后,这里的功能,就有问题了.
+# 暂时留着, 以备不时之需.
+
+################################################################################################################
 import glob
 import os
 import random
@@ -16,8 +20,6 @@ from moviepy.editor import (
     concatenate_videoclips,
 )
 from moviepy.video.tools.subtitles import SubtitlesClip
-
-# from moviepy import clip
 from PIL import ImageFont
 
 from mtmai.mpt.models import const
@@ -104,7 +106,11 @@ def combine_videos(
             # Only shorten clips if the calculated clip length (req_dur) is shorter than the actual clip to prevent still image
             elif req_dur < clip.duration:
                 clip = clip.subclipped(0, req_dur)
-            clip = clip.with_fps(30)
+
+            # 旧代码
+            # clip = clip.with_fps(30)
+            # 新代码
+            clip = clip.set_fps(30)
 
             # Not all videos are same size, so we need to resize them
             clip_w, clip_h = clip.size

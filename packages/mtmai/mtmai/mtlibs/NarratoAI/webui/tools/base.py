@@ -1,35 +1,33 @@
 import os
+
 import requests
-import streamlit as st
 from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from app.config import config
-from app.utils import gemini_analyzer, qwenvl_analyzer
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.utils import gemini_analyzer, qwenvl_analyzer
 
 
 def create_vision_analyzer(provider, api_key, model, base_url):
     """
     创建视觉分析器实例
-    
+
     Args:
         provider: 提供商名称 ('gemini' 或 'qwenvl')
         api_key: API密钥
         model: 模型名称
         base_url: API基础URL
-        
+
     Returns:
         VisionAnalyzer 或 QwenAnalyzer 实例
     """
-    if provider == 'gemini':
+    if provider == "gemini":
         return gemini_analyzer.VisionAnalyzer(model_name=model, api_key=api_key)
-    elif provider == 'qwenvl':
+    elif provider == "qwenvl":
         # 只传入必要的参数
         return qwenvl_analyzer.QwenAnalyzer(
-            model_name=model, 
-            api_key=api_key,
-            base_url=base_url
+            model_name=model, api_key=api_key, base_url=base_url
         )
     else:
         raise ValueError(f"不支持的视觉分析提供商: {provider}")
@@ -72,9 +70,9 @@ def get_batch_timestamps(batch_files, prev_batch_files=None):
         """从文件名提取时间信息"""
         try:
             # 提取类似 000050100 的时间戳部分
-            time_str = filename.split('_')[2].replace('.jpg', '')
+            time_str = filename.split("_")[2].replace(".jpg", "")
             if len(time_str) < 9:  # 处理旧格式
-                time_str = time_str.ljust(9, '0')
+                time_str = time_str.ljust(9, "0")
             return time_str
         except (IndexError, AttributeError) as e:
             logger.warning(f"Invalid filename format: {filename}, error: {e}")
@@ -129,7 +127,7 @@ def get_batch_files(keyframe_files, result, batch_size=5):
     """
     获取当前批次的图片文件
     """
-    batch_start = result['batch_index'] * batch_size
+    batch_start = result["batch_index"] * batch_size
     batch_end = min(batch_start + batch_size, len(keyframe_files))
     return keyframe_files[batch_start:batch_end]
 
@@ -138,15 +136,10 @@ def chekc_video_config(video_params):
     """
     检查视频分析配置
     """
-    headers = {
-        'accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
     session = requests.Session()
     retry_strategy = Retry(
-        total=3,
-        backoff_factor=1,
-        status_forcelist=[500, 502, 503, 504]
+        total=3, backoff_factor=1, status_forcelist=[500, 502, 503, 504]
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("https://", adapter)
@@ -156,8 +149,8 @@ def chekc_video_config(video_params):
             headers=headers,
             json=video_params,
             timeout=30,
-            verify=True
+            verify=True,
         )
         return True
-    except Exception as e:
+    except Exception:
         return False
