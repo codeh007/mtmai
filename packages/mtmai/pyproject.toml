@@ -53,7 +53,7 @@ dependencies = [
     "cel-python>=0.1.5",
     "python-dateutil>=2.9.0.post0",
     "loguru>=0.7.3",
-    "browser-use>=0.1.41",
+    "browser-use>=0.1.45",
     "pgvector>=0.3.6",
     "sqlalchemy>=2.0.37",
     "psycopg2-binary>=2.9.10",
@@ -163,6 +163,13 @@ dependencies = [
     "boto3>=1.38.2",
     "fastmcp>=2.2.7",
     "g4f[webview]>=0.5.2.1",
+    "moviepy>=2.0.0.dev2",
+    "faster-whisper~=1.0.1",
+    "pysrt>=1.1.2",
+    "opencv-python~=4.10.0.84",
+    "pydub>=0.25.1",
+    # "google-generativeai",
+
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
