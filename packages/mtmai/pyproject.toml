@@ -158,6 +158,7 @@ dependencies = [
     "redis>=6.0.0",
     "boto3>=1.38.2",
     "fastmcp>=2.2.7",
+    "g4f[webview]>=0.5.2.1",
 ]
 name = "mtxai"
 version = "0.0.269"
