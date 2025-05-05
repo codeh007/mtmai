@@ -239,7 +239,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 packages = ["mtmai"]
-exclude = ["tests/**", ".vol/**"]
+exclude = ["tests/**", ".vol/**", "__pycache__/**"]
 
 [tool.hatch.version]
 source = "vcs"
