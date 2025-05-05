@@ -1,5 +1,5 @@
 [project]
-name = "mtmai"
+name = "mtxai"
 version = "0.7.0"
 dependencies = [
     "grpcio>=1.70.0",
