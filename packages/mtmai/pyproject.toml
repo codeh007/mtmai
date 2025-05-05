@@ -4,7 +4,7 @@ dependencies = [
     "grpcio-tools>=1.70.0",
     "pydantic-settings",
     "litellm>=1.63.11",
-    "beautifulsoup4>=4.12.3",
+    "beautifulsoup4>=4.13.4",
     "pandas>=2.2.2",
     "python-dotenv>=1.0.1",
     "tiktoken>=0.7",
