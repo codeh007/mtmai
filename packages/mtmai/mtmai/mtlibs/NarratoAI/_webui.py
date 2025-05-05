@@ -217,5 +217,6 @@ def main():
     render_generate_button()
 
 
+# streamlit run /home/user/workspace/mtmai/packages/mtmai/mtmai/mtlibs/NarratoAI/_webui.py
 if __name__ == "__main__":
     main()

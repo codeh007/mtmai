@@ -27,9 +27,9 @@
 			"name": "narratoai",
 			"type": "debugpy",
 			"request": "launch",
-			"program": "${workspaceFolder}/packages/mtmai/mtmai/main.py",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/mtlibs/NarratoAI/_webui.py",
 			"cwd": "${workspaceFolder}",
-			"args": ["narratoai"],
+			"args": [],
 			"jinja": true,
 			"justMyCode": false,
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
