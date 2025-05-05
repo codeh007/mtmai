@@ -1,4 +1,6 @@
 [project]
+name = "mtxai"
+version = "0.0.270"
 dependencies = [
     "grpcio>=1.70.0",
     "grpcio-tools>=1.70.0",
@@ -162,8 +164,7 @@ dependencies = [
     "fastmcp>=2.2.7",
     "g4f[webview]>=0.5.2.1",
 ]
-name = "mtxai"
-version = "0.0.269"
+
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
 authors = [{ name = "Marco Vinciguerra", email = "mvincig11@gmail.com" }]
 license = "MIT"
