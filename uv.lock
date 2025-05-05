@@ -9,7 +9,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "mtxai",
+    "mtmai",
 ]
 
 [manifest.dependency-groups]
@@ -3617,8 +3617,8 @@ wheels = [
 ]
 
 [[package]]
-name = "mtxai"
-version = "0.7.0"
+name = "mtmai"
+version = "0.7.1"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "absl-py" },
