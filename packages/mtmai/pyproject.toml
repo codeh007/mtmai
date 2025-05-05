@@ -66,9 +66,8 @@ dependencies = [
     # "autogen-agentchat @file:///home/user/workspace/autogen/python/packages/autogen-agentchat",
     # "autogen-ext @file:///home/user/workspace/autogen/python/packages/autogen-ext",
     # "google-adk @file:///home/user/workspace/adk-python",
+    # 开发板执行: pip install git+https://github.com/google/adk-python.git@main
     "google-adk>=0.4.0",
-    #
-    # "google-adk @ git+https://github.com/google/adk-python.git",
     "email-validator>=2.2.0",
     "passlib>=1.7.4",
     "json-repair>=0.35.0",
