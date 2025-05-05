@@ -238,7 +238,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 packages = ["mtmai"]
-exclude = ["tests/**"]
+exclude = ["tests/**", ".vol/**"]
 
 [tool.hatch.version]
 source = "vcs"

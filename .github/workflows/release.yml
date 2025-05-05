@@ -54,9 +54,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: install gomtm
-        run: |
-          bun install -g gomtm-cli
+
 
 
       - name: Generate requirements.txt
@@ -66,6 +64,9 @@ jobs:
           uv pip compile pyproject.toml -o requirements.txt
 
 
+      - name: install gomtm
+        run: |
+          bun install -g gomtm-cli
       - name: 更新版本号
         run: |
           # (cd packages/mtmai && gomtm tool patch-version)
