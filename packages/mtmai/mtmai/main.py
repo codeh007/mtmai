@@ -142,7 +142,7 @@ async def start_chrome_server():
 
 
 @app.command()
-def mcpserve():
+def mcpserver():
     import asyncio
 
     from mtmai.mcp_server.mcp_app import mcpApp
