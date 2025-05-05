@@ -1,7 +1,8 @@
 import ast
 from abc import ABC, abstractmethod
-from app.config import config
-from app.models import const
+
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.models import const
 
 
 # Base class for state management

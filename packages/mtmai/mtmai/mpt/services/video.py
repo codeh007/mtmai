@@ -4,28 +4,17 @@ import random
 from typing import List
 
 from loguru import logger
-from moviepy import (
-    AudioFileClip,
-    ColorClip,
-    CompositeAudioClip,
-    CompositeVideoClip,
-    ImageClip,
-    TextClip,
-    VideoFileClip,
-    afx,
-    concatenate_videoclips,
-)
+from moviepy.editor import (AudioFileClip, ColorClip, CompositeAudioClip,
+                            CompositeVideoClip, ImageClip, TextClip,
+                            VideoFileClip, afx, concatenate_videoclips)
 from moviepy.video.tools.subtitles import SubtitlesClip
+from PIL import ImageFont
+
 from mtmai.mpt.models import const
-from mtmai.mpt.models.schema import (
-    MaterialInfo,
-    VideoAspect,
-    VideoConcatMode,
-    VideoTransitionMode,
-)
+from mtmai.mpt.models.schema import (MaterialInfo, VideoAspect,
+                                     VideoConcatMode, VideoTransitionMode)
 from mtmai.mtlibs import video_effects
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
-from PIL import ImageFont
 
 
 def get_bgm_file(bgm_type: str = "random", bgm_file: str = ""):

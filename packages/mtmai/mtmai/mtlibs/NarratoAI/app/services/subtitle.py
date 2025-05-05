@@ -1,18 +1,17 @@
-import json
+import os
 import os.path
 import re
 import traceback
+from timeit import default_timer as timer
 from typing import Optional
 
-from faster_whisper import WhisperModel
-from timeit import default_timer as timer
-from loguru import logger
 import google.generativeai as genai
+from faster_whisper import WhisperModel
+from loguru import logger
 from moviepy.editor import VideoFileClip
-import os
 
-from app.config import config
-from app.utils import utils
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.utils import utils
 
 model_size = config.whisper.get("model_size", "faster-whisper-large-v2")
 device = config.whisper.get("device", "cpu")
@@ -340,14 +339,14 @@ def create_with_gemini(audio_file: str, subtitle_file: str = "", api_key: Option
     genai.configure(api_key=api_key)
 
     logger.info(f"开始使用Gemini模型处理音频文件: {audio_file}")
-    
+
     model = genai.GenerativeModel(model_name="gemini-1.5-flash")
     prompt = "生成这段语音的转录文本。请以SRT格式输出，包含时间戳。"
 
     try:
         with open(audio_file, "rb") as f:
             audio_data = f.read()
-        
+
         response = model.generate_content([prompt, audio_data])
         transcript = response.text
 
@@ -380,38 +379,38 @@ def extract_audio_and_create_subtitle(video_file: str, subtitle_file: str = "") 
         # 获取视频文件所在目录
         video_dir = os.path.dirname(video_file)
         video_name = os.path.splitext(os.path.basename(video_file))[0]
-        
+
         # 设置音频文件路径
         audio_file = os.path.join(video_dir, f"{video_name}_audio.wav")
-        
+
         # 如果未指定字幕文件路径，则自动生成
         if not subtitle_file:
             subtitle_file = os.path.join(video_dir, f"{video_name}.srt")
-        
+
         logger.info(f"开始从视频提取音频: {video_file}")
-        
+
         # 加载视频文件
         video = VideoFileClip(video_file)
-        
+
         # 提取音频并保存为WAV格式
         logger.info(f"正在提取音频到: {audio_file}")
         video.audio.write_audiofile(audio_file, codec='pcm_s16le')
-        
+
         # 关闭视频文件
         video.close()
-        
+
         logger.info("音频提取完成，开始生成字幕")
-        
+
         # 使用create函数生成字幕
         create(audio_file, subtitle_file)
-        
+
         # 删除临时音频文件
         if os.path.exists(audio_file):
             os.remove(audio_file)
             logger.info("已清理临时音频文件")
-        
+
         return subtitle_file
-        
+
     except Exception as e:
         logger.error(f"处理视频文件时出错: {str(e)}")
         logger.error(traceback.format_exc())

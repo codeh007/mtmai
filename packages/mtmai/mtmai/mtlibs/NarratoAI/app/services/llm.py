@@ -5,9 +5,9 @@ import subprocess
 import traceback
 from typing import List, TextIO, Union
 
-import google.generativeai as gemini
-from google.api_core.exceptions import *
-from google.generativeai.types import *
+# import google.generativeai as gemini
+# from google.api_core.exceptions import *
+# from google.generativeai.types import *
 from googleapiclient.errors import ResumableUploadError
 from loguru import logger
 from moviepy.editor import VideoFileClip

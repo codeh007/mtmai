@@ -1,7 +1,9 @@
-import streamlit as st
 import os
-from app.config import config
-from app.utils import utils
+
+import streamlit as st
+
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.utils import utils
 
 
 def render_basic_settings(tr):
@@ -35,19 +37,17 @@ def render_language_settings(tr):
     selected_index = 0
     for i, code in enumerate(locales.keys()):
         display_languages.append(f"{code} - {locales[code].get('Language')}")
-        if code == st.session_state.get('ui_language', system_locale):
+        if code == st.session_state.get("ui_language", system_locale):
             selected_index = i
 
     selected_language = st.selectbox(
-        tr("Language"),
-        options=display_languages,
-        index=selected_index
+        tr("Language"), options=display_languages, index=selected_index
     )
 
     if selected_language:
         code = selected_language.split(" - ")[0].strip()
-        st.session_state['ui_language'] = code
-        config.ui['language'] = code
+        st.session_state["ui_language"] = code
+        config.ui["language"] = code
 
 
 def render_proxy_settings(tr):
@@ -59,7 +59,7 @@ def render_proxy_settings(tr):
 
     # 添加代理开关
     proxy_enabled = st.checkbox(tr("Enable Proxy"), value=proxy_enabled)
-    
+
     # 保存代理开关状态
     config.proxy["enabled"] = proxy_enabled
 
@@ -84,20 +84,20 @@ def render_proxy_settings(tr):
 
 def test_vision_model_connection(api_key, base_url, model_name, provider, tr):
     """测试视觉模型连接
-    
+
     Args:
         api_key: API密钥
         base_url: 基础URL
         model_name: 模型名称
         provider: 提供商名称
-    
+
     Returns:
         bool: 连接是否成功
         str: 测试结果消息
     """
-    if provider.lower() == 'gemini':
+    if provider.lower() == "gemini":
         import google.generativeai as genai
-        
+
         try:
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel(model_name)
@@ -106,46 +106,50 @@ def test_vision_model_connection(api_key, base_url, model_name, provider, tr):
         except Exception as e:
             return False, f"{tr('gemini model is not available')}: {str(e)}"
 
-    elif provider.lower() == 'qwenvl':
+    elif provider.lower() == "qwenvl":
         from openai import OpenAI
+
         try:
             client = OpenAI(
                 api_key=api_key,
-                base_url=base_url or "https://dashscope.aliyuncs.com/compatible-mode/v1"
+                base_url=base_url
+                or "https://dashscope.aliyuncs.com/compatible-mode/v1",
             )
-            
+
             # 发送一个简单的测试请求
             response = client.chat.completions.create(
                 model=model_name or "qwen-vl-max-latest",
-                messages=[{"role": "user", "content": "直接回复我文本'当前网络可用'"}]
+                messages=[{"role": "user", "content": "直接回复我文本'当前网络可用'"}],
             )
-            
+
             if response and response.choices:
                 return True, tr("QwenVL model is available")
             else:
                 return False, tr("QwenVL model returned invalid response")
-                
+
         except Exception as e:
             return False, f"{tr('QwenVL model is not available')}: {str(e)}"
-            
-    elif provider.lower() == 'narratoapi':
+
+    elif provider.lower() == "narratoapi":
         import requests
+
         try:
             # 构建测试请求
-            headers = {
-                "Authorization": f"Bearer {api_key}"
-            }
-        
+            headers = {"Authorization": f"Bearer {api_key}"}
+
             test_url = f"{base_url.rstrip('/')}/health"
             response = requests.get(test_url, headers=headers, timeout=10)
-        
+
             if response.status_code == 200:
                 return True, tr("NarratoAPI is available")
             else:
-                return False, f"{tr('NarratoAPI is not available')}: HTTP {response.status_code}"
+                return (
+                    False,
+                    f"{tr('NarratoAPI is not available')}: HTTP {response.status_code}",
+                )
         except Exception as e:
             return False, f"{tr('NarratoAPI is not available')}: {str(e)}"
-            
+
     else:
         return False, f"{tr('Unsupported provider')}: {provider}"
 
@@ -155,7 +159,7 @@ def render_vision_llm_settings(tr):
     st.subheader(tr("Vision Model Settings"))
 
     # 视频分析模型提供商选择
-    vision_providers = ['Gemini', 'QwenVL', 'NarratoAPI(待发布)']
+    vision_providers = ["Gemini", "QwenVL", "NarratoAPI(待发布)"]
     saved_vision_provider = config.app.get("vision_llm_provider", "Gemini").lower()
     saved_provider_index = 0
 
@@ -167,11 +171,11 @@ def render_vision_llm_settings(tr):
     vision_provider = st.selectbox(
         tr("Vision Model Provider"),
         options=vision_providers,
-        index=saved_provider_index
+        index=saved_provider_index,
     )
     vision_provider = vision_provider.lower()
     config.app["vision_llm_provider"] = vision_provider
-    st.session_state['vision_llm_providers'] = vision_provider
+    st.session_state["vision_llm_providers"] = vision_provider
 
     # 获取已保存的视觉模型配置
     vision_api_key = config.app.get(f"vision_{vision_provider}_api_key", "")
@@ -179,35 +183,39 @@ def render_vision_llm_settings(tr):
     vision_model_name = config.app.get(f"vision_{vision_provider}_model_name", "")
 
     # 渲染视觉模型配置输入框
-    st_vision_api_key = st.text_input(tr("Vision API Key"), value=vision_api_key, type="password")
-    
+    st_vision_api_key = st.text_input(
+        tr("Vision API Key"), value=vision_api_key, type="password"
+    )
+
     # 根据不同提供商设置默认值和帮助信息
-    if vision_provider == 'gemini':
+    if vision_provider == "gemini":
         st_vision_base_url = st.text_input(
-            tr("Vision Base URL"), 
+            tr("Vision Base URL"),
             value=vision_base_url,
             disabled=True,
-            help=tr("Gemini API does not require a base URL")
+            help=tr("Gemini API does not require a base URL"),
         )
         st_vision_model_name = st.text_input(
-            tr("Vision Model Name"), 
+            tr("Vision Model Name"),
             value=vision_model_name or "gemini-1.5-flash",
-            help=tr("Default: gemini-1.5-flash")
+            help=tr("Default: gemini-1.5-flash"),
         )
-    elif vision_provider == 'qwenvl':
+    elif vision_provider == "qwenvl":
         st_vision_base_url = st.text_input(
-            tr("Vision Base URL"), 
+            tr("Vision Base URL"),
             value=vision_base_url,
-            help=tr("Default: https://dashscope.aliyuncs.com/compatible-mode/v1")
+            help=tr("Default: https://dashscope.aliyuncs.com/compatible-mode/v1"),
         )
         st_vision_model_name = st.text_input(
-            tr("Vision Model Name"), 
+            tr("Vision Model Name"),
             value=vision_model_name or "qwen-vl-max-latest",
-            help=tr("Default: qwen-vl-max-latest")
+            help=tr("Default: qwen-vl-max-latest"),
         )
     else:
         st_vision_base_url = st.text_input(tr("Vision Base URL"), value=vision_base_url)
-        st_vision_model_name = st.text_input(tr("Vision Model Name"), value=vision_model_name)
+        st_vision_model_name = st.text_input(
+            tr("Vision Model Name"), value=vision_model_name
+        )
 
     # 在配置输入框后添加测试按钮
     if st.button(tr("Test Connection"), key="test_vision_connection"):
@@ -217,9 +225,9 @@ def render_vision_llm_settings(tr):
                 base_url=st_vision_base_url,
                 model_name=st_vision_model_name,
                 provider=vision_provider,
-                tr=tr
+                tr=tr,
             )
-            
+
             if success:
                 st.success(tr(message))
             else:
@@ -239,71 +247,68 @@ def render_vision_llm_settings(tr):
 
 def test_text_model_connection(api_key, base_url, model_name, provider, tr):
     """测试文本模型连接
-    
+
     Args:
         api_key: API密钥
         base_url: 基础URL
         model_name: 模型名称
         provider: 提供商名称
-    
+
     Returns:
         bool: 连接是否成功
         str: 测试结果消息
     """
     import requests
-    
+
     try:
         # 构建统一的测试请求（遵循OpenAI格式）
         headers = {
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
-        
+
         # 如果没有指定base_url，使用默认值
         if not base_url:
-            if provider.lower() == 'openai':
+            if provider.lower() == "openai":
                 base_url = "https://api.openai.com/v1"
-            elif provider.lower() == 'moonshot':
+            elif provider.lower() == "moonshot":
                 base_url = "https://api.moonshot.cn/v1"
-            elif provider.lower() == 'deepseek':
+            elif provider.lower() == "deepseek":
                 base_url = "https://api.deepseek.com/v1"
-                
+
         # 构建测试URL
         test_url = f"{base_url.rstrip('/')}/chat/completions"
-        
+
         # 特殊处理Gemini
-        if provider.lower() == 'gemini':
+        if provider.lower() == "gemini":
             import google.generativeai as genai
+
             try:
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel(model_name or 'gemini-pro')
+                model = genai.GenerativeModel(model_name or "gemini-pro")
                 model.generate_content("直接回复我文本'当前网络可用'")
                 return True, tr("Gemini model is available")
             except Exception as e:
                 return False, f"{tr('Gemini model is not available')}: {str(e)}"
-        
+
         # 构建测试消息
         test_data = {
             "model": model_name,
-            "messages": [
-                {"role": "user", "content": "直接回复我文本'当前网络可用'"}
-            ],
-            "max_tokens": 10
+            "messages": [{"role": "user", "content": "直接回复我文本'当前网络可用'"}],
+            "max_tokens": 10,
         }
-        
+
         # 发送测试请求
-        response = requests.post(
-            test_url,
-            headers=headers,
-            json=test_data,
-            timeout=10
-        )
-        
+        response = requests.post(test_url, headers=headers, json=test_data, timeout=10)
+
         if response.status_code == 200:
             return True, tr("Text model is available")
         else:
-            return False, f"{tr('Text model is not available')}: HTTP {response.status_code}"
-            
+            return (
+                False,
+                f"{tr('Text model is not available')}: HTTP {response.status_code}",
+            )
+
     except Exception as e:
         return False, f"{tr('Connection failed')}: {str(e)}"
 
@@ -313,7 +318,7 @@ def render_text_llm_settings(tr):
     st.subheader(tr("Text Generation Model Settings"))
 
     # 文案生成模型提供商选择
-    text_providers = ['DeepSeek', 'OpenAI', 'Qwen', 'Moonshot', 'Gemini']
+    text_providers = ["DeepSeek", "OpenAI", "Qwen", "Moonshot", "Gemini"]
     saved_text_provider = config.app.get("text_llm_provider", "DeepSeek").lower()
     saved_provider_index = 0
 
@@ -323,9 +328,7 @@ def render_text_llm_settings(tr):
             break
 
     text_provider = st.selectbox(
-        tr("Text Model Provider"),
-        options=text_providers,
-        index=saved_provider_index
+        tr("Text Model Provider"), options=text_providers, index=saved_provider_index
     )
     text_provider = text_provider.lower()
     config.app["text_llm_provider"] = text_provider
@@ -336,7 +339,9 @@ def render_text_llm_settings(tr):
     text_model_name = config.app.get(f"text_{text_provider}_model_name", "")
 
     # 渲染文本模型配置输入框
-    st_text_api_key = st.text_input(tr("Text API Key"), value=text_api_key, type="password")
+    st_text_api_key = st.text_input(
+        tr("Text API Key"), value=text_api_key, type="password"
+    )
     st_text_base_url = st.text_input(tr("Text Base URL"), value=text_base_url)
     st_text_model_name = st.text_input(tr("Text Model Name"), value=text_model_name)
 
@@ -348,9 +353,9 @@ def render_text_llm_settings(tr):
                 base_url=st_text_base_url,
                 model_name=st_text_model_name,
                 provider=text_provider,
-                tr=tr
+                tr=tr,
             )
-            
+
             if success:
                 st.success(message)
             else:
@@ -365,10 +370,11 @@ def render_text_llm_settings(tr):
         config.app[f"text_{text_provider}_model_name"] = st_text_model_name
 
     # Cloudflare 特殊配置
-    if text_provider == 'cloudflare':
+    if text_provider == "cloudflare":
         st_account_id = st.text_input(
             tr("Account ID"),
-            value=config.app.get(f"text_{text_provider}_account_id", "")
+            value=config.app.get(f"text_{text_provider}_account_id", ""),
         )
         if st_account_id:
+            config.app[f"text_{text_provider}_account_id"] = st_account_id
             config.app[f"text_{text_provider}_account_id"] = st_account_id

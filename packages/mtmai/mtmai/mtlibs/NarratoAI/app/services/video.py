@@ -1,22 +1,24 @@
+import os
 import traceback
+from contextlib import contextmanager
+from typing import List, Optional
 
 import pysrt
-from typing import Optional
-from typing import List
 from loguru import logger
-from moviepy.editor import *
-from PIL import ImageFont
-from contextlib import contextmanager
+
+# from moviepy.editor import *
 from moviepy.editor import (
-    VideoFileClip,
     AudioFileClip,
-    TextClip,
+    ColorClip,
+    CompositeAudioClip,
     CompositeVideoClip,
-    CompositeAudioClip
+    TextClip,
+    VideoFileClip,
+    concatenate_videoclips,
 )
+from PIL import ImageFont
 
-
-from app.models.schema import VideoAspect, SubtitlePosition
+from mtmai.mtlibs.NarratoAI.app.models.schema import SubtitlePosition, VideoAspect
 
 
 def wrap_text(text, max_width, font, fontsize=60):
@@ -105,13 +107,14 @@ def manage_clip(clip):
         del clip
 
 
-def combine_clip_videos(combined_video_path: str,
-                        video_paths: List[str],
-                        video_ost_list: List[int],
-                        list_script: list,
-                        video_aspect: VideoAspect = VideoAspect.portrait,
-                        threads: int = 2,
-                        ) -> str:
+def combine_clip_videos(
+    combined_video_path: str,
+    video_paths: List[str],
+    video_ost_list: List[int],
+    list_script: list,
+    video_aspect: VideoAspect = VideoAspect.portrait,
+    threads: int = 2,
+) -> str:
     """
     合并子视频
     Args:
@@ -126,6 +129,7 @@ def combine_clip_videos(combined_video_path: str,
         str: 合并后的视频路径
     """
     from app.utils.utils import calculate_total_duration
+
     audio_duration = calculate_total_duration(list_script)
     logger.info(f"音频的最大持续时间: {audio_duration} s")
 
@@ -148,11 +152,11 @@ def combine_clip_videos(combined_video_path: str,
             clip_w, clip_h = clip.size
             if clip_w != video_width or clip_h != video_height:
                 clip = resize_video_with_padding(
-                    clip,
-                    target_width=video_width,
-                    target_height=video_height
+                    clip, target_width=video_width, target_height=video_height
                 )
-                logger.info(f"视频 {video_path} 已调整尺寸为 {video_width} x {video_height}")
+                logger.info(
+                    f"视频 {video_path} 已调整尺寸为 {video_width} x {video_height}"
+                )
 
             clips.append(clip)
 
@@ -173,7 +177,7 @@ def combine_clip_videos(combined_video_path: str,
             threads=threads,
             audio_codec="aac",
             fps=30,
-            temp_audiofile=os.path.join(output_dir, "temp-audio.m4a")
+            temp_audiofile=os.path.join(output_dir, "temp-audio.m4a"),
         )
     finally:
         # 确保资源被正确放
@@ -212,14 +216,10 @@ def resize_video_with_padding(clip, target_width: int, target_height: int):
     clip_resized = clip.resize(newsize=(new_width, new_height))
 
     background = ColorClip(
-        size=(target_width, target_height),
-        color=(0, 0, 0)
+        size=(target_width, target_height), color=(0, 0, 0)
     ).set_duration(clip.duration)
 
-    return CompositeVideoClip([
-        background,
-        clip_resized.set_position("center")
-    ])
+    return CompositeVideoClip([background, clip_resized.set_position("center")])
 
 
 def loop_audio_clip(audio_clip: AudioFileClip, target_duration: float) -> AudioFileClip:
@@ -238,54 +238,55 @@ def loop_audio_clip(audio_clip: AudioFileClip, target_duration: float) -> AudioF
     # 创建足够长的音频
     extended_audio = audio_clip
     for _ in range(loops_needed - 1):
-        extended_audio = CompositeAudioClip([
-            extended_audio,
-            audio_clip.set_start(extended_audio.duration)
-        ])
+        extended_audio = CompositeAudioClip(
+            [extended_audio, audio_clip.set_start(extended_audio.duration)]
+        )
 
     # 裁剪到目标时长
     return extended_audio.subclip(0, target_duration)
 
 
-def calculate_subtitle_position(position, video_height: int, text_height: int = 0) -> tuple:
+def calculate_subtitle_position(
+    position, video_height: int, text_height: int = 0
+) -> tuple:
     """
     计算字幕在视频中的具体位置
-    
+
     Args:
         position: 位置配置，可以是 SubtitlePosition 枚举值或表示距顶部百分比的浮点数
         video_height: 视频高度
         text_height: 字幕文本高度
-    
+
     Returns:
         tuple: (x, y) 坐标
     """
     margin = 50  # 字幕距离边缘的边距
-    
+
     if isinstance(position, (int, float)):
         # 百分比位置
-        return ('center', int(video_height * position))
-    
+        return ("center", int(video_height * position))
+
     # 预设位置
     if position == SubtitlePosition.TOP:
-        return ('center', margin)
+        return ("center", margin)
     elif position == SubtitlePosition.CENTER:
-        return ('center', video_height // 2)
+        return ("center", video_height // 2)
     elif position == SubtitlePosition.BOTTOM:
-        return ('center', video_height - margin - text_height)
-    
+        return ("center", video_height - margin - text_height)
+
     # 默认底部
-    return ('center', video_height - margin - text_height)
+    return ("center", video_height - margin - text_height)
 
 
 def generate_video_v3(
-        video_path: str,
-        subtitle_style: dict,
-        volume_config: dict,
-        subtitle_path: Optional[str] = None,
-        bgm_path: Optional[str] = None,
-        narration_path: Optional[str] = None,
-        output_path: str = "output.mp4",
-        font_path: Optional[str] = None
+    video_path: str,
+    subtitle_style: dict,
+    volume_config: dict,
+    subtitle_path: Optional[str] = None,
+    bgm_path: Optional[str] = None,
+    narration_path: Optional[str] = None,
+    output_path: str = "output.mp4",
+    font_path: Optional[str] = None,
 ) -> None:
     """
     合并视频素材，包括视频、字幕、BGM和解说音频
@@ -336,53 +337,59 @@ def generate_video_v3(
 
                     try:
                         # 检查字幕文本是否为空
-                        if not sub.text or sub.text.strip() == '':
+                        if not sub.text or sub.text.strip() == "":
                             logger.info(f"警告：第 {index + 1} 条字幕内容为空，已跳过")
                             continue
 
                         # 处理字幕文本：确保是字符串，并处理可能的列表情况
                         if isinstance(sub.text, (list, tuple)):
-                            subtitle_text = ' '.join(str(item) for item in sub.text if item is not None)
+                            subtitle_text = " ".join(
+                                str(item) for item in sub.text if item is not None
+                            )
                         else:
                             subtitle_text = str(sub.text)
 
                         subtitle_text = subtitle_text.strip()
 
                         if not subtitle_text:
-                            logger.info(f"警告：第 {index + 1} 条字幕处理后为空，已跳过")
+                            logger.info(
+                                f"警告：第 {index + 1} 条字幕处理后为空，已跳过"
+                            )
                             continue
 
                         # 创建临时 TextClip 来获取文本高度
                         temp_clip = TextClip(
                             subtitle_text,
                             font=font_path,
-                            fontsize=subtitle_style['fontsize'],
-                            color=subtitle_style['color']
+                            fontsize=subtitle_style["fontsize"],
+                            color=subtitle_style["color"],
                         )
                         text_height = temp_clip.h
                         temp_clip.close()
 
                         # 计算字幕位置
                         position = calculate_subtitle_position(
-                            subtitle_style['position'],
-                            video.h,
-                            text_height
+                            subtitle_style["position"], video.h, text_height
                         )
 
                         # 创建最终的 TextClip
-                        text_clip = (TextClip(
-                            subtitle_text,
-                            font=font_path,
-                            fontsize=subtitle_style['fontsize'],
-                            color=subtitle_style['color']
-                        )
+                        text_clip = (
+                            TextClip(
+                                subtitle_text,
+                                font=font_path,
+                                fontsize=subtitle_style["fontsize"],
+                                color=subtitle_style["color"],
+                            )
                             .set_position(position)
                             .set_duration(end_time - start_time)
-                            .set_start(start_time))
+                            .set_start(start_time)
+                        )
                         subtitle_clips.append(text_clip)
 
-                    except Exception as e:
-                        logger.error(f"警告：创建第 {index + 1} 条字幕时出错: {traceback.format_exc()}")
+                    except Exception:
+                        logger.error(
+                            f"警告：创建第 {index + 1} 条字幕时出错: {traceback.format_exc()}"
+                        )
 
                 logger.info(f"成功创建 {len(subtitle_clips)} 条字幕剪辑")
             except Exception as e:
@@ -396,7 +403,7 @@ def generate_video_v3(
     # 添加原声（设置音量）
     logger.debug(f"音量配置: {volume_config}")
     if video.audio is not None:
-        original_audio = video.audio.volumex(volume_config['original'])
+        original_audio = video.audio.volumex(volume_config["original"])
         audio_clips.append(original_audio)
 
     # 添加BGM（如果提供）
@@ -406,12 +413,12 @@ def generate_video_v3(
             bgm = loop_audio_clip(bgm, video.duration)
         else:
             bgm = bgm.subclip(0, video.duration)
-        bgm = bgm.volumex(volume_config['bgm'])
+        bgm = bgm.volumex(volume_config["bgm"])
         audio_clips.append(bgm)
 
     # 添加解说音频（如果提供）
     if narration_path:
-        narration = AudioFileClip(narration_path).volumex(volume_config['narration'])
+        narration = AudioFileClip(narration_path).volumex(volume_config["narration"])
         audio_clips.append(narration)
 
     # 合成最终视频（包含字幕）
@@ -428,10 +435,7 @@ def generate_video_v3(
     # 导出视频
     logger.info("开始导出视频...")  # 调试信息
     final_video.write_videofile(
-        output_path,
-        codec='libx264',
-        audio_codec='aac',
-        fps=video.fps
+        output_path, codec="libx264", audio_codec="aac", fps=video.fps
     )
     logger.info(f"视频已导出到: {output_path}")  # 调试信息
 
@@ -443,4 +447,3 @@ def generate_video_v3(
         bgm.close()
     if narration_path:
         narration.close()
-

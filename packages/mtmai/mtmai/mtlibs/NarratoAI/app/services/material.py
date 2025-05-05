@@ -1,18 +1,21 @@
 import os
-import subprocess
 import random
+import subprocess
 import traceback
+from typing import List
 from urllib.parse import urlencode
-from datetime import datetime
 
 import requests
-from typing import List
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-from app.config import config
-from app.models.schema import VideoAspect, VideoConcatMode, MaterialInfo
-from app.utils import utils
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.models.schema import (
+    MaterialInfo,
+    VideoAspect,
+    VideoConcatMode,
+)
+from mtmai.mtlibs.NarratoAI.app.utils import utils
 
 requested_count = 0
 
@@ -177,7 +180,7 @@ def save_video(video_url: str, save_dir: str = "") -> str:
             clip.close()
             if duration > 0 and fps > 0:
                 return video_path
-        except Exception as e:
+        except Exception:
             try:
                 os.remove(video_path)
             except Exception as e:
@@ -256,24 +259,24 @@ def time_to_seconds(time_str: str) -> float:
     """
     将时间字符串转换为秒数
     支持格式: 'HH:MM:SS,mmm' (时:分:秒,毫秒)
-    
+
     Args:
         time_str: 时间字符串,如 "00:00:20,100"
-        
+
     Returns:
         float: 转换后的秒数(包含毫秒)
     """
     try:
         # 处理毫秒部分
-        if ',' in time_str:
-            time_part, ms_part = time_str.split(',')
+        if "," in time_str:
+            time_part, ms_part = time_str.split(",")
             ms = int(ms_part) / 1000
         else:
             time_part = time_str
             ms = 0
 
         # 处理时分秒
-        parts = time_part.split(':')
+        parts = time_part.split(":")
         if len(parts) == 3:  # HH:MM:SS
             h, m, s = map(int, parts)
             seconds = h * 3600 + m * 60 + s
@@ -281,19 +284,19 @@ def time_to_seconds(time_str: str) -> float:
             raise ValueError("时间格式必须为 HH:MM:SS,mmm")
 
         return seconds + ms
-        
+
     except ValueError as e:
         logger.error(f"时间格式错误: {time_str}")
-        raise ValueError(f"时间格式错误: 必须为 HH:MM:SS,mmm 格式") from e
+        raise ValueError("时间格式错误: 必须为 HH:MM:SS,mmm 格式") from e
 
 
 def format_timestamp(seconds: float) -> str:
     """
     将秒数转换为可读的时间格式 (HH:MM:SS,mmm)
-    
+
     Args:
         seconds: 秒数(可包含毫秒)
-        
+
     Returns:
         str: 格式化的时间字符串,如 "00:00:20,100"
     """
@@ -302,14 +305,14 @@ def format_timestamp(seconds: float) -> str:
     seconds_remain = seconds % 60
     whole_seconds = int(seconds_remain)
     milliseconds = int((seconds_remain - whole_seconds) * 1000)
-    
+
     return f"{hours:02d}:{minutes:02d}:{whole_seconds:02d},{milliseconds:03d}"
 
 
 def save_clip_video(timestamp: str, origin_video: str, save_dir: str = "") -> dict:
     """
     保存剪辑后的视频
-    
+
     Args:
         timestamp: 需要裁剪的时间戳,格式为 'HH:MM:SS,mmm-HH:MM:SS,mmm'
                   例如: '00:00:00,000-00:00:20,100'
@@ -340,60 +343,68 @@ def save_clip_video(timestamp: str, origin_video: str, save_dir: str = "") -> di
         # 加载视频获取总时长
         video = VideoFileClip(origin_video)
         total_duration = video.duration
-        
+
         # 解析时间戳
-        start_str, end_str = timestamp.split('-')
+        start_str, end_str = timestamp.split("-")
         start = time_to_seconds(start_str)
         end = time_to_seconds(end_str)
-        
+
         # 验证时间段
         if start >= total_duration:
-            logger.warning(f"起始时间 {format_timestamp(start)} ({start:.3f}秒) 超出视频总时长 {format_timestamp(total_duration)} ({total_duration:.3f}秒)")
+            logger.warning(
+                f"起始时间 {format_timestamp(start)} ({start:.3f}秒) 超出视频总时长 {format_timestamp(total_duration)} ({total_duration:.3f}秒)"
+            )
             video.close()
             return {}
-            
+
         if end > total_duration:
-            logger.warning(f"结束时间 {format_timestamp(end)} ({end:.3f}秒) 超出视频总时长 {format_timestamp(total_duration)} ({total_duration:.3f}秒)，将自动调整为视频结尾")
+            logger.warning(
+                f"结束时间 {format_timestamp(end)} ({end:.3f}秒) 超出视频总时长 {format_timestamp(total_duration)} ({total_duration:.3f}秒)，将自动调整为视频结尾"
+            )
             end = total_duration
-            
+
         if end <= start:
-            logger.warning(f"结束时间 {format_timestamp(end)} 必须大于起始时间 {format_timestamp(start)}")
+            logger.warning(
+                f"结束时间 {format_timestamp(end)} 必须大于起始时间 {format_timestamp(start)}"
+            )
             video.close()
             return {}
-            
+
         # 剪辑视频
         duration = end - start
-        logger.info(f"开始剪辑视频: {format_timestamp(start)} - {format_timestamp(end)}，时长 {format_timestamp(duration)}")
-        
+        logger.info(
+            f"开始剪辑视频: {format_timestamp(start)} - {format_timestamp(end)}，时长 {format_timestamp(duration)}"
+        )
+
         # 剪辑视频
         subclip = video.subclip(start, end)
-        
+
         try:
             # 检查视频是否有音频轨道并写入文件
             subclip.write_videofile(
                 video_path,
-                codec='libx264',
-                audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                codec="libx264",
+                audio_codec="aac",
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
                 audio=(subclip.audio is not None),
-                logger=None
+                logger=None,
             )
-            
+
             # 验证生成的视频文件
             if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
                 with VideoFileClip(video_path) as clip:
                     if clip.duration > 0 and clip.fps > 0:
                         return {timestamp: video_path}
-                    
+
             raise ValueError("视频文件验证失败")
-            
+
         except Exception as e:
             logger.warning(f"视频文件处理失败: {video_path} => {str(e)}")
             if os.path.exists(video_path):
                 os.remove(video_path)
-                
-    except Exception as e:
+
+    except Exception:
         logger.warning(f"视频剪辑失败: \n{str(traceback.format_exc())}")
         if os.path.exists(video_path):
             os.remove(video_path)
@@ -401,15 +412,17 @@ def save_clip_video(timestamp: str, origin_video: str, save_dir: str = "") -> di
         # 确保视频对象被正确关闭
         try:
             video.close()
-            if 'subclip' in locals():
+            if "subclip" in locals():
                 subclip.close()
         except:
             pass
-    
+
     return {}
 
 
-def clip_videos(task_id: str, timestamp_terms: List[str], origin_video: str, progress_callback=None) -> dict:
+def clip_videos(
+    task_id: str, timestamp_terms: List[str], origin_video: str, progress_callback=None
+) -> dict:
     """
     剪辑视频
     Args:
@@ -426,18 +439,22 @@ def clip_videos(task_id: str, timestamp_terms: List[str], origin_video: str, pro
     for index, item in enumerate(timestamp_terms):
         material_directory = config.app.get("material_directory", "").strip()
         try:
-            saved_video_path = save_clip_video(timestamp=item, origin_video=origin_video, save_dir=material_directory)
+            saved_video_path = save_clip_video(
+                timestamp=item, origin_video=origin_video, save_dir=material_directory
+            )
             if saved_video_path:
                 logger.info(f"video saved: {saved_video_path}")
                 video_paths.update(saved_video_path)
-            
+
             # 更新进度
             if progress_callback:
                 progress_callback(index + 1, total_items)
-        except Exception as e:
-            logger.error(f"视频裁剪失败: {utils.to_json(item)} =>\n{str(traceback.format_exc())}")
+        except Exception:
+            logger.error(
+                f"视频裁剪失败: {utils.to_json(item)} =>\n{str(traceback.format_exc())}"
+            )
             return {}
-            
+
     logger.success(f"裁剪 {len(video_paths)} videos")
     return video_paths
 
@@ -465,20 +482,29 @@ def merge_videos(video_paths, ost_list):
             else:
                 # 如果不保留原声，创建一个无声的临时视频
                 silent_video = f"silent_{os.path.basename(video_path)}"
-                subprocess.run(["ffmpeg", "-i", video_path, "-c:v", "copy", "-an", silent_video], check=True)
+                subprocess.run(
+                    ["ffmpeg", "-i", video_path, "-c:v", "copy", "-an", silent_video],
+                    check=True,
+                )
                 f.write(f"file '{silent_video}'\n")
 
     # 合并视频
     output_file = "combined.mp4"
     ffmpeg_cmd = [
         "ffmpeg",
-        "-f", "concat",
-        "-safe", "0",
-        "-i", temp_file,
-        "-c:v", "copy",
-        "-c:a", "aac",
-        "-strict", "experimental",
-        output_file
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        temp_file,
+        "-c:v",
+        "copy",
+        "-c:a",
+        "aac",
+        "-strict",
+        "experimental",
+        output_file,
     ]
 
     try:

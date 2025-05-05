@@ -1,20 +1,20 @@
+import json
 import locale
 import os
+import threading
 import traceback
+from datetime import datetime, timedelta
+from typing import Any
+from uuid import uuid4
 
 import requests
-import threading
-from typing import Any
-from loguru import logger
 import streamlit as st
-import json
-from uuid import uuid4
 import urllib3
-from datetime import datetime, timedelta
+from loguru import logger
 
-from app.models import const
-from app.utils import check_script
-from app.services import material
+from mtmai.mtlibs.NarratoAI.app.models import const
+from mtmai.mtlibs.NarratoAI.app.services import material
+from mtmai.mtlibs.NarratoAI.app.utils import check_script
 
 urllib3.disable_warnings()
 
@@ -58,7 +58,7 @@ def to_json(obj):
 
         # 序列化处理后的对象为JSON符串
         return json.dumps(serialized_obj, ensure_ascii=False, indent=4)
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -129,6 +129,7 @@ def get_bgm_file(bgm_type: str = "random", bgm_file: str = ""):
     """
     import glob
     import random
+
     if not bgm_type:
         return ""
 
@@ -159,7 +160,7 @@ def get_bgm_file(bgm_type: str = "random", bgm_file: str = ""):
 
 
 def public_dir(sub_dir: str = ""):
-    d = resource_dir(f"public")
+    d = resource_dir("public")
     if sub_dir:
         d = os.path.join(d, sub_dir)
     if not os.path.exists(d):
@@ -168,7 +169,7 @@ def public_dir(sub_dir: str = ""):
 
 
 def srt_dir(sub_dir: str = ""):
-    d = resource_dir(f"srt")
+    d = resource_dir("srt")
     if sub_dir:
         d = os.path.join(d, sub_dir)
     if not os.path.exists(d):
@@ -266,7 +267,7 @@ def get_system_locale():
         # en_US, en_GB return en
         language_code = loc[0].split("_")[0]
         return language_code
-    except Exception as e:
+    except Exception:
         return "en"
 
 
@@ -286,7 +287,7 @@ def parse_extension(filename):
 
 
 def script_dir(sub_dir: str = ""):
-    d = resource_dir(f"scripts")
+    d = resource_dir("scripts")
     if sub_dir:
         d = os.path.join(d, sub_dir)
     if not os.path.exists(d):
@@ -295,7 +296,7 @@ def script_dir(sub_dir: str = ""):
 
 
 def video_dir(sub_dir: str = ""):
-    d = resource_dir(f"videos")
+    d = resource_dir("videos")
     if sub_dir:
         d = os.path.join(d, sub_dir)
     if not os.path.exists(d):
@@ -307,12 +308,12 @@ def split_timestamp(timestamp):
     """
     拆分时间戳
     """
-    start, end = timestamp.split('-')
-    start_hour, start_minute = map(int, start.split(':'))
-    end_hour, end_minute = map(int, end.split(':'))
+    start, end = timestamp.split("-")
+    start_hour, start_minute = map(int, start.split(":"))
+    end_hour, end_minute = map(int, end.split(":"))
 
-    start_time = '00:{:02d}:{:02d}'.format(start_hour, start_minute)
-    end_time = '00:{:02d}:{:02d}'.format(end_hour, end_minute)
+    start_time = "00:{:02d}:{:02d}".format(start_hour, start_minute)
+    end_time = "00:{:02d}:{:02d}".format(end_hour, end_minute)
 
     return start_time, end_time
 
@@ -333,11 +334,11 @@ def get_current_country():
     """
     try:
         # 使用ipapi.co的免费API获取IP地址信息
-        response = requests.get('https://ipapi.co/json/')
+        response = requests.get("https://ipapi.co/json/")
         data = response.json()
 
         # 获取国家名称
-        country = data.get('country_name')
+        country = data.get("country_name")
 
         if country:
             logger.debug(f"当前网络IP地址位于：{country}")
@@ -358,28 +359,28 @@ def time_to_seconds(time_str: str) -> float:
     - "MM:SS,mmm" -> 分钟:秒,毫秒
     - "SS,mmm" -> 秒,毫秒
     - "SS-mmm" -> 秒-毫秒
-    
+
     Args:
         time_str: 时间字符串
-        
+
     Returns:
         float: 转换后的秒数(包含毫秒)
     """
     try:
         # 处理带有'-'的毫秒格式
-        if '-' in time_str:
-            time_part, ms_part = time_str.split('-')
+        if "-" in time_str:
+            time_part, ms_part = time_str.split("-")
             ms = float(ms_part) / 1000
         # 处理带有','的毫秒格式
-        elif ',' in time_str:
-            time_part, ms_part = time_str.split(',')
+        elif "," in time_str:
+            time_part, ms_part = time_str.split(",")
             ms = float(ms_part) / 1000
         else:
             time_part = time_str
             ms = 0
 
         # 分割时间部分
-        parts = time_part.split(':')
+        parts = time_part.split(":")
 
         if len(parts) == 3:  # HH:MM:SS
             h, m, s = map(float, parts)
@@ -406,17 +407,17 @@ def seconds_to_time(seconds: float) -> str:
 def calculate_total_duration(scenes):
     """
     计算场景列表的总时长
-    
+
     Args:
         scenes: 场景列表，每个场景包含 timestamp 字段，格式如 "00:00:28,350-00:00:41,000"
-        
+
     Returns:
         float: 总时长（秒）
     """
     total_seconds = 0
 
     for scene in scenes:
-        start, end = scene['timestamp'].split('-')
+        start, end = scene["timestamp"].split("-")
         # 使用 time_to_seconds 函数处理更精确的时间格式
         start_seconds = time_to_seconds(start)
         end_seconds = time_to_seconds(end)
@@ -444,9 +445,9 @@ def add_new_timestamps(scenes):
 
     for scene in scenes:
         new_scene = scene.copy()  # 创建场景的副本，以保留原始数据
-        start, end = new_scene['timestamp'].split('-')
-        start_time = datetime.strptime(start, '%M:%S')
-        end_time = datetime.strptime(end, '%M:%S')
+        start, end = new_scene["timestamp"].split("-")
+        start_time = datetime.strptime(start, "%M:%S")
+        end_time = datetime.strptime(end, "%M:%S")
         duration = end_time - start_time
 
         new_start = current_time
@@ -457,12 +458,12 @@ def add_new_timestamps(scenes):
         new_start_str = f"{int(new_start.total_seconds() // 60):02d}:{int(new_start.total_seconds() % 60):02d}"
         new_end_str = f"{int(new_end.total_seconds() // 60):02d}:{int(new_end.total_seconds() % 60):02d}"
 
-        new_scene['new_timestamp'] = f"{new_start_str}-{new_end_str}"
+        new_scene["new_timestamp"] = f"{new_start_str}-{new_end_str}"
 
         # 为"原生播放"的narration添加唯一标识符
-        if new_scene.get('narration') == "" or new_scene.get('narration') == None:
+        if new_scene.get("narration") == "" or new_scene.get("narration") == None:
             unique_id = str(uuid4())[:8]  # 使用UUID的前8个字符作为唯一标识符
-            new_scene['narration'] = f"原声播放_{unique_id}"
+            new_scene["narration"] = f"原声播放_{unique_id}"
 
         updated_scenes.append(new_scene)
 
@@ -471,7 +472,7 @@ def add_new_timestamps(scenes):
 
 def clean_model_output(output):
     # 移除可能的代码块标记
-    output = output.strip('```json').strip('```')
+    output = output.strip("```json").strip("```")
     # 移除开头和结尾的空白字符
     output = output.strip()
     return output
@@ -480,13 +481,13 @@ def clean_model_output(output):
 def cut_video(params, progress_callback=None):
     try:
         task_id = str(uuid4())
-        st.session_state['task_id'] = task_id
+        st.session_state["task_id"] = task_id
 
-        if not st.session_state.get('video_clip_json'):
+        if not st.session_state.get("video_clip_json"):
             raise ValueError("视频脚本不能为空")
 
-        video_script_list = st.session_state['video_clip_json']
-        time_list = [i['timestamp'] for i in video_script_list]
+        video_script_list = st.session_state["video_clip_json"]
+        time_list = [i["timestamp"] for i in video_script_list]
 
         def clip_progress(current, total):
             progress = int((current / total) * 100)
@@ -497,22 +498,22 @@ def cut_video(params, progress_callback=None):
             task_id=task_id,
             timestamp_terms=time_list,
             origin_video=params.video_origin_path,
-            progress_callback=clip_progress
+            progress_callback=clip_progress,
         )
 
         if subclip_videos is None:
             raise ValueError("裁剪视频失败")
 
-        st.session_state['subclip_videos'] = subclip_videos
+        st.session_state["subclip_videos"] = subclip_videos
         for i, video_script in enumerate(video_script_list):
             try:
-                video_script['path'] = subclip_videos[video_script['timestamp']]
+                video_script["path"] = subclip_videos[video_script["timestamp"]]
             except KeyError as err:
                 logger.error(f"裁剪视频失败: {err}")
 
         return task_id, subclip_videos
 
-    except Exception as e:
+    except Exception:
         logger.error(f"视频裁剪过程中发生错误: \n{traceback.format_exc()}")
         raise
 
@@ -550,11 +551,13 @@ def clear_keyframes_cache(video_path: str = None):
             video_keyframes_dir = os.path.join(keyframes_dir, video_hash)
             if os.path.exists(video_keyframes_dir):
                 import shutil
+
                 shutil.rmtree(video_keyframes_dir)
                 logger.info(f"已清理视频关键帧缓存: {video_path}")
         else:
             # 清理所有缓存
             import shutil
+
             shutil.rmtree(keyframes_dir)
             logger.info("已清理所有关键帧缓存")
 
@@ -571,8 +574,10 @@ def init_resources():
 
         # 检查字体文件
         font_files = [
-            ("SourceHanSansCN-Regular.otf",
-             "https://github.com/adobe-fonts/source-han-sans/raw/release/OTF/SimplifiedChinese/SourceHanSansSC-Regular.otf"),
+            (
+                "SourceHanSansCN-Regular.otf",
+                "https://github.com/adobe-fonts/source-han-sans/raw/release/OTF/SimplifiedChinese/SourceHanSansSC-Regular.otf",
+            ),
             ("simhei.ttf", "C:/Windows/Fonts/simhei.ttf"),  # Windows 黑体
             ("simkai.ttf", "C:/Windows/Fonts/simkai.ttf"),  # Windows 楷体
             ("simsun.ttc", "C:/Windows/Fonts/simsun.ttc"),  # Windows 宋体
@@ -585,6 +590,7 @@ def init_resources():
                 target_path = os.path.join(font_dir, font_name)
                 if not os.path.exists(target_path):
                     import shutil
+
                     shutil.copy2(source, target_path)
                     logger.info(f"已复制系统字体: {font_name}")
                 system_font_found = True
@@ -605,10 +611,11 @@ def download_font(url: str, font_path: str):
     try:
         logger.info(f"正在下载字体文件: {url}")
         import requests
+
         response = requests.get(url)
         response.raise_for_status()
 
-        with open(font_path, 'wb') as f:
+        with open(font_path, "wb") as f:
             f.write(response.content)
 
         logger.info(f"字体文件下载成功: {font_path}")
@@ -623,13 +630,14 @@ def init_imagemagick():
     try:
         # 检查 ImageMagick 是否已安装
         import subprocess
-        result = subprocess.run(['magick', '-version'], capture_output=True, text=True)
+
+        result = subprocess.run(["magick", "-version"], capture_output=True, text=True)
         if result.returncode != 0:
             logger.error("ImageMagick 未安装或配置不正确")
             return False
 
         # 设置 IMAGEMAGICK_BINARY 环境变量
-        os.environ['IMAGEMAGICK_BINARY'] = 'magick'
+        os.environ["IMAGEMAGICK_BINARY"] = "magick"
 
         return True
     except Exception as e:

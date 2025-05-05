@@ -1,19 +1,17 @@
-import os
-import re
-import json
-import traceback
-import edge_tts
 import asyncio
-from loguru import logger
-from typing import List
-from datetime import datetime
-from xml.sax.saxutils import unescape
-from edge_tts import submaker, SubMaker
-from moviepy.video.tools import subtitles
+import os
 import time
+import traceback
+from datetime import datetime
+from typing import List
+from xml.sax.saxutils import unescape
 
-from app.config import config
-from app.utils import utils
+import edge_tts
+from edge_tts import SubMaker, submaker
+from loguru import logger
+
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.utils import utils
 
 
 def get_all_azure_voices(filter_locals=None) -> list[str]:
@@ -1074,10 +1072,16 @@ def azure_tts_v1(
             logger.info(f"第 {i+1} 次使用 edge_tts 生成音频")
 
             async def _do() -> tuple[SubMaker, bytes]:
-                communicate = edge_tts.Communicate(text, voice_name, rate=rate_str, pitch=pitch_str, proxy=config.proxy.get("http"))
+                communicate = edge_tts.Communicate(
+                    text,
+                    voice_name,
+                    rate=rate_str,
+                    pitch=pitch_str,
+                    proxy=config.proxy.get("http"),
+                )
                 sub_maker = edge_tts.SubMaker()
                 audio_data = bytes()  # 用于存储音频数据
-                
+
                 async for chunk in communicate.stream():
                     if chunk["type"] == "audio":
                         audio_data += chunk["data"]
@@ -1094,10 +1098,10 @@ def azure_tts_v1(
 
             # 获取音频数据和字幕信息
             sub_maker, audio_data = asyncio.run(_do())
-            
+
             # 验证数据是否有效
             if not sub_maker or not sub_maker.subs or not audio_data:
-                logger.warning(f"failed, invalid data generated")
+                logger.warning("failed, invalid data generated")
                 if i < 2:
                     time.sleep(1)
                 continue
@@ -1214,8 +1218,12 @@ def _format_text(text: str) -> str:
     return text
 
 
-def create_subtitle_from_multiple(text: str, sub_maker_list: List[SubMaker], list_script: List[dict], 
-                                  subtitle_file: str):
+def create_subtitle_from_multiple(
+    text: str,
+    sub_maker_list: List[SubMaker],
+    list_script: List[dict],
+    subtitle_file: str,
+):
     """
     根据多个 SubMaker 对象、完整文本和原始脚本创建优化的字幕文件
     1. 使用原始脚本中的时间戳
@@ -1237,17 +1245,19 @@ def create_subtitle_from_multiple(text: str, sub_maker_list: List[SubMaker], lis
     try:
         sub_maker_index = 0
         for script_item in list_script:
-            if script_item['OST']:
+            if script_item["OST"]:
                 continue
 
-            start_time, end_time = script_item['new_timestamp'].split('-')
+            start_time, end_time = script_item["new_timestamp"].split("-")
             if sub_maker_index >= len(sub_maker_list):
                 logger.error(f"Sub maker list index out of range: {sub_maker_index}")
                 break
             sub_maker = sub_maker_list[sub_maker_index]
             sub_maker_index += 1
 
-            script_duration = utils.time_to_seconds(end_time) - utils.time_to_seconds(start_time)
+            script_duration = utils.time_to_seconds(end_time) - utils.time_to_seconds(
+                start_time
+            )
             audio_duration = get_audio_duration(sub_maker)
             time_ratio = script_duration / audio_duration if audio_duration > 0 else 1
 
@@ -1257,17 +1267,26 @@ def create_subtitle_from_multiple(text: str, sub_maker_list: List[SubMaker], lis
 
             for offset, sub in zip(sub_maker.offset, sub_maker.subs):
                 sub = unescape(sub).strip()
-                sub_start = utils.seconds_to_time(utils.time_to_seconds(start_time) + offset[0] / 10000000 * time_ratio)
-                sub_end = utils.seconds_to_time(utils.time_to_seconds(start_time) + offset[1] / 10000000 * time_ratio)
-                
+                sub_start = utils.seconds_to_time(
+                    utils.time_to_seconds(start_time)
+                    + offset[0] / 10000000 * time_ratio
+                )
+                sub_end = utils.seconds_to_time(
+                    utils.time_to_seconds(start_time)
+                    + offset[1] / 10000000 * time_ratio
+                )
+
                 if current_start is None:
                     current_start = sub_start
                 current_end = sub_end
-                
+
                 current_sub += sub
-                
+
                 # 检查当前累积的字幕是否匹配下一个句子
-                while sentence_index < len(sentences) and sentences[sentence_index] in current_sub:
+                while (
+                    sentence_index < len(sentences)
+                    and sentences[sentence_index] in current_sub
+                ):
                     sub_index += 1
                     line = formatter(
                         idx=sub_index,
@@ -1276,7 +1295,9 @@ def create_subtitle_from_multiple(text: str, sub_maker_list: List[SubMaker], lis
                         sub_text=sentences[sentence_index].strip(),
                     )
                     sub_items.append(line)
-                    current_sub = current_sub.replace(sentences[sentence_index], "", 1).strip()
+                    current_sub = current_sub.replace(
+                        sentences[sentence_index], "", 1
+                    ).strip()
                     current_start = current_end
                     sentence_index += 1
 
@@ -1326,10 +1347,17 @@ def get_audio_duration(sub_maker: submaker.SubMaker):
     return sub_maker.offset[-1][1] / 10000000
 
 
-def tts_multiple(task_id: str, list_script: list, voice_name: str, voice_rate: float, voice_pitch: float, force_regenerate: bool = True):
+def tts_multiple(
+    task_id: str,
+    list_script: list,
+    voice_name: str,
+    voice_rate: float,
+    voice_pitch: float,
+    force_regenerate: bool = True,
+):
     """
     根据JSON文件中的多段文本进行TTS转换
-    
+
     :param task_id: 任务ID
     :param list_script: 脚本列表
     :param voice_name: 语音名称
@@ -1343,18 +1371,18 @@ def tts_multiple(task_id: str, list_script: list, voice_name: str, voice_rate: f
     sub_maker_list = []
 
     for item in list_script:
-        if item['OST'] != 1:
+        if item["OST"] != 1:
             # 将时间戳中的冒号替换为下划线
-            timestamp = item['new_timestamp'].replace(':', '_')
+            timestamp = item["new_timestamp"].replace(":", "_")
             audio_file = os.path.join(output_dir, f"audio_{timestamp}.mp3")
-            
+
             # 检查文件是否已存在，如存在且不强制重新生成，则跳过
             if os.path.exists(audio_file) and not force_regenerate:
                 logger.info(f"音频文件已存在，跳过生成: {audio_file}")
                 audio_files.append(audio_file)
                 continue
 
-            text = item['narration']
+            text = item["narration"]
 
             sub_maker = tts(
                 text=text,
@@ -1365,9 +1393,11 @@ def tts_multiple(task_id: str, list_script: list, voice_name: str, voice_rate: f
             )
 
             if sub_maker is None:
-                logger.error(f"无法为时间戳 {timestamp} 生成音频; "
-                             f"如果您在中国，请使用VPN; "
-                             f"或者使用其他 tts 引擎")
+                logger.error(
+                    f"无法为时间戳 {timestamp} 生成音频; "
+                    f"如果您在中国，请使用VPN; "
+                    f"或者使用其他 tts 引擎"
+                )
                 continue
 
             audio_files.append(audio_file)

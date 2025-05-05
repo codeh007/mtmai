@@ -1,16 +1,19 @@
-import json
-from typing import List, Union, Dict
-import os
-from pathlib import Path
-from loguru import logger
-from tqdm import tqdm
 import asyncio
-from tenacity import retry, stop_after_attempt, RetryError, retry_if_exception_type, wait_exponential
-from google.api_core import exceptions
+import json
+import os
+import traceback
+from pathlib import Path
+from typing import Dict, List, Union
+
 import google.generativeai as genai
 import PIL.Image
-import traceback
-from app.utils import utils
+from google.api_core import exceptions
+from loguru import logger
+from tenacity import (RetryError, retry, retry_if_exception_type,
+                      stop_after_attempt, wait_exponential)
+from tqdm import tqdm
+
+from mtmai.mtlibs.NarratoAI.app.utils import utils
 
 
 class VisionAnalyzer:
@@ -31,7 +34,7 @@ class VisionAnalyzer:
         """配置API客户端"""
         genai.configure(api_key=self.api_key)
         # 开放 Gemini 模型安全设置
-        from google.generativeai.types import HarmCategory, HarmBlockThreshold
+        from google.generativeai.types import HarmBlockThreshold, HarmCategory
         safety_settings = {
             HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
             HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
@@ -160,7 +163,7 @@ class VisionAnalyzer:
                     seconds_remainder = seconds % 60
                     whole_seconds = int(seconds_remainder)
                     milliseconds = int((seconds_remainder - whole_seconds) * 1000)
-                    
+
                     return f"{hours:02d}:{minutes:02d}:{whole_seconds:02d},{milliseconds:03d}"
                 except Exception as e:
                     logger.error(f"时间戳格式转换错误: {timestamp}, {str(e)}")
@@ -168,7 +171,7 @@ class VisionAnalyzer:
 
             start_timestamp = format_timestamp(image_paths[0])
             end_timestamp = format_timestamp(image_paths[-1])
-            
+
             txt_path = os.path.join(output_dir, f"frame_{start_timestamp}_{end_timestamp}.txt")
 
             # 保存结果到txt文件
@@ -207,6 +210,12 @@ class VisionAnalyzer:
                 failed_images.append(img_path)
 
         if failed_images:
+            logger.warning(f"以下图片加载失败:\n{json.dumps(failed_images, indent=2, ensure_ascii=False)}")
+
+        if not images:
+            raise ValueError("没有成功加载任何图片")
+
+        return images        if failed_images:
             logger.warning(f"以下图片加载失败:\n{json.dumps(failed_images, indent=2, ensure_ascii=False)}")
 
         if not images:
