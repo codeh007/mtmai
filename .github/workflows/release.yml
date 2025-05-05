@@ -80,20 +80,20 @@ jobs:
         run: |
           gomtm git save
 
-  sync_to_huggingface_space:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # sync_to_huggingface_space:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: setup bun
-        uses: ./.github/actions/setup_bun
+  #     - name: setup bun
+  #       uses: ./.github/actions/setup_bun
 
-      - name: install gomtm
-        run: |
-          npm install -g gomtm-cli
-      - name: 使用 gomtm 同步到 hf space
-        run: |
-          gomtm sync-space
+  #     - name: install gomtm
+  #       run: |
+  #         npm install -g gomtm-cli
+  #     - name: 使用 gomtm 同步到 hf space
+  #       run: |
+  #         gomtm sync-space
