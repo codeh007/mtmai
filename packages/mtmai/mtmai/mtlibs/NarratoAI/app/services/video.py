@@ -128,7 +128,7 @@ def combine_clip_videos(
     Returns:
         str: 合并后的视频路径
     """
-    from app.utils.utils import calculate_total_duration
+    from mtmai.mtlibs.NarratoAI.app.utils.utils import calculate_total_duration
 
     audio_duration = calculate_total_duration(list_script)
     logger.info(f"音频的最大持续时间: {audio_duration} s")
@@ -356,7 +356,9 @@ def generate_video_v3(
                                 f"警告：第 {index + 1} 条字幕处理后为空，已跳过"
                             )
                             continue
-
+                        logger.info(
+                            f"subtitle_text: {subtitle_text},font_path={font_path}, subtitle_style={subtitle_style}, subtitle_style['fontsize']={subtitle_style['fontsize']}"
+                        )
                         # 创建临时 TextClip 来获取文本高度
                         temp_clip = TextClip(
                             subtitle_text,

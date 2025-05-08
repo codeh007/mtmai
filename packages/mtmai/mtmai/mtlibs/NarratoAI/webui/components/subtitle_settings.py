@@ -1,6 +1,7 @@
 import os
 
 import streamlit as st
+from loguru import logger
 
 from mtmai.mtlibs.NarratoAI.app.config import config
 from mtmai.mtlibs.NarratoAI.webui.utils.cache import get_fonts_cache
@@ -28,6 +29,7 @@ def render_font_settings(tr):
         os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "resource", "fonts"
     )
     font_names = get_fonts_cache(font_dir)
+    logger.info(f"font_dir: {font_dir}, font_names: {font_names}")
 
     # 获取保存的字体设置
     saved_font_name = config.ui.get("font_name", "")

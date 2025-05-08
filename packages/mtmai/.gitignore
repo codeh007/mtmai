@@ -30,6 +30,7 @@ node_modules
 **/resource/fonts/*.ttc
 **/resource/fonts/*.ttf
 **/resource/fonts/*.otf
+!**/resource/fonts/MicrosoftYaHeiNormal.ttc
 **/resource/srt/*.srt
 **/app/models/faster-whisper-large-v2/*
 **/app/models/bert/*

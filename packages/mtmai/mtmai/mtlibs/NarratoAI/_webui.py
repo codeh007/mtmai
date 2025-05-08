@@ -112,7 +112,7 @@ def render_generate_button():
     """渲染生成按钮和处理逻辑"""
     if st.button(tr("Generate Video"), use_container_width=True, type="primary"):
         try:
-            from app.services import task as tm
+            from mtmai.mtlibs.NarratoAI.app.services import task as tm
 
             # 重置日志容器和记录
             log_container = st.empty()
@@ -157,8 +157,14 @@ def render_generate_button():
                 **subtitle_params,
             }
 
+            # 提示,这里可能版本问题 font_name 为空值, 暂时写手固定的值.
+            if not all_params.get("font_name"):
+                all_params["font_name"] = "MicrosoftYaHeiNormal.ttc"
+
             # 创建参数对象
-            params = VideoClipParams(**all_params)
+            params = VideoClipParams(
+                **all_params,
+            )
 
             result = tm.start_subclip(
                 task_id=task_id,

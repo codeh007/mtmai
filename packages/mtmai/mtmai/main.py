@@ -158,9 +158,22 @@ def mcpserver():
 
 @app.command()
 def narratoai():
-    from mtmai.mtlibs.NarratoAI._webui import main
+    # streamlit run /home/user/workspace/mtmai/packages/mtmai/mtmai/mtlibs/NarratoAI/_webui.py
+    # from mtmai.mtlibs.NarratoAI._webui import main
 
-    main()
+    # main()
+    ...
+
+
+@app.command()
+def download_models():
+    from mtmai.mtlibs.hf_utils.hf_utils import download_whisper_model
+
+    # 相对当前文件路径
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    download_whisper_model(
+        os.path.join(current_dir, "mtlibs/NarratoAI/app/models/faster-whisper-large-v2")
+    )
 
 
 if __name__ == "__main__":
