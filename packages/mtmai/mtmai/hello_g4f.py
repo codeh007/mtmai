@@ -1,11 +1,11 @@
 from g4f.client import Client
 
 client = Client()
-# response = client.images.generate(
-#     model="flux", prompt="a white siamese cat", response_format="url"
-# )
+response = client.images.generate(
+    model="flux", prompt="a white siamese cat", response_format="url"
+)
 
-# print(f"Generated image URL: {response.data[0].url}")
+print(f"Generated image URL: {response.data[0].url}")
 
 
 # response = client.chat.completions.create(
@@ -17,6 +17,6 @@ client = Client()
 
 
 # sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1
-from g4f.gui.webview import run_webview
+# from g4f.gui.webview import run_webview
 
-run_webview(debug=True)
+# run_webview(debug=True)
