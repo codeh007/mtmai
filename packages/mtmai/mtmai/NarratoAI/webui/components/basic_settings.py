@@ -1,7 +1,7 @@
 import os
 
 import streamlit as st
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.utils import utils
 
 

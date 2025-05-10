@@ -2,7 +2,7 @@ import os
 
 import streamlit as st
 from loguru import logger
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.webui.utils.cache import get_fonts_cache
 
 

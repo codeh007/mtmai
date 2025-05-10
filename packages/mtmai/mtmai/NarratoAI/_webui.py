@@ -2,7 +2,7 @@ import os
 import sys
 
 import streamlit as st
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.schema import VideoClipParams
 from mtmai.NarratoAI.utils import utils
 from mtmai.NarratoAI.webui.components import (
