@@ -2,12 +2,11 @@ import uuid
 from datetime import datetime
 from typing import Literal, Optional
 
-from pydantic import BaseModel
-from sqlmodel import JSON, Column, Field
-
-from mtmai.models.agent import CopilotScreen
+# from mtmai.models.agent import CopilotScreen
 from mtmai.models.base_model import MtmBaseSqlModel
 from mtmai.models.search_index import SearchRequest
+from pydantic import BaseModel
+from sqlmodel import JSON, Column, Field
 
 
 class ChatThread(MtmBaseSqlModel, table=True):

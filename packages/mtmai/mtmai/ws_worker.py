@@ -19,7 +19,7 @@ from websockets.sync.client import Connection, connect
 
 from mtmai.core.config import settings
 from mtmai.mtlibs.utils import http_url_ws
-from mtmai.services.article_service import ArticleService
+from mtmai.services.artifact_service import ArticleService
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
 default_agents_dir = str(Path(os.path.dirname(__file__), "..", "agents").resolve())

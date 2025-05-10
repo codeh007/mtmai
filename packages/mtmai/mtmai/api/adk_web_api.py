@@ -37,6 +37,7 @@ from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
 
 from mtmai.core.config import settings
+from mtmai.services.artifact_service import MtmArtifactService
 
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
@@ -157,9 +158,8 @@ def configure_adk_web_api(
 
     # # Build the Artifact service
     # artifact_service = InMemoryArtifactService()
-    from mtmai.services.article_service import ArticleService
 
-    artifact_service = ArticleService(
+    artifact_service = MtmArtifactService(
         db_url=settings.MTM_DATABASE_URL,
     )
 
@@ -760,6 +760,10 @@ def configure_adk_web_api(
         async def dev_ui():
             return FileResponse(BASE_DIR / "browser/index.html")
 
+        app.mount(
+            "/", StaticFiles(directory=ANGULAR_DIST_PATH, html=True), name="static"
+        )
+    return app
         app.mount(
             "/", StaticFiles(directory=ANGULAR_DIST_PATH, html=True), name="static"
         )

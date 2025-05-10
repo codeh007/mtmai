@@ -162,17 +162,16 @@ def build_app():
     session_service = GomtmDatabaseSessionService(
         db_url=settings.MTM_DATABASE_URL,
     )
-    from mtmai.services.article_service import ArticleService
+    from mtmai.services.artifact_service import MtmArtifactService
 
-    article_service = ArticleService(
+    artifact_service = MtmArtifactService(
         db_url=settings.MTM_DATABASE_URL,
     )
 
     adk_web_api.configure_adk_web_api(
         app=app,
-        # artifact_service=artifact_service,
         session_service=session_service,
-        article_service=article_service,
+        artifact_service=artifact_service,
     )
 
     # async def mount_mpt_app():

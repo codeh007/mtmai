@@ -197,6 +197,10 @@ class StorageAppState(Base):
     )
 
 
+class Base(DeclarativeBase):
+    """Base class for database tables."""
+
+
 class StorageUserState(Base):
     """Represents a user state stored in the database."""
 

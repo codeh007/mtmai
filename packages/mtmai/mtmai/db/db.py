@@ -13,7 +13,8 @@ from sqlmodel import Session, create_engine, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from mtmai.core.config import settings
-from mtmai.crud import curd
+
+# from mtmai.crud import curd
 from mtmai.models.models import User, UserCreate
 
 

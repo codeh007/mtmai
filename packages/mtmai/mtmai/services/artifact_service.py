@@ -7,14 +7,17 @@ from typing import Optional
 
 from google.adk.artifacts.base_artifact_service import BaseArtifactService
 from google.genai import types
-from sqlalchemy import Text, func
+from sqlalchemy import delete, func
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.exc import ArgumentError
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
-from sqlalchemy.types import DateTime
+
+# from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
+from sqlmodel import Field, SQLModel, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 from typing_extensions import override
 
 logger = logging.getLogger(__name__)
+
 
 # 表结构
 # CREATE TABLE "artifacts" (
@@ -33,51 +36,36 @@ logger = logging.getLogger(__name__)
 #     "content" TEXT
 # );
 # class Base(DeclarativeBase):
-#   """Base class for database tables."""
+#     """Base class for database tables."""
+
+#     pass
 
 
-#   pass
-class StoreArtifact(DeclarativeBase):
+class StoreArtifact(SQLModel, table=True):
     """Represents an artifact stored in the database."""
 
     __tablename__ = "artifacts"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=func.now()
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime = Field(
+        default_factory=datetime.now,
+        nullable=False,
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=func.now()
+    updated_at: datetime = Field(
+        default_factory=datetime.now,
+        nullable=False,
     )
-    type: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    # chat_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("Chat.id", ondelete="CASCADE"), nullable=False)
-    # tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("Tenant.id", ondelete="CASCADE"), nullable=True)
-    # user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("User.id", ondelete="CASCADE"), nullable=False)
-    version: Mapped[Optional[int]] = mapped_column(default=1)
-    session_id: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    file_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    app_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-
-    # @property
-    # def long_running_tool_ids(self) -> set[str]:
-    #     return (
-    #         set(json.loads(self.long_running_tool_ids_json))
-    #         if self.long_running_tool_ids_json
-    #         else set()
-    #     )
-
-    # @long_running_tool_ids.setter
-    # def long_running_tool_ids(self, value: set[str]):
-    #     if value is None:
-    #         self.long_running_tool_ids_json = None
-    #     else:
-    #         self.long_running_tool_ids_json = json.dumps(list(value))
+    type: str | None = Field(default=None)
+    version: int | None = Field(default=1)
+    session_id: str | None = Field(default=None)
+    file_name: str | None = Field(default=None)
+    app_name: str | None = Field(default=None)
+    title: str | None = Field(default=None)
+    content: str | None = Field(default=None)
 
 
 class MtmArtifactService(BaseArtifactService):
-    """An artifact service implementation using Google Cloud Storage (GCS)."""
+    """An artifact service implementation 使用 postgresql 存储构件, 列表数据存入表, 文件存入第三方aws s3"""
 
     def __init__(self, db_url: str):
         """Initializes the MtmArtifactService.
@@ -86,7 +74,7 @@ class MtmArtifactService(BaseArtifactService):
             bucket_name: The name of the bucket to use.
             **kwargs: Keyword arguments to pass to the Google Cloud Storage client.
         """
-        # self.bucket_name = bucket_name
+        self.bucket_name = ""
         # self.storage_client = storage.Client(**kwargs)
         # self.bucket = self.storage_client.bucket(self.bucket_name)
         try:
@@ -141,35 +129,42 @@ class MtmArtifactService(BaseArtifactService):
     #         return f"{app_name}/{user_id}/user/{filename}/{version}"
     #     return f"{app_name}/{user_id}/{session_id}/{filename}/{version}"
 
-    # @override
-    # async def save_artifact(
-    #     self,
-    #     *,
-    #     app_name: str,
-    #     user_id: str,
-    #     session_id: str,
-    #     filename: str,
-    #     artifact: types.Part,
-    # ) -> int:
-    #     versions = await self.list_versions(
-    #         app_name=app_name,
-    #         user_id=user_id,
-    #         session_id=session_id,
-    #         filename=filename,
-    #     )
-    #     version = 0 if not versions else max(versions) + 1
+    @override
+    async def save_artifact(
+        self,
+        *,
+        app_name: str,
+        user_id: str,
+        session_id: str,
+        filename: str,
+        artifact: types.Part,
+    ) -> int:
+        async with AsyncSession(self.db_engine) as session:
+            # Get current max version for this artifact
+            result = await session.exec(
+                select(func.max(StoreArtifact.version)).where(
+                    StoreArtifact.app_name == app_name,
+                    StoreArtifact.user_id == user_id,
+                    StoreArtifact.session_id == session_id,
+                    StoreArtifact.filename == filename,
+                )
+            )
+            current_version = result.scalar() or 0
+            new_version = current_version + 1
 
-    #     blob_name = self._get_blob_name(
-    #         app_name, user_id, session_id, filename, version
-    #     )
-    #     blob = self.bucket.blob(blob_name)
+            # Create new artifact with incremented version
+            new_artifact = StoreArtifact(
+                app_name=app_name,
+                user_id=user_id,
+                session_id=session_id,
+                filename=filename,
+                version=new_version,
+                artifact=artifact,
+            )
+            session.add(new_artifact)
+            await session.commit()
 
-    #     blob.upload_from_string(
-    #         data=artifact.inline_data.data,
-    #         content_type=artifact.inline_data.mime_type,
-    #     )
-
-    #     return version
+            return new_version
 
     @override
     async def load_artifact(
@@ -181,46 +176,50 @@ class MtmArtifactService(BaseArtifactService):
         filename: str,
         version: Optional[int] = None,
     ) -> Optional[types.Part]:
-        session = Session(self.db_engine)
-        artifact = (
-            session.query(StoreArtifact)
-            .filter(
+        async with AsyncSession(self.db_engine) as session:
+            statement = select(StoreArtifact).where(
                 StoreArtifact.app_name == app_name,
                 StoreArtifact.user_id == user_id,
                 StoreArtifact.session_id == session_id,
                 StoreArtifact.filename == filename,
                 StoreArtifact.version == version,
             )
-            .first()
-        )
-        return artifact
+            result = await session.exec(statement)
+            artifact = result.first()
+            return artifact
 
     @override
     async def list_artifact_keys(
         self, *, app_name: str, user_id: str, session_id: str
     ) -> list[str]:
-        session = Session(self.db_engine)
-        filenames = session.query(StoreArtifact.filename).distinct().all()
-        return sorted(list(filenames))
+        async with AsyncSession(self.db_engine) as session:
+            statement = select(StoreArtifact.filename).distinct()
+            result = await session.exec(statement)
+            filenames = result.all()
+            return sorted(list(filenames))
 
     @override
     async def delete_artifact(
         self, *, app_name: str, user_id: str, session_id: str, filename: str
     ) -> None:
-        session = Session(self.db_engine)
-        session.query(StoreArtifact).filter(
-            StoreArtifact.app_name == app_name,
-            StoreArtifact.user_id == user_id,
-            StoreArtifact.session_id == session_id,
-            StoreArtifact.filename == filename,
-        ).delete()
-        session.commit()
+        async with AsyncSession(self.db_engine) as session:
+            await session.exec(
+                delete(StoreArtifact).where(
+                    StoreArtifact.app_name == app_name,
+                    StoreArtifact.user_id == user_id,
+                    StoreArtifact.session_id == session_id,
+                    StoreArtifact.filename == filename,
+                )
+            )
+            await session.commit()
         return
 
     @override
     async def list_versions(
         self, *, app_name: str, user_id: str, session_id: str, filename: str
     ) -> list[int]:
-        session = Session(self.db_engine)
-        versions = session.query(StoreArtifact.version).distinct().all()
-        return sorted(list(versions))
+        async with AsyncSession(self.db_engine) as session:
+            statement = select(StoreArtifact.version).distinct()
+            result = await session.exec(statement)
+            versions = result.all()
+            return sorted(list(versions))

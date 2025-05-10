@@ -20,9 +20,9 @@ from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.mtm_engine import mtm_engine, mtmapp
 
 # artifact_service = InMemoryArtifactService()
-from mtmai.services.article_service import ArticleService
+from mtmai.services.artifact_service import ArticleService
 
-article_service = ArticleService(
+artifact_service = ArticleService(
     db_url=settings.MTM_DATABASE_URL,
 )
 session_service = mtm_engine.get_session()
