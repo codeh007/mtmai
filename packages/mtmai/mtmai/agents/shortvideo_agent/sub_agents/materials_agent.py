@@ -11,9 +11,9 @@ from google.genai import types
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mtmai.core.config import settings
-from mtmai.mtlibs.NarratoAI.app.config import config
-from mtmai.mtlibs.NarratoAI.app.utils import mpt_utils as utils
+from mtmai.mtlibs.NarratoAI import config
 from mtmai.mtlibs.NarratoAI.schema import MaterialInfo, VideoAspect, VideoConcatMode
+from mtmai.mtlibs.NarratoAI.utils import mpt_utils as utils
 
 
 def search_videos_pexels(

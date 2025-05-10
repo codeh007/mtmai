@@ -5,7 +5,7 @@ from uuid import uuid4
 import yt_dlp
 from loguru import logger
 
-from mtmai.mtlibs.NarratoAI.app.utils import utils
+from mtmai.mtlibs.NarratoAI.utils import utils
 
 
 class YoutubeService:
