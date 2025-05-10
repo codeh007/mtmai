@@ -12,7 +12,7 @@ from edge_tts import SubMaker, submaker
 from edge_tts.submaker import mktimestamp
 from loguru import logger
 from moviepy.video.tools import subtitles
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.utils import utils
 
 

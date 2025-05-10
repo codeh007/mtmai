@@ -1,7 +1,7 @@
 import ast
 from abc import ABC, abstractmethod
 
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.schema import TASK_STATE_PROCESSING
 
 

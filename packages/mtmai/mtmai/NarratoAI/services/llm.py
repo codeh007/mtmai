@@ -8,7 +8,7 @@ from typing import List, TextIO, Union
 from googleapiclient.errors import ResumableUploadError
 from loguru import logger
 from moviepy.editor import VideoFileClip
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion
 

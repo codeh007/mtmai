@@ -5,7 +5,7 @@ import traceback
 
 import streamlit as st
 from loguru import logger
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.webui.tools.base import chekc_video_config
 
 

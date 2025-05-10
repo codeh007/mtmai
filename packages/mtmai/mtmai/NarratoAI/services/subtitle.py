@@ -9,7 +9,7 @@ from typing import Optional
 from faster_whisper import WhisperModel
 from loguru import logger
 from moviepy.editor import VideoFileClip
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.utils import utils
 
 model_size = config.whisper.get("model_size", "faster-whisper-large-v2")

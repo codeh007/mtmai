@@ -2,7 +2,7 @@ import os
 
 import requests
 from loguru import logger
-from mtmai.mtlibs.NarratoAI import config
+from mtmai.NarratoAI import config
 from mtmai.NarratoAI.utils import gemini_analyzer, qwenvl_analyzer
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
