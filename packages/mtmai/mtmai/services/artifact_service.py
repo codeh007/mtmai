@@ -6,7 +6,7 @@ from google.genai import types
 from mtmai.db.db import get_async_session
 from mtmai.models.artifact import DBArtifact
 from mtmai.mtlibs.mtfs import get_s3fs
-from sqlalchemy import delete, func
+from sqlalchemy import delete, text
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing_extensions import override
@@ -43,31 +43,21 @@ class MtmArtifactService(BaseArtifactService):
         )
 
         async with get_async_session() as session:
-            # Get current max version for this artifact
             result = await session.exec(
-                select(func.max(DBArtifact.version)).where(
-                    DBArtifact.app_name == app_name,
-                    # StoreArtifact.user_id == user_id,  # TODO: 需要根据用户id存储
-                    DBArtifact.session_id == session_id,
-                    DBArtifact.filename == filename,
-                )
+                text("""
+                SELECT * FROM public.insert_artifact(:p_user_id, :p_session_id, :p_file_name, :p_app_name, :p_type, :p_content);
+            """),
+                params={
+                    "p_user_id": user_id,
+                    "p_session_id": session_id,
+                    "p_app_name": app_name,
+                    "p_file_name": filename,
+                    "p_type": artifact.inline_data.mime_type,
+                    "p_content": artifact.inline_data.data,
+                },
             )
-            current_version = result.scalar() or 0
-            new_version = current_version + 1
-
-            # Create new artifact with incremented version
-            new_artifact = DBArtifact(
-                app_name=app_name,
-                # user_id=user_id,  # TODO: 需要根据用户id存储
-                session_id=session_id,
-                filename=filename,
-                version=new_version,
-                artifact=artifact,
-            )
-            session.add(new_artifact)
-            await session.commit()
-
-            return new_version
+            new_artifact = result.fetchone()
+            return new_artifact.version
 
     @override
     async def load_artifact(
