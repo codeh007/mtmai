@@ -38,8 +38,6 @@ from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
 
-# from mtmai.services.artifact_service import MtmArtifactService
-
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
 
