@@ -1,4 +1,3 @@
-
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
@@ -50,12 +49,12 @@ def build_app():
         except Exception as e:
             logger.exception(f"failed to setup worker: {e}")
         # finally:
-            # await worker_app.stop()
-            # worker_task.cancel()
-            # try:
-            #     await worker_task
-            # except asyncio.CancelledError:
-            #     pass
+        # await worker_app.stop()
+        # worker_task.cancel()
+        # try:
+        #     await worker_task
+        # except asyncio.CancelledError:
+        #     pass
 
     def custom_generate_unique_id(route: APIRoute) -> str:
         if len(route.tags) > 0:
@@ -152,22 +151,28 @@ def build_app():
     # dev_ui.configure_dev_web_ui(app)
 
     # 配置 ADK 的 web api
-    from google.adk.artifacts import InMemoryArtifactService
+    # from google.adk.artifacts import InMemoryArtifactService
 
     from mtmai.api import adk_web_api
 
-    artifact_service = InMemoryArtifactService()
+    # artifact_service = InMemoryArtifactService()
     # session_service = InMemorySessionService()
     from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
     session_service = GomtmDatabaseSessionService(
         db_url=settings.MTM_DATABASE_URL,
     )
+    from mtmai.services.article_service import ArticleService
+
+    article_service = ArticleService(
+        db_url=settings.MTM_DATABASE_URL,
+    )
 
     adk_web_api.configure_adk_web_api(
         app=app,
-        artifact_service=artifact_service,
+        # artifact_service=artifact_service,
         session_service=session_service,
+        article_service=article_service,
     )
 
     # async def mount_mpt_app():

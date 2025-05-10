@@ -325,82 +325,72 @@ def generate_video_v3(
 
     # 处理字幕（如果提供）
     if subtitle_path:
-        if os.path.exists(subtitle_path):
-            # 检查字体文件
-            if font_path and not os.path.exists(font_path):
-                logger.warning(f"警告：字体文件不存在: {font_path}")
+        if not os.path.exists(subtitle_path):
+            raise FileNotFoundError(f"字幕文件不存在: {subtitle_path}")
+        if font_path and not os.path.exists(font_path):
+            raise FileNotFoundError(f"字体文件不存在: {font_path}")
+        subs = pysrt.open(subtitle_path)
+        logger.info(f"读取到 {len(subs)} 条字幕")
 
+        for index, sub in enumerate(subs):
+            start_time = sub.start.ordinal / 1000
+            end_time = sub.end.ordinal / 1000
+            logger.info(f"处理第 {index + 1} 条字幕剪辑")
             try:
-                subs = pysrt.open(subtitle_path)
-                logger.info(f"读取到 {len(subs)} 条字幕")
+                # 检查字幕文本是否为空
+                if not sub.text or sub.text.strip() == "":
+                    logger.info(f"警告：第 {index + 1} 条字幕内容为空，已跳过")
+                    continue
 
-                for index, sub in enumerate(subs):
-                    start_time = sub.start.ordinal / 1000
-                    end_time = sub.end.ordinal / 1000
+                # 处理字幕文本：确保是字符串，并处理可能的列表情况
+                if isinstance(sub.text, (list, tuple)):
+                    subtitle_text = " ".join(
+                        str(item) for item in sub.text if item is not None
+                    )
+                else:
+                    subtitle_text = str(sub.text)
 
-                    try:
-                        # 检查字幕文本是否为空
-                        if not sub.text or sub.text.strip() == "":
-                            logger.info(f"警告：第 {index + 1} 条字幕内容为空，已跳过")
-                            continue
+                subtitle_text = subtitle_text.strip()
 
-                        # 处理字幕文本：确保是字符串，并处理可能的列表情况
-                        if isinstance(sub.text, (list, tuple)):
-                            subtitle_text = " ".join(
-                                str(item) for item in sub.text if item is not None
-                            )
-                        else:
-                            subtitle_text = str(sub.text)
+                if not subtitle_text:
+                    logger.info(f"警告：第 {index + 1} 条字幕处理后为空，已跳过")
+                    continue
+                logger.info(
+                    f"subtitle_text: {subtitle_text},font_path={font_path}, subtitle_style={subtitle_style}, subtitle_style['fontsize']={subtitle_style['fontsize']}"
+                )
+                # 创建临时 TextClip 来获取文本高度
+                temp_clip = TextClip(
+                    subtitle_text,
+                    font=font_path,
+                    fontsize=subtitle_style["fontsize"],
+                    color=subtitle_style["color"],
+                )
+                text_height = temp_clip.h
+                temp_clip.close()
 
-                        subtitle_text = subtitle_text.strip()
+                # 计算字幕位置
+                position = calculate_subtitle_position(
+                    subtitle_style["position"], video.h, text_height
+                )
 
-                        if not subtitle_text:
-                            logger.info(
-                                f"警告：第 {index + 1} 条字幕处理后为空，已跳过"
-                            )
-                            continue
-                        logger.info(
-                            f"subtitle_text: {subtitle_text},font_path={font_path}, subtitle_style={subtitle_style}, subtitle_style['fontsize']={subtitle_style['fontsize']}"
-                        )
-                        # 创建临时 TextClip 来获取文本高度
-                        temp_clip = TextClip(
-                            subtitle_text,
-                            font=font_path,
-                            fontsize=subtitle_style["fontsize"],
-                            color=subtitle_style["color"],
-                        )
-                        text_height = temp_clip.h
-                        temp_clip.close()
+                # 创建最终的 TextClip
+                text_clip = (
+                    TextClip(
+                        subtitle_text,
+                        font=font_path,
+                        fontsize=subtitle_style["fontsize"],
+                        color=subtitle_style["color"],
+                    )
+                    .set_position(position)
+                    .set_duration(end_time - start_time)
+                    .set_start(start_time)
+                )
+                subtitle_clips.append(text_clip)
 
-                        # 计算字幕位置
-                        position = calculate_subtitle_position(
-                            subtitle_style["position"], video.h, text_height
-                        )
-
-                        # 创建最终的 TextClip
-                        text_clip = (
-                            TextClip(
-                                subtitle_text,
-                                font=font_path,
-                                fontsize=subtitle_style["fontsize"],
-                                color=subtitle_style["color"],
-                            )
-                            .set_position(position)
-                            .set_duration(end_time - start_time)
-                            .set_start(start_time)
-                        )
-                        subtitle_clips.append(text_clip)
-
-                    except Exception:
-                        logger.error(
-                            f"警告：创建第 {index + 1} 条字幕时出错: {traceback.format_exc()}"
-                        )
-
-                logger.info(f"成功创建 {len(subtitle_clips)} 条字幕剪辑")
-            except Exception as e:
-                logger.info(f"警告：处理字幕文件时出错: {str(e)}")
-        else:
-            logger.info(f"提示：字幕文件不存在: {subtitle_path}")
+            except Exception:
+                raise ValueError(
+                    f"创建第 {index + 1} 条字幕时出错: {traceback.format_exc()}"
+                )
 
     # 合并音频
     audio_clips = []
@@ -438,7 +428,7 @@ def generate_video_v3(
         final_video = final_video.set_audio(final_audio)
 
     # 导出视频
-    logger.info("开始导出视频...")  # 调试信息
+    logger.info(f"开始导出视频,到: {output_path}, ")  # 调试信息
     final_video.write_videofile(
         output_path, codec="libx264", audio_codec="aac", fps=video.fps
     )

@@ -10,7 +10,8 @@ from fastapi.responses import StreamingResponse
 from google.adk.agents import RunConfig
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
-from google.adk.artifacts import InMemoryArtifactService
+
+# from google.adk.artifacts import InMemoryArtifactService
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
 from google.genai import types
@@ -21,6 +22,7 @@ from smolagents import ActionStep, CodeAgent
 from mtmai.clients.rest.models.agent_run_request_v3 import AgentRunRequestV3
 from mtmai.core.config import settings
 from mtmai.model_client.utils import get_default_smolagents_model
+from mtmai.services.article_service import ArticleService
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
 agents_dir = str(pathlib.Path(os.path.dirname(__file__), "..", "agents").resolve())
@@ -33,7 +35,12 @@ agent_engine_id = ""
 
 # session_service = InMemorySessionService()
 session_service = GomtmDatabaseSessionService(settings.MTM_DATABASE_URL)
-artifact_service = InMemoryArtifactService()
+# artifact_service = InMemoryArtifactService()
+
+
+article_service = ArticleService(
+    db_url=settings.MTM_DATABASE_URL,
+)
 
 
 class SmolAgentRequest(BaseModel):

@@ -16,10 +16,10 @@ def mount_api_routes(app: FastAPI, prefix=""):
 
     # app.include_router(api_router, prefix=prefix)
 
-    from mtmai.api import agent_runner
+    # from mtmai.api import agent_runner
 
     # api_router.include_router(agent_runner.router, tags=["agent_runner"])
-    app.include_router(agent_runner.router, prefix=prefix, tags=["agent_runner"])
+    # app.include_router(agent_runner.router, prefix=prefix, tags=["agent_runner"])
 
     from mtmai.api import tiktok_api
 

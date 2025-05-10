@@ -17,7 +17,7 @@ from google.adk.agents import RunConfig
 from google.adk.agents.live_request_queue import LiveRequest, LiveRequestQueue
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
-from google.adk.artifacts import BaseArtifactService, InMemoryArtifactService
+from google.adk.artifacts import BaseArtifactService
 from google.adk.cli.cli_eval import (
     EVAL_SESSION_ID_PREFIX,
     EvalMetric,
@@ -35,6 +35,8 @@ from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
+
+from mtmai.core.config import settings
 
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
@@ -154,7 +156,12 @@ def configure_adk_web_api(
     root_agent_dict = {}
 
     # # Build the Artifact service
-    artifact_service = InMemoryArtifactService()
+    # artifact_service = InMemoryArtifactService()
+    from mtmai.services.article_service import ArticleService
+
+    artifact_service = ArticleService(
+        db_url=settings.MTM_DATABASE_URL,
+    )
 
     # # Build the Session service
     agent_engine_id = ""

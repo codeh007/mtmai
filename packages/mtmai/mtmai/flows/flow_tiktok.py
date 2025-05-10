@@ -1,11 +1,10 @@
 import importlib
 import os
 
-from autogen_agentchat.base import Team
+# from autogen_agentchat.base import Team
 from google.adk.agents import RunConfig
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
-from google.adk.artifacts import InMemoryArtifactService
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
 from loguru import logger
@@ -18,7 +17,12 @@ from mtmai.mtlibs.autogen_utils.cancel_token import MtCancelToken
 from mtmai.mtlibs.autogen_utils.component_loader import ComponentLoader
 from mtmai.mtm_engine import mtm_engine, mtmapp
 
-artifact_service = InMemoryArtifactService()
+# artifact_service = InMemoryArtifactService()
+from mtmai.services.article_service import ArticleService
+
+article_service = ArticleService(
+    db_url=settings.MTM_DATABASE_URL,
+)
 session_service = mtm_engine.get_session()
 runner_dict = {}
 root_agent_dict = {}

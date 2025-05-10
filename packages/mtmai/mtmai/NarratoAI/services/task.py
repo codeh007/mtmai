@@ -1,17 +1,17 @@
-import math
 import json
+import math
 import os.path
 import re
 import traceback
 from os import path
-from loguru import logger
 
 from app.config import config
 from app.models import const
-from app.models.schema import VideoConcatMode, VideoParams, VideoClipParams
-from app.services import llm, material, subtitle, video, voice, audio_merger
+from app.models.schema import VideoClipParams
+from app.services import audio_merger, llm, material, subtitle, video, voice
 from app.services import state as sm
 from app.utils import utils
+from loguru import logger
 
 
 def generate_script(task_id, params):
@@ -177,9 +177,9 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
         try:
             with open(video_script_path, "r", encoding="utf-8") as f:
                 list_script = json.load(f)
-                video_list = [i['narration'] for i in list_script]
-                video_ost = [i['OST'] for i in list_script]
-                time_list = [i['timestamp'] for i in list_script]
+                video_list = [i["narration"] for i in list_script]
+                video_ost = [i["OST"] for i in list_script]
+                time_list = [i["timestamp"] for i in list_script]
 
                 video_script = " ".join(video_list)
                 logger.debug(f"解说完整脚本: \n{video_script}")
@@ -187,7 +187,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
                 logger.debug(f"解说时间戳列表: \n{time_list}")
 
                 # 获取视频总时长(单位 s)
-                last_timestamp = list_script[-1]['new_timestamp']
+                last_timestamp = list_script[-1]["new_timestamp"]
                 end_time = last_timestamp.split("-")[1]
                 total_duration = utils.time_to_seconds(end_time)
 
@@ -195,15 +195,14 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
             logger.error(f"无法读取视频json脚本，请检查配置是否正确。{e}")
             raise ValueError("无法读取视频json脚本，请检查配置是否正确")
     else:
-        logger.error(f"video_script_path: {video_script_path} \n\n", traceback.format_exc())
+        logger.error(
+            f"video_script_path: {video_script_path} \n\n", traceback.format_exc()
+        )
         raise ValueError("解说脚本不存在！请检查配置是否正确。")
 
     logger.info("\n\n## 2. 根据OST设置生成音频列表")
     # 只为OST=0或2的片段生成TTS音频
-    tts_segments = [
-        segment for segment in list_script
-        if segment['OST'] in [0, 2]
-    ]
+    tts_segments = [segment for segment in list_script if segment["OST"] in [0, 2]]
     logger.debug(f"需要生成TTS的片段数: {len(tts_segments)}")
 
     # 初始化音频文件路径
@@ -217,7 +216,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
             voice_name=voice_name,
             voice_rate=params.voice_rate,
             voice_pitch=params.voice_pitch,
-            force_regenerate=True
+            force_regenerate=True,
         )
         if audio_files is None:
             sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
@@ -232,7 +231,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
                     task_id=task_id,
                     audio_files=audio_files,
                     total_duration=total_duration,
-                    list_script=list_script  # 传入完整脚本以便处理OST
+                    list_script=list_script,  # 传入完整脚本以便处理OST
                 )
                 logger.info("音频文件合并成功")
             except Exception as e:
@@ -245,6 +244,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
         final_audio = path.join(utils.task_dir(task_id), "empty.mp3")
         try:
             from moviepy.editor import AudioClip
+
             # 创建一个与视频等长的空白音频
             empty_audio = AudioClip(make_frame=lambda t: 0, duration=total_duration)
             empty_audio.write_audiofile(final_audio, fps=44100)
@@ -258,7 +258,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
     subtitle_path = ""
     if params.subtitle_enabled:
         if audio_files:
-            subtitle_path = path.join(utils.task_dir(task_id), f"subtitle.srt")
+            subtitle_path = path.join(utils.task_dir(task_id), "subtitle.srt")
             subtitle_provider = config.app.get("subtitle_provider", "").strip().lower()
             logger.info(f"\n\n## 3. 生成字幕、提供程序是: {subtitle_provider}")
 
@@ -280,8 +280,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
 
     if not subclip_videos:
         sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
-        logger.error(
-            "裁剪视频失败，可能是 ImageMagick 不可用")
+        logger.error("裁剪视频失败，可能是 ImageMagick 不可用")
         return
 
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=50)
@@ -291,7 +290,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
 
     _progress = 50
     index = 1
-    combined_video_path = path.join(utils.task_dir(task_id), f"combined.mp4")
+    combined_video_path = path.join(utils.task_dir(task_id), "combined.mp4")
     logger.info(f"\n\n## 5. 合并视频: => {combined_video_path}")
 
     video.combine_clip_videos(
@@ -300,7 +299,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
         video_ost_list=video_ost,
         list_script=list_script,
         video_aspect=params.video_aspect,
-        threads=params.n_threads  # 多线程
+        threads=params.n_threads,  # 多线程
     )
 
     _progress += 50 / 2
@@ -314,7 +313,9 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
     bgm_path = None
     if params.bgm_type or params.bgm_file:
         try:
-            bgm_path = utils.get_bgm_file(bgm_type=params.bgm_type, bgm_file=params.bgm_file)
+            bgm_path = utils.get_bgm_file(
+                bgm_type=params.bgm_type, bgm_file=params.bgm_file
+            )
             if bgm_path:
                 logger.info(f"使用背景音乐: {bgm_path}")
         except Exception as e:
@@ -322,20 +323,20 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
 
     # 示例：自定义字幕样式
     subtitle_style = {
-        'fontsize': params.font_size,  # 字体大小
-        'color': params.text_fore_color,  # 字体颜色
-        'stroke_color': params.stroke_color,  # 描边颜色
-        'stroke_width': params.stroke_width,  # 描边宽度, 范围0-10
-        'bg_color': params.text_back_color,   # 半透明黑色背景
-        'position': (params.subtitle_position, 0.2),  # 距离顶部60%的位置
-        'method': 'caption'  # 渲染方法
+        "fontsize": params.font_size,  # 字体大小
+        "color": params.text_fore_color,  # 字体颜色
+        "stroke_color": params.stroke_color,  # 描边颜色
+        "stroke_width": params.stroke_width,  # 描边宽度, 范围0-10
+        "bg_color": params.text_back_color,  # 半透明黑色背景
+        "position": (params.subtitle_position, 0.2),  # 距离顶部60%的位置
+        "method": "caption",  # 渲染方法
     }
 
     # 示例：自定义音量配置
     volume_config = {
-        'original': params.original_volume,  # 原声音量80%
-        'bgm': params.bgm_volume,  # BGM音量20%
-        'narration': params.tts_volume or params.voice_volume,  # 解说音量100%
+        "original": params.original_volume,  # 原声音量80%
+        "bgm": params.bgm_volume,  # BGM音量20%
+        "narration": params.tts_volume or params.voice_volume,  # 解说音量100%
     }
     font_path = utils.font_dir(params.font_name)
     video.generate_video_v3(
@@ -346,7 +347,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
         output_path=final_video_path,
         volume_config=volume_config,  # 添加音量配置
         subtitle_style=subtitle_style,
-        font_path=font_path
+        font_path=font_path,
     )
 
     _progress += 50 / 2
@@ -357,11 +358,10 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
 
     logger.success(f"任务 {task_id} 已完成, 生成 {len(final_video_paths)} 个视频.")
 
-    kwargs = {
-        "videos": final_video_paths,
-        "combined_videos": combined_video_paths
-    }
-    sm.state.update_task(task_id, state=const.TASK_STATE_COMPLETE, progress=100, **kwargs)
+    kwargs = {"videos": final_video_paths, "combined_videos": combined_video_paths}
+    sm.state.update_task(
+        task_id, state=const.TASK_STATE_COMPLETE, progress=100, **kwargs
+    )
     return kwargs
 
 

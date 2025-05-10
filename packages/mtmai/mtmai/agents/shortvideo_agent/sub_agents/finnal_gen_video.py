@@ -9,6 +9,7 @@ from loguru import logger
 from mtmai.mtlibs.mtfs import get_s3fs
 from mtmai.NarratoAI.schema import VideoAspect, VideoConcatMode, VideoTransitionMode
 from mtmai.NarratoAI.services import video
+from mtmai.NarratoAI.utils import utils
 
 
 class FinalGenVideoAgent(BaseAgent):
@@ -44,11 +45,35 @@ class FinalGenVideoAgent(BaseAgent):
             final_video_path = path.join(output_dir, f"final-{index}.mp4")
 
             logger.info(f"\n\n## generating video: {index} => {final_video_path}")
-            video.generate_video(
+            font_path = utils.font_dir("MicrosoftYaHeiNormal.ttc")
+
+            # 示例：自定义字幕样式
+            subtitle_style = {
+                "fontsize": 40,  # 字体大小
+                "color": "#ffffff",  # 字体颜色
+                "stroke_color": "#000000",  # 描边颜色
+                "stroke_width": 1,  # 描边宽度, 范围0-10
+                "bg_color": "#000000",  # 半透明黑色背景
+                "position": ("bottom", 0.2),  # 距离顶部60%的位置
+                "method": "caption",  # 渲染方法
+            }
+
+            volume_config = {
+                "original": 0.8,  # 原声音量80%
+                "bgm": 0.2,  # BGM音量20%
+                "narration": 1,  # 解说音量100%
+            }
+
+            srt_path = ctx.session.state["subtitle_path"]
+            video.generate_video_v3(
                 video_path=combined_video_path,
-                audio_path=ctx.session.state["audio_file"],
-                subtitle_path=ctx.session.state["subtitle_path"],
-                output_file=final_video_path,
+                # audio_path=ctx.session.state["audio_file"],
+                # subtitle_path=ctx.session.state["subtitle_path"],
+                output_path=final_video_path,
+                font_path=font_path,
+                subtitle_path=srt_path,
+                subtitle_style=subtitle_style,
+                volume_config=volume_config,
             )
 
             final_video_paths.append(final_video_path)
