@@ -3,6 +3,7 @@ import json
 from google.adk.agents import LlmAgent
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types  # noqa
+from json_repair import repair_json
 from mtmai.model_client.utils import get_default_litellm_model
 
 
@@ -11,7 +12,7 @@ def after_agent_callback(callback_context: CallbackContext):
     video_terms = callback_context.state.get("video_terms")
     if video_terms:
         if isinstance(video_terms, str):
-            video_terms = json.loads(video_terms)
+            video_terms = json.loads(repair_json(video_terms))
         callback_context.state["video_terms"] = video_terms
 
     return None
