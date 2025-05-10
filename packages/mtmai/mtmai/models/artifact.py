@@ -21,7 +21,7 @@ class DBArtifact(SQLModel, table=True):
     type: str | None = Field(default=None)
     version: int | None = Field(default=1)
     session_id: str | None = Field(default=None)
-    file_name: str | None = Field(default=None)
+    filename: str | None = Field(default=None)
     app_name: str | None = Field(default=None)
     title: str | None = Field(default=None)
     content: str | None = Field(default=None)
