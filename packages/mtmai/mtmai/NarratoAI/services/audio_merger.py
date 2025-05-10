@@ -3,7 +3,7 @@ import os
 import subprocess
 
 from loguru import logger
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 from pydub import AudioSegment
 
 

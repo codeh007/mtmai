@@ -2,9 +2,9 @@ import os
 from uuid import uuid4
 
 import streamlit as st
-from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.app.services import voice
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI import config
+from mtmai.NarratoAI.services import voice
+from mtmai.NarratoAI.utils import utils
 
 
 def render_audio_panel(tr):

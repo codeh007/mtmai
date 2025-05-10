@@ -2,7 +2,7 @@ import os
 
 import streamlit as st
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 
 
 def render_basic_settings(tr):

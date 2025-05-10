@@ -3,7 +3,7 @@ import os
 import streamlit as st
 from loguru import logger
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.webui.utils.cache import get_fonts_cache
+from mtmai.NarratoAI.webui.utils.cache import get_fonts_cache
 
 
 def render_subtitle_panel(tr):

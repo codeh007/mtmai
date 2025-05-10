@@ -159,7 +159,7 @@ def mcpserver():
 @app.command()
 def narratoai():
     # streamlit run /home/user/workspace/mtmai/packages/mtmai/mtmai/mtlibs/NarratoAI/_webui.py
-    # from mtmai.mtlibs.NarratoAI._webui import main
+    # from mtmai.NarratoAI._webui import main
 
     # main()
     ...

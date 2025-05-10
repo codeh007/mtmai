@@ -6,7 +6,7 @@ import traceback
 import streamlit as st
 from loguru import logger
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.webui.tools.base import chekc_video_config
+from mtmai.NarratoAI.webui.tools.base import chekc_video_config
 
 
 def generate_script_short(tr, params, custom_clips=5):
@@ -64,7 +64,7 @@ def generate_script_short(tr, params, custom_clips=5):
                 "text_base_url": text_base_url or "",
             }
             chekc_video_config(api_params)
-            from mtmai.mtlibs.NarratoAI.app.services.SDP.generate_script_short import (
+            from mtmai.NarratoAI.services.SDP.generate_script_short import (
                 generate_script,
             )
 

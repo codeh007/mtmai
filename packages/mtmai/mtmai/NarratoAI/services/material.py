@@ -9,8 +9,8 @@ import requests
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.schema import MaterialInfo, VideoAspect, VideoConcatMode
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.schema import MaterialInfo, VideoAspect, VideoConcatMode
+from mtmai.NarratoAI.utils import utils
 
 requested_count = 0
 

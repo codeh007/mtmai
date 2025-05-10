@@ -15,7 +15,7 @@ from moviepy.editor import (
     VideoFileClip,
     concatenate_videoclips,
 )
-from mtmai.mtlibs.NarratoAI.schema import (
+from mtmai.NarratoAI.schema import (
     SubtitlePosition,
     VideoAspect,
     VideoConcatMode,
@@ -131,7 +131,7 @@ def combine_clip_videos(
     Returns:
         str: 合并后的视频路径
     """
-    from mtmai.mtlibs.NarratoAI.app.utils.utils import calculate_total_duration
+    from mtmai.NarratoAI.utils.utils import calculate_total_duration
 
     audio_duration = calculate_total_duration(list_script)
     logger.info(f"音频的最大持续时间: {audio_duration} s")

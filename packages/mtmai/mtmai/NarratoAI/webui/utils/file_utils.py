@@ -6,7 +6,7 @@ import time
 from uuid import uuid4
 
 from loguru import logger
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 
 
 def open_task_folder(root_dir, task_id):

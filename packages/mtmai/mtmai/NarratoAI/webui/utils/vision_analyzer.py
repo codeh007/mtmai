@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
-from mtmai.mtlibs.NarratoAI.utils import gemini_analyzer, qwenvl_analyzer
+from mtmai.NarratoAI.utils import gemini_analyzer, qwenvl_analyzer
 
 logger = logging.getLogger(__name__)
 

@@ -13,7 +13,7 @@ from edge_tts.submaker import mktimestamp
 from loguru import logger
 from moviepy.video.tools import subtitles
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 
 
 def get_all_azure_voices(filter_locals=None) -> list[str]:

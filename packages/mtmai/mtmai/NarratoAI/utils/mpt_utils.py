@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import urllib3
 from loguru import logger
-from mtmai.mtlibs.NarratoAI.schema import PUNCTUATIONS
+from mtmai.NarratoAI.schema import PUNCTUATIONS
 
 urllib3.disable_warnings()
 

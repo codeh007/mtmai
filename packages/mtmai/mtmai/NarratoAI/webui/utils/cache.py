@@ -2,7 +2,7 @@ import glob
 import os
 
 import streamlit as st
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 
 
 def get_fonts_cache(font_dir):

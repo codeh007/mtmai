@@ -2,14 +2,14 @@
 NarratoAI WebUI Package
 """
 
-from mtmai.mtlibs.NarratoAI.webui.components import (
+from mtmai.NarratoAI.webui.components import (
     audio_settings,
     basic_settings,
     subtitle_settings,
     video_settings,
 )
-from mtmai.mtlibs.NarratoAI.webui.config.settings import config
-from mtmai.mtlibs.NarratoAI.webui.utils import cache, file_utils, performance
+from mtmai.NarratoAI.webui.config.settings import config
+from mtmai.NarratoAI.webui.utils import cache, file_utils, performance
 
 __all__ = [
     "config",

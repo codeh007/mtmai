@@ -7,12 +7,8 @@ from google.adk.events import Event
 from google.genai import types  # noqa
 from loguru import logger
 from mtmai.mtlibs.mtfs import get_s3fs
-from mtmai.mtlibs.NarratoAI.app.services import video
-from mtmai.mtlibs.NarratoAI.schema import (
-    VideoAspect,
-    VideoConcatMode,
-    VideoTransitionMode,
-)
+from mtmai.NarratoAI.schema import VideoAspect, VideoConcatMode, VideoTransitionMode
+from mtmai.NarratoAI.services import video
 
 
 class FinalGenVideoAgent(BaseAgent):

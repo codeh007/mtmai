@@ -62,44 +62,6 @@ class MaterialInfo:
     duration: int = 0
 
 
-# VoiceNames = [
-#     # zh-CN
-#     "female-zh-CN-XiaoxiaoNeural",
-#     "female-zh-CN-XiaoyiNeural",
-#     "female-zh-CN-liaoning-XiaobeiNeural",
-#     "female-zh-CN-shaanxi-XiaoniNeural",
-#
-#     "male-zh-CN-YunjianNeural",
-#     "male-zh-CN-YunxiNeural",
-#     "male-zh-CN-YunxiaNeural",
-#     "male-zh-CN-YunyangNeural",
-#
-#     # "female-zh-HK-HiuGaaiNeural",
-#     # "female-zh-HK-HiuMaanNeural",
-#     # "male-zh-HK-WanLungNeural",
-#     #
-#     # "female-zh-TW-HsiaoChenNeural",
-#     # "female-zh-TW-HsiaoYuNeural",
-#     # "male-zh-TW-YunJheNeural",
-#
-#     # en-US
-#     "female-en-US-AnaNeural",
-#     "female-en-US-AriaNeural",
-#     "female-en-US-AvaNeural",
-#     "female-en-US-EmmaNeural",
-#     "female-en-US-JennyNeural",
-#     "female-en-US-MichelleNeural",
-#
-#     "male-en-US-AndrewNeural",
-#     "male-en-US-BrianNeural",
-#     "male-en-US-ChristopherNeural",
-#     "male-en-US-EricNeural",
-#     "male-en-US-GuyNeural",
-#     "male-en-US-RogerNeural",
-#     "male-en-US-SteffanNeural",
-# ]
-
-
 class VideoParams(BaseModel):
     """
     {

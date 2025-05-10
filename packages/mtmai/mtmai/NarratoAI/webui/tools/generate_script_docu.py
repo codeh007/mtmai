@@ -7,10 +7,10 @@ import traceback
 
 import streamlit as st
 from loguru import logger
-from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.app.utils.script_generator import ScriptProcessor
-from mtmai.mtlibs.NarratoAI.utils import utils, video_processor, video_processor_v2
-from mtmai.mtlibs.NarratoAI.webui.tools.base import (
+from mtmai.NarratoAI import config
+from mtmai.NarratoAI.utils import utils, video_processor, video_processor_v2
+from mtmai.NarratoAI.utils.script_generator import ScriptProcessor
+from mtmai.NarratoAI.webui.tools.base import (
     chekc_video_config,
     create_vision_analyzer,
     get_batch_files,

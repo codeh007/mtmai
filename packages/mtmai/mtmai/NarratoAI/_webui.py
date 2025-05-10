@@ -3,9 +3,9 @@ import sys
 
 import streamlit as st
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.schema import VideoClipParams
-from mtmai.mtlibs.NarratoAI.utils import utils
-from mtmai.mtlibs.NarratoAI.webui.components import (
+from mtmai.NarratoAI.schema import VideoClipParams
+from mtmai.NarratoAI.utils import utils
+from mtmai.NarratoAI.webui.components import (
     audio_settings,
     basic_settings,
     merge_settings,
@@ -15,8 +15,8 @@ from mtmai.mtlibs.NarratoAI.webui.components import (
     system_settings,
     video_settings,
 )
-from mtmai.mtlibs.NarratoAI.webui.utils import file_utils
-from mtmai.mtlibs.NarratoAI.webui.utils.performance import PerformanceMonitor
+from mtmai.NarratoAI.webui.utils import file_utils
+from mtmai.NarratoAI.webui.utils.performance import PerformanceMonitor
 
 # 初始化配置 - 必须是第一个 Streamlit 命令
 st.set_page_config(
@@ -111,7 +111,7 @@ def render_generate_button():
     """渲染生成按钮和处理逻辑"""
     if st.button(tr("Generate Video"), use_container_width=True, type="primary"):
         try:
-            from mtmai.mtlibs.NarratoAI.app.services import task as tm
+            from mtmai.NarratoAI.services import task as tm
 
             # 重置日志容器和记录
             log_container = st.empty()

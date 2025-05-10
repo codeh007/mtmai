@@ -6,13 +6,10 @@ from typing import Dict, List
 
 import streamlit as st
 from loguru import logger
+from mtmai.NarratoAI.services.subtitle import extract_audio_and_create_subtitle
+from mtmai.NarratoAI.utils.utils import srt_dir, video_dir
+from mtmai.NarratoAI.webui.utils.merge_video import merge_videos_and_subtitles
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-
-from mtmai.mtlibs.NarratoAI.app.services.subtitle import (
-    extract_audio_and_create_subtitle,
-)
-from mtmai.mtlibs.NarratoAI.app.utils.utils import srt_dir, video_dir
-from mtmai.mtlibs.NarratoAI.webui.utils.merge_video import merge_videos_and_subtitles
 
 # 定义临时目录路径
 TEMP_MERGE_DIR = os.path.join("storage", "temp", "merge")

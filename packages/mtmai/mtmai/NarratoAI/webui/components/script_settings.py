@@ -7,12 +7,10 @@ import traceback
 import streamlit as st
 from loguru import logger
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.schema import VideoClipParams
-from mtmai.mtlibs.NarratoAI.utils import check_script, utils
-from mtmai.mtlibs.NarratoAI.webui.tools.generate_script_docu import generate_script_docu
-from mtmai.mtlibs.NarratoAI.webui.tools.generate_script_short import (
-    generate_script_short,
-)
+from mtmai.NarratoAI.schema import VideoClipParams
+from mtmai.NarratoAI.utils import check_script, utils
+from mtmai.NarratoAI.webui.tools.generate_script_docu import generate_script_docu
+from mtmai.NarratoAI.webui.tools.generate_script_short import generate_script_short
 
 
 def render_script_panel(tr):

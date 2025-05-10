@@ -10,7 +10,7 @@ from faster_whisper import WhisperModel
 from loguru import logger
 from moviepy.editor import VideoFileClip
 from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 
 model_size = config.whisper.get("model_size", "faster-whisper-large-v2")
 device = config.whisper.get("device", "cpu")

@@ -11,11 +11,11 @@ import requests
 import streamlit as st
 import urllib3
 from loguru import logger
-from mtmai.mtlibs.NarratoAI.app.services import material
 
-# from mtmai.mtlibs.NarratoAI.schema import const
-from mtmai.mtlibs.NarratoAI.schema import PUNCTUATIONS
-from mtmai.mtlibs.NarratoAI.utils import check_script
+# from mtmai.NarratoAI.schema import const
+from mtmai.NarratoAI.schema import PUNCTUATIONS
+from mtmai.NarratoAI.services import material
+from mtmai.NarratoAI.utils import check_script
 
 urllib3.disable_warnings()
 

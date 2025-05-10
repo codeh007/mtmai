@@ -9,7 +9,7 @@ import google.generativeai as genai
 import PIL.Image
 from google.api_core import exceptions
 from loguru import logger
-from mtmai.mtlibs.NarratoAI.utils import utils
+from mtmai.NarratoAI.utils import utils
 from tenacity import (
     RetryError,
     retry,

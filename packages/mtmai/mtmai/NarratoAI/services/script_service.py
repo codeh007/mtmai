@@ -5,14 +5,14 @@ from typing import Any, Callable, Dict, List
 
 import requests
 from loguru import logger
-from mtmai.mtlibs.NarratoAI import config
-from mtmai.mtlibs.NarratoAI.app.utils.script_generator import ScriptProcessor
-from mtmai.mtlibs.NarratoAI.utils import (
+from mtmai.NarratoAI import config
+from mtmai.NarratoAI.utils import (
     gemini_analyzer,
     utils,
     video_processor,
     video_processor_v2,
 )
+from mtmai.NarratoAI.utils.script_generator import ScriptProcessor
 
 
 class ScriptGenerator:

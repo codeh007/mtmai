@@ -3,8 +3,7 @@ import shutil
 
 import streamlit as st
 from loguru import logger
-
-from mtmai.mtlibs.NarratoAI.app.utils.utils import storage_dir
+from mtmai.NarratoAI.utils.utils import storage_dir
 
 
 def clear_directory(dir_path, tr):

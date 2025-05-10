@@ -1,7 +1,8 @@
 import os
-import socket
-import toml
 import shutil
+import socket
+
+import toml
 from loguru import logger
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -17,7 +18,7 @@ def load_config():
         example_file = f"{root_dir}/config.example.toml"
         if os.path.isfile(example_file):
             shutil.copyfile(example_file, config_file)
-            logger.info(f"copy config.example.toml to config.toml")
+            logger.info("copy config.example.toml to config.toml")
 
     logger.info(f"load config from file: {config_file}")
 
@@ -49,7 +50,7 @@ frames = _cfg.get("frames", {})
 
 hostname = socket.gethostname()
 
-log_level = _cfg.get("log_level", "DEBUG")
+# log_level = _cfg.get("log_level", "DEBUG")
 listen_host = _cfg.get("listen_host", "0.0.0.0")
 listen_port = _cfg.get("listen_port", 8080)
 project_name = _cfg.get("project_name", "NarratoAI")
@@ -57,8 +58,8 @@ project_description = _cfg.get(
     "project_description",
     "<a href='https://github.com/linyqh/NarratoAI'>https://github.com/linyqh/NarratoAI</a>",
 )
-project_version = _cfg.get("app", {}).get("project_version")
-reload_debug = False
+# project_version = _cfg.get("app", {}).get("project_version")
+# reload_debug = False
 
 imagemagick_path = app.get("imagemagick_path", "")
 if imagemagick_path and os.path.isfile(imagemagick_path):
@@ -68,4 +69,4 @@ ffmpeg_path = app.get("ffmpeg_path", "")
 if ffmpeg_path and os.path.isfile(ffmpeg_path):
     os.environ["IMAGEIO_FFMPEG_EXE"] = ffmpeg_path
 
-logger.info(f"{project_name} v{project_version}")
+# logger.info(f"{project_name} v{project_version}")
