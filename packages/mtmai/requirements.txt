@@ -72,6 +72,8 @@ authlib==1.5.2
     # via
     #   arize-phoenix
     #   google-adk
+av==12.3.0
+    # via faster-whisper
 azure-core==1.32.0
     # via
     #   mtmai (pyproject.toml)
@@ -133,6 +135,8 @@ certifi==2024.12.14
     #   selenium
 cffi==1.17.1
     # via cryptography
+chardet==5.2.0
+    # via pysrt
 charset-normalizer==3.4.1
     # via
     #   markitdown
@@ -174,10 +178,14 @@ cryptography==43.0.3
     #   pyopenssl
 cssselect==1.3.0
     # via mtmai (pyproject.toml)
+ctranslate2==4.6.0
+    # via faster-whisper
 cycler==0.12.1
     # via matplotlib
 dataclasses-json==0.6.7
     # via langchain-community
+decorator==4.4.2
+    # via moviepy
 defusedxml==0.7.1
     # via
     #   langchain-anthropic
@@ -228,6 +236,8 @@ fastapi==0.115.9
     #   fastapi-mcp
     #   google-adk
 fastapi-mcp==0.3.3
+    # via mtmai (pyproject.toml)
+faster-whisper==1.0.3
     # via mtmai (pyproject.toml)
 fastmcp==2.2.7
     # via mtmai (pyproject.toml)
@@ -418,6 +428,7 @@ httpx-sse==0.4.0
 huggingface-hub==0.30.2
     # via
     #   mtmai (pyproject.toml)
+    #   faster-whisper
     #   smolagents
     #   tokenizers
     #   transformers
@@ -435,6 +446,10 @@ idna==3.10
     #   requests
     #   trio
     #   yarl
+imageio==2.37.0
+    # via moviepy
+imageio-ffmpeg==0.6.0
+    # via moviepy
 importlib-metadata==8.4.0
     # via
     #   litellm
@@ -513,9 +528,7 @@ langchain-core==0.3.49
 langchain-deepseek==0.1.3
     # via browser-use
 langchain-google-genai==2.1.2
-    # via
-    #   mtmai (pyproject.toml)
-    #   browser-use
+    # via browser-use
 langchain-nvidia-ai-endpoints==0.3.9
     # via mtmai (pyproject.toml)
 langchain-ollama==0.3.0
@@ -619,6 +632,8 @@ mmh3==5.1.0
     # via chromadb
 monotonic==1.6
     # via posthog
+moviepy==2.0.0.dev2
+    # via mtmai (pyproject.toml)
 mpire==2.10.2
     # via semchunk
 mpmath==1.3.0
@@ -656,12 +671,16 @@ numpy==2.2.5
     #   chroma-hnswlib
     #   chromadb
     #   contourpy
+    #   ctranslate2
     #   faiss-cpu
+    #   imageio
     #   langchain-aws
     #   langchain-community
     #   magika
     #   matplotlib
+    #   moviepy
     #   onnxruntime
+    #   opencv-python
     #   pandas
     #   pgvector
     #   qdrant-client
@@ -682,6 +701,7 @@ ollama==0.4.7
 onnxruntime==1.21.1
     # via
     #   chromadb
+    #   faster-whisper
     #   magika
 openai==1.75.0
     # via
@@ -692,6 +712,8 @@ openai==1.75.0
     #   mem0ai
 openapi-pydantic==0.5.1
     # via fastmcp
+opencv-python==4.10.0.84
+    # via mtmai (pyproject.toml)
 openinference-instrumentation==0.1.28
     # via
     #   arize-phoenix
@@ -843,6 +865,7 @@ pgvector==0.3.6
     # via mtmai (pyproject.toml)
 pillow==11.1.0
     # via
+    #   imageio
     #   matplotlib
     #   pdfplumber
     #   python-pptx
@@ -875,6 +898,8 @@ posthog==3.9.3
     #   mem0ai
 primp==0.15.0
     # via duckduckgo-search
+proglog==0.1.12
+    # via moviepy
 propcache==0.2.1
     # via
     #   aiohttp
@@ -982,6 +1007,8 @@ pydantic-settings==2.7.1
     #   fastapi-mcp
     #   langchain-community
     #   mcp
+pydub==0.25.1
+    # via mtmai (pyproject.toml)
 pyee==12.0.0
     # via
     #   patchright
@@ -1015,6 +1042,8 @@ pyproject-hooks==1.2.0
     # via build
 pysocks==1.7.1
     # via urllib3
+pysrt==1.1.2
+    # via mtmai (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   mtmai (pyproject.toml)
@@ -1059,6 +1088,7 @@ pyyaml==6.0.2
     #   mtmai (pyproject.toml)
     #   cel-python
     #   chromadb
+    #   ctranslate2
     #   google-adk
     #   huggingface-hub
     #   kubernetes
@@ -1112,6 +1142,7 @@ requests==2.32.3
     #   langsmith
     #   markitdown
     #   mcp-server-fetch
+    #   moviepy
     #   msal
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-resourcedetector-gcp
@@ -1172,7 +1203,9 @@ semchunk==3.0.1
 serpapi==0.1.5
     # via mtmai (pyproject.toml)
 setuptools==75.8.0
-    # via grpcio-tools
+    # via
+    #   ctranslate2
+    #   grpcio-tools
 shapely==2.1.0
     # via google-cloud-aiplatform
 shellingham==1.5.4
@@ -1259,6 +1292,7 @@ tiktoken==0.8.0
 tokenizers==0.21.0
     # via
     #   chromadb
+    #   faster-whisper
     #   litellm
     #   transformers
 tomli==2.2.1
@@ -1273,6 +1307,7 @@ tqdm==4.67.1
     #   mpire
     #   nltk
     #   openai
+    #   proglog
     #   semchunk
     #   transformers
 transformers==4.48.1
