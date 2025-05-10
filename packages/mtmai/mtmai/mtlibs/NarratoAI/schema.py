@@ -1,9 +1,35 @@
-import warnings
 from enum import Enum
 from typing import Any, List, Optional
 
 import pydantic
 from pydantic import BaseModel, Field
+
+PUNCTUATIONS = [
+    "?",
+    ",",
+    ".",
+    "、",
+    ";",
+    ":",
+    "!",
+    "…",
+    "？",
+    "，",
+    "。",
+    "、",
+    "；",
+    "：",
+    "！",
+    "...",
+]
+
+TASK_STATE_FAILED = -1
+TASK_STATE_COMPLETE = 1
+TASK_STATE_PROCESSING = 4
+
+FILE_TYPE_VIDEOS = ["mp4", "mov", "mkv", "webm"]
+FILE_TYPE_IMAGES = ["jpg", "jpeg", "png", "bmp"]
+
 
 class VideoConcatMode(str, Enum):
     random = "random"
@@ -325,10 +351,17 @@ class VideoClipParams(BaseModel):
     """
     NarratoAI 数据模型
     """
-    video_clip_json: Optional[list] = Field(default=[], description="LLM 生成的视频剪辑脚本内容")
-    video_clip_json_path: Optional[str] = Field(default="", description="LLM 生成的视频剪辑脚本路径")
+
+    video_clip_json: Optional[list] = Field(
+        default=[], description="LLM 生成的视频剪辑脚本内容"
+    )
+    video_clip_json_path: Optional[str] = Field(
+        default="", description="LLM 生成的视频剪辑脚本路径"
+    )
     video_origin_path: Optional[str] = Field(default="", description="原视频路径")
-    video_aspect: Optional[VideoAspect] = Field(default=VideoAspect.portrait.value, description="视频比例")
+    video_aspect: Optional[VideoAspect] = Field(
+        default=VideoAspect.portrait.value, description="视频比例"
+    )
     video_language: Optional[str] = Field(default="zh-CN", description="视频语言")
 
     # video_clip_duration: Optional[int] = 5      # 视频片段时长
@@ -336,7 +369,9 @@ class VideoClipParams(BaseModel):
     # video_source: Optional[str] = "local"
     # video_concat_mode: Optional[VideoConcatMode] = VideoConcatMode.random.value
 
-    voice_name: Optional[str] = Field(default="zh-CN-YunjianNeural", description="语音名称")
+    voice_name: Optional[str] = Field(
+        default="zh-CN-YunjianNeural", description="语音名称"
+    )
     voice_volume: Optional[float] = Field(default=1.0, description="解说语音音量")
     voice_rate: Optional[float] = Field(default=1.0, description="语速")
     voice_pitch: Optional[float] = Field(default=1.0, description="语调")
@@ -348,15 +383,19 @@ class VideoClipParams(BaseModel):
     subtitle_enabled: bool = True
     font_name: str = "SimHei"  # 默认使用黑体
     font_size: int = 36
-    text_fore_color: str = "white"              # 文本前景色
-    text_back_color: Optional[str] = None       # 文本背景色
-    stroke_color: str = "black"                 # 描边颜色
-    stroke_width: float = 1.5                   # 描边宽度
+    text_fore_color: str = "white"  # 文本前景色
+    text_back_color: Optional[str] = None  # 文本背景色
+    stroke_color: str = "black"  # 描边颜色
+    stroke_width: float = 1.5  # 描边宽度
     subtitle_position: str = "bottom"  # top, bottom, center, custom
 
-    n_threads: Optional[int] = Field(default=16, description="解说语音音量")    # 线程���，有助于提升视频处理速度
+    n_threads: Optional[int] = Field(
+        default=16, description="解说语音音量"
+    )  # 线程���，有助于提升视频处理速度
 
-    tts_volume: Optional[float] = Field(default=1.0, description="解说语音音量（后处理）")
+    tts_volume: Optional[float] = Field(
+        default=1.0, description="解说语音音量（后处理）"
+    )
     original_volume: Optional[float] = Field(default=1.0, description="视频原声音量")
     bgm_volume: Optional[float] = Field(default=0.6, description="背景音乐音量")
 
@@ -378,3 +417,75 @@ class SubtitlePosition(str, Enum):
     CENTER = "center"
     BOTTOM = "bottom"
 
+
+# 可能没用了
+class VideoTransitionMode(str, Enum):
+    none = None
+    shuffle = "Shuffle"
+    fade_in = "FadeIn"
+    fade_out = "FadeOut"
+    slide_in = "SlideIn"
+    slide_out = "SlideOut"
+
+
+# V2 =======================================================
+
+
+class GenerateScriptRequest(BaseModel):
+    video_path: str
+    video_theme: Optional[str] = ""
+    custom_prompt: Optional[str] = ""
+    skip_seconds: Optional[int] = 0
+    threshold: Optional[int] = 30
+    vision_batch_size: Optional[int] = 5
+    vision_llm_provider: Optional[str] = "gemini"
+
+
+class GenerateScriptResponse(BaseModel):
+    task_id: str
+    script: List[dict]
+
+
+class CropVideoRequest(BaseModel):
+    video_origin_path: str
+    video_script: List[dict]
+
+
+class CropVideoResponse(BaseModel):
+    task_id: str
+    subclip_videos: dict
+
+
+class DownloadVideoRequest(BaseModel):
+    url: str
+    resolution: str
+    output_format: Optional[str] = "mp4"
+    rename: Optional[str] = None
+
+
+class DownloadVideoResponse(BaseModel):
+    task_id: str
+    output_path: str
+    resolution: str
+    format: str
+    filename: str
+
+
+class StartSubclipRequest(BaseModel):
+    task_id: str
+    video_origin_path: str
+    video_clip_json_path: str
+    voice_name: Optional[str] = None
+    voice_rate: Optional[int] = 0
+    voice_pitch: Optional[int] = 0
+    subtitle_enabled: Optional[bool] = True
+    video_aspect: Optional[str] = "16:9"
+    n_threads: Optional[int] = 4
+    subclip_videos: list  # 从裁剪视频接口获取的视频片段字典
+
+
+class StartSubclipResponse(BaseModel):
+    task_id: str
+    state: str
+    videos: Optional[List[str]] = None
+    combined_videos: Optional[List[str]] = None

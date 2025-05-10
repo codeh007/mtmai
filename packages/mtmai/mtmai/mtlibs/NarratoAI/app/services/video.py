@@ -1,12 +1,11 @@
 import os
+import random
 import traceback
 from contextlib import contextmanager
 from typing import List, Optional
 
 import pysrt
 from loguru import logger
-
-# from moviepy.editor import *
 from moviepy.editor import (
     AudioFileClip,
     ColorClip,
@@ -16,9 +15,13 @@ from moviepy.editor import (
     VideoFileClip,
     concatenate_videoclips,
 )
+from mtmai.mtlibs.NarratoAI.schema import (
+    SubtitlePosition,
+    VideoAspect,
+    VideoConcatMode,
+    VideoTransitionMode,
+)
 from PIL import ImageFont
-
-from mtmai.mtlibs.NarratoAI.app.models.schema import SubtitlePosition, VideoAspect
 
 
 def wrap_text(text, max_width, font, fontsize=60):
@@ -449,3 +452,156 @@ def generate_video_v3(
         bgm.close()
     if narration_path:
         narration.close()
+
+
+# 旧代码 ==============================================================================
+
+
+def combine_videos(
+    combined_video_path: str,
+    video_paths: List[str],
+    audio_file: str,
+    video_aspect: VideoAspect = VideoAspect.portrait,
+    video_concat_mode: VideoConcatMode = VideoConcatMode.random,
+    video_transition_mode: VideoTransitionMode = None,
+    max_clip_duration: int = 5,
+    threads: int = 2,
+    fps: int = 30,
+) -> str:
+    audio_clip = AudioFileClip(audio_file)
+    audio_duration = audio_clip.duration
+    logger.info(f"max duration of audio: {audio_duration} seconds")
+    # Required duration of each clip
+    req_dur = audio_duration / len(video_paths)
+    req_dur = max_clip_duration
+    logger.info(f"each clip will be maximum {req_dur} seconds long")
+    output_dir = os.path.dirname(combined_video_path)
+
+    aspect = VideoAspect(video_aspect)
+    video_width, video_height = aspect.to_resolution()
+
+    clips = []
+    video_duration = 0
+
+    raw_clips = []
+    for video_path in video_paths:
+        clip = VideoFileClip(video_path).without_audio()
+        clip_duration = clip.duration
+        start_time = 0
+
+        while start_time < clip_duration:
+            end_time = min(start_time + max_clip_duration, clip_duration)
+            # 旧代码
+            # split_clip = clip.subclipped(start_time, end_time)
+            # 新代码
+            split_clip = clip.subclip(start_time, end_time)
+
+            raw_clips.append(split_clip)
+            # logger.info(f"splitting from {start_time:.2f} to {end_time:.2f}, clip duration {clip_duration:.2f}, split_clip duration {split_clip.duration:.2f}")
+            start_time = end_time
+            if video_concat_mode.value == VideoConcatMode.sequential.value:
+                break
+
+    # random video_paths order
+    if video_concat_mode.value == VideoConcatMode.random.value:
+        random.shuffle(raw_clips)
+
+    # Add downloaded clips over and over until the duration of the audio (max_duration) has been reached
+    while video_duration < audio_duration:
+        for clip in raw_clips:
+            # Check if clip is longer than the remaining audio
+            if (audio_duration - video_duration) < clip.duration:
+                clip = clip.subclipped(0, (audio_duration - video_duration))
+            # Only shorten clips if the calculated clip length (req_dur) is shorter than the actual clip to prevent still image
+            elif req_dur < clip.duration:
+                clip = clip.subclipped(0, req_dur)
+
+            clip = clip.set_fps(fps)
+
+            # Not all videos are same size, so we need to resize them
+            clip_w, clip_h = clip.size
+            if clip_w != video_width or clip_h != video_height:
+                clip_ratio = clip.w / clip.h
+                video_ratio = video_width / video_height
+
+                if clip_ratio == video_ratio:
+                    # Resize proportionally
+                    clip = clip.resize((video_width, video_height))
+                else:
+                    # Resize proportionally
+                    if clip_ratio > video_ratio:
+                        # Resize proportionally based on the target width
+                        scale_factor = video_width / clip_w
+                    else:
+                        # Resize proportionally based on the target height
+                        scale_factor = video_height / clip_h
+
+                    new_width = int(clip_w * scale_factor)
+                    new_height = int(clip_h * scale_factor)
+                    clip_resized = clip.resize(newsize=(new_width, new_height))
+
+                    background = ColorClip(
+                        size=(video_width, video_height), color=(0, 0, 0)
+                    )
+                    clip = CompositeVideoClip(
+                        [
+                            background.with_duration(clip.duration),
+                            clip_resized.with_position("center"),
+                        ]
+                    )
+
+                logger.info(
+                    f"resizing video to {video_width} x {video_height}, clip size: {clip_w} x {clip_h}"
+                )
+
+            shuffle_side = random.choice(["left", "right", "top", "bottom"])
+            logger.info(f"Using transition mode: {video_transition_mode}")
+            if video_transition_mode.value == VideoTransitionMode.none.value:
+                clip = clip
+            elif video_transition_mode.value == VideoTransitionMode.fade_in.value:
+                # clip = video_effects.fadein_transition(clip, 1)
+                clip = clip.fadein(1)
+            elif video_transition_mode.value == VideoTransitionMode.fade_out.value:
+                # clip = video_effects.fadeout_transition(clip, 1)
+                clip = clip.fadeout(1)
+            elif video_transition_mode.value == VideoTransitionMode.slide_in.value:
+                # clip = video_effects.slidein_transition(clip, 1, shuffle_side)
+                clip = clip.slidein(1, shuffle_side)
+            elif video_transition_mode.value == VideoTransitionMode.slide_out.value:
+                # clip = video_effects.slideout_transition(clip, 1, shuffle_side)
+                clip = clip.slideout(1, shuffle_side)
+            elif video_transition_mode.value == VideoTransitionMode.shuffle.value:
+                transition_funcs = [
+                    # lambda c: video_effects.fadein_transition(c, 1),
+                    lambda c: c.fadein(1),
+                    # lambda c: video_effects.fadeout_transition(c, 1),
+                    lambda c: c.fadeout(1),
+                    # lambda c: video_effects.slidein_transition(c, 1, shuffle_side),
+                    lambda c: c.slidein(1, shuffle_side),
+                    # lambda c: video_effects.slideout_transition(c, 1, shuffle_side),
+                    lambda c: c.slideout(1, shuffle_side),
+                ]
+                shuffle_transition = random.choice(transition_funcs)
+                clip = shuffle_transition(clip)
+
+            if clip.duration > max_clip_duration:
+                clip = clip.subclipped(0, max_clip_duration)
+
+            clips.append(clip)
+            video_duration += clip.duration
+    clips = [CompositeVideoClip([clip]) for clip in clips]
+    video_clip = concatenate_videoclips(clips)
+    video_clip = video_clip.with_fps(fps)
+    logger.info("writing")
+    # https://github.com/harry0703/MoneyPrinterTurbo/issues/111#issuecomment-2032354030
+    video_clip.write_videofile(
+        filename=combined_video_path,
+        threads=threads,
+        logger=None,
+        temp_audiofile_path=output_dir,
+        audio_codec="aac",
+        fps=fps,
+    )
+    video_clip.close()
+    logger.success("completed")
+    return combined_video_path

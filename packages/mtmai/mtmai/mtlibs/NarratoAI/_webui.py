@@ -2,10 +2,9 @@ import os
 import sys
 
 import streamlit as st
-
 from mtmai.mtlibs.NarratoAI.app.config import config
-from mtmai.mtlibs.NarratoAI.app.models.schema import VideoClipParams
 from mtmai.mtlibs.NarratoAI.app.utils import utils
+from mtmai.mtlibs.NarratoAI.schema import VideoClipParams
 from mtmai.mtlibs.NarratoAI.webui.components import (
     audio_settings,
     basic_settings,

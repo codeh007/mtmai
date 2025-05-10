@@ -1,7 +1,7 @@
 from fastapi import BackgroundTasks
 from loguru import logger
 
-from mtmai.mtlibs.NarratoAI.app.controllers.v2.base import v2_router
+# from mtmai.mtlibs.NarratoAI.app.controllers.v2.base import v2_router
 from mtmai.mtlibs.NarratoAI.app.models.schema import VideoClipParams
 from mtmai.mtlibs.NarratoAI.app.models.schema_v2 import (
     CropVideoRequest,
@@ -15,10 +15,10 @@ from mtmai.mtlibs.NarratoAI.app.models.schema_v2 import (
 from mtmai.mtlibs.NarratoAI.app.services import task as task_service
 from mtmai.mtlibs.NarratoAI.app.services.script_service import ScriptGenerator
 from mtmai.mtlibs.NarratoAI.app.services.video_service import VideoService
-from mtmai.mtlibs.NarratoAI.app.services.youtube_service import YoutubeService
 from mtmai.mtlibs.NarratoAI.app.utils import utils
+from mtmai.mtlibs.youtube_service import YoutubeService
 
-router = v2_router()
+# router = v2_router()
 
 
 @router.post(

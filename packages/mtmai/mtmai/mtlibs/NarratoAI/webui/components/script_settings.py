@@ -6,10 +6,9 @@ import traceback
 
 import streamlit as st
 from loguru import logger
-
 from mtmai.mtlibs.NarratoAI.app.config import config
-from mtmai.mtlibs.NarratoAI.app.models.schema import VideoClipParams
 from mtmai.mtlibs.NarratoAI.app.utils import check_script, utils
+from mtmai.mtlibs.NarratoAI.schema import VideoClipParams
 from mtmai.mtlibs.NarratoAI.webui.tools.generate_script_docu import generate_script_docu
 from mtmai.mtlibs.NarratoAI.webui.tools.generate_script_short import (
     generate_script_short,

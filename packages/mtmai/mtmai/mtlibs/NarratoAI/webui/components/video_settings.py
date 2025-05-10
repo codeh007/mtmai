@@ -1,6 +1,5 @@
 import streamlit as st
-
-from mtmai.mtlibs.NarratoAI.app.models.schema import VideoAspect, VideoClipParams
+from mtmai.mtlibs.NarratoAI.schema import VideoAspect, VideoClipParams
 
 
 def render_video_panel(tr):
