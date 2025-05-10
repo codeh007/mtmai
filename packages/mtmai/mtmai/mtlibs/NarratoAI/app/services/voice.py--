@@ -9,7 +9,7 @@ from edge_tts import SubMaker, submaker
 from edge_tts.submaker import mktimestamp
 from loguru import logger
 from moviepy.video.tools import subtitles
-from mtmai.mpt.config import config
+from mtmai.mtlibs.NarratoAI.app.config import config
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 

@@ -9,7 +9,8 @@ from google.adk.events import Event
 from google.genai import types  # noqa
 from mtmai.mtlibs.NarratoAI.app.services import subtitle
 from mtmai.mtlibs.mtfs import get_s3fs
-from mtmai.tts import voice
+# from mtmai.tts import voice
+from mtmai.mtlibs.NarratoAI.app.services import voice
 
 
 async def generate_audio(

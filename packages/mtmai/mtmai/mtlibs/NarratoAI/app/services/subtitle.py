@@ -5,7 +5,7 @@ import traceback
 from timeit import default_timer as timer
 from typing import Optional
 
-import google.generativeai as genai
+# import google.generativeai as genai
 from faster_whisper import WhisperModel
 from loguru import logger
 from moviepy.editor import VideoFileClip

@@ -3,13 +3,12 @@ import os
 import time
 import traceback
 from datetime import datetime
-from typing import List
+from typing import List, Union
 from xml.sax.saxutils import unescape
 
 import edge_tts
 from edge_tts import SubMaker, submaker
 from loguru import logger
-
 from mtmai.mtlibs.NarratoAI.app.config import config
 from mtmai.mtlibs.NarratoAI.app.utils import utils
 
@@ -1058,6 +1057,29 @@ def convert_pitch_to_percent(rate: float) -> str:
         return f"+{percent}Hz"
     else:
         return f"{percent}Hz"
+
+
+async def tts_edgetts(
+    text: str, voice_name: str, voice_file: str
+) -> Union[SubMaker, None]:
+    """
+    使用 edge_tts 库实现文本转语音,并生成字幕
+    """
+    sub_maker = edge_tts.SubMaker()
+    communicate = edge_tts.Communicate(text, voice_name)
+
+    os.makedirs(os.path.dirname(voice_file), exist_ok=True)
+    with open(voice_file, "wb") as file:
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                file.write(chunk["data"])
+            elif chunk["type"] == "WordBoundary":
+                sub_maker.create_sub(
+                    (chunk["offset"], chunk["duration"]), chunk["text"]
+                )
+
+    logger.success(f"edge tts speech synthesis succeeded: {voice_file}")
+    return sub_maker
 
 
 def azure_tts_v1(
