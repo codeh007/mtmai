@@ -7,47 +7,8 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
+from mtmai.core.config import settings
 from mtmai.NarratoAI.services import subtitle, voice
-
-# async def generate_audio(
-#     output_audio_file,
-#     voice_rate=1.0,
-#     voice_name="zh-CN-XiaoxiaoNeural",
-#     video_script="",
-# ):
-#     sub_maker = await voice.tts_edgetts(
-#         text=video_script,
-#         voice_name=voice.parse_voice_name(voice_name),
-#         # voice_rate=voice_rate,
-#         voice_file=output_audio_file,
-#     )
-#     if sub_maker is None:
-#         raise ValueError("failed to generate audio, sub_maker is None")
-
-#     audio_duration = math.ceil(voice.get_audio_duration(sub_maker))
-#     return output_audio_file, audio_duration, sub_maker
-
-
-# def generate_subtitle(
-#     subtitle_output_path, video_script, sub_maker, audio_file, subtitle_provider="edge"
-# ):
-#     """
-#     生成字幕
-#     """
-#     subtitle_fallback = False
-#     if subtitle_provider == "edge":
-#         voice.create_subtitle(
-#             text=video_script, sub_maker=sub_maker, subtitle_file=subtitle_output_path
-#         )
-#         if not os.path.exists(subtitle_output_path):
-#             subtitle_fallback = True
-#             raise ValueError("failed to generate subtitle")
-
-#     if subtitle_provider == "whisper" or subtitle_fallback:
-#         subtitle.create(audio_file=audio_file, subtitle_file=subtitle_output_path)
-#         subtitle.correct(subtitle_file=subtitle_output_path, video_script=video_script)
-
-#     return subtitle.file_to_subtitles(subtitle_output_path)
 
 
 class AudioGenAgent(BaseAgent):
@@ -76,12 +37,6 @@ class AudioGenAgent(BaseAgent):
             raise ValueError("failed to generate audio, sub_maker is None")
 
         audio_duration = math.ceil(voice.get_audio_duration(sub_maker))
-        # return output_audio_file, audio_duration, sub_maker
-
-        # audio_file, audio_duration, sub_maker = await generate_audio(
-        #     output_audio_file=path.join(output_dir, "audio.mp3"),
-        #     video_script=ctx.session.state["video_script"],
-        # )
 
         if not output_audio_file:
             yield Event(
@@ -102,7 +57,7 @@ class AudioGenAgent(BaseAgent):
 
         await ctx.artifact_service.save_artifact(
             app_name=ctx.agent.name,
-            user_id=ctx.session.id,  # TODO: 修正 user_id
+            user_id=settings.DEMO_USER_ID,  # TODO: 修正 user_id
             session_id=ctx.session.id,
             filename="speech.mp3",
             artifact=mp3_part,
@@ -143,7 +98,9 @@ class AudioGenAgent(BaseAgent):
             )
             if not os.path.exists(subtitle_path):
                 subtitle_fallback = True
-                raise ValueError("failed to generate subtitle")
+                raise ValueError(
+                    f"failed to generate subtitle, subtitle_path: {subtitle_path}"
+                )
 
         if subtitle_provider == "whisper" or subtitle_fallback:
             subtitle.create(audio_file=output_audio_file, subtitle_file=subtitle_path)
@@ -151,14 +108,8 @@ class AudioGenAgent(BaseAgent):
 
         subtitle_srt = subtitle.file_to_subtitles(subtitle_path)
 
-        # subtitle = generate_subtitle(
-        #     subtitle_output_path=subtitle_path,
-        #     video_script=ctx.session.state["video_script"],
-        #     sub_maker=sub_maker,
-        #     audio_file=audio_file,
-        # )
         if not subtitle_srt:
-            raise ValueError("failed to generate subtitle")
+            raise ValueError("failed to generate subtitle_srt")
 
         subtitle_file_bytes = open(subtitle_path, "rb").read()
         srt_part = types.Part(
@@ -166,7 +117,7 @@ class AudioGenAgent(BaseAgent):
         )
         await ctx.artifact_service.save_artifact(
             app_name=ctx.agent.name,
-            user_id=ctx.session.id,  # TODO: 修正 user_id
+            user_id=settings.DEMO_USER_ID,  # TODO: 修正 user_id
             session_id=ctx.session.id,
             filename="subtitle.srt",
             artifact=srt_part,

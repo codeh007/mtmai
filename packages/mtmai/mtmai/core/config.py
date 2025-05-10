@@ -278,5 +278,12 @@ class Settings(BaseSettings):
     def CLOUDFLARE_R2_BUCKET(self) -> str | None:
         return os.environ.get("CLOUDFLARE_R2_BUCKET", "default")
 
+    @property
+    def DEMO_USER_ID(self) -> str | None:
+        """
+        默认用户id
+        """
+        return os.environ.get("DEMO_USER_ID", "076293cb-7f2c-4844-a178-ebe299f77034")
+
 
 settings = Settings()  # type: ignore
