@@ -49,7 +49,6 @@ class AudioGenAgent(BaseAgent):
             return
 
         # 上传
-        # get_s3fs().upload_file(audio_file, f"short_videos/audio-{ctx.session.id}.mp3")
         audio_file_bytes = open(output_audio_file, "rb").read()
         mp3_part = types.Part(
             inline_data=types.Blob(data=audio_file_bytes, mime_type="audio/mpeg")
@@ -92,7 +91,7 @@ class AudioGenAgent(BaseAgent):
         subtitle_fallback = False
         subtitle_path = path.join(output_dir, "subtitle.srt")
         subtitle_provider = ctx.session.state["voice_llm_provider"]
-        if subtitle_provider == "edge":
+        if subtitle_provider == "edgetts":
             voice.create_subtitle(
                 text=video_script, sub_maker=sub_maker, subtitle_file=subtitle_path
             )
@@ -102,9 +101,12 @@ class AudioGenAgent(BaseAgent):
                     f"failed to generate subtitle, subtitle_path: {subtitle_path}"
                 )
 
-        if subtitle_provider == "whisper" or subtitle_fallback:
+        elif subtitle_provider == "whisper" or subtitle_fallback:
             subtitle.create(audio_file=output_audio_file, subtitle_file=subtitle_path)
             subtitle.correct(subtitle_file=subtitle_path, video_script=video_script)
+
+        else:
+            raise ValueError(f"unknown subtitle provider: {subtitle_provider}")
 
         subtitle_srt = subtitle.file_to_subtitles(subtitle_path)
 
