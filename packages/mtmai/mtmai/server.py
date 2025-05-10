@@ -145,18 +145,6 @@ def build_app():
         )
         # app.add_middleware(AuthMiddleware)
 
-    # 配置 dev 的 web ui
-    # from mtmai.api import dev_ui
-
-    # dev_ui.configure_dev_web_ui(app)
-
-    # 配置 ADK 的 web api
-    # from google.adk.artifacts import InMemoryArtifactService
-
-    from mtmai.api import adk_web_api
-
-    # artifact_service = InMemoryArtifactService()
-    # session_service = InMemorySessionService()
     from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
     session_service = GomtmDatabaseSessionService(
@@ -167,29 +155,13 @@ def build_app():
     artifact_service = MtmArtifactService(
         db_url=settings.MTM_DATABASE_URL,
     )
+    from mtmai.api import adk_web_api
 
     adk_web_api.configure_adk_web_api(
         app=app,
         session_service=session_service,
         artifact_service=artifact_service,
     )
-
-    # async def mount_mpt_app():
-    #     from mtmai.mpt.router import root_api_router
-
-    #     app.include_router(root_api_router)
-    #     from mtmai.mpt.utils import utils
-
-    #     task_dir = utils.task_dir()
-    #     app.mount(
-    #         "/tasks",
-    #         StaticFiles(directory=task_dir, html=True, follow_symlink=True),
-    #         name="",
-    #     )
-    #     public_dir = utils.public_dir()
-    #     app.mount("/", StaticFiles(directory=public_dir, html=True), name="")
-
-    # mount_mpt_app()
 
     # from .gradio_app import mount_gradio_app
 

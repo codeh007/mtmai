@@ -2,7 +2,9 @@ import asyncio
 import importlib
 import json
 import os
+import pathlib
 import re
+import sys
 import traceback
 import typing
 from pathlib import Path
@@ -44,6 +46,10 @@ ANGULAR_DIST_PATH = BASE_DIR / "browser"
 
 
 _EVAL_SET_FILE_EXTENSION = ".evalset.json"
+
+agents_dir = str(pathlib.Path(os.path.dirname(__file__), "..", "agents").resolve())
+if agents_dir not in sys.path:
+    sys.path.append(agents_dir)
 
 
 class ApiServerSpanExporter(export.SpanExporter):
@@ -119,39 +125,6 @@ def configure_adk_web_api(
     provider.add_span_processor(
         export.SimpleSpanProcessor(ApiServerSpanExporter(trace_dict))
     )
-    # envs.load_dotenv()
-    # enable_cloud_tracing = trace_to_cloud or os.environ.get(
-    #     "ADK_TRACE_TO_CLOUD", "0"
-    # ).lower() in ["1", "true"]
-    # if enable_cloud_tracing:
-    #     if project_id := os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-    #         processor = export.BatchSpanProcessor(
-    #             CloudTraceSpanExporter(project_id=project_id)
-    #         )
-    #         provider.add_span_processor(processor)
-    #     else:
-    #         logger.warning(
-    #             "GOOGLE_CLOUD_PROJECT environment variable is not set. Tracing will"
-    #             " not be enabled."
-    #         )
-
-    # trace.set_tracer_provider(provider)
-
-    # # Run the FastAPI server.
-    # app = FastAPI(lifespan=lifespan)
-
-    # app.add_middleware(
-    #     CORSMiddleware,
-    #     allow_origins=["*"]
-    #     if settings.BACKEND_CORS_ORIGINS == "*"
-    #     else [str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS],
-    #     allow_credentials=True,
-    #     allow_methods=["*"],
-    #     allow_headers=["*", "x-chainlit-client-type"],
-    # )
-
-    # if agent_dir not in sys.path:
-    #     sys.path.append(agent_dir)
 
     runner_dict = {}
     root_agent_dict = {}
@@ -760,10 +733,6 @@ def configure_adk_web_api(
         async def dev_ui():
             return FileResponse(BASE_DIR / "browser/index.html")
 
-        app.mount(
-            "/", StaticFiles(directory=ANGULAR_DIST_PATH, html=True), name="static"
-        )
-    return app
         app.mount(
             "/", StaticFiles(directory=ANGULAR_DIST_PATH, html=True), name="static"
         )
