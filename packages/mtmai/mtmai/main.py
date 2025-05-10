@@ -46,6 +46,19 @@ def wsworker():
 
 
 @app.command()
+def worker():
+    from mtmai.worker_v2 import WorkerV2
+
+    worker = WorkerV2(
+        db_url=settings.MTM_DATABASE_URL,
+        pgmq_queue_name="mtmai_queue",
+        pgmq_consumer_group="mtmai_consumer_group",
+    )
+
+    asyncio.run(worker.start())
+
+
+@app.command()
 def adkweb(
     agents_dir: str,
     log_to_tmp: bool = True,

@@ -38,8 +38,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 from structlog.threadlocal import wrap_dict
 
-from mtmai.core.config import settings
-from mtmai.services.artifact_service import MtmArtifactService
+# from mtmai.services.artifact_service import MtmArtifactService
 
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
@@ -132,9 +131,9 @@ def configure_adk_web_api(
     # # Build the Artifact service
     # artifact_service = InMemoryArtifactService()
 
-    artifact_service = MtmArtifactService(
-        db_url=settings.MTM_DATABASE_URL,
-    )
+    # artifact_service = MtmArtifactService(
+    #     db_url=settings.MTM_DATABASE_URL,
+    # )
 
     # # Build the Session service
     agent_engine_id = ""
@@ -236,7 +235,7 @@ def configure_adk_web_api(
                 status_code=400, detail=f"Session already exists: {session_id}"
             )
 
-        logger.info("New session created: %s", session_id)
+        logger.info(f"New session created: {session_id}, user_id: {user_id}")
         return session_service.create_session(
             app_name=app_name, user_id=user_id, state=state, session_id=session_id
         )

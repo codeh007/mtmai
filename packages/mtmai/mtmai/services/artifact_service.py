@@ -7,9 +7,9 @@ from typing import Optional
 
 from google.adk.artifacts.base_artifact_service import BaseArtifactService
 from google.genai import types
+from mtmai.db.db import get_async_session
+from mtmai.mtlibs.mtfs import get_s3fs
 from sqlalchemy import delete, func
-from sqlalchemy.engine import Engine, create_engine
-from sqlalchemy.exc import ArgumentError
 
 # from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 from sqlmodel import Field, SQLModel, select
@@ -77,21 +77,21 @@ class MtmArtifactService(BaseArtifactService):
         self.bucket_name = ""
         # self.storage_client = storage.Client(**kwargs)
         # self.bucket = self.storage_client.bucket(self.bucket_name)
-        try:
-            db_engine = create_engine(db_url)
-            self.db_engine: Engine = db_engine
-        except Exception as e:
-            if isinstance(e, ArgumentError):
-                raise ValueError(
-                    f"Invalid database URL format or argument '{db_url}'."
-                ) from e
-            if isinstance(e, ImportError):
-                raise ValueError(
-                    f"Database related module not found for URL '{db_url}'."
-                ) from e
-            raise ValueError(
-                f"Failed to create database engine for URL '{db_url}'"
-            ) from e
+        # try:
+        #     db_engine = create_async_engine(db_url)
+        #     self.db_engine: Engine = db_engine
+        # except Exception as e:
+        #     if isinstance(e, ArgumentError):
+        #         raise ValueError(
+        #             f"Invalid database URL format or argument '{db_url}'."
+        #         ) from e
+        #     if isinstance(e, ImportError):
+        #         raise ValueError(
+        #             f"Database related module not found for URL '{db_url}'."
+        #         ) from e
+        #     raise ValueError(
+        #         f"Failed to create database engine for URL '{db_url}'"
+        #     ) from e
 
     # def _file_has_user_namespace(self, filename: str) -> bool:
     #     """Checks if the filename has a user namespace.
@@ -139,7 +139,18 @@ class MtmArtifactService(BaseArtifactService):
         filename: str,
         artifact: types.Part,
     ) -> int:
-        async with AsyncSession(self.db_engine) as session:
+        s3fs = get_s3fs()
+
+        # 例子: get_s3fs().upload_file(audio_file, f"short_videos/audio-{ctx.session.id}.mp3")
+        # temp_file = BytesIO()
+        # temp_file.write(artifact.inline_data.data)
+        # temp_file.seek(0)
+        await s3fs.put_object(
+            artifact.inline_data.data,
+            f"{app_name}/{user_id}/{session_id}/{filename}",
+        )
+
+        async with get_async_session() as session:
             # Get current max version for this artifact
             result = await session.exec(
                 select(func.max(StoreArtifact.version)).where(

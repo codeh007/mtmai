@@ -1,5 +1,6 @@
 import boto3
 from google.genai import types  # noqa
+
 from mtmai.core.config import settings
 
 
@@ -21,16 +22,41 @@ class Mtfs:
         )
         return s3_client
 
-    def upload_file(
-        self, file_path: str, target_path: str, content_type: str = "application/json"
+    async def upload_file(
+        self,
+        file_path: str | bytes,
+        target_path: str,
+        content_type: str = "application/json",
     ):
-        with open(file_path, "rb") as f:
-            self.get_Client().upload_fileobj(
-                f,
-                settings.CLOUDFLARE_R2_BUCKET,
-                target_path,
-                ExtraArgs={"ContentType": content_type},
+        if isinstance(file_path, str):
+            with open(file_path, "rb") as f:
+                self.get_Client().upload_fileobj(
+                    f,
+                    settings.CLOUDFLARE_R2_BUCKET,
+                    target_path,
+                    ExtraArgs={"ContentType": content_type},
+                )
+        else:
+            self.get_Client().put_object(
+                Body=file_path,
+                Bucket=settings.CLOUDFLARE_R2_BUCKET,
+                Key=target_path,
+                ContentType=content_type,
             )
+
+    async def put_object(
+        self,
+        Body: bytes,
+        Key: str,
+        ContentType: str = "application/json",
+    ):
+        self.get_Client().put_object(
+            Body=Body,
+            # Bucket=Bucket,
+            Bucket=settings.CLOUDFLARE_R2_BUCKET,
+            Key=Key,
+            ContentType=ContentType,
+        )
 
 
 mts3fs = None

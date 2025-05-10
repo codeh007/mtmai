@@ -67,7 +67,7 @@ async def get_checkpointer():
             "prepare_threshold": 0,
         }
         pool = AsyncConnectionPool(
-            conninfo=settings.MTMAI_DATABASE_URL,
+            conninfo=settings.MTM_DATABASE_URL,
             max_size=20,
             kwargs=connection_kwargs,
         )
@@ -83,11 +83,11 @@ def get_async_engine():
     global async_engine
     if async_engine is not None:
         return async_engine
-    if settings.MTMAI_DATABASE_URL is None:
-        raise ValueError("DATABASE_URL environment variable is not set")  # noqa: EM101, TRY003
+    if settings.MTM_DATABASE_URL is None:
+        raise ValueError("MTMAI_DATABASE_URL environment variable is not set")  # noqa: EM101, TRY003
 
     return create_async_engine(
-        fix_conn_str(settings.MTMAI_DATABASE_URL),
+        fix_conn_str(settings.MTM_DATABASE_URL),
         #    echo=True,# echo 会打印所有sql语句，影响性能
         future=True,
     )

@@ -8,6 +8,7 @@ from loguru import logger
 from mtmai._version import version
 from mtmai.api import mount_api_routes
 from mtmai.core.config import settings
+from mtmai.worker_v2 import WorkerV2
 
 # from mtmai.middleware import AuthMiddleware
 
@@ -38,7 +39,14 @@ def build_app():
             # from mtmai.worker_app import run_worker
 
             # worker_task = asyncio.create_task(run_worker())
+            worker = WorkerV2(
+                db_url=settings.MTM_DATABASE_URL,
+                pgmq_queue_name="mtmai_queue",
+                pgmq_consumer_group="mtmai_consumer_group",
+            )
+            await worker.start()
             yield
+            await worker.stop()
             # Cleanup worker on shutdown
             # if not worker_task.done():
             #     worker_task.cancel()
