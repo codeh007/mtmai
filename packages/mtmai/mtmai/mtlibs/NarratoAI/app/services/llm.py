@@ -5,9 +5,6 @@ import subprocess
 import traceback
 from typing import List, TextIO, Union
 
-# import google.generativeai as gemini
-# from google.api_core.exceptions import *
-# from google.generativeai.types import *
 from googleapiclient.errors import ResumableUploadError
 from loguru import logger
 from moviepy.editor import VideoFileClip
@@ -29,7 +26,7 @@ Method = """
 文案的前三句，是整部电影的概括总结，2-3句介绍后，开始叙述故事剧情！
 推荐新手（新号）做：（盘点型）
 盘点全球最恐怖的10部电影
-盘���全球最科幻的10部电影
+盘点全球最科幻的10部电影
 盘点全球最悲惨的10部电影
 盘全球最值得看的10部灾难电影
 盘点全球最值得看的10部励志电影

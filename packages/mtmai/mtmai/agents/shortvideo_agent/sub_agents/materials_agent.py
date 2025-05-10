@@ -11,8 +11,8 @@ from google.genai import types
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mtmai.core.config import settings
-from mtmai.mpt.config import config
-from mtmai.mpt.models.schema import MaterialInfo, VideoAspect, VideoConcatMode
+from mtmai.mtlibs.NarratoAI.app.config import config
+from mtmai.mtlibs.NarratoAI.app.models.schema import MaterialInfo, VideoAspect, VideoConcatMode
 from mtmai.mtlibs.mpt_utils import mpt_utils as utils
 
 

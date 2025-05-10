@@ -6,11 +6,11 @@ import pydantic
 from pydantic import BaseModel, Field
 
 # 忽略 Pydantic 的特定警告
-warnings.filterwarnings(
-    "ignore",
-    category=UserWarning,
-    message="Field name.*shadows an attribute in parent.*",
-)
+# warnings.filterwarnings(
+#     "ignore",
+#     category=UserWarning,
+#     message="Field name.*shadows an attribute in parent.*",
+# )
 
 
 class VideoConcatMode(str, Enum):

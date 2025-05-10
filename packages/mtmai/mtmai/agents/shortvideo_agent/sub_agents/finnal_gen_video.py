@@ -1,3 +1,4 @@
+from enum import Enum
 from os import path
 from typing import AsyncGenerator, override
 
@@ -6,10 +7,19 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
 from loguru import logger
-from mtmai.mpt.models.schema import VideoAspect, VideoConcatMode, VideoTransitionMode
-from mtmai.mpt.services import video
+from mtmai.mtlibs.NarratoAI.app.models.schema import VideoAspect, VideoConcatMode
+from mtmai.mtlibs.NarratoAI.app.services import video
 from mtmai.mtlibs.mtfs import get_s3fs
 
+
+# 可能没用了
+class VideoTransitionMode(str, Enum):
+    none = None
+    shuffle = "Shuffle"
+    fade_in = "FadeIn"
+    fade_out = "FadeOut"
+    slide_in = "SlideIn"
+    slide_out = "SlideOut"
 
 class FinalGenVideoAgent(BaseAgent):
     """

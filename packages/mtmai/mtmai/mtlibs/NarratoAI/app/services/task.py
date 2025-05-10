@@ -160,11 +160,11 @@ def get_video_materials(task_id, params, video_terms, audio_duration):
 def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: dict):
     """后台任务（自动剪辑视频进行剪辑）"""
     logger.info(f"\n\n## 开始任务: {task_id}")
-    
+
     # 初始化 ImageMagick
     if not utils.init_imagemagick():
         logger.warning("ImageMagick 初始化失败，字幕可能无法正常显示")
-    
+
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=5)
 
     # tts 角色名称
@@ -172,7 +172,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
 
     logger.info("\n\n## 1. 加载视频脚本")
     video_script_path = path.join(params.video_clip_json_path)
-    
+
     if path.exists(video_script_path):
         try:
             with open(video_script_path, "r", encoding="utf-8") as f:
@@ -185,12 +185,12 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
                 logger.debug(f"解说完整脚本: \n{video_script}")
                 logger.debug(f"解说 OST 列表: \n{video_ost}")
                 logger.debug(f"解说时间戳列表: \n{time_list}")
-                
+
                 # 获取视频总时长(单位 s)
                 last_timestamp = list_script[-1]['new_timestamp']
                 end_time = last_timestamp.split("-")[1]
                 total_duration = utils.time_to_seconds(end_time)
-                
+
         except Exception as e:
             logger.error(f"无法读取视频json脚本，请检查配置是否正确。{e}")
             raise ValueError("无法读取视频json脚本，请检查配置是否正确")
@@ -201,15 +201,15 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
     logger.info("\n\n## 2. 根据OST设置生成音频列表")
     # 只为OST=0或2的片段生成TTS音频
     tts_segments = [
-        segment for segment in list_script 
+        segment for segment in list_script
         if segment['OST'] in [0, 2]
     ]
     logger.debug(f"需要生成TTS的片段数: {len(tts_segments)}")
-    
+
     # 初始化音频文件路径
     audio_files = []
     final_audio = ""
-    
+
     if tts_segments:
         audio_files, sub_maker_list = voice.tts_multiple(
             task_id=task_id,
@@ -309,7 +309,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
     final_video_path = path.join(utils.task_dir(task_id), f"final-{index}.mp4")
 
     logger.info(f"\n\n## 6. 最后合成: {index} => {final_video_path}")
-    
+
     # 获取背景音乐
     bgm_path = None
     if params.bgm_type or params.bgm_file:
@@ -382,53 +382,53 @@ def validate_params(video_path, audio_path, output_file, params):
         raise ValueError("视频路径不能为空")
     if not os.path.exists(video_path):
         raise FileNotFoundError(f"视频文件不存在: {video_path}")
-        
+
     # 如果提供了音频路径，则验证文件是否存在
     if audio_path and not os.path.exists(audio_path):
         raise FileNotFoundError(f"音频文件不存在: {audio_path}")
-        
+
     if not output_file:
         raise ValueError("输出文件路径不能为空")
-    
+
     # 确保输出目录存在
     output_dir = os.path.dirname(output_file)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        
+
     if not params:
         raise ValueError("视频参数不能为空")
 
 
-if __name__ == "__main__":
-    # task_id = "test123"
-    # subclip_path_videos = {'00:41-01:58': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_41-01_58.mp4',
-    #                        '00:06-00:15': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_06-00_15.mp4',
-    #                        '01:10-01:17': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-01_10-01_17.mp4',
-    #                        '00:47-01:03': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_47-01_03.mp4',
-    #                        '01:03-01:10': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-01_03-01_10.mp4',
-    #                        '02:40-03:08': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-02_40-03_08.mp4',
-    #                        '03:02-03:20': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-03_02-03_20.mp4',
-    #                        '03:18-03:20': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-03_18-03_20.mp4'}
-    #
-    # params = VideoClipParams(
-    #     video_clip_json_path="E:\\projects\\NarratoAI\\resource/scripts/test003.json",
-    #     video_origin_path="E:\\projects\\NarratoAI\\resource/videos/1.mp4",
-    # )
-    # start_subclip(task_id, params, subclip_path_videos=subclip_path_videos)
+# if __name__ == "__main__":
+#     # task_id = "test123"
+#     # subclip_path_videos = {'00:41-01:58': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_41-01_58.mp4',
+#     #                        '00:06-00:15': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_06-00_15.mp4',
+#     #                        '01:10-01:17': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-01_10-01_17.mp4',
+#     #                        '00:47-01:03': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-00_47-01_03.mp4',
+#     #                        '01:03-01:10': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-01_03-01_10.mp4',
+#     #                        '02:40-03:08': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-02_40-03_08.mp4',
+#     #                        '03:02-03:20': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-03_02-03_20.mp4',
+#     #                        '03:18-03:20': 'E:\\projects\\NarratoAI\\storage\\cache_videos/vid-03_18-03_20.mp4'}
+#     #
+#     # params = VideoClipParams(
+#     #     video_clip_json_path="E:\\projects\\NarratoAI\\resource/scripts/test003.json",
+#     #     video_origin_path="E:\\projects\\NarratoAI\\resource/videos/1.mp4",
+#     # )
+#     # start_subclip(task_id, params, subclip_path_videos=subclip_path_videos)
 
-    task_id = "test456"
-    subclip_path_videos = {'01:10-01:17': './storage/cache_videos/vid-01_10-01_17.mp4',
-                           '01:58-02:04': './storage/cache_videos/vid-01_58-02_04.mp4',
-                           '02:25-02:31': './storage/cache_videos/vid-02_25-02_31.mp4',
-                           '01:28-01:33': './storage/cache_videos/vid-01_28-01_33.mp4',
-                           '03:14-03:18': './storage/cache_videos/vid-03_14-03_18.mp4',
-                           '00:24-00:28': './storage/cache_videos/vid-00_24-00_28.mp4',
-                           '03:02-03:08': './storage/cache_videos/vid-03_02-03_08.mp4',
-                           '00:41-00:44': './storage/cache_videos/vid-00_41-00_44.mp4',
-                           '02:12-02:25': './storage/cache_videos/vid-02_12-02_25.mp4'}
+#     task_id = "test456"
+#     subclip_path_videos = {'01:10-01:17': './storage/cache_videos/vid-01_10-01_17.mp4',
+#                            '01:58-02:04': './storage/cache_videos/vid-01_58-02_04.mp4',
+#                            '02:25-02:31': './storage/cache_videos/vid-02_25-02_31.mp4',
+#                            '01:28-01:33': './storage/cache_videos/vid-01_28-01_33.mp4',
+#                            '03:14-03:18': './storage/cache_videos/vid-03_14-03_18.mp4',
+#                            '00:24-00:28': './storage/cache_videos/vid-00_24-00_28.mp4',
+#                            '03:02-03:08': './storage/cache_videos/vid-03_02-03_08.mp4',
+#                            '00:41-00:44': './storage/cache_videos/vid-00_41-00_44.mp4',
+#                            '02:12-02:25': './storage/cache_videos/vid-02_12-02_25.mp4'}
 
-    params = VideoClipParams(
-        video_clip_json_path="/Users/apple/Desktop/home/NarratoAI/resource/scripts/test004.json",
-        video_origin_path="/Users/apple/Desktop/home/NarratoAI/resource/videos/1.mp4",
-    )
-    start_subclip(task_id, params, subclip_path_videos=subclip_path_videos)
+#     params = VideoClipParams(
+#         video_clip_json_path="/Users/apple/Desktop/home/NarratoAI/resource/scripts/test004.json",
+#         video_origin_path="/Users/apple/Desktop/home/NarratoAI/resource/videos/1.mp4",
+#     )
+#     start_subclip(task_id, params, subclip_path_videos=subclip_path_videos)

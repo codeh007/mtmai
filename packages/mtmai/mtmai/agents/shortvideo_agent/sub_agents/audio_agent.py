@@ -7,7 +7,7 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
-from mtmai.mpt.services import subtitle
+from mtmai.mtlibs.NarratoAI.app.services import subtitle
 from mtmai.mtlibs.mtfs import get_s3fs
 from mtmai.tts import voice
 
