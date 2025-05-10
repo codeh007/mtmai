@@ -511,10 +511,10 @@ def combine_videos(
         for clip in raw_clips:
             # Check if clip is longer than the remaining audio
             if (audio_duration - video_duration) < clip.duration:
-                clip = clip.subclipped(0, (audio_duration - video_duration))
+                clip = clip.subclip(0, (audio_duration - video_duration))
             # Only shorten clips if the calculated clip length (req_dur) is shorter than the actual clip to prevent still image
             elif req_dur < clip.duration:
-                clip = clip.subclipped(0, req_dur)
+                clip = clip.subclip(0, req_dur)
 
             clip = clip.set_fps(fps)
 
@@ -591,7 +591,7 @@ def combine_videos(
             video_duration += clip.duration
     clips = [CompositeVideoClip([clip]) for clip in clips]
     video_clip = concatenate_videoclips(clips)
-    video_clip = video_clip.with_fps(fps)
+    video_clip = video_clip.set_fps(fps)
     logger.info("writing")
     # https://github.com/harry0703/MoneyPrinterTurbo/issues/111#issuecomment-2032354030
     video_clip.write_videofile(
@@ -603,5 +603,4 @@ def combine_videos(
         fps=fps,
     )
     video_clip.close()
-    logger.success("completed")
     return combined_video_path

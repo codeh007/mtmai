@@ -1,21 +1,8 @@
-import json
 import os
-import subprocess
 
 from loguru import logger
 from mtmai.NarratoAI.utils import utils
 from pydub import AudioSegment
-
-
-def check_ffmpeg():
-    """检查FFmpeg是否已安装"""
-    try:
-        subprocess.run(
-            ["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
-        return True
-    except FileNotFoundError:
-        return False
 
 
 def merge_audio_files(
@@ -33,10 +20,6 @@ def merge_audio_files(
     Returns:
         str: 合并后的音频文件路径
     """
-    # 检查FFmpeg是否安装
-    if not check_ffmpeg():
-        logger.error("FFmpeg未安装，无法合并音频文件")
-        return None
 
     # 创建一个空的音频片段
     final_audio = AudioSegment.silent(
@@ -145,24 +128,23 @@ def extract_timestamp(filename):
         return 0.0, 0.0
 
 
-if __name__ == "__main__":
-    # 示例用法
-    audio_files = [
-        "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:06-00:24.mp3",
-        "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:32-00:38.mp3",
-        "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:43-00:52.mp3",
-        "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:52-01:09.mp3",
-        "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_01:13-01:15.mp3",
-    ]
-    total_duration = 38
-    video_script_path = (
-        "/Users/apple/Desktop/home/NarratoAI/resource/scripts/test003.json"
-    )
-    with open(video_script_path, "r", encoding="utf-8") as f:
-        video_script = json.load(f)
+# if __name__ == "__main__":
+#     # 示例用法
+#     audio_files = [
+#         "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:06-00:24.mp3",
+#         "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:32-00:38.mp3",
+#         "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:43-00:52.mp3",
+#         "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_00:52-01:09.mp3",
+#         "/Users/apple/Desktop/home/NarratoAI/storage/tasks/test456/audio_01:13-01:15.mp3",
+#     ]
+#     total_duration = 38
+#     video_script_path = (
+#         "/Users/apple/Desktop/home/NarratoAI/resource/scripts/test003.json"
+#     )
+#     with open(video_script_path, "r", encoding="utf-8") as f:
+#         video_script = json.load(f)
 
-    output_file = merge_audio_files(
-        "test456", audio_files, total_duration, video_script
-    )
-    print(output_file)
-    print(output_file)
+#     output_file = merge_audio_files(
+#         "test456", audio_files, total_duration, video_script
+#     )
+#     print(output_file)
