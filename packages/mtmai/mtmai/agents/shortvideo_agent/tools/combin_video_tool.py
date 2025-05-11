@@ -78,14 +78,9 @@ async def combin_video_tool(tool_context: ToolContext) -> dict:
         #     "video/mp4",
         # )
 
-        # srt_part = types.Part(
-        #     inline_data=types.Blob(data=subtitle_file_bytes, mime_type="text/plain")
-        # )
+        video_bytes = open(final_video_paths[0], "rb").read()
         arti_part = types.Part(
-            # name=f"final-{tool_context.function_call_id}.mp4",
-            # path=final_video_paths[0],
-            # type="video/mp4",
-            inline_data=types.Blob(data=final_video_paths[0], mime_type="video/mp4")
+            inline_data=types.Blob(data=video_bytes, mime_type="video/mp4")
         )
         await tool_context.save_artifact("final_video.mp4", arti_part)
 

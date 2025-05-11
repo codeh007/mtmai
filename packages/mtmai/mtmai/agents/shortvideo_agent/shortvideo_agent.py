@@ -1,9 +1,10 @@
 import os
-from typing import AsyncGenerator, override
+import time
+from typing import AsyncGenerator, List, override
 
 from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event
+from google.adk.events import Event, EventActions
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
@@ -11,6 +12,7 @@ from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_ter
 from mtmai.agents.shortvideo_agent.tools.combin_video_tool import combin_video_tool
 from mtmai.agents.shortvideo_agent.tools.speech_tool import speech_tool
 from mtmai.model_client.utils import get_default_litellm_model
+from pydantic import BaseModel, Field
 
 video_subject_generator = LlmAgent(
     name="video_subject_generator",
@@ -66,6 +68,33 @@ Generate a script for a video, depending on the subject of the video.
 #     pass
 
 
+class ShortvideoState(BaseModel):
+    id: str = Field(default="1")
+    title: str = Field(default="The Current State of AI in September 2024")
+    # book: List[Chapter] = Field(default_factory=list)
+    # book_outline: List[ChapterOutline] = Field(default_factory=list)
+    topic: str = Field(
+        default="Exploring the latest trends in AI across different industries as of September 2024"
+    )
+    goal: str = Field(
+        default="""
+        The goal of this book is to provide a comprehensive overview of the current state of artificial intelligence in September 2024.
+        It will delve into the latest trends impacting various industries, analyze significant advancements,
+        and discuss potential future developments. The book aims to inform readers about cutting-edge AI technologies
+        and prepare them for upcoming innovations in the field.
+    """
+    )
+    video_subject: str = Field(default="")
+    video_script: str = Field(default="")
+    video_terms: List[str] = Field(default_factory=list)
+    video_terms_amount: int = Field(default=3)
+    audio_file: str = Field(default="")
+    output_dir: str = Field(default="")
+    voice_name: str = Field(default="zh-CN-XiaoxiaoNeural")
+    voice_llm_provider: str = Field(default="edgetts")
+    paragraph_number: int = Field(default=3)
+
+
 class ShortvideoAgent(LlmAgent):
     model_config = {"arbitrary_types_allowed": True}
 
@@ -84,15 +113,6 @@ class ShortvideoAgent(LlmAgent):
             tools=[
                 AgentTool(video_subject_generator),
                 AgentTool(video_script_agent),
-                # AgentTool(
-                #     AudioGenAgent(
-                #         name="audio_gen_agent",
-                #         description="音频生成专家",
-                #         model=model,
-                #         tools=[],
-                #         output_key="audio_file",
-                #     )
-                # ),
                 AgentTool(video_terms_agent),
                 combin_video_tool,
                 speech_tool,
@@ -100,21 +120,55 @@ class ShortvideoAgent(LlmAgent):
             **kwargs,
         )
 
+    async def _init_state(self, ctx: InvocationContext):
+        user_content = ctx.user_content
+        user_input_text = user_content.parts[0].text
+
+        state = ctx.session.state.get("shortvideo_state")
+        if state is None:
+            state = ShortvideoState(
+                id=ctx.session.id,
+                title=user_input_text,
+                topic=user_input_text,
+                goal=user_input_text,
+                video_subject=user_input_text,
+                video_script=user_input_text,
+                paragraph_number=3,
+                video_terms_amount=3,
+                output_dir=f".vol/short_videos/{ctx.session.id}",
+                voice_name="zh-CN-XiaoxiaoNeural",
+                voice_llm_provider="edgetts",
+            ).model_dump()
+            # --- 创建带有 Actions 的事件 ---
+            actions_with_update = EventActions(state_delta=state)
+            # 此事件可能代表内部系统操作，而不仅仅是智能体响应
+            system_event = Event(
+                invocation_id="inv_book_writer_update",
+                author="system",  # 或 'agent', 'tool' 等
+                actions=actions_with_update,
+                timestamp=time.time(),
+                # content 可能为 None 或表示所采取的操作
+            )
+            ctx.session_service.append_event(ctx.session, system_event)
+        os.makedirs(state["output_dir"], exist_ok=True)
+        return state
+
     @override
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        user_content = ctx.user_content
-        user_input_text = user_content.parts[0].text
+        # user_content = ctx.user_content
+        # user_input_text = user_content.parts[0].text
 
+        init_state = await self._init_state(ctx)
         # 默认值
-        ctx.session.state["video_subject"] = user_input_text
-        ctx.session.state["paragraph_number"] = 3
-        ctx.session.state["video_terms_amount"] = 3
-        ctx.session.state["output_dir"] = f".vol/short_videos/{ctx.session.id}"
-        ctx.session.state["voice_name"] = "zh-CN-XiaoxiaoNeural"
-        ctx.session.state["voice_llm_provider"] = "edgetts"
-        os.makedirs(ctx.session.state["output_dir"], exist_ok=True)
+        # ctx.session.state["video_subject"] = user_input_text
+        # ctx.session.state["paragraph_number"] = 3
+        # ctx.session.state["video_terms_amount"] = 3
+        # ctx.session.state["output_dir"] = f".vol/short_videos/{ctx.session.id}"
+        # ctx.session.state["voice_name"] = "zh-CN-XiaoxiaoNeural"
+        # ctx.session.state["voice_llm_provider"] = "edgetts"
+        # os.makedirs(ctx.session.state["output_dir"], exist_ok=True)
 
         async for event in super()._run_async_impl(ctx):
             yield event
