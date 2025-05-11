@@ -14,8 +14,8 @@ from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from mtmai import tools as tools
 from mtmai.agents.webSurfer import MtMultimodalWebSurfer
 from mtmai.core.config import settings
+from mtmai.model_client import get_default_model_client
 from mtmai.model_client.model_client import MtOpenAIChatCompletionClient
-from mtmai.model_client.utils import get_default_model_client
 
 # from mtmai.teams.tenant_team import TenantTeam
 from pydantic import BaseModel, ConfigDict, SecretStr

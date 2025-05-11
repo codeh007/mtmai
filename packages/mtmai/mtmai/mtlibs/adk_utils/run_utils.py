@@ -4,11 +4,12 @@ from textwrap import dedent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types
-from loguru import logger
 from smolagents import ActionStep, CodeAgent
 
 
-async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
+async def adk_run_smolagent(
+    agent: CodeAgent, ctx: InvocationContext, include_step_events=False
+):
     """
     在 adk agent 上下文中运行 smolagents 的 CodeAgent, 并且并对相关事件进行转换
 
@@ -66,42 +67,30 @@ async def adk_run_smolagent(agent: CodeAgent, ctx: InvocationContext):
                 step_callback,
             ]
 
-    try:
-        # Start agent operations in the background
-        loop = asyncio.get_event_loop()
-        agent_future = loop.run_in_executor(
-            None,
-            agent.run,
-            user_input_task,
-        )
+    loop = asyncio.get_event_loop()
+    agent_future = loop.run_in_executor(
+        None,
+        agent.run,
+        user_input_task,
+    )
 
-        # Keep yielding events from queue until agent is done
-        while not agent_future.done() or not event_queue.empty():
-            try:
+    # Keep yielding events from queue until agent is done
+    while not agent_future.done() or not event_queue.empty():
+        try:
+            if include_step_events:
                 event = await asyncio.wait_for(event_queue.get(), timeout=0.1)
                 yield event
-            except asyncio.TimeoutError:
-                continue
+        except asyncio.TimeoutError:
+            continue
 
-        # Get the final result
-        result = await agent_future
-        completion_event = Event(
-            author=ctx.agent.name,
-            content=types.Content(
-                role="assistant",
-                parts=[types.Part(text=f"**✅ 最终答案**\n{result}")],
-            ),
-        )
-        yield completion_event
-
-    except Exception as e:
-        logger.error(f"Error during agent execution: {str(e)}")
-        error_event = Event(
-            author=ctx.agent.name,
-            content=types.Content(
-                role="assistant",
-                parts=[types.Part(text=f"**❌** \n{str(e)}")],
-            ),
-        )
-        yield error_event
-        raise
+    # Get the final result
+    result = await agent_future
+    completion_event = Event(
+        author=ctx.agent.name,
+        content=types.Content(
+            role="assistant",
+            # parts=[types.Part(text=f"**✅ 最终答案**\n{result}")],
+            parts=[types.Part(text=f"{result}")],
+        ),
+    )
+    yield completion_event

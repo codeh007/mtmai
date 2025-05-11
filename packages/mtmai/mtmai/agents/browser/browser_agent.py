@@ -17,7 +17,7 @@ from google.genai import types  # noqa
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 from mtmai.core.config import settings
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.browser_utils.browser_manager import BrowseruseHelper
 from playwright.async_api import BrowserContext as PlaywrightBrowserContext
 from pydantic import SecretStr

@@ -1,5 +1,5 @@
 from google.adk.agents import Agent
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 
 CONTENT_WRITER_AGENT_PROMPT = """
 你是擅长内容创作的专家,根据用户给定的主题,生成文章的正文

@@ -1371,20 +1371,6 @@ wheels = [
 ]
 
 [[package]]
-name = "duckduckgo-search"
-version = "7.5.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "lxml" },
-    { name = "primp" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/07/5e/c8b1ce359fc67ac81e68f4092c6b7215574df2c6250c6f6a81ca467af767/duckduckgo_search-7.5.2.tar.gz", hash = "sha256:92962c139317e71278aa67fed8d3f2bb5b2dcc8f659904e0cb0c224da901519c", size = 24615, upload-time = "2025-03-13T05:39:15.157Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/5e/8a23160d2411d48d5b2a470aa53c7369a9a2019771c3472bfde3fb9ad456/duckduckgo_search-7.5.2-py3-none-any.whl", hash = "sha256:71668990c5082839bd3dc5dbffc37ae451cbf15dfae9a379e77b237999a5dcc8", size = 20205, upload-time = "2025-03-13T05:39:14.065Z" },
-]
-
-[[package]]
 name = "durationpy"
 version = "0.9"
 source = { registry = "https://pypi.org/simple" }
@@ -2363,6 +2349,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d1/71/6f2bef5db8741467848f2b2c7f7818df44234df0de0917428a16da3f6e81/helium-5.1.1.tar.gz", hash = "sha256:8232b6597d24b435cda4e18a95ae883ff0bdcdbff70f98a6cb41133864d2d493", size = 40494, upload-time = "2025-02-20T16:05:14.293Z" }
 
 [[package]]
+name = "hf-xet"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/2c/70009910fcbd204bde75842b60c1e47fe72edb0e978954cb8001735885c7/hf_xet-1.1.0.tar.gz", hash = "sha256:a7c2a4c2b6eee9ce0a1a367a82b60d95ba634420ef1c250addad7aa4af419cf4", size = 263996, upload-time = "2025-04-29T21:15:51.247Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dc/fd/0db331297e331f0f02005fd7ea666439bf15efd74f0dd62af02a43236a1b/hf_xet-1.1.0-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:0322c42551e275fcb7949c083a54a81b2898e50787c9aa74284fcb8d2c58c12c", size = 5069444, upload-time = "2025-04-29T21:15:42.631Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/7d/4d7ae44219d3744ad55669cb90ef3d4ed9f5f8a4729fa635a6499491cb78/hf_xet-1.1.0-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:667153a0304ac2debf2af95a8ff7687186f885b493f4cd16344869af270cd110", size = 4881465, upload-time = "2025-04-29T21:15:40.799Z" },
+    { url = "https://files.pythonhosted.org/packages/83/9a/d40d2a57b132d609d8a4ccc29e59ed69749021610616749cabcda2532158/hf_xet-1.1.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:995eeffb119636ea617b96c7d7bf3c3f5ea8727fa57974574e25d700b8532d48", size = 53584225, upload-time = "2025-04-29T21:15:37.754Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/01/d94553f91d85746e0862f24d239da88d10f5ce252b028565744e982432f4/hf_xet-1.1.0-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:3aee847da362393331f515c4010d0aaa1c2669acfcca1f4b28946d6949cc0086", size = 52043680, upload-time = "2025-04-29T21:15:34.15Z" },
+    { url = "https://files.pythonhosted.org/packages/29/89/1f31853bf378f0ceb3363c07fd8a12af9b904b1f8c21e65eb5c19397bc98/hf_xet-1.1.0-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:68c5813a6074aa36e12ef5983230e3b03148cce61e0fcdd294096493795565b4", size = 53072672, upload-time = "2025-04-29T21:15:44.743Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/9f/5ecb92b18a4b2135a72a95dc08bcbeda9176f46642c745ee052420d2aea8/hf_xet-1.1.0-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:4ee9222bf9274b1c198b88a929de0b5a49349c4962d89c5b3b2f0f7f47d9761c", size = 53521053, upload-time = "2025-04-29T21:15:48.252Z" },
+    { url = "https://files.pythonhosted.org/packages/53/d6/cb32842cbf1cf5a154b41fa918a2fd86003af9bca227a2397cd7f312a8a6/hf_xet-1.1.0-cp37-abi3-win_amd64.whl", hash = "sha256:73153eab9abf3d6973b21e94a67ccba5d595c3e12feb8c0bf50be02964e7f126", size = 4204376, upload-time = "2025-04-29T21:15:52.69Z" },
+]
+
+[[package]]
 name = "hpack"
 version = "4.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2483,20 +2484,21 @@ wheels = [
 
 [[package]]
 name = "huggingface-hub"
-version = "0.28.1"
+version = "0.31.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "filelock" },
     { name = "fsspec" },
+    { name = "hf-xet", marker = "platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
     { name = "packaging" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e7/ce/a734204aaae6c35a22f9956ebcd8d8708ae5b842e15d6f42bd6f49e634a4/huggingface_hub-0.28.1.tar.gz", hash = "sha256:893471090c98e3b6efbdfdacafe4052b20b84d59866fb6f54c33d9af18c303ae", size = 387074, upload-time = "2025-01-30T13:45:41.519Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/eb/9268c1205d19388659d5dc664f012177b752c0eef194a9159acc7227780f/huggingface_hub-0.31.1.tar.gz", hash = "sha256:492bb5f545337aa9e2f59b75ef4c5f535a371e8958a6ce90af056387e67f1180", size = 403036, upload-time = "2025-05-07T15:25:19.695Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ea/da/6c2bea5327b640920267d3bf2c9fc114cfbd0a5de234d81cda80cc9e33c8/huggingface_hub-0.28.1-py3-none-any.whl", hash = "sha256:aa6b9a3ffdae939b72c464dbb0d7f99f56e649b55c3d52406f49e0a5a620c0a7", size = 464068, upload-time = "2025-01-30T13:45:39.514Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/bf/6002da17ec1c7a47bedeb216812929665927c70b6e7500b3c7bf36f01bdd/huggingface_hub-0.31.1-py3-none-any.whl", hash = "sha256:43f73124819b48b42d140cbc0d7a2e6bd15b2853b1b9d728d4d55ad1750cac5b", size = 484265, upload-time = "2025-05-07T15:25:17.921Z" },
 ]
 
 [[package]]
@@ -4073,7 +4075,7 @@ requires-dist = [
     { name = "serpapi", specifier = ">=0.1.5" },
     { name = "simpleeval", specifier = ">=1.0.0" },
     { name = "slugify", specifier = ">=0.0.1" },
-    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.14.0" },
+    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.15.0" },
     { name = "snowballstemmer", specifier = "~=2.2" },
     { name = "speechrecognition", specifier = ">=3.14.2" },
     { name = "sqlalchemy", specifier = ">=2.0.37" },
@@ -5173,22 +5175,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a1/f9/ffb682dfcfe43ff38c501791b8b4c01ba25f772c5d16bdb8c0f992f099fd/posthog-3.11.0.tar.gz", hash = "sha256:42a1f88cbcddeceaf6e8900a528db62d84fc56f6e5809f3d6dfb40e6f743091e", size = 61344, upload-time = "2025-01-28T13:24:46.045Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/21/a7975b832603fed31930860108e12f7680ad829d74ce05eab2df1a17ae2d/posthog-3.11.0-py2.py3-none-any.whl", hash = "sha256:8cbd52c26bcdfbe65c4ea84a8090cfa2e046879d6b6d71da68e279a5b4aedb46", size = 72005, upload-time = "2025-01-28T13:24:44.136Z" },
-]
-
-[[package]]
-name = "primp"
-version = "0.14.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/95/1e/a063129aed2320b463fd35c5d918d5754e59011698aaf7cf297a610b3380/primp-0.14.0.tar.gz", hash = "sha256:b6f23b2b694118a9d0443b3760698b90afb6f867f8447e71972530f48297992e", size = 112406, upload-time = "2025-02-23T21:36:46.489Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/12/eba13ddbeb5c6df6cf7511aedb5fa4bcb99c0754e88056260dd44aa53929/primp-0.14.0-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:bd2dfb57feeba21a77a1128b6c6f17856605c4e73edcc05764fb134de4ff014f", size = 3173837, upload-time = "2025-02-23T21:36:40.891Z" },
-    { url = "https://files.pythonhosted.org/packages/77/65/3cd25b4f4d0cd9de4f1d95858dcddd7ed082587524294c179c847de18951/primp-0.14.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:31eecb5316f9bd732a7994530b85eb698bf6500d2f6c5c3382dac0353f77084e", size = 2947192, upload-time = "2025-02-23T21:36:38.595Z" },
-    { url = "https://files.pythonhosted.org/packages/13/77/f85bc3e31befa9b9bac54bab61beb34ff84a70d20f02b7dcd8abc120120a/primp-0.14.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:11229e65aa5755fdfb535cc03fd64259a06764ad7c22e650fb3bea51400f1d09", size = 3276730, upload-time = "2025-02-23T21:36:36.292Z" },
-    { url = "https://files.pythonhosted.org/packages/44/36/bc95049264ee668a5cdaadf77ef711aaa9cb0c4c0a246b27bba9a2f0114c/primp-0.14.0-cp38-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:8f56ca2cd63f9ac75b33bf48129b7e79ade29cf280bc253b17b052afb27d2b9e", size = 3247684, upload-time = "2025-02-23T21:36:31.649Z" },
-    { url = "https://files.pythonhosted.org/packages/31/d9/632a70c80dcdd0bb9293cdc7e7543d35e5912325631c3e9f3b7c7d842941/primp-0.14.0-cp38-abi3-manylinux_2_34_armv7l.whl", hash = "sha256:3fb204f67a4b58dc53f3452143121317b474437812662ac0149d332a77ecbe1a", size = 3007835, upload-time = "2025-02-23T21:36:34.05Z" },
-    { url = "https://files.pythonhosted.org/packages/dc/ba/07b04b9d404f20ec78449c5974c988a5adf7d4d245a605466486f70d35c3/primp-0.14.0-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:b0b21e6a599f580137774623009c7f895afab49d6c3d6c9a28344fd2586ebe8a", size = 3413956, upload-time = "2025-02-23T21:36:43.288Z" },
-    { url = "https://files.pythonhosted.org/packages/d7/d3/3bee499b4594fce1f8ccede785e517162407fbea1d452c4fb55fe3fb5e81/primp-0.14.0-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:6549766ece3c7be19e1c16fa9029d3e50fa73628149d88601fcd964af8b44a8d", size = 3595850, upload-time = "2025-02-23T21:36:45.064Z" },
-    { url = "https://files.pythonhosted.org/packages/6a/20/042c8ae21d185f2efe61780dfbc01464c982f59626b746d5436c2e4c1e08/primp-0.14.0-cp38-abi3-win_amd64.whl", hash = "sha256:d3ae1ba954ec8d07abb527ccce7bb36633525c86496950ba0178e44a0ea5c891", size = 3143077, upload-time = "2025-02-23T21:36:48.12Z" },
 ]
 
 [[package]]
@@ -9124,21 +9110,19 @@ wheels = [
 
 [[package]]
 name = "smolagents"
-version = "1.14.0"
+version = "1.15.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "duckduckgo-search" },
     { name = "huggingface-hub" },
     { name = "jinja2" },
-    { name = "markdownify" },
     { name = "pillow" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/df/5d/ddc672ec9ff6347080d13d291a6db5b8e76dd6603f5ec1265797e2781af4/smolagents-1.14.0.tar.gz", hash = "sha256:7d06237c56afa8f0ec95552832a7a368d4cbae2ea66bd217f0f0430241db7611", size = 157712, upload-time = "2025-04-18T09:58:20.26Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/b5/68d5dd434715e65e438fd60bf6eeb99a88cbffac0b072346ee6766af1594/smolagents-1.15.0.tar.gz", hash = "sha256:ca8fe7b2481e9a0ea761f8158b0a40f2c583c7c5f7cb77426199ef9a13d34178", size = 166877, upload-time = "2025-05-07T15:24:43.865Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/ce/dedad549d2b37e73d14c56aef25bd42a5f87fdb8e97bf2a78cac5aac8287/smolagents-1.14.0-py3-none-any.whl", hash = "sha256:3444a5231bf395ea8c8cc39905aaa17e9ef434b7f4a03bde91b83ea08dd0a856", size = 114488, upload-time = "2025-04-18T09:58:18.763Z" },
+    { url = "https://files.pythonhosted.org/packages/88/42/d23acaf224e562e712b52d6c0651956f2c1b945ae23ec478a3de60c22817/smolagents-1.15.0-py3-none-any.whl", hash = "sha256:68b38fc8e97a0e55ec545ff0df70c02b66b776ff265adffe4f6f845f151c79ca", size = 124313, upload-time = "2025-05-07T15:24:42.241Z" },
 ]
 
 [package.optional-dependencies]

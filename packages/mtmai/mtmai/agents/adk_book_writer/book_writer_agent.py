@@ -7,10 +7,9 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
 from google.adk.models import BaseLlm
 from google.genai import types  # noqa: F401
+from mtmai.model_client import get_default_litellm_model
 from pydantic import BaseModel, Field
 from typing_extensions import override
-
-from mtmai.model_client.utils import get_default_litellm_model
 
 
 class ChapterOutline(BaseModel):

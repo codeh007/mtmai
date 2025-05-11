@@ -5,10 +5,9 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa: F401
 from loguru import logger
-from typing_extensions import override
-
 from mtmai.agents.browser.browser_agent import AdkBrowserAgent
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
+from typing_extensions import override
 
 
 class CustomStoryFlowAgent(BaseAgent):

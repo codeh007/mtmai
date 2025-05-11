@@ -5,13 +5,12 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.adk.models import BaseLlm
 from google.genai import types  # noqa: F401
+from mtmai.core.config import settings
+from mtmai.model_client import get_default_smolagents_model
+from mtmai.mtlibs.adk_utils.run_utils import adk_run_smolagent
 from pydantic import Field
 from smolagents import CodeAgent, GoogleSearchTool, ToolCallingAgent
 from typing_extensions import override
-
-from mtmai.core.config import settings
-from mtmai.model_client.utils import get_default_smolagents_model
-from mtmai.mtlibs.adk_utils.run_utils import adk_run_smolagent
 
 from .scripts.text_inspector_tool import TextInspectorTool
 from .scripts.text_web_browser import (
@@ -56,7 +55,7 @@ class AdkOpenDeepResearch(BaseAgent):
         }
         browser = SimpleTextBrowser(**BROWSER_CONFIG)
         text_webbrowser_agent = ToolCallingAgent(
-            model=self.model or get_default_smolagents_model(),
+            model=get_default_smolagents_model(),
             tools=[
                 GoogleSearchTool(provider="serper"),
                 VisitTool(browser),
@@ -86,7 +85,7 @@ class AdkOpenDeepResearch(BaseAgent):
         Additionally, if after some searching you find out that you need more information to answer the question, you can use `final_answer` with your request for clarification as argument to request for more information."""
 
         manager_agent = CodeAgent(
-            model=self.model or get_default_smolagents_model(),
+            model=get_default_smolagents_model(),
             tools=[visualizer, TextInspectorTool(self.model, self.text_limit)],
             max_steps=self.max_steps,
             verbosity_level=self.verbosity_level,

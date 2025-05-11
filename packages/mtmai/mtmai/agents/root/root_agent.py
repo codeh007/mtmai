@@ -5,7 +5,7 @@ from loguru import logger
 
 # from mtmai.crawl4ai.async_configs import BrowserConfig  # noqa: F401
 from mtmai.agents.root.prompt import return_instructions_root
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 from pydantic import BaseModel
 
 # from mtmai.agents.adk_smolagent.adk_smolagent import (

@@ -9,10 +9,10 @@ import uvicorn
 from fastapi import FastAPI
 from loguru import logger
 
-from mtmai.core import bootstraps
+from mtmai.core import bootstrap_core
 from mtmai.core.config import settings
 
-bootstraps.bootstrap_core()
+bootstrap_core()
 app = typer.Typer(invoke_without_command=True)
 
 

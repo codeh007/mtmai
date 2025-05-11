@@ -1,6 +1,5 @@
 from google.adk.tools import ToolContext
-
-from mtmai.model_client.utils import get_default_smolagents_model
+from mtmai.model_client import get_default_smolagents_model
 
 
 async def adk_smolagent_blogwriter_tool(
@@ -14,9 +13,8 @@ async def adk_smolagent_blogwriter_tool(
     Returns:
         操作的最终结果
     """
-    from smolagents import CodeAgent, DuckDuckGoSearchTool, ToolCallingAgent
-
     from mtmai.tools.jinaai import scrape_page_with_jina_ai, search_facts_with_jina_ai
+    from smolagents import CodeAgent, DuckDuckGoSearchTool, ToolCallingAgent
 
     # Research Agent
     research_agent = ToolCallingAgent(

@@ -25,4 +25,9 @@ SHORTVIDEO_PROMPT = """
 5. 使用 "video_combine_agent" 工具合成视频
     - 输入: 视频脚本, 音频讲解, 视频素材
     - 输出: 合成后的视频
+
+**Constrains**
+1. 如果没有具体指定语言,则跟随用户输入的语言.
+
+
 """

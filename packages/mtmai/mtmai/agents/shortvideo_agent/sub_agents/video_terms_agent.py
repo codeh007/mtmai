@@ -13,7 +13,7 @@ from json_repair import repair_json
 from loguru import logger
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from mtmai.core.config import settings
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 from mtmai.NarratoAI import config
 from mtmai.NarratoAI.schema import MaterialInfo, VideoAspect, VideoConcatMode
 from mtmai.NarratoAI.utils import mpt_utils as utils

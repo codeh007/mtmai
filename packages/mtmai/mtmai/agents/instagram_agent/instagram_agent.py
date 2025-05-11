@@ -10,7 +10,7 @@ from google.adk.models import LlmRequest
 from google.adk.tools import BaseTool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.mtlibs.instagrapi import Client
 from mtmai.tools.instagram_tool import (

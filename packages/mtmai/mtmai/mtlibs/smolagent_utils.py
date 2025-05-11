@@ -2,7 +2,7 @@ from loguru import logger
 from smolagents import CodeAgent
 from smolagents.agents import ActionStep
 
-from mtmai.model_client.utils import get_custom_model
+from mtmai.model_client import get_custom_model
 from mtmai.tools.instagram_tool import InstagramLoginTool
 
 

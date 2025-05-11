@@ -8,31 +8,13 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
+from mtmai.agents.open_deep_research.open_deep_research import AdkOpenDeepResearch
 from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
-from mtmai.agents.shortvideo_agent.sub_agents.research_agent import new_research_agent
 from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_terms_agent
 from mtmai.agents.shortvideo_agent.tools.combin_video_tool import combin_video_tool
 from mtmai.agents.shortvideo_agent.tools.speech_tool import speech_tool
-from mtmai.model_client.utils import get_default_litellm_model
+from mtmai.model_client import get_default_litellm_model
 from pydantic import BaseModel, Field
-
-# video_subject_generator = LlmAgent(
-#     name="video_subject_generator",
-#     description="视频主题生成专家",
-#     model=get_default_litellm_model(),
-#     instruction="""
-#     # Role: Video Subject Generator
-
-#     ## Goals:
-#     Generate a subject for a video, depending on the user's input.
-
-#     ## Constrains:
-#     1. the subject is to be returned as a string.
-#     2. the subject must be related to the user's input.
-#     """.strip(),
-#     input_schema=None,
-#     output_key="video_subject",  # Key for storing output in session state
-# )
 
 video_script_agent = LlmAgent(
     name="VideoScriptGenerator",
@@ -170,5 +152,12 @@ def new_shortvideo_agent():
         model=get_default_litellm_model(),
         name="shortvideo_generator",
         description="短视频生成专家",
-        sub_agents=[new_research_agent()],
+        sub_agents=[
+            # new_research_agent(),
+            AdkOpenDeepResearch(
+                name="open_deep_research",
+                description="社交媒体话题调研专家",
+                model=get_default_litellm_model(),
+            ),
+        ],
     )
