@@ -8,7 +8,6 @@ from mtmai.models.artifact import DBArtifact
 from mtmai.mtlibs.mtfs import get_s3fs
 from sqlalchemy import delete, text
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 from typing_extensions import override
 
 logger = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class MtmArtifactService(BaseArtifactService):
         filename: str,
         version: Optional[int] = None,
     ) -> Optional[types.Part]:
-        async with AsyncSession(self.db_engine) as session:
+        async with get_async_session() as session:
             statement = select(DBArtifact).where(
                 DBArtifact.app_name == app_name,
                 # StoreArtifact.user_id == user_id,  # TODO: 需要根据用户id查询
@@ -85,7 +84,7 @@ class MtmArtifactService(BaseArtifactService):
     async def list_artifact_keys(
         self, *, app_name: str, user_id: str, session_id: str
     ) -> list[str]:
-        async with AsyncSession(self.db_engine) as session:
+        async with get_async_session() as session:
             statement = select(DBArtifact.filename).distinct()
             result = await session.exec(statement)
             filenames = result.all()
@@ -95,7 +94,7 @@ class MtmArtifactService(BaseArtifactService):
     async def delete_artifact(
         self, *, app_name: str, user_id: str, session_id: str, filename: str
     ) -> None:
-        async with AsyncSession(self.db_engine) as session:
+        async with get_async_session() as session:
             await session.exec(
                 delete(DBArtifact).where(
                     DBArtifact.app_name == app_name,
@@ -111,7 +110,7 @@ class MtmArtifactService(BaseArtifactService):
     async def list_versions(
         self, *, app_name: str, user_id: str, session_id: str, filename: str
     ) -> list[int]:
-        async with AsyncSession(self.db_engine) as session:
+        async with get_async_session() as session:
             statement = select(DBArtifact.version).distinct()
             result = await session.exec(statement)
             versions = result.all()

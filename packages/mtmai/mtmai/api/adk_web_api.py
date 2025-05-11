@@ -36,7 +36,6 @@ from loguru import logger
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
-from structlog.threadlocal import wrap_dict
 
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
@@ -125,37 +124,7 @@ def configure_adk_web_api(
 
     runner_dict = {}
     root_agent_dict = {}
-
-    # # Build the Artifact service
-    # artifact_service = InMemoryArtifactService()
-
-    # artifact_service = MtmArtifactService(
-    #     db_url=settings.MTM_DATABASE_URL,
-    # )
-
-    # # Build the Session service
     agent_engine_id = ""
-    # if session_db_url:
-    #     if session_db_url.startswith("agentengine://"):
-    #         # Create vertex session service
-    #         agent_engine_id = session_db_url.split("://")[1]
-    #         if not agent_engine_id:
-    #             raise click.ClickException("Agent engine id can not be empty.")
-    #         envs.load_dotenv_for_agent("", agent_dir)
-    #         session_service = VertexAiSessionService(
-    #             os.environ["GOOGLE_CLOUD_PROJECT"],
-    #             os.environ["GOOGLE_CLOUD_LOCATION"],
-    #         )
-    #     else:
-    #         session_service = DatabaseSessionService(db_url=session_db_url)
-    #         # from mtmai.services.gomtm_db_session_service import (
-    #         #     GomtmDatabaseSessionService,
-    #         # )
-
-    #         # session_service = GomtmDatabaseSessionService(db_url=session_db_url)
-    # else:
-    #     session_service = InMemorySessionService()
-
     @app.get("/list-apps")
     def list_apps() -> list[str]:
         base_path = Path.cwd() / agent_dir
@@ -175,7 +144,7 @@ def configure_adk_web_api(
 
     @app.get("/debug/trace/{event_id}")
     def get_trace_dict(event_id: str) -> Any:
-        event_dict = wrap_dict.get(event_id, None)
+        event_dict = trace_dict.get(event_id, None)
         if event_dict is None:
             raise HTTPException(status_code=404, detail="Trace not found")
         return event_dict
