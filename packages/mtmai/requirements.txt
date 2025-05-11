@@ -61,6 +61,8 @@ async-timeout==5.0.1
     # via mtmai (pyproject.toml)
 asyncio-atexit==1.0.1
     # via mtmai (pyproject.toml)
+asyncpg==0.30.0
+    # via mtmai (pyproject.toml)
 attrs==24.3.0
     # via
     #   aiohttp
@@ -265,7 +267,7 @@ fsspec==2024.12.0
     # via huggingface-hub
 g4f==0.5.2.1
     # via mtmai (pyproject.toml)
-google-adk==0.4.0
+google-adk==0.5.0
     # via mtmai (pyproject.toml)
 google-ai-generativelanguage==0.6.18
     # via langchain-google-genai
@@ -861,6 +863,8 @@ pdfplumber==0.11.6
     # via mtmai (pyproject.toml)
 peewee==3.17.9
     # via yfinance
+pgmq-sqlalchemy==0.1.2
+    # via mtmai (pyproject.toml)
 pgvector==0.3.6
     # via mtmai (pyproject.toml)
 pillow==11.1.0
@@ -943,6 +947,8 @@ psutil==7.0.0
     #   browser-use
 psycopg==3.2.4
     # via langgraph-checkpoint-postgres
+psycopg-binary==3.2.7
+    # via mtmai (pyproject.toml)
 psycopg-pool==3.2.4
     # via langgraph-checkpoint-postgres
 psycopg2-binary==2.9.10
@@ -1247,6 +1253,7 @@ sqlalchemy==2.0.37
     #   langchain
     #   langchain-community
     #   mem0ai
+    #   pgmq-sqlalchemy
     #   sqlmodel
 sqlean-py==3.49.1
     # via arize-phoenix
