@@ -1,10 +1,17 @@
+import logging
+import time
 from contextlib import asynccontextmanager
+from functools import wraps
+from typing import Callable, TypeVar, cast
 
 from psycopg_pool import AsyncConnectionPool
+from sqlalchemy.exc import DisconnectionError, OperationalError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from mtmai.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 def fix_conn_str(conn_str: str) -> str:
@@ -16,6 +23,7 @@ def fix_conn_str(conn_str: str) -> str:
 # 全局连接池对象
 pool: AsyncConnectionPool | None = None
 async_engine: AsyncEngine | None = None
+
 
 async def get_async_engine():
     global async_engine
@@ -50,3 +58,44 @@ async def get_async_session():
             yield session
         finally:
             await session.close()
+
+
+T = TypeVar("T")
+
+
+def with_db_retry(max_retries: int = 3, retry_delay: float = 1.0):
+    """装饰器：为数据库操作添加重试机制
+
+    Args:
+        max_retries: 最大重试次数
+        retry_delay: 重试间隔（秒）
+    """
+
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except (OperationalError, DisconnectionError) as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        logger.warning(
+                            f"Database operation failed (attempt {attempt + 1}/{max_retries}): {str(e)}. "
+                            f"Retrying in {retry_delay} seconds..."
+                        )
+                        time.sleep(retry_delay)
+                    else:
+                        logger.error(
+                            f"Database operation failed after {max_retries} attempts: {str(e)}"
+                        )
+                        raise
+                except SQLAlchemyError as e:
+                    logger.error(f"Database error: {str(e)}")
+                    raise
+            raise last_exception
+
+        return cast(Callable[..., T], wrapper)
+
+    return decorator

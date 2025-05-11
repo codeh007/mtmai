@@ -290,5 +290,9 @@ class Settings(BaseSettings):
     def QUEUE_SHORTVIDEO_COMBINE(self) -> str | None:
         return os.environ.get("QUEUE_SHORTVIDEO_COMBINE", "shortvideo_combine")
 
+    @property
+    def IS_DEV(self) -> bool:
+        return os.environ.get("MTM_DEV", "development").lower() == "development"
+
 
 settings = Settings()  # type: ignore

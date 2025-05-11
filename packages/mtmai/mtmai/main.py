@@ -190,6 +190,7 @@ uv add playwright_stealth
 
 uv pip install google-generativeai~=0.8.3
 uv pip install torch
+uv sync
 """
     os.system(commamd_line)
 

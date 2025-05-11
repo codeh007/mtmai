@@ -76,6 +76,7 @@ async def speech_tool(script: str, tool_context: ToolContext):
 
         if not subtitle_srt:
             return f"字幕生成失败, 字幕文件: 输出文件不存在, 文件路径: {subtitle_path}"
+        tool_context.state["subtitle_path"] = subtitle_path
 
         subtitle_file_bytes = open(subtitle_path, "rb").read()
         srt_part = types.Part(

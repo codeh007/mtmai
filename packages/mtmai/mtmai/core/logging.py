@@ -3,7 +3,6 @@ import pathlib
 from logging.handlers import RotatingFileHandler
 
 from mtmai.core.config import settings
-from mtmai.core.coreutils import is_in_dev
 
 logs_dir = pathlib.Path(settings.storage_dir) / ".logs"
 
@@ -74,7 +73,7 @@ def setup_logging():
     root_logger = get_logger()
     root_logger.setLevel(logging.INFO)
 
-    if is_in_dev():
+    if settings.IS_DEV:
         target_file = pathlib.Path(logs_dir) / "root.log"
         if not target_file.parent.exists():
             target_file.parent.mkdir(parents=True, exist_ok=True)
@@ -89,53 +88,8 @@ def setup_logging():
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
     setup_httpx_logging()
-    # setup_sqlalchemy_logging()
-    # setup_httpx_logging()
-    # setup_openai_base_logging()
 
 
-# def setup_sqlalchemy_logging():
-#     sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
-#     sqlalchemy_logger.setLevel(logging.ERROR)
-#     print(f"SQLAlchemy logger level set to: {sqlalchemy_logger.level}")
-
-#     if is_in_dev():
-#         target_file = pathlib.Path(logs_dir) / "sqlalchemy.log"
-#         if not target_file.parent.exists():
-#             target_file.parent.mkdir(parents=True, exist_ok=True)
-
-#         file_handler = RotatingFileHandler(
-#             target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-#         )
-#         file_handler.setLevel(logging.DEBUG)
-#         formatter = logging.Formatter(
-#             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-#         )
-#         file_handler.setFormatter(formatter)
-#         sqlalchemy_logger.addHandler(file_handler)
-
-
-# def setup_httpx_logging():
-#     httpx_logger = logging.getLogger("httpx")
-#     # httpx_logger.setLevel(logging.DEBUG)
-
-#     # if is_in_dev():
-#     target_file = pathlib.Path(logs_dir) / "httpx.log"
-#     print(f"httpx logger level set to: {httpx_logger.level}, logfile: {target_file}")
-
-#     if not target_file.parent.exists():
-#         target_file.parent.mkdir(parents=True, exist_ok=True)
-
-
-#     file_handler = RotatingFileHandler(
-#         target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-#     )
-#     file_handler.setLevel(logging.DEBUG)
-#     formatter = logging.Formatter(
-#         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-#     )
-#     file_handler.setFormatter(formatter)
-#     httpx_logger.addHandler(file_handler)
 def setup_httpx_logging():
     httpx_logger = logging.getLogger("httpx")
     httpx_logger.setLevel(
@@ -159,25 +113,3 @@ def setup_httpx_logging():
     )
     file_handler.setFormatter(formatter)
     httpx_logger.addHandler(file_handler)
-
-
-# def setup_openai_base_logging():
-#     openai_base_client_logger = logging.getLogger("openai._base_client")
-#     openai_base_client_logger.setLevel(logging.ERROR)
-#     print(f"openai._base_client logger level set to: {openai_base_client_logger.level}")
-
-#     # if is_in_dev():
-#     target_file = pathlib.Path(logs_dir) / "openai._base_client.log"
-
-#     if not target_file.parent.exists():
-#         target_file.parent.mkdir(parents=True, exist_ok=True)
-
-#     file_handler = RotatingFileHandler(
-#         target_file, maxBytes=10 * 1024 * 1024, backupCount=5
-#     )
-#     file_handler.setLevel(logging.DEBUG)
-#     formatter = logging.Formatter(
-#         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-#     )
-#     file_handler.setFormatter(formatter)
-#     openai_base_client_logger.addHandler(file_handler)
