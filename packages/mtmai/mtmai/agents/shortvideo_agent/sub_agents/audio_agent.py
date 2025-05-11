@@ -3,7 +3,7 @@ import os.path
 from os import path
 from typing import AsyncGenerator, override
 
-from google.adk.agents import BaseAgent
+from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
@@ -11,7 +11,7 @@ from mtmai.core.config import settings
 from mtmai.NarratoAI.services import subtitle, voice
 
 
-class AudioGenAgent(BaseAgent):
+class AudioGenAgent(LlmAgent):
     """
     生成字幕和解说音频
     """

@@ -168,6 +168,7 @@ dependencies = [
     "opencv-python~=4.10.0.84",
     "pydub>=0.25.1",
     "asyncpg>=0.30.0",
+    "pgmq-sqlalchemy>=0.1.2",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
