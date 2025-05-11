@@ -8,9 +8,9 @@ async def run_worker():
         logger.info("booting worker")
         await mtmapp.boot()
 
-        from mtmai.otel import setup_instrument
+        from mtmai.otel import setup_instrumentor
 
-        setup_instrument()
+        setup_instrumentor()
 
         worker = mtmapp.worker(settings.WORKER_NAME)
 

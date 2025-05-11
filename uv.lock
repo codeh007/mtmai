@@ -3138,6 +3138,25 @@ wheels = [
 ]
 
 [[package]]
+name = "langfuse"
+version = "2.60.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "backoff" },
+    { name = "httpx" },
+    { name = "idna" },
+    { name = "packaging" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c8/fc/3cbf173d8a4caf595d13de3f7ed659b4199ae898e8f35fa03167fa1c527a/langfuse-2.60.4.tar.gz", hash = "sha256:1fb6f1228dd6ed8ce49ffeba92eae1209bd46f0bd67fc0c6a5ec881af60ea68a", size = 152779, upload-time = "2025-05-06T13:30:17.189Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/3f/4c404b5d8c767ab8a64fa1ec2ac2c13c94c5e442cab336dff1dbe12d56d3/langfuse-2.60.4-py3-none-any.whl", hash = "sha256:458e685d9c924addca6a268ab01369e32777e6514694325a6dd1578a0c1e6fa6", size = 275355, upload-time = "2025-05-06T13:30:15.173Z" },
+]
+
+[[package]]
 name = "langgraph"
 version = "0.2.69"
 source = { registry = "https://pypi.org/simple" }
@@ -3836,6 +3855,7 @@ dependencies = [
     { name = "langchain-nvidia-ai-endpoints" },
     { name = "langchain-ollama" },
     { name = "langchain-openai" },
+    { name = "langfuse" },
     { name = "langgraph" },
     { name = "langgraph-checkpoint-postgres" },
     { name = "lazify" },
@@ -4010,6 +4030,7 @@ requires-dist = [
     { name = "langchain-ollama", specifier = ">=0.1.3" },
     { name = "langchain-ollama", specifier = ">=0.2.2" },
     { name = "langchain-openai", specifier = ">=0.3.1" },
+    { name = "langfuse", specifier = ">=2.60.4" },
     { name = "langgraph", specifier = ">=0.2.63" },
     { name = "langgraph-checkpoint-postgres", specifier = ">=2.0.13" },
     { name = "lazify", specifier = ">=0.4.0" },

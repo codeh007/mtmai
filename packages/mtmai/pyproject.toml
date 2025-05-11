@@ -170,6 +170,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "pgmq-sqlalchemy>=0.1.2",
     "psycopg-binary>=3.2.7",
+    "langfuse>=2.60.4",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."

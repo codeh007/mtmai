@@ -7,14 +7,17 @@ from loguru import logger
 
 from mtmai._version import version
 from mtmai.core.config import settings
+from mtmai.otel import setup_instrumentor
 from mtmai.worker_v2 import WorkerV2
 
 # from mtmai.middleware import AuthMiddleware
+
 
 def mount_api_routes(app: FastAPI, prefix=""):
     from mtmai.api import tiktok_api
 
     app.include_router(tiktok_api.router, prefix=prefix, tags=["tiktok_api"])
+
 
 def setup_main_routes(target_app: FastAPI):
     # 设置基于 fastapi_mcp 的 routes
@@ -242,6 +245,7 @@ def build_app():
 
 
 async def serve():
+    setup_instrumentor()
     app = build_app()
     config = uvicorn.Config(
         app,
