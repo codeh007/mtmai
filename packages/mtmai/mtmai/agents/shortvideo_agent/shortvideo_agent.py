@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 from typing import AsyncGenerator, List, override
 
 from google.adk.agents import LlmAgent
@@ -8,29 +9,30 @@ from google.adk.events import Event, EventActions
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
+from mtmai.agents.shortvideo_agent.sub_agents.research_agent import new_research_agent
 from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_terms_agent
 from mtmai.agents.shortvideo_agent.tools.combin_video_tool import combin_video_tool
 from mtmai.agents.shortvideo_agent.tools.speech_tool import speech_tool
 from mtmai.model_client.utils import get_default_litellm_model
 from pydantic import BaseModel, Field
 
-video_subject_generator = LlmAgent(
-    name="video_subject_generator",
-    description="视频主题生成专家",
-    model=get_default_litellm_model(),
-    instruction="""
-    # Role: Video Subject Generator
+# video_subject_generator = LlmAgent(
+#     name="video_subject_generator",
+#     description="视频主题生成专家",
+#     model=get_default_litellm_model(),
+#     instruction="""
+#     # Role: Video Subject Generator
 
-    ## Goals:
-    Generate a subject for a video, depending on the user's input.
+#     ## Goals:
+#     Generate a subject for a video, depending on the user's input.
 
-    ## Constrains:
-    1. the subject is to be returned as a string.
-    2. the subject must be related to the user's input.
-    """.strip(),
-    input_schema=None,
-    output_key="video_subject",  # Key for storing output in session state
-)
+#     ## Constrains:
+#     1. the subject is to be returned as a string.
+#     2. the subject must be related to the user's input.
+#     """.strip(),
+#     input_schema=None,
+#     output_key="video_subject",  # Key for storing output in session state
+# )
 
 video_script_agent = LlmAgent(
     name="VideoScriptGenerator",
@@ -70,9 +72,8 @@ Generate a script for a video, depending on the subject of the video.
 
 class ShortvideoState(BaseModel):
     id: str = Field(default="1")
+    current_date: str = Field(default=datetime.now().strftime("%Y-%m-%d"))
     title: str = Field(default="The Current State of AI in September 2024")
-    # book: List[Chapter] = Field(default_factory=list)
-    # book_outline: List[ChapterOutline] = Field(default_factory=list)
     topic: str = Field(
         default="Exploring the latest trends in AI across different industries as of September 2024"
     )
@@ -102,6 +103,7 @@ class ShortvideoAgent(LlmAgent):
         self,
         name: str,
         description: str = "短视频生成专家",
+        sub_agents: List[LlmAgent] = [],
         model: str = get_default_litellm_model(),
         **kwargs,
     ):
@@ -111,12 +113,13 @@ class ShortvideoAgent(LlmAgent):
             model=model,
             instruction=SHORTVIDEO_PROMPT,
             tools=[
-                AgentTool(video_subject_generator),
+                # AgentTool(video_subject_generator),
                 AgentTool(video_script_agent),
                 AgentTool(video_terms_agent),
                 combin_video_tool,
                 speech_tool,
             ],
+            sub_agents=sub_agents,
             **kwargs,
         )
 
@@ -157,19 +160,7 @@ class ShortvideoAgent(LlmAgent):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        # user_content = ctx.user_content
-        # user_input_text = user_content.parts[0].text
-
         init_state = await self._init_state(ctx)
-        # 默认值
-        # ctx.session.state["video_subject"] = user_input_text
-        # ctx.session.state["paragraph_number"] = 3
-        # ctx.session.state["video_terms_amount"] = 3
-        # ctx.session.state["output_dir"] = f".vol/short_videos/{ctx.session.id}"
-        # ctx.session.state["voice_name"] = "zh-CN-XiaoxiaoNeural"
-        # ctx.session.state["voice_llm_provider"] = "edgetts"
-        # os.makedirs(ctx.session.state["output_dir"], exist_ok=True)
-
         async for event in super()._run_async_impl(ctx):
             yield event
 
@@ -179,4 +170,5 @@ def new_shortvideo_agent():
         model=get_default_litellm_model(),
         name="shortvideo_generator",
         description="短视频生成专家",
+        sub_agents=[new_research_agent()],
     )

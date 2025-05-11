@@ -177,8 +177,13 @@ class Settings(BaseSettings):
     # socks
     SOCKS_PROXY: str | None = None
 
-    # https://serper.dev/api-key
-    SERPER_DEV_TOKEN: str | None = None
+    #
+    # SERPER_DEV_TOKEN: str | None = None
+
+    @property
+    def SERPER_DEV_TOKEN(self) -> str | None:
+        # https://serper.dev/api-key
+        return os.environ.get("SERPER_DEV_TOKEN", "serper_dev_token_not_set")
 
     # selenium
     SELENIUM_VERSION: str = "4.24.0"
