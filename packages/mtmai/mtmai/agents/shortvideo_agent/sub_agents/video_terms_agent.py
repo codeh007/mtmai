@@ -275,6 +275,7 @@ def after_agent_callback(callback_context: CallbackContext):
                 parts=[types.Part(text="素材收集失败")],
             ),
         )
+    callback_context.state["downloaded_videos"] = downloaded_videos
     return Event(
         author=callback_context.agent_name,
         content=types.Content(

@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     )
     app_name: str = "Mtmai"
     work_dir: str = os.getcwd()
-    PORT: int = os.getenv("PORT", 7861)
+    PORT: int = os.getenv("MTMAI_HTTP_PORT", 7860)
     HOSTNAME: str | None = "0.0.0.0"  # noqa: S104
     SERVE_IP: str | None = "0.0.0.0"  # noqa: S104
     Serve_ADDR: str | None = None  # 明确指定服务器域名

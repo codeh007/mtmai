@@ -37,6 +37,8 @@ from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from pydantic import BaseModel, ValidationError
 from starlette.types import Lifespan
 
+from mtmai.core.config import settings
+
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
 
@@ -125,6 +127,7 @@ def configure_adk_web_api(
     runner_dict = {}
     root_agent_dict = {}
     agent_engine_id = ""
+
     @app.get("/list-apps")
     def list_apps() -> list[str]:
         base_path = Path.cwd() / agent_dir
@@ -510,9 +513,10 @@ def configure_adk_web_api(
     async def agent_run_sse(req: AgentRunRequest) -> StreamingResponse:
         # Connect to managed session if agent_engine_id is set.
         app_id = agent_engine_id if agent_engine_id else req.app_name
+        user_id = settings.DEMO_USER_ID
         # SSE endpoint
         session = session_service.get_session(
-            app_name=app_id, user_id=req.user_id, session_id=req.session_id
+            app_name=app_id, user_id=user_id, session_id=req.session_id
         )
 
         # 新增代码
@@ -520,7 +524,7 @@ def configure_adk_web_api(
             logger.info("New session created: %s", req.session_id)
             session = session_service.create_session(
                 app_name=app_id,
-                user_id=req.user_id,
+                user_id=user_id,
                 state={},
                 session_id=req.session_id,
             )
@@ -533,7 +537,7 @@ def configure_adk_web_api(
                 stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
                 runner = _get_runner(req.app_name)
                 async for event in runner.run_async(
-                    user_id=req.user_id,
+                    user_id=user_id,
                     session_id=req.session_id,
                     new_message=req.new_message,
                     run_config=RunConfig(streaming_mode=stream_mode),
@@ -543,7 +547,7 @@ def configure_adk_web_api(
                     logger.info("Generated event in agent run streaming: %s", sse_event)
                     yield f"data: {sse_event}\n\n"
             except Exception as e:
-                logger.exception("Error in event_generator: %s", e)
+                logger.exception(e)
                 # You might want to yield an error event here
                 yield f'data: {{"error": "{str(e)}"}}\n\n'
 

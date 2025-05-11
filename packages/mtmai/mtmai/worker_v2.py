@@ -21,8 +21,6 @@ class WorkerV2:
         db_url: str,
     ) -> None:
         self.db_url = db_url
-        # self.pgmq_queue_name = pgmq_queue_name
-        # self.pgmq_consumer_group = pgmq_consumer_group
         self._running = False
         self._task: Optional[asyncio.Task] = None
         try:
@@ -65,19 +63,19 @@ class WorkerV2:
         消费消息的主循环
         """
         pgmq = PGMQueue(dsn=self.db_url)
-
+        self.queue_name = settings.QUEUE_SHORTVIDEO_COMBINE
         queues = pgmq.list_queues()
         # logger.info(f"队列列表: {queues}")
-        if settings.QUEUE_SHORTVIDEO_COMBINE not in queues:
+        if self.queue_name not in queues:
             logger.info(f"队列 {settings.QUEUE_SHORTVIDEO_COMBINE} 不存在,现在创建")
 
-            pgmq.create_queue(settings.QUEUE_SHORTVIDEO_COMBINE)
+            pgmq.create_queue(self.queue_name)
 
         wait_seconds = 5
         while self._running:
             try:
                 # read a single message
-                msg = pgmq.read(settings.QUEUE_SHORTVIDEO_COMBINE)
+                msg = pgmq.read(self.queue_name)
                 if not msg:
                     await asyncio.sleep(1)
                     continue
@@ -89,10 +87,10 @@ class WorkerV2:
                 except Exception as e:
                     logger.error(f"处理消息失败: {e}")
                     # 设置消息可见性超时,让消息重新入队
-                    pgmq.set_vt(self.pgmq_queue_name, msg.msg_id, 30)
+                    pgmq.set_vt(self.queue_name, msg.msg_id, 30)
                 finally:
                     # 删除已处理的消息
-                    pgmq.delete(self.pgmq_queue_name, msg.msg_id)
+                    pgmq.delete(self.queue_name, msg.msg_id)
             except Exception as e:
                 if "Connection timed out" in str(
                     e
@@ -111,7 +109,7 @@ class WorkerV2:
             logger.warning("Worker is not running")
             return
 
-        logging.info(f"Stopping worker for queue: {self.pgmq_queue_name}")
+        logging.info(f"Stopping worker for queue: {self.queue_name}")
         self._running = False
 
         if self._task:
