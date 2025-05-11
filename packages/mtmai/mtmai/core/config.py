@@ -285,5 +285,9 @@ class Settings(BaseSettings):
         """
         return os.environ.get("DEMO_USER_ID", "076293cb-7f2c-4844-a178-ebe299f77034")
 
+    @property
+    def QUEUE_SHORTVIDEO_COMBINE(self) -> str | None:
+        return os.environ.get("QUEUE_SHORTVIDEO_COMBINE", "shortvideo_combine")
+
 
 settings = Settings()  # type: ignore

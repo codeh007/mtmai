@@ -11,18 +11,18 @@ from pgmq_sqlalchemy import PGMQueue
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.exc import ArgumentError
 
+from mtmai.core.config import settings
+
 
 class WorkerV2:
     def __init__(
         self,
         *,
         db_url: str,
-        pgmq_queue_name: str,
-        pgmq_consumer_group: str = "default_group",
     ) -> None:
         self.db_url = db_url
-        self.pgmq_queue_name = pgmq_queue_name
-        self.pgmq_consumer_group = pgmq_consumer_group
+        # self.pgmq_queue_name = pgmq_queue_name
+        # self.pgmq_consumer_group = pgmq_consumer_group
         self._running = False
         self._task: Optional[asyncio.Task] = None
         try:
@@ -49,9 +49,16 @@ class WorkerV2:
             logger.warning("Worker is already running")
             return
 
-        logging.info(f"Starting worker for queue: {self.pgmq_queue_name}")
+        logging.info(f"Starting worker for queue: {settings.QUEUE_SHORTVIDEO_COMBINE}")
         self._running = True
         self._task = asyncio.create_task(self._consume_messages())
+
+    async def start_block(self) -> None:
+        """
+        阻塞启动 worker
+        """
+        await self.start()
+        await self._consume_messages()
 
     async def _consume_messages(self) -> None:
         """
@@ -59,10 +66,17 @@ class WorkerV2:
         """
         pgmq = PGMQueue(dsn=self.db_url)
 
+        queues = pgmq.list_queues()
+        # logger.info(f"队列列表: {queues}")
+        if settings.QUEUE_SHORTVIDEO_COMBINE not in queues:
+            logger.info(f"队列 {settings.QUEUE_SHORTVIDEO_COMBINE} 不存在,现在创建")
+
+            pgmq.create_queue(settings.QUEUE_SHORTVIDEO_COMBINE)
+
         while self._running:
             try:
                 # read a single message
-                msg = pgmq.read(self.pgmq_queue_name)
+                msg = pgmq.read(settings.QUEUE_SHORTVIDEO_COMBINE)
                 if not msg:
                     await asyncio.sleep(1)
                     continue

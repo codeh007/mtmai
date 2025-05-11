@@ -50,7 +50,8 @@ class ShortvideoAgent(LlmAgent):
             yield event
         os.makedirs(ctx.session.state["output_dir"], exist_ok=True)
 
-        await super()._run_async_impl(ctx)
+        async for event in super()._run_async_impl(ctx):
+            yield event
 
 
 def new_shortvideo_agent():

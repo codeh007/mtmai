@@ -49,13 +49,11 @@ def wsworker():
 def worker():
     from mtmai.worker_v2 import WorkerV2
 
-    worker = WorkerV2(
-        db_url=settings.MTM_DATABASE_URL,
-        pgmq_queue_name="mtmai_queue",
-        pgmq_consumer_group="mtmai_consumer_group",
+    asyncio.run(
+        WorkerV2(
+            db_url=settings.MTM_DATABASE_URL,
+        ).start_block()
     )
-
-    asyncio.run(worker.start())
 
 
 @app.command()

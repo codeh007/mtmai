@@ -41,8 +41,6 @@ def build_app():
             # worker_task = asyncio.create_task(run_worker())
             worker = WorkerV2(
                 db_url=settings.MTM_DATABASE_URL,
-                pgmq_queue_name="mtmai_queue",
-                pgmq_consumer_group="mtmai_consumer_group",
             )
             await worker.start()
             yield

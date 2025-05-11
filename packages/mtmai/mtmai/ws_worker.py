@@ -9,8 +9,6 @@ from pathlib import Path
 
 from google.adk.agents.live_request_queue import LiveRequest, LiveRequestQueue
 from google.adk.agents.llm_agent import Agent
-
-# from google.adk.artifacts import InMemoryArtifactService
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
 from loguru import logger
@@ -25,8 +23,6 @@ from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 default_agents_dir = str(Path(os.path.dirname(__file__), "..", "agents").resolve())
 if default_agents_dir not in sys.path:
     sys.path.append(default_agents_dir)
-# artifact_service = InMemoryArtifactService()
-
 
 artifact_service = ArticleService(
     db_url=settings.MTM_DATABASE_URL,
