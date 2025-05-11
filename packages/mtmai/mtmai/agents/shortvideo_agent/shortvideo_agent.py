@@ -7,9 +7,9 @@ from google.adk.events import Event
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
-
-# from mtmai.agents.shortvideo_agent.tools.gen_speech_tool import gen_speech_tool
 from mtmai.agents.shortvideo_agent.sub_agents.audio_agent import AudioGenAgent
+from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_terms_agent
+from mtmai.agents.shortvideo_agent.tools.combin_video_tool import combin_video_tool
 from mtmai.model_client.utils import get_default_litellm_model
 
 video_subject_generator = LlmAgent(
@@ -58,6 +58,14 @@ Generate a script for a video, depending on the subject of the video.
 )
 
 
+# def after_agent_callback(callback_context: CallbackContext):
+#     """
+#     在 agent 执行完毕后, 当ShortvideoAgent 输出 "TERMINATE" 时, 表示一切就绪,将进行最后的视频合并操作
+#     """
+#     if callback_context.
+#     pass
+
+
 class ShortvideoAgent(LlmAgent):
     model_config = {"arbitrary_types_allowed": True}
 
@@ -82,10 +90,11 @@ class ShortvideoAgent(LlmAgent):
                         description="音频生成专家",
                         model=model,
                         tools=[],
-                        input_schema=None,
                         output_key="audio_file",
                     )
                 ),
+                AgentTool(video_terms_agent),
+                combin_video_tool,
             ],
             **kwargs,
         )

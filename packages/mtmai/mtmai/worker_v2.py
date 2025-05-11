@@ -73,6 +73,7 @@ class WorkerV2:
 
             pgmq.create_queue(settings.QUEUE_SHORTVIDEO_COMBINE)
 
+        wait_seconds = 5
         while self._running:
             try:
                 # read a single message
@@ -93,6 +94,12 @@ class WorkerV2:
                     # 删除已处理的消息
                     pgmq.delete(self.pgmq_queue_name, msg.msg_id)
             except Exception as e:
+                if "Connection timed out" in str(
+                    e
+                ) or "could not receive data from server" in str(e):
+                    logger.warning(f"数据库连接超时,将在{wait_seconds}秒后重试: {e}")
+                    await asyncio.sleep(wait_seconds)
+                    continue
                 logger.error(f"消费消息时发生错误: {e}")
                 await asyncio.sleep(1)
 

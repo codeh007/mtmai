@@ -57,6 +57,7 @@ class Settings(BaseSettings):
 
     # db
     MTM_DATABASE_URL: str | None = os.environ.get("MTM_DATABASE_URL", "development")
+    MTM_DATABASE_POOL_SIZE: int = 10
 
     API_PREFIX: str = "/api/mtmai"
     # OPENAPI_JSON_PATH: str = "pyprojects/mtmai/mtmai/openapi.json"
