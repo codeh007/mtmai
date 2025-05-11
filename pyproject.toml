@@ -1,7 +1,9 @@
-[project]
-name = "mtmai_workspace"
-version = "0.7.6"
-dependencies = []
+# [project]
+# name = "mtmai_workspace"
+# version = "0.7.6"
+# dependencies = [
+#     # "playwright-stealth>=1.0.6",
+# ]
 
 [dependency-groups]
 dev = [

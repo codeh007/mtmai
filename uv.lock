@@ -16,7 +16,31 @@ resolution-markers = [
 [manifest]
 members = [
     "mtmai",
-    "mtmai-workspace",
+]
+
+[manifest.dependency-groups]
+dev = [
+    { name = "burr", extras = ["start"], specifier = ">=0.22.1" },
+    { name = "cookiecutter" },
+    { name = "mypy", specifier = "==1.13.0" },
+    { name = "packaging" },
+    { name = "poethepoet" },
+    { name = "poethepoet", specifier = ">=0.31.1" },
+    { name = "polars" },
+    { name = "pylint", specifier = ">=3.2.5" },
+    { name = "pyright", specifier = "==1.1.389" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-asyncio", specifier = ">=0.24.0" },
+    { name = "pytest-cov" },
+    { name = "pytest-mock" },
+    { name = "pytest-mock", specifier = ">=3.14.0" },
+    { name = "pytest-xdist" },
+    { name = "rich" },
+    { name = "ruff", specifier = "==0.4.8" },
+    { name = "tomli" },
+    { name = "tomli-w" },
+    { name = "typer" },
 ]
 
 [[package]]
@@ -3843,6 +3867,7 @@ dependencies = [
     { name = "playwright" },
     { name = "playwright-stealth" },
     { name = "psutil" },
+    { name = "psycopg" },
     { name = "psycopg2-binary" },
     { name = "puremagic" },
     { name = "py-mini-racer" },
@@ -4016,6 +4041,7 @@ requires-dist = [
     { name = "playwright" },
     { name = "playwright-stealth", specifier = ">=1.0.6" },
     { name = "psutil", specifier = ">=6.1.1" },
+    { name = "psycopg", specifier = ">=3.2.4" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "puremagic", specifier = ">=1.28" },
     { name = "py-mini-racer", specifier = ">=0.6.0" },
@@ -4092,60 +4118,6 @@ other-language-models = [
 screenshot-scraper = [
     { name = "ipywidgets", specifier = ">=8.1.0" },
     { name = "matplotlib", specifier = ">=3.7.2" },
-]
-
-[[package]]
-name = "mtmai-workspace"
-version = "0.7.6"
-source = { editable = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "burr", extra = ["start"] },
-    { name = "cookiecutter" },
-    { name = "mypy" },
-    { name = "packaging" },
-    { name = "poethepoet" },
-    { name = "polars" },
-    { name = "pylint" },
-    { name = "pyright" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "pytest-xdist" },
-    { name = "rich" },
-    { name = "ruff" },
-    { name = "tomli" },
-    { name = "tomli-w" },
-    { name = "typer" },
-]
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "burr", extras = ["start"], specifier = ">=0.22.1" },
-    { name = "cookiecutter" },
-    { name = "mypy", specifier = "==1.13.0" },
-    { name = "packaging" },
-    { name = "poethepoet" },
-    { name = "poethepoet", specifier = ">=0.31.1" },
-    { name = "polars" },
-    { name = "pylint", specifier = ">=3.2.5" },
-    { name = "pyright", specifier = "==1.1.389" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-asyncio", specifier = ">=0.24.0" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "pytest-xdist" },
-    { name = "rich" },
-    { name = "ruff", specifier = "==0.4.8" },
-    { name = "tomli" },
-    { name = "tomli-w" },
-    { name = "typer" },
 ]
 
 [[package]]

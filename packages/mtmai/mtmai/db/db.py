@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from mtmai.core.config import settings
 
-engine = None
+# engine = None
 
 
 def fix_conn_str(conn_str: str) -> str:

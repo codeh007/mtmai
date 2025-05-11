@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI
 from loguru import logger
 
-import mtmai.core.bootstraps as bootstraps
+from mtmai.core import bootstraps
 from mtmai.core.config import settings
 
 bootstraps.bootstrap_core()
@@ -173,6 +173,8 @@ def mcpserver():
 def setup():
     install1 = "sudo apt install -yqq ffmpeg imagemagick"
     os.system(install1)
+
+    os.system("apt-get install -y libpq-dev")
 
     # 修正 ImageMagick 安全策略, 允许读写
     cmd = "sudo sed -i 's/none/read,write/g' /etc/ImageMagick-6/policy.xml"

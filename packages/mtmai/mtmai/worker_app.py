@@ -19,10 +19,10 @@ async def run_worker():
         worker.register_workflow(FlowTeam())
         logger.info("register team workflow")
 
-        from mtmai.flows.flow_tiktok import FlowTiktok
+        # from mtmai.flows.flow_tiktok import FlowTiktok
 
-        worker.register_workflow(FlowTiktok())
-        logger.info("register tiktok workflow")
+        # worker.register_workflow(FlowTiktok())
+        # logger.info("register tiktok workflow")
 
         await worker.async_start()
     except Exception as e:
