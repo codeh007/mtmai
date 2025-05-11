@@ -8,7 +8,18 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types  # noqa
 from mtmai.core.config import settings
+from mtmai.model_client.utils import get_default_litellm_model
 from mtmai.NarratoAI.services import subtitle, voice
+
+SPEECH_PROMPT = """
+你是一个有10年经验的短视频生成专家, 擅长短视频相关的完整的操作流程,包括文案创作, 视频拍摄, 视频剪辑, 视频特效, 视频配音, 视频字幕, 视频封面, 视频发布等.
+
+**要求**
+- 最终的视频,是适合发布到 tiktok 的短视频, 视频长度在 15 秒到 30 秒之间, 目的是吸引用户关注
+- 整个操作过程, 不要打搅用户,应该尽你最大的能力, 帮助用户生成一个优质的短视频
+
+
+"""
 
 
 class AudioGenAgent(LlmAgent):
@@ -17,6 +28,21 @@ class AudioGenAgent(LlmAgent):
     """
 
     model_config = {"arbitrary_types_allowed": True}
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        model: str = get_default_litellm_model(),
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            description=description,
+            model=model,
+            # instruction=AUDIO_PROMPT,
+            **kwargs,
+        )
 
     @override
     async def _run_async_impl(

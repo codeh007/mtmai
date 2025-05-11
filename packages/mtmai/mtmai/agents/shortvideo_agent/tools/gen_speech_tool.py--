@@ -1,0 +1,100 @@
+"""音频生成工具"""
+
+import logging
+import math
+from os import path
+
+from google.adk.tools import ToolContext
+from google.genai import types  # noqa
+from mtmai.core.config import settings
+from mtmai.NarratoAI.services import voice
+
+logger = logging.getLogger(__name__)
+
+
+async def gen_speech_tool(tool_context: ToolContext) -> dict:
+    """
+    视频解说音频生成工具
+    """
+    # 生成 音频讲解
+    video_script = tool_context.session.state["video_script"]
+    voice_name = tool_context.session.state["voice_name"]
+    output_dir = tool_context.session.state["output_dir"]
+
+    output_audio_file = path.join(output_dir, "audio.mp3")
+    sub_maker = await voice.tts_edgetts(
+        text=video_script,
+        voice_name=voice.parse_voice_name(voice_name),
+        # voice_rate=voice_rate,
+        voice_file=output_audio_file,
+    )
+    if sub_maker is None:
+        raise ValueError("failed to generate audio, sub_maker is None")
+
+    audio_duration = math.ceil(voice.get_audio_duration(sub_maker))
+
+    if not output_audio_file:
+        # yield Event(
+        #     author=tool_context.agent.name,
+        #     content=types.Content(
+        #         role="assistant",
+        #         parts=[types.Part(text="音频生成失败")],
+        #     ),
+        # )
+        # return
+        return {"status": "failed", "message": "音频生成失败"}
+    # 上传
+    audio_file_bytes = open(output_audio_file, "rb").read()
+    mp3_part = types.Part(
+        inline_data=types.Blob(data=audio_file_bytes, mime_type="audio/mpeg")
+    )
+    await tool_context.artifact_service.save_artifact(
+        app_name=tool_context.agent.name,
+        user_id=settings.DEMO_USER_ID,  # TODO: 修正 user_id
+        session_id=tool_context.session.id,
+        filename="speech.mp3",
+        artifact=mp3_part,
+    )
+
+    # 对应的字幕
+    subtitle_fallback = False
+    subtitle_path = path.join(output_dir, "subtitle.srt")
+    subtitle_provider = tool_context.session.state["voice_llm_provider"]
+    if subtitle_provider == "edgetts":
+        voice.create_subtitle(
+            text=video_script, sub_maker=sub_maker, subtitle_file=subtitle_path
+        )
+        if not os.path.exists(subtitle_path):
+            subtitle_fallback = True
+            raise ValueError(
+                f"failed to generate subtitle, subtitle_path: {subtitle_path}"
+            )
+
+    elif subtitle_provider == "whisper" or subtitle_fallback:
+        subtitle.create(audio_file=output_audio_file, subtitle_file=subtitle_path)
+        subtitle.correct(subtitle_file=subtitle_path, video_script=video_script)
+
+    else:
+        raise ValueError(f"unknown subtitle provider: {subtitle_provider}")
+
+    subtitle_srt = subtitle.file_to_subtitles(subtitle_path)
+
+    if not subtitle_srt:
+        raise ValueError("failed to generate subtitle_srt")
+
+    subtitle_file_bytes = open(subtitle_path, "rb").read()
+    srt_part = types.Part(
+        inline_data=types.Blob(data=subtitle_file_bytes, mime_type="text/plain")
+    )
+    await ctx.artifact_service.save_artifact(
+        app_name=ctx.agent.name,
+        user_id=settings.DEMO_USER_ID,  # TODO: 修正 user_id
+        session_id=ctx.session.id,
+        filename="subtitle.srt",
+        artifact=srt_part,
+    )
+    return {
+        "status": "ok",
+        "audio_duration": audio_duration,
+        "audio_file_uri": f"user:{tool_context.session.id}/speech.mp3",
+    }

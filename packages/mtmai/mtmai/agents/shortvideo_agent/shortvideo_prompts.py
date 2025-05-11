@@ -5,10 +5,15 @@ SHORTVIDEO_PROMPT = """
 - 最终的视频,是适合发布到 tiktok 的短视频, 视频长度在 15 秒到 30 秒之间, 目的是吸引用户关注
 - 整个操作过程, 不要打搅用户,应该尽你最大的能力, 帮助用户生成一个优质的短视频
 
-
-
-**提示**:
-- 使用 "video_subject_generator" 工具生成视频主题
-- 使用 "video_script_generator" 工具生成视频脚本
+**流程**
+1. 使用 "video_subject_generator" 工具生成视频主题
+    - 输入: 用户输入的文本
+    - 输出: 视频主题
+2. 使用 "video_script_generator" 工具生成视频脚本
+    - 输入: 视频主题
+    - 输出: 视频脚本
+3. 使用 "audio_gen_agent" 工具生成音频讲解
+    - 输入: 视频脚本
+    - 输出: 音频讲解及对应的 srt 格式字幕文件, 将用于最后的 mp4格式的 video 合成
 
 """

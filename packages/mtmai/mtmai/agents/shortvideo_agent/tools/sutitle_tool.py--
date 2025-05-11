@@ -1,0 +1,63 @@
+"""音频生成工具"""
+
+import logging
+from os import path
+
+from google.adk.tools import ToolContext
+from google.genai import types  # noqa
+from mtmai.core.config import settings
+from mtmai.NarratoAI.services import voice
+
+logger = logging.getLogger(__name__)
+
+import logging
+
+# from ..shared_libraries import file_utils
+
+logger = logging.getLogger(__name__)
+
+
+def subtitle_tool(tool_context: ToolContext) -> dict:
+    """
+    字幕生成工具
+    """
+    video_script = tool_context.session.state["video_script"]
+    voice_name = tool_context.session.state["voice_name"]
+    output_dir = tool_context.session.state["output_dir"]
+    subtitle_fallback = False
+    subtitle_path = path.join(output_dir, "subtitle.srt")
+    subtitle_provider = tool_context.session.state["voice_llm_provider"]
+    if subtitle_provider == "edgetts":
+        voice.create_subtitle(
+            text=video_script, sub_maker=sub_maker, subtitle_file=subtitle_path
+        )
+        if not os.path.exists(subtitle_path):
+            subtitle_fallback = True
+            raise ValueError(
+                f"failed to generate subtitle, subtitle_path: {subtitle_path}"
+            )
+
+    elif subtitle_provider == "whisper" or subtitle_fallback:
+        subtitle.create(audio_file=output_audio_file, subtitle_file=subtitle_path)
+        subtitle.correct(subtitle_file=subtitle_path, video_script=video_script)
+
+    else:
+        raise ValueError(f"unknown subtitle provider: {subtitle_provider}")
+
+    subtitle_srt = subtitle.file_to_subtitles(subtitle_path)
+
+    if not subtitle_srt:
+        raise ValueError("failed to generate subtitle_srt")
+
+    subtitle_file_bytes = open(subtitle_path, "rb").read()
+    srt_part = types.Part(
+        inline_data=types.Blob(data=subtitle_file_bytes, mime_type="text/plain")
+    )
+    await ctx.artifact_service.save_artifact(
+        app_name=ctx.agent.name,
+        user_id=settings.DEMO_USER_ID,  # TODO: 修正 user_id
+        session_id=ctx.session.id,
+        filename="subtitle.srt",
+        artifact=srt_part,
+    )
+    return {"status": "ok"}

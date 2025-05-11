@@ -6,26 +6,11 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from mtmai.core.config import settings
 
-# engine = None
-
 
 def fix_conn_str(conn_str: str) -> str:
     if not str(conn_str).startswith("postgresql+psycopg"):
         conn_str = str(conn_str).replace("postgresql", "postgresql+psycopg")
     return conn_str
-
-
-# def get_engine():
-#     global engine
-#     if engine is not None:
-#         return engine
-#     if settings.MTMAI_DATABASE_URL is None:
-#         raise ValueError("MTMAI_DATABASE_URL environment variable is not set")  # noqa: EM101, TRY003
-#     return create_engine(
-#         settings.MTMAI_DATABASE_URL,
-#         connect_args={"sslmode": "require"},
-#         pool_recycle=300,
-# )
 
 
 # 全局连接池对象

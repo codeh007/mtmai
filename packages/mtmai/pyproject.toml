@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.6"
+version = "0.7.7"
 dependencies = [
     "grpcio>=1.70.0",
     "grpcio-tools>=1.70.0",
@@ -169,6 +169,7 @@ dependencies = [
     "pydub>=0.25.1",
     "asyncpg>=0.30.0",
     "pgmq-sqlalchemy>=0.1.2",
+    "psycopg-binary>=3.2.7",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."

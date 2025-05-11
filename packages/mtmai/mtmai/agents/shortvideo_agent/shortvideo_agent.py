@@ -7,6 +7,9 @@ from google.adk.events import Event
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
+
+# from mtmai.agents.shortvideo_agent.tools.gen_speech_tool import gen_speech_tool
+from mtmai.agents.shortvideo_agent.sub_agents.audio_agent import AudioGenAgent
 from mtmai.model_client.utils import get_default_litellm_model
 
 video_subject_generator = LlmAgent(
@@ -73,6 +76,16 @@ class ShortvideoAgent(LlmAgent):
             tools=[
                 AgentTool(video_subject_generator),
                 AgentTool(video_script_agent),
+                AgentTool(
+                    AudioGenAgent(
+                        name="audio_gen_agent",
+                        description="音频生成专家",
+                        model=model,
+                        tools=[],
+                        input_schema=None,
+                        output_key="audio_file",
+                    )
+                ),
             ],
             **kwargs,
         )
