@@ -543,7 +543,7 @@ def configure_adk_web_api(
                 ):
                     # Format as SSE data
                     sse_event = event.model_dump_json(exclude_none=True, by_alias=True)
-                    logger.info("Generated event in agent run streaming: %s", sse_event)
+                    logger.info(f"Generated event in agent run streaming: {sse_event}")
                     yield f"data: {sse_event}\n\n"
             except Exception as e:
                 logger.exception(e)

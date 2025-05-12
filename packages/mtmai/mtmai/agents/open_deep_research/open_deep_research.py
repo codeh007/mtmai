@@ -108,15 +108,19 @@ class AdkOpenDeepResearch(LlmAgent):
                 pass
             if isinstance(step, FinalAnswerStep):
                 yield Event(
-                    author="open_deep_research",
+                    author=self.name,
                     content=types.Content(
-                        role="open_deep_research",
+                        role=self.name,
                         parts=[
                             types.Part(text=step.final_answer),
                         ],
                     ),
-                    actions=EventActions(
-                        # transfer_to_agent="root_agent",
-                        escalate=True,
-                    ),
                 )
+        # 交接给父级 agent
+        yield Event(
+            author=self.name,
+            actions=EventActions(
+                transfer_to_agent="shortvideo_generator",
+                # escalate=True,
+            ),
+        )
