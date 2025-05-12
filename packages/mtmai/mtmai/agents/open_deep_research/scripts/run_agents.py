@@ -4,6 +4,7 @@ import shutil
 import textwrap
 from pathlib import Path
 
+# import tqdm.asyncio
 from smolagents.utils import AgentError
 
 
@@ -41,16 +42,17 @@ def get_single_file_description(
         file_description += f"\n     -> Image description: {get_image_description(file_path, question, visual_inspection_tool)}"
         return file_description
     elif file_extension in ["pdf", "xls", "xlsx", "docx", "doc", "xml"]:
-        file_description = f" - Attached document: {file_path}"
         image_path = file_path.split(".")[0] + ".png"
         if os.path.exists(image_path):
             description = get_image_description(
                 image_path, question, visual_inspection_tool
             )
+            file_path = image_path
         else:
             description = get_document_description(
                 file_path, question, document_inspection_tool
             )
+        file_description = f" - Attached document: {file_path}"
         file_description += f"\n     -> File description: {description}"
         return file_description
     elif file_extension in ["mp3", "m4a", "wav"]:

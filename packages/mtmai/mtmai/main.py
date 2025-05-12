@@ -67,6 +67,9 @@ def adkweb(
     port: int = settings.PORT,
     trace_to_cloud: bool = False,
 ):
+    from mtmai.otel import setup_instrumentor
+
+    setup_instrumentor()
     @asynccontextmanager
     async def _lifespan(app: FastAPI):
         # from mtmai.worker_app import run_worker
