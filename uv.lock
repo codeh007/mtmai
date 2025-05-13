@@ -3887,7 +3887,6 @@ dependencies = [
     { name = "pathvalidate" },
     { name = "pdfminer-six" },
     { name = "pdfplumber" },
-    { name = "pgmq-sqlalchemy" },
     { name = "pgvector" },
     { name = "playwright" },
     { name = "playwright-stealth" },
@@ -4065,7 +4064,6 @@ requires-dist = [
     { name = "pathvalidate", specifier = ">=3.2.3" },
     { name = "pdfminer-six", specifier = ">=20250327" },
     { name = "pdfplumber", specifier = ">=0.11.6" },
-    { name = "pgmq-sqlalchemy", specifier = ">=0.1.2" },
     { name = "pgvector", specifier = ">=0.3.6" },
     { name = "playwright" },
     { name = "playwright-stealth", specifier = ">=1.0.6" },
@@ -5017,18 +5015,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9e/c3/059298687310d527a58bb01f3b1965787ee3b40dce76752eda8b44e9a2c5/pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523", size = 63772, upload-time = "2023-11-25T06:56:14.81Z" },
-]
-
-[[package]]
-name = "pgmq-sqlalchemy"
-version = "0.1.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "sqlalchemy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/b3/7dcc4e06d12105082c7f3ec0390ce70c3c1121aa0d7fa33798b14ed46826/pgmq_sqlalchemy-0.1.2.tar.gz", hash = "sha256:8ab499aad73f488897e1acc1f39aacbe66554a005e3d86929f9c45589e42105c", size = 12511, upload-time = "2024-08-03T16:11:30.379Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/0a/6aedbbc22ea76c38cf6a426d8b74b35070dfcc55ece430bf50b7b88177e2/pgmq_sqlalchemy-0.1.2-py3-none-any.whl", hash = "sha256:1f3ddf4c1b5f77874bb2eca1d63ae7a901d2f58a920c42862efc0f2cb3b78af7", size = 12314, upload-time = "2024-08-03T16:11:29.081Z" },
 ]
 
 [[package]]
