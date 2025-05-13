@@ -74,7 +74,7 @@ class WorkerV2:
                     params={"worker_id": "aa", "task_type": "bb"},
                 )
             ).all()
-            await session.commit()
+            # await session.commit()
             return result_data
 
     # async def _ack_message(self, msg_id: int) -> None:
@@ -97,9 +97,9 @@ class WorkerV2:
         async with get_async_session() as session:
             await session.exec(
                 text("SELECT taskmq_submit_result(:task_id, :result,:error)"),
-                params={"msg_task_idid": task_id},
+                params={"task_id": task_id, "result": task_result, "error": error},
             )
-            await session.commit()
+            # await session.commit()
 
     async def _consume_messages(self) -> None:
         """
@@ -114,22 +114,20 @@ class WorkerV2:
                     continue
 
                 for msg_tuple in result_data:
+                    msg_id = msg_tuple.msg_id
+                    message_obj = msg_tuple.message
+                    task_id = message_obj.get("task_id")
+                    if not task_id:
+                        raise ValueError("task_id 为空")
+                    payload = message_obj.get("input")
+                    if not payload:
+                        raise ValueError("input 为空")
                     try:
-                        msg_id = msg_tuple.msg_id
-                        message_obj = msg_tuple.message
-                        task_id = message_obj.get("task_id")
-                        if not task_id:
-                            raise ValueError("task_id 为空")
-                        payload = message_obj.get("input")
-                        if not payload:
-                            raise ValueError("input 为空")
                         result = await self.on_message(msg_id, task_id, payload)
-                        await self._ack_message(msg_id)
-                        logger.info(f"任务完成: {msg_id}")
-
+                        await self._post_task_result(task_id, result)
                     except Exception as e:
                         logger.error(f"任务出错: error={str(e)}")
-                        self._post_task_result(task_id, None, str(e))
+                        await self._post_task_result(task_id, None, str(e))
 
             except Exception as e:
                 if "Connection timed out" in str(
@@ -139,7 +137,7 @@ class WorkerV2:
                     await asyncio.sleep(wait_seconds)
                     continue
                 logger.error(f"消费消息错误: {e}")
-                await asyncio.sleep(1)
+                await asyncio.sleep(2)
 
     async def stop(self) -> None:
         """
@@ -160,7 +158,7 @@ class WorkerV2:
                 pass
             self._task = None
 
-    async def on_message(self, msg_id: str, task_id: str, payload: dict) -> None:
+    async def on_message(self, msg_id: str, task_id: str, payload: dict):
         """
         处理消息
         """
@@ -169,12 +167,16 @@ class WorkerV2:
         if not input_obj:
             raise ValueError("input 为空")
         task_type = payload.get("task_type")
+
+        task_result = None
         match task_type:
-            case "run_small_agent":
-                return await self.on_run_small_agent(task_id, payload)
+            case "smolagent":
+                task_result = await self.on_run_small_agent(task_id, payload)
             case _:
-                logger.info(f"不支持的任务类型: {task_type}")
+                # logger.info(f"不支持的任务类型: {task_type}")
                 raise ValueError(f"不支持的任务类型: {task_type}")
+        if task_result:
+            self._post_task_result(task_id, task_result)
 
     async def on_run_small_agent(self, task_id: str, payload: dict) -> None:
         """
@@ -194,13 +196,11 @@ class WorkerV2:
             managed_agents=[],
         )
 
-        final_answer = ""
+        final_answer = None
         for step in code_agent.run(task=input_task, stream=True, reset=True):
             if isinstance(step, ActionStep):
-                # logger.info(f"ActionStep: {step}")
                 pass
             if isinstance(step, PlanningStep):
-                # logger.info(f"PlanningStep: {step}")
                 pass
             if isinstance(step, FinalAnswerStep):
                 final_answer = step.final_answer
