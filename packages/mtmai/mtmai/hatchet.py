@@ -1,6 +1,6 @@
 from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
-from autogen_core import AgentRuntime
+# from autogen_core import AgentRuntime
 from connecpy.context import ClientContext
 from loguru import logger
 from pydantic import BaseModel
@@ -269,7 +269,7 @@ class Hatchet:
         self.cron = CronClient(self._client)
         self.scheduled = ScheduledClient(self._client)
         self.debug = debug
-        self._agent_runtime: AgentRuntime | None = None
+        # self._agent_runtime: AgentRuntime | None = None
 
     @property
     def admin(self) -> AdminClient:

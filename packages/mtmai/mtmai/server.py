@@ -13,7 +13,6 @@ from mtmai.worker_v2 import WorkerV2
 
 # from mtmai.middleware import AuthMiddleware
 
-
 class MtmaiServeOptions(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8000
