@@ -75,7 +75,10 @@ class WorkerV2:
         while self._running:
             try:
                 # read a single message
-                msg = pgmq.read(self.queue_name)
+                msg = pgmq.read(
+                    self.queue_name,
+                    vt=60,
+                )
                 if not msg:
                     await asyncio.sleep(1)
                     continue
@@ -87,7 +90,7 @@ class WorkerV2:
                 except Exception as e:
                     logger.error(f"处理消息失败: {e}")
                     # 设置消息可见性超时,让消息重新入队
-                    pgmq.set_vt(self.queue_name, msg.msg_id, 30)
+                    # pgmq.set_vt(self.queue_name, msg.msg_id, 30)
                 finally:
                     # 删除已处理的消息
                     pgmq.delete(self.queue_name, msg.msg_id)
