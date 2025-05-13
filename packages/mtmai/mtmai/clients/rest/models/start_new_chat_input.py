@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.social_team_config import SocialTeamConfig
+from mtmai.clients.rest.models.start_new_chat_input_config import StartNewChatInputConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +29,7 @@ class StartNewChatInput(BaseModel):
     """ # noqa: E501
     type: StrictStr
     task: StrictStr
-    config: SocialTeamConfig
+    config: StartNewChatInputConfig
     __properties: ClassVar[List[str]] = ["type", "task", "config"]
 
     @field_validator('type')
@@ -100,7 +100,7 @@ class StartNewChatInput(BaseModel):
         _obj = cls.model_validate({
             "type": obj.get("type") if obj.get("type") is not None else 'StartNewChatInput',
             "task": obj.get("task"),
-            "config": SocialTeamConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
+            "config": StartNewChatInputConfig.from_dict(obj["config"]) if obj.get("config") is not None else None
         })
         return _obj
 

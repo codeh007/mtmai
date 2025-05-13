@@ -6,12 +6,16 @@ import asyncio
 import logging
 from typing import Optional
 
+from google.genai import types  # noqa: F401
 from loguru import logger
+from smolagents import CodeAgent
+from smolagents.memory import ActionStep, FinalAnswerStep, PlanningStep
 from sqlalchemy import text
 from sqlalchemy.exc import ArgumentError
 
 from mtmai.core.config import settings
 from mtmai.db.db import get_async_session
+from mtmai.model_client import get_default_smolagents_model
 
 
 class WorkerV2:
@@ -66,21 +70,34 @@ class WorkerV2:
         async with get_async_session() as session:
             result_data = (
                 await session.exec(
-                    text("SELECT * FROM taskmq_pull(:queue_name, :consumer_id)"),
-                    params={"queue_name": "aa", "consumer_id": "bb"},
+                    text("SELECT * FROM taskmq_pull(:worker_id, :task_type)"),
+                    params={"worker_id": "aa", "task_type": "bb"},
                 )
             ).all()
             await session.commit()
             return result_data
 
-    async def _ack_message(self, msg_id: int) -> None:
+    # async def _ack_message(self, msg_id: int) -> None:
+    #     """
+    #     确认消息
+    #     """
+    #     async with get_async_session() as session:
+    #         await session.exec(
+    #             text("SELECT taskmq_submit_result(:msg_id)"),
+    #             params={"msg_id": msg_id},
+    #         )
+    #         await session.commit()
+
+    async def _post_task_result(
+        self, task_id: str, task_result: any, error: str | None = None
+    ) -> None:
         """
         确认消息
         """
         async with get_async_session() as session:
             await session.exec(
-                text("SELECT taskmq_submit_result(:msg_id)"),
-                params={"msg_id": msg_id},
+                text("SELECT taskmq_submit_result(:task_id, :result,:error)"),
+                params={"msg_task_idid": task_id},
             )
             await session.commit()
 
@@ -100,15 +117,19 @@ class WorkerV2:
                     try:
                         msg_id = msg_tuple.msg_id
                         message_obj = msg_tuple.message
+                        task_id = message_obj.get("task_id")
+                        if not task_id:
+                            raise ValueError("task_id 为空")
                         payload = message_obj.get("input")
                         if not payload:
                             raise ValueError("input 为空")
-                        result = await self.on_message(msg_id, payload)
+                        result = await self.on_message(msg_id, task_id, payload)
                         await self._ack_message(msg_id)
                         logger.info(f"任务完成: {msg_id}")
 
                     except Exception as e:
                         logger.error(f"任务出错: error={str(e)}")
+                        self._post_task_result(task_id, None, str(e))
 
             except Exception as e:
                 if "Connection timed out" in str(
@@ -139,12 +160,48 @@ class WorkerV2:
                 pass
             self._task = None
 
-    async def on_message(self, msg_id: str, payload: dict) -> None:
+    async def on_message(self, msg_id: str, task_id: str, payload: dict) -> None:
         """
         处理消息
         """
-        logger.info(f"on_message\t{msg_id}\t{payload}")
-        return {
-            "result": "success",
-            "some_data": "some_data1111",
-        }
+        logger.info(f"on_message\t{msg_id}\t{task_id}\t{payload}")
+        input_obj = payload.get("input")
+        if not input_obj:
+            raise ValueError("input 为空")
+        task_type = payload.get("task_type")
+        match task_type:
+            case "run_small_agent":
+                return await self.on_run_small_agent(task_id, payload)
+            case _:
+                logger.info(f"不支持的任务类型: {task_type}")
+                raise ValueError(f"不支持的任务类型: {task_type}")
+
+    async def on_run_small_agent(self, task_id: str, payload: dict) -> None:
+        """
+        处理消息
+        """
+        logger.info(f"on_message\t{task_id}\t{payload}")
+
+        input_task = payload.get("input")
+        code_agent = CodeAgent(
+            model=get_default_smolagents_model(),
+            # tools=[visualizer, TextInspectorTool(self.model, self.text_limit)],
+            tools=[],
+            max_steps=self.max_steps,
+            verbosity_level=self.verbosity_level,
+            additional_authorized_imports=self.additional_authorized_imports,
+            planning_interval=4,
+            managed_agents=[],
+        )
+
+        final_answer = ""
+        for step in code_agent.run(task=input_task, stream=True, reset=True):
+            if isinstance(step, ActionStep):
+                # logger.info(f"ActionStep: {step}")
+                pass
+            if isinstance(step, PlanningStep):
+                # logger.info(f"PlanningStep: {step}")
+                pass
+            if isinstance(step, FinalAnswerStep):
+                final_answer = step.final_answer
+        return final_answer
