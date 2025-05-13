@@ -62,17 +62,6 @@ def wsworker():
     asyncio.run(WSAgentWorker().start())
 
 
-# @app.command()
-# def worker():
-#     from mtmai.worker_v2 import WorkerV2
-
-#     asyncio.run(
-#         WorkerV2(
-#             db_url=settings.MTM_DATABASE_URL,
-#         ).start_block()
-#     )
-
-
 @app.command()
 def chrome():
     asyncio.run(start_chrome_server())
