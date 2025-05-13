@@ -74,7 +74,7 @@ class WorkerV2:
                     params={"worker_id": "aa", "task_type": "bb"},
                 )
             ).all()
-            # await session.commit()
+            await session.commit()
             return result_data
 
     # async def _ack_message(self, msg_id: int) -> None:
@@ -89,17 +89,22 @@ class WorkerV2:
     #         await session.commit()
 
     async def _post_task_result(
-        self, task_id: str, task_result: any, error: str | None = None
+        self, msg_id: str, task_id: str, task_result: any, error: str | None = None
     ) -> None:
         """
         确认消息
         """
         async with get_async_session() as session:
             await session.exec(
-                text("SELECT taskmq_submit_result(:task_id, :result,:error)"),
-                params={"task_id": task_id, "result": task_result, "error": error},
+                text("SELECT taskmq_submit_result(:msg_id, :task_id, :result,:error)"),
+                params={
+                    "msg_id": msg_id,
+                    "task_id": task_id,
+                    "result": task_result,
+                    "error": error,
+                },
             )
-            # await session.commit()
+            await session.commit()
 
     async def _consume_messages(self) -> None:
         """
@@ -124,10 +129,12 @@ class WorkerV2:
                         raise ValueError("input 为空")
                     try:
                         result = await self.on_message(msg_id, task_id, payload)
-                        await self._post_task_result(task_id, result)
+                        await self._post_task_result(msg_id, task_id, result)
                     except Exception as e:
                         logger.error(f"任务出错: error={str(e)}")
-                        await self._post_task_result(task_id, None, str(e))
+                        await self._post_task_result(msg_id, task_id, None, str(e))
+                        await asyncio.sleep(1)
+                        continue
 
             except Exception as e:
                 if "Connection timed out" in str(
@@ -138,6 +145,7 @@ class WorkerV2:
                     continue
                 logger.error(f"消费消息错误: {e}")
                 await asyncio.sleep(2)
+                continue
 
     async def stop(self) -> None:
         """
@@ -173,10 +181,10 @@ class WorkerV2:
             case "smolagent":
                 task_result = await self.on_run_small_agent(task_id, payload)
             case _:
-                # logger.info(f"不支持的任务类型: {task_type}")
                 raise ValueError(f"不支持的任务类型: {task_type}")
-        if task_result:
-            self._post_task_result(task_id, task_result)
+        # if task_result:
+        #     await self._post_task_result(task_id, task_result)
+        return task_result
 
     async def on_run_small_agent(self, task_id: str, payload: dict) -> None:
         """
