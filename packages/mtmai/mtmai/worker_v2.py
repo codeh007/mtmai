@@ -121,7 +121,7 @@ class WorkerV2:
                         result = await self.on_message(msg_id, task_id, payload)
                         await self._post_task_result(msg_id, task_id, result)
                     except Exception as e:
-                        logger.error(f"任务出错: error={str(e)}")
+                        logger.exception(e)
                         await self._post_task_result(msg_id, task_id, None, str(e))
                         await asyncio.sleep(1)
                         continue
