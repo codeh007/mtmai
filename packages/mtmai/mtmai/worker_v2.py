@@ -3,6 +3,7 @@
 """
 
 import asyncio
+import json
 import logging
 from typing import Optional
 
@@ -77,17 +78,6 @@ class WorkerV2:
             await session.commit()
             return result_data
 
-    # async def _ack_message(self, msg_id: int) -> None:
-    #     """
-    #     确认消息
-    #     """
-    #     async with get_async_session() as session:
-    #         await session.exec(
-    #             text("SELECT taskmq_submit_result(:msg_id)"),
-    #             params={"msg_id": msg_id},
-    #         )
-    #         await session.commit()
-
     async def _post_task_result(
         self, msg_id: str, task_id: str, task_result: any, error: str | None = None
     ) -> None:
@@ -100,7 +90,7 @@ class WorkerV2:
                 params={
                     "msg_id": msg_id,
                     "task_id": task_id,
-                    "result": task_result,
+                    "result": json.dumps(task_result),
                     "error": error,
                 },
             )
@@ -191,15 +181,14 @@ class WorkerV2:
         处理消息
         """
         logger.info(f"on_message\t{task_id}\t{payload}")
-
         input_task = payload.get("input")
         code_agent = CodeAgent(
             model=get_default_smolagents_model(),
             # tools=[visualizer, TextInspectorTool(self.model, self.text_limit)],
             tools=[],
-            max_steps=self.max_steps,
-            verbosity_level=self.verbosity_level,
-            additional_authorized_imports=self.additional_authorized_imports,
+            max_steps=25,
+            verbosity_level=2,
+            additional_authorized_imports=["*"],
             planning_interval=4,
             managed_agents=[],
         )
