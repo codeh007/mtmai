@@ -95,6 +95,7 @@ class WorkerV2:
                 },
             )
             await session.commit()
+        logger.info(f"_post_task_result 完成, {task_id}")
 
     async def _consume_messages(self) -> None:
         """
@@ -117,6 +118,8 @@ class WorkerV2:
                     payload = message_obj.get("input")
                     if not payload:
                         raise ValueError("input 为空")
+                    if isinstance(payload, str):
+                        payload = json.loads(payload)
                     try:
                         result = await self.on_message(msg_id, task_id, payload)
                         await self._post_task_result(msg_id, task_id, result)
