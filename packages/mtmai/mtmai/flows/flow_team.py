@@ -1,12 +1,9 @@
 import importlib
 import os
 
-# from autogen_agentchat.base import Team
 from google.adk.agents import RunConfig
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
-
-# from google.adk.artifacts import InMemoryArtifactService
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
 from loguru import logger

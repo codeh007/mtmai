@@ -1,0 +1,90 @@
+import logging
+import random
+from datetime import timedelta
+
+from google.adk.agents import RunConfig
+from google.adk.agents.run_config import StreamingMode
+from google.adk.runners import Runner
+from hatchet_sdk import Context, SleepCondition
+from mtmai.agents.shortvideo_agent.shortvideo_agent import new_shortvideo_agent
+from mtmai.core.config import settings
+from mtmai.db.id import generate_id
+from mtmai.hatchet_client import hatchet
+from mtmai.services.artifact_service import MtmArtifactService
+from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
+from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
+
+
+class ShortVideoGenInput(BaseModel):
+    topic: str
+
+
+class StepOutput(BaseModel):
+    random_number: int
+
+
+class RandomSum(BaseModel):
+    sum: int
+
+
+short_video_gen_workflow = hatchet.workflow(
+    name="ShortVideoGenWorkflow2", input_validator=ShortVideoGenInput
+)
+
+
+session_service = GomtmDatabaseSessionService(
+    db_url=settings.MTM_DATABASE_URL,
+)
+
+artifact_service = MtmArtifactService(
+    db_url=settings.MTM_DATABASE_URL,
+)
+
+
+@short_video_gen_workflow.task()
+async def start(input: ShortVideoGenInput, ctx: Context) -> StepOutput:
+    """
+    开始生成 topic
+    """
+
+    logger.info("开始生成 topic")
+    session_id = generate_id()
+
+    agent = new_shortvideo_agent()
+
+    runner = Runner(
+        app_name="hello-adk-agent",
+        agent=agent,
+        artifact_service=artifact_service,
+        session_service=session_service,
+    )
+    logger.info("开始生成 topic 2222")
+
+    async for event in runner.run_async(
+        user_id="hello-user",
+        session_id=session_id,
+        new_message=input.topic,
+        run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+    ):
+        if event.is_final_response():
+            return {"topic": event.content.actual_instance}
+        # yield event
+        else:
+            logger.info(event)
+    return {"topic": "生成主题失败???"}
+
+
+# > Add wait for sleep
+@short_video_gen_workflow.task(
+    parents=[start],
+    wait_for=[
+        SleepCondition(
+            timedelta(seconds=1),
+        )
+    ],
+)
+async def wait_for_sleep(input, ctx: Context) -> StepOutput:
+    logger.info("到达 wait_for_sleep")
+    return StepOutput(random_number=random.randint(1, 100))
