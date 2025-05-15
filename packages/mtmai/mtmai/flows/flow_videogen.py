@@ -4,12 +4,16 @@ from datetime import timedelta
 
 from google.adk.agents import RunConfig
 from google.adk.agents.run_config import StreamingMode
+from google.adk.events.event import Event
 from google.adk.runners import Runner
+from google.genai import types  # noqa: F401
 from hatchet_sdk import Context, SleepCondition
 from mtmai.agents.shortvideo_agent.shortvideo_agent import new_shortvideo_agent
 from mtmai.core.config import settings
-from mtmai.db.id import generate_id
+
+# from mtmai.db.id import generate_id
 from mtmai.hatchet_client import hatchet
+from mtmai.mtlibs.id import generate_uuid
 from mtmai.services.artifact_service import MtmArtifactService
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 from pydantic import BaseModel
@@ -22,7 +26,8 @@ class ShortVideoGenInput(BaseModel):
 
 
 class StepOutput(BaseModel):
-    random_number: int
+    # random_number: int
+    events: list[Event]
 
 
 class RandomSum(BaseModel):
@@ -50,30 +55,47 @@ async def start(input: ShortVideoGenInput, ctx: Context) -> StepOutput:
     """
 
     logger.info("开始生成 topic")
-    session_id = generate_id()
-
+    session_id = generate_uuid()
+    adk_app_name = "shortvideo_agent"
+    session = session_service.get_session(
+        app_name=adk_app_name,
+        user_id=settings.DEMO_USER_ID,
+        session_id=session_id,
+    )
+    if not session:
+        logger.info(f"New session created: {session_id}")
+        session = session_service.create_session(
+            app_name=adk_app_name,
+            user_id=settings.DEMO_USER_ID,
+            state={},
+            session_id=session_id,
+        )
+    if not session:
+        raise Exception("session not found")
     agent = new_shortvideo_agent()
 
     runner = Runner(
-        app_name="hello-adk-agent",
+        app_name=adk_app_name,
         agent=agent,
         artifact_service=artifact_service,
         session_service=session_service,
     )
-    logger.info("开始生成 topic 2222")
-
+    events = []
     async for event in runner.run_async(
-        user_id="hello-user",
+        user_id=settings.DEMO_USER_ID,
         session_id=session_id,
-        new_message=input.topic,
+        new_message=types.Content(
+            role="user",
+            parts=[types.Part(text=input.topic)],
+        ),
         run_config=RunConfig(streaming_mode=StreamingMode.SSE),
     ):
+        events.append(event)
+        logger.info(event)
         if event.is_final_response():
-            return {"topic": event.content.actual_instance}
-        # yield event
-        else:
-            logger.info(event)
-    return {"topic": "生成主题失败???"}
+            return {"events": events}
+
+    return {"events": events}
 
 
 # > Add wait for sleep

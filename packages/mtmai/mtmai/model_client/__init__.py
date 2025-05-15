@@ -234,5 +234,9 @@ def get_default_smolagents_model():
         client_kwargs={
             "routing_strategy": "simple-shuffle",
         },
+        num_retries=10,
+        cooldown_time=10,
+        retry_after=5,
+        # fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
     )
     return model

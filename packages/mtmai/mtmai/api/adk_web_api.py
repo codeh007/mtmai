@@ -31,7 +31,7 @@ from google.adk.events.event import Event
 from google.adk.runners import Runner
 from google.adk.sessions import BaseSessionService
 from google.adk.sessions.session import Session
-from google.genai import types
+from google.genai import types  # type: ignore
 from loguru import logger
 from mtmai.core.config import settings
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export

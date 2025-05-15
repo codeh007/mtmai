@@ -14,6 +14,7 @@ from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_ter
 from mtmai.agents.shortvideo_agent.tools.combin_video_tool import combin_video_tool
 from mtmai.agents.shortvideo_agent.tools.speech_tool import speech_tool
 from mtmai.model_client import get_default_litellm_model
+from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 from pydantic import BaseModel, Field
 
 video_script_agent = LlmAgent(
@@ -160,4 +161,5 @@ def new_shortvideo_agent():
                 model=get_default_litellm_model(),
             ),
         ],
+        before_model_callback=[rate_limit_callback],
     )
