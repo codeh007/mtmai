@@ -164,14 +164,14 @@ wheels = [
 
 [[package]]
 name = "aiostream"
-version = "0.6.4"
+version = "0.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a5/fe/aa14603fcd5cc4333f81791bbdf58cd4cb8677c8e21e3cc691d27c00173f/aiostream-0.6.4.tar.gz", hash = "sha256:f99bc6b1b9cea3e70885dc235a233523597555fe4a585ed21d65264b3f1ff3d2", size = 67983, upload-time = "2024-10-30T12:59:15.361Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/60/0b46dfd568d1e22ff587ff0b00829a11411bc34be1b6497c8783cbd9ec82/aiostream-0.5.2.tar.gz", hash = "sha256:b71b519a2d66c38f0872403ab86417955b77352f08d9ad02ad46fc3926b389f4", size = 35339, upload-time = "2023-10-24T10:11:30.891Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/5c/639dc59441df1d5cec49a09c36eb89af651476760f950b7d018bdf0ec4a7/aiostream-0.6.4-py3-none-any.whl", hash = "sha256:bd8c6a8b90a52c0325a3b19406f0f2a131448e596c06398886f5be1c73b4cea9", size = 53665, upload-time = "2024-10-30T12:59:13.732Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/2a/4140da24a81adce23b79e4fdc3fc722c9ff698460c1b9f8f7bd3742eb02e/aiostream-0.5.2-py3-none-any.whl", hash = "sha256:054660370be9d37f6fe3ece3851009240416bd082e469fd90cc8673d3818cf71", size = 39486, upload-time = "2023-10-24T10:11:28.221Z" },
 ]
 
 [[package]]
@@ -527,15 +527,6 @@ wheels = [
 ]
 
 [[package]]
-name = "babel"
-version = "2.17.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7d/6b/d52e42361e1aa00709585ecc30b3f9684b3ab62530771402248b1b1d6240/babel-2.17.0.tar.gz", hash = "sha256:0c54cffb19f690cdcc52a3b50bcbf71e07a808d1c80d549f2459b9d2cf0afb9d", size = 9951852, upload-time = "2025-02-01T15:17:41.026Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/b8/3fe70c75fe32afc4bb507f75563d39bc5642255d1d94f1f23604725780bf/babel-2.17.0-py3-none-any.whl", hash = "sha256:4d0b53093fdfb4b21c92b5213dba5a1b23885afa8383709427046b21c366e5f2", size = 10182537, upload-time = "2025-02-01T15:17:37.39Z" },
-]
-
-[[package]]
 name = "backoff"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -839,20 +830,19 @@ wheels = [
 
 [[package]]
 name = "cel-python"
-version = "0.1.5"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "babel" },
     { name = "jmespath" },
-    { name = "lark-parser" },
+    { name = "lark" },
     { name = "python-dateutil" },
     { name = "pyyaml" },
-    { name = "requests" },
-    { name = "urllib3" },
+    { name = "types-python-dateutil" },
+    { name = "types-pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b3/9e/c3af4a83cbe8108cff92b0588b7ac53efc41fcaf1ffd09d07dc68c9b5d27/cel-python-0.1.5.tar.gz", hash = "sha256:d3911bb046bc3ed12792bd88ab453f72d98c66923b72a2fa016bcdffd96e2f98", size = 81518, upload-time = "2021-07-20T15:21:47.044Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/10/87/85a1b99b98f6466bb87d40df636626385945ae82348e82cd97d44313f612/cel_python-0.2.0.tar.gz", hash = "sha256:75de72a5cf223ec690b236f0cc24da267219e667bd3e7f8f4f20595fcc1c0c0f", size = 67185, upload-time = "2025-02-14T11:42:21.882Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/6b/e12b1d5593cbf49d52028bd5ace95ec3e4197365b19ea4ed198c7c06f495/cel_python-0.1.5-py3-none-any.whl", hash = "sha256:ac81fab8ba08b633700a45d84905be2863529c6a32935c9da7ef53fc06844f1a", size = 87124, upload-time = "2021-07-20T15:21:45.332Z" },
+    { url = "https://files.pythonhosted.org/packages/18/28/08871462a0347b3e707658a8308be6f979167488a2196f93b402c2ea7170/cel_python-0.2.0-py3-none-any.whl", hash = "sha256:478ff73def7b39d51e6982f95d937a57c2b088c491c578fe5cecdbd79f476f60", size = 71337, upload-time = "2025-02-14T11:42:19.996Z" },
 ]
 
 [[package]]
@@ -2340,6 +2330,30 @@ wheels = [
 ]
 
 [[package]]
+name = "hatchet-sdk"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "aiohttp-retry" },
+    { name = "aiostream" },
+    { name = "cel-python" },
+    { name = "grpcio" },
+    { name = "grpcio-tools" },
+    { name = "prometheus-client" },
+    { name = "protobuf" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "python-dateutil" },
+    { name = "tenacity" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f5/f0/6eaa48b5d58e071803e304e17f49842a9b96fc313adc7d8413ba65fbc10b/hatchet_sdk-1.9.0.tar.gz", hash = "sha256:c9065b34e0aeb92e04ee4fd9476de14dfa7a1970a2e15f3c19eca62087dfd70a", size = 329029, upload-time = "2025-05-14T15:16:46.922Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e6/3d/99dc92d033ca9e02fcb0967c677c14ffb81360ca0bd2fbd38b30b8f7b2eb/hatchet_sdk-1.9.0-py3-none-any.whl", hash = "sha256:508b6fefdb41d1df52fb6d32e9dadd2de2d616b75b2ded317c88416a4f0e6573", size = 799967, upload-time = "2025-05-14T15:16:45.028Z" },
+]
+
+[[package]]
 name = "helium"
 version = "5.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -3229,12 +3243,12 @@ wheels = [
 ]
 
 [[package]]
-name = "lark-parser"
+name = "lark"
 version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5a/ee/fd1192d7724419ddfe15b6f17d1c8742800d4de917c0adac3b6aaf22e921/lark-parser-0.12.0.tar.gz", hash = "sha256:15967db1f1214013dca65b1180745047b9be457d73da224fcda3d9dd4e96a138", size = 235029, upload-time = "2021-08-30T09:14:44.484Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/02/1d/29681d27b84e384ea50b5546e9f0089126afbc91754db4ca89593fcfd0e8/lark-0.12.0.tar.gz", hash = "sha256:7da76fcfddadabbbbfd949bbae221efd33938451d90b1fefbbc423c3cccf48ef", size = 235168, upload-time = "2021-11-12T11:15:32.124Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/00/90f05db333fe1aa6b6ffea83a35425b7d53ea95c8bba0b1597f226cf1d5f/lark_parser-0.12.0-py2.py3-none-any.whl", hash = "sha256:0eaf30cb5ba787fe404d73a7d6e61df97b21d5a63ac26c5008c78a494373c675", size = 103498, upload-time = "2021-08-30T13:01:01.603Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/39/cef2ccdfd984ae3cf93878d050c1b7c9354dd9493ce83fd9bb33a41f7a33/lark-0.12.0-py2.py3-none-any.whl", hash = "sha256:ed1d891cbcf5151ead1c1d14663bf542443e579e63a76ae175b01b899bd854ca", size = 103540, upload-time = "2021-11-12T11:15:34.408Z" },
 ]
 
 [[package]]
@@ -3840,6 +3854,7 @@ dependencies = [
     { name = "googlesearch-python" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
+    { name = "hatchet-sdk" },
     { name = "helium" },
     { name = "html2text" },
     { name = "httpx" },
@@ -4015,6 +4030,7 @@ requires-dist = [
     { name = "googlesearch-python", specifier = ">=1.2.5" },
     { name = "grpcio", specifier = ">=1.70.0" },
     { name = "grpcio-tools", specifier = ">=1.70.0" },
+    { name = "hatchet-sdk", specifier = ">=1.9.0" },
     { name = "helium", specifier = ">=5.1.1" },
     { name = "html2text", specifier = ">=2024.2.26" },
     { name = "httpx", specifier = ">=0.27.2" },
@@ -9731,6 +9747,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a9/60/47d92293d9bc521cd2301e423a358abfac0ad409b3a1606d8fbae1321961/types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb", size = 13802, upload-time = "2024-12-06T02:56:41.019Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/b3/ca41df24db5eb99b00d97f89d7674a90cb6b3134c52fb8121b6d8d30f15c/types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53", size = 14384, upload-time = "2024-12-06T02:56:39.412Z" },
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20250402"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2d/68/609eed7402f87c9874af39d35942744e39646d1ea9011765ec87b01b2a3c/types_pyyaml-6.0.12.20250402.tar.gz", hash = "sha256:d7c13c3e6d335b6af4b0122a01ff1d270aba84ab96d1a1a1063ecba3e13ec075", size = 17282, upload-time = "2025-04-02T02:56:00.235Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ed/56/1fe61db05685fbb512c07ea9323f06ea727125951f1eb4dff110b3311da3/types_pyyaml-6.0.12.20250402-py3-none-any.whl", hash = "sha256:652348fa9e7a203d4b0d21066dfb00760d3cbd5a15ebb7cf8d33c88a49546681", size = 20329, upload-time = "2025-04-02T02:55:59.382Z" },
 ]
 
 [[package]]

@@ -172,6 +172,7 @@ dependencies = [
     "langfuse>=2.60.4",
     "opentelemetry-sdk>=1.32.0",
     "openinference-instrumentation-smolagents>=0.1.8",
+    "hatchet-sdk>=1.9.0",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."

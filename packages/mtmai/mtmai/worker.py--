@@ -1,0 +1,11 @@
+from mtmai.flows.first_workflow import my_task
+from mtmai.hatchet_client import hatchet
+
+
+def main() -> None:
+    worker = hatchet.worker("test-worker", slots=1, workflows=[my_task])
+    worker.start()
+
+
+if __name__ == "__main__":
+    main()
