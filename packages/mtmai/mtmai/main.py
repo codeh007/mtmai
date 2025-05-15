@@ -152,17 +152,18 @@ def download_models():
 
 @app.command()
 def worker():
+    from mtmai.flows.condition_example import task_condition_workflow
     from mtmai.flows.first_workflow import my_task
     from mtmai.hatchet_client import hatchet
 
-    worker = hatchet.worker("test-worker", slots=1, workflows=[my_task])
+    worker = hatchet.worker(
+        "test-worker", slots=1, workflows=[my_task, task_condition_workflow]
+    )
     worker.start()
 
 
 @app.command()
 def runtask():
-    import asyncio
-
     from mtmai.flows.first_workflow import my_task
 
     async def run_task():
@@ -170,6 +171,20 @@ def runtask():
         print(
             "任务结果: ",
             result["meaning_of_life"],
+        )
+
+    asyncio.run(run_task())
+
+
+@app.command()
+def run_c1():
+    from mtmai.flows.condition_example import task_condition_workflow
+
+    async def run_task():
+        result = await task_condition_workflow.aio_run()
+        print(
+            "任务结果: ",
+            result["sum"],
         )
 
     asyncio.run(run_task())
