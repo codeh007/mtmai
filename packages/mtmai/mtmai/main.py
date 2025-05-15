@@ -152,44 +152,45 @@ def download_models():
 
 @app.command()
 def worker():
-    from mtmai.flows.condition_example import task_condition_workflow
     from mtmai.flows.flow_videogen import short_video_gen_workflow
     from mtmai.hatchet_client import hatchet
 
     worker = hatchet.worker(
         "mtmai-worker",
         slots=1,
-        workflows=[short_video_gen_workflow, task_condition_workflow],
+        workflows=[short_video_gen_workflow],
     )
     worker.start()
 
 
 @app.command()
 def run_short():
-    from mtmai.flows.flow_videogen import short_video_gen_workflow
+    from mtmai.flows.flow_videogen import ShortVideoGenInput, short_video_gen_workflow
 
     async def run_task():
-        result = await short_video_gen_workflow.aio_run()
+        result = await short_video_gen_workflow.aio_run(
+            input=ShortVideoGenInput(topic="动物世界的狂欢")
+        )
         print(
             "任务结果: ",
-            result["sum"],
+            result,
         )
 
     asyncio.run(run_task())
 
 
-@app.command()
-def run_c1():
-    from mtmai.flows.condition_example import task_condition_workflow
+# @app.command()
+# def run_c1():
+#     from mtmai.flows.condition_example import task_condition_workflow
 
-    async def run_task():
-        result = await task_condition_workflow.aio_run()
-        print(
-            "任务结果: ",
-            result["sum"],
-        )
+#     async def run_task():
+#         result = await task_condition_workflow.aio_run()
+#         print(
+#             "任务结果: ",
+#             result["sum"],
+#         )
 
-    asyncio.run(run_task())
+#     asyncio.run(run_task())
 
 
 if __name__ == "__main__":
