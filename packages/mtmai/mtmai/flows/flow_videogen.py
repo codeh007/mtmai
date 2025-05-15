@@ -1,5 +1,4 @@
 import logging
-import random
 from datetime import timedelta
 
 from google.adk.agents import RunConfig
@@ -98,7 +97,6 @@ async def start(input: ShortVideoGenInput, ctx: Context) -> StepOutput:
     return {"events": events}
 
 
-# > Add wait for sleep
 @short_video_gen_workflow.task(
     parents=[start],
     wait_for=[
@@ -107,6 +105,6 @@ async def start(input: ShortVideoGenInput, ctx: Context) -> StepOutput:
         )
     ],
 )
-async def wait_for_sleep(input, ctx: Context) -> StepOutput:
+async def wait_for_sleep(input, ctx: Context) -> dict:
     logger.info("到达 wait_for_sleep")
-    return StepOutput(random_number=random.randint(1, 100))
+    return {"步骤2": input}

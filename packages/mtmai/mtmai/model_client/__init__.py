@@ -49,6 +49,16 @@ def get_model_list():
     return model_list
 
 
+def get_litellm_router():
+    return Router(
+        model_list=get_model_list(),
+        num_retries=30,
+        cooldown_time=10,
+        retry_after=20,
+        fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
+    )
+
+
 ## 主要改变: 使用了 litellm router
 class MtAdkLiteRouterLlm(BaseLlm):
     """
@@ -78,13 +88,7 @@ class MtAdkLiteRouterLlm(BaseLlm):
         self._additional_args.pop("stream", None)
 
         ## !!! 关键修改
-        self.llm_client = Router(
-            model_list=get_model_list(),
-            num_retries=5,
-            cooldown_time=10,
-            retry_after=5,
-            fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
-        )
+        self.llm_client = get_litellm_router()
 
     async def generate_content_async(
         self, llm_request: LlmRequest, stream: bool = False
@@ -182,43 +186,6 @@ class MtAdkLiteRouterLlm(BaseLlm):
 
 
 def get_default_litellm_model():
-    # return LiteLlm(
-    #     # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
-    #     # model="openai/qwen/qwq-32b",
-    #     model="openai/meta/llama-3.3-70b-instruct",
-    #     api_key="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",
-    #     base_url="https://integrate.api.nvidia.com/v1",
-    # )
-    # return MtLiteLlm(
-    #     # model="openai/nvidia/llama-3.3-nemotron-super-49b-v1",
-    #     # model="openai/qwen/qwq-32b",
-    #     # model="openai/qwen/qwen-2.5-coder-32b-instruct:free",
-    #     # model="openai/qwen/qwq-32b:free",
-    #     model="openai/google/gemini-2.5-pro-exp-03-25:free",
-    #     api_key=settings.OPENROUTER_API_KEY,
-    #     base_url="https://openrouter.ai/api/v1",
-    # )
-    # return MtLiteLlm(
-    #     model="openai/google/gemini-2.5-pro-exp-03-25:free",
-    #     api_key=settings.OPENROUTER_API_KEY,
-    #     base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/openrouter",
-    # )
-
-    # return MtLiteLlm(
-    #     # model="openai/deepseek-ai/DeepSeek-V3-0324",
-    #     model="huggingface/sambanova/meta-llama/Llama-3.3-70B-Instruct",
-    #     api_key=settings.HF_TOKEN,
-    #     # base_url="https://gateway.ai.cloudflare.com/v1/623faf72ee0d2af3e586e7cd9dadb72b/openrouter/huggingface",
-    # )
-
-    # return MtLiteLlm(
-    #     # model="openai/nvidia/Llama-3_3-Nemotron-Super-49B-v1",
-    #     model="openai/chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8",
-    #     api_key="cpk_85dee936b21c481ea7d542176feb9200.e3d47e0e31625c8d950242c2df75d5bf.yiIDLv7Symy5QjdrPuRO7pU6ImMnR9iw",
-    #     base_url="https://llm.chutes.ai/v1",
-    #     # tool_choice="auto",
-    # )
-
     return MtAdkLiteRouterLlm(
         # model="gemini/gemini-2.5-pro-exp-03-25",
         # model="gemini/gemini-2.0-flash-exp",
@@ -228,15 +195,15 @@ def get_default_litellm_model():
 
 
 def get_default_smolagents_model():
+    router = get_litellm_router()
     model = LiteLLMRouterModel(
         model_id="gemini-2.0-flash-exp2",
         model_list=get_model_list(),
         client_kwargs={
-            "routing_strategy": "simple-shuffle",
+            "routing_strategy": router.routing_strategy,
+            "num_retries": router.num_retries,
+            "cooldown_time": router.cooldown_time,
+            "retry_after": router.retry_after,
         },
-        num_retries=10,
-        cooldown_time=10,
-        retry_after=5,
-        # fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
     )
     return model
