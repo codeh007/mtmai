@@ -5,7 +5,7 @@ dependencies = [
     "grpcio>=1.70.0",
     "grpcio-tools>=1.70.0",
     "pydantic-settings",
-    "litellm>=1.63.11",
+    "litellm>=1.69.3",
     "beautifulsoup4>=4.13.4",
     "pandas>=2.2.2",
     "python-dotenv>=1.0.1",
@@ -117,7 +117,6 @@ dependencies = [
     # crawl4ai ========================================
     "aiosqlite~=0.20",
     "lxml~=5.3",
-    "litellm>=1.53.1",
     "numpy>=1.26.0,<3",
     "xxhash~=3.4",
     "rank-bm25~=0.2",

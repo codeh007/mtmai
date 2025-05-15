@@ -208,13 +208,13 @@ def get_default_litellm_model():
     return MtAdkLiteRouterLlm(
         # model="gemini/gemini-2.5-pro-exp-03-25",
         model="gemini-2.0-flash-exp",
-        api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
+        # api_key=settings.GOOGLE_AI_STUDIO_API_KEY,
     )
 
 
 def get_default_smolagents_model():
     router = get_litellm_router()
-    model = LiteLLMRouterModel(
+    return LiteLLMRouterModel(
         model_id="gemini-2.0-flash-exp",
         model_list=get_model_list(),
         client_kwargs={
@@ -229,4 +229,3 @@ def get_default_smolagents_model():
             "debug_level": router.debug_level,
         },
     )
-    return model
