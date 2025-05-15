@@ -1,0 +1,50 @@
+[
+  {
+    "name": "casec9121bfff",
+    "data": [
+      {
+        "query": "\u4f60\u597d",
+        "expected_tool_use": [],
+        "expected_intermediate_agent_responses": [],
+        "reference": "\u4f60\u597d\uff01\u6709\u4ec0\u4e48\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u7684\u5417\uff1f\u4f60\u60f3\u5236\u4f5c\u4e00\u4e2a\u4ec0\u4e48\u6837\u7684\u77ed\u89c6\u9891\u5462\uff1f"
+      }
+    ],
+    "initial_session": {
+      "state": {},
+      "app_name": "shortvideo_agent",
+      "user_id": "user"
+    }
+  },
+  {
+    "name": "case8d80a6",
+    "data": [
+      {
+        "query": "\u4f60\u597d",
+        "expected_tool_use": [],
+        "expected_intermediate_agent_responses": [],
+        "reference": "\u4f60\u597d\uff01\u6709\u4ec0\u4e48\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u7684\u5417\uff1f\u4f60\u60f3\u5236\u4f5c\u4e00\u4e2a\u4ec0\u4e48\u6837\u7684\u77ed\u89c6\u9891\u5462\uff1f"
+      }
+    ],
+    "initial_session": {
+      "state": {},
+      "app_name": "shortvideo_agent",
+      "user_id": "user"
+    }
+  },
+  {
+    "name": "case953648",
+    "data": [
+      {
+        "query": "\u4f60\u597d",
+        "expected_tool_use": [],
+        "expected_intermediate_agent_responses": [],
+        "reference": "\u4f60\u597d\uff01\u6709\u4ec0\u4e48\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u7684\u5417\uff1f\u4f60\u60f3\u5236\u4f5c\u4e00\u4e2a\u4ec0\u4e48\u6837\u7684\u77ed\u89c6\u9891\u5462\uff1f"
+      }
+    ],
+    "initial_session": {
+      "state": {},
+      "app_name": "shortvideo_agent",
+      "user_id": "user"
+    }
+  }
+]

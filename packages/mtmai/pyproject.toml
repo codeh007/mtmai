@@ -2,8 +2,6 @@
 name = "mtmai"
 version = "0.7.7"
 dependencies = [
-    "grpcio>=1.70.0",
-    "grpcio-tools>=1.70.0",
     "pydantic-settings",
     "litellm>=1.69.3",
     "beautifulsoup4>=4.13.4",
@@ -60,7 +58,6 @@ dependencies = [
     # "mem0ai>=0.1.44",
     "openai>=1.59.7",
     "exa-py>=1.7.2",
-    # "duckduckgo-search>=7.2.1",
     # "newspaper4k>=0.9.3.1",
     "lxml-html-clean>=0.4.1",
     "huggingface-hub>=0.27.1",

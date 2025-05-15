@@ -17,7 +17,6 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-
 class ShortVideoGenInput(BaseModel):
     topic: str
 
