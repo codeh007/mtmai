@@ -9,8 +9,6 @@ from google.genai import types  # noqa: F401
 from hatchet_sdk import Context, SleepCondition
 from mtmai.agents.shortvideo_agent.shortvideo_agent import new_shortvideo_agent
 from mtmai.core.config import settings
-
-# from mtmai.db.id import generate_id
 from mtmai.hatchet_client import hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.services.artifact_service import MtmArtifactService

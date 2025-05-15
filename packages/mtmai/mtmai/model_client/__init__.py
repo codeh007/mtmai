@@ -19,6 +19,7 @@ from litellm import (
     Function,
     Router,
 )
+from litellm.router import AllowedFailsPolicy, RetryPolicy
 from loguru import logger
 from pydantic import Field
 from smolagents import LiteLLMRouterModel
@@ -38,7 +39,7 @@ def get_model_list():
             },
         },
         {
-            "model_name": "gemini-2.0-flash-exp2",
+            "model_name": "gemini-2.0-flash-exp",
             "litellm_params": {
                 "api_key": settings.GOOGLE_AI_STUDIO_API_KEY_2,
                 "model": "gemini/gemini-2.0-flash-exp",
@@ -49,13 +50,31 @@ def get_model_list():
     return model_list
 
 
+retry_policy = RetryPolicy(
+    ContentPolicyViolationErrorRetries=3,  # run 3 retries for ContentPolicyViolationErrors
+    AuthenticationErrorRetries=0,  # run 0 retries for AuthenticationErrorRetries
+    BadRequestErrorRetries=1,
+    TimeoutErrorRetries=2,
+    RateLimitErrorRetries=10,
+)
+
+allowed_fails_policy = AllowedFailsPolicy(
+    ContentPolicyViolationErrorAllowedFails=1000,  # Allow num of ContentPolicyViolationError before cooling down a deployment
+    RateLimitErrorAllowedFails=100,  # Allow num of RateLimitErrors before cooling down a deployment
+)
+
+
 def get_litellm_router():
     return Router(
         model_list=get_model_list(),
-        num_retries=30,
-        cooldown_time=10,
+        num_retries=6,
         retry_after=20,
-        fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
+        cooldown_time=60,  # cooldown the deployment for seconds if it num_fails > allowed_fails
+        # fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
+        retry_policy=retry_policy,
+        allowed_fails_policy=allowed_fails_policy,
+        cache_responses=True,
+        debug_level="DEBUG",  # defaults to INFO
     )
 
 
@@ -197,13 +216,18 @@ def get_default_litellm_model():
 def get_default_smolagents_model():
     router = get_litellm_router()
     model = LiteLLMRouterModel(
-        model_id="gemini-2.0-flash-exp2",
+        model_id="gemini-2.0-flash-exp",
         model_list=get_model_list(),
         client_kwargs={
             "routing_strategy": router.routing_strategy,
             "num_retries": router.num_retries,
-            "cooldown_time": router.cooldown_time,
             "retry_after": router.retry_after,
+            "cooldown_time": router.cooldown_time,
+            "allowed_fails_policy": router.allowed_fails_policy,
+            "retry_policy": router.retry_policy,
+            "fallbacks": router.fallbacks,
+            "cache_responses": router.cache_responses,
+            "debug_level": router.debug_level,
         },
     )
     return model
