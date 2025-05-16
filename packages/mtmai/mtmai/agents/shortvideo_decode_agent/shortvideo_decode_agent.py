@@ -1,11 +1,10 @@
 import logging
-import time
 from datetime import datetime
 from typing import AsyncGenerator, List, override
 
 from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event, EventActions
+from google.adk.events import Event
 from google.adk.tools import ToolContext
 from google.genai import types  # noqa
 from mtmai.model_client import get_default_litellm_model
@@ -62,7 +61,7 @@ class ShortvideoDecodeAgent(LlmAgent):
       instruction="""你是一个短视频解码及分析专家, 职责是协助用户完成短视频的分析
 通常用户会给你网上的短视频网址,同时告诉你希望你对这个短视频如何分析,希望得到什么答案.
 你应该充分使用现有的工具, 来完成用户的请求.
-**工具**
+**TOOLS**
 * `download_video_tool`: 下载视频工具, 下载视频并返回视频的本地路径,并且返回视频的基本信息
 
 """,
@@ -83,16 +82,16 @@ class ShortvideoDecodeAgent(LlmAgent):
         topic=user_input_text,
       ).model_dump()
       # --- 创建带有 Actions 的事件 ---
-      actions_with_update = EventActions(state_delta=state)
+      # actions_with_update = EventActions(state_delta=state)
       # 此事件可能代表内部系统操作，而不仅仅是智能体响应
-      system_event = Event(
-        invocation_id="inv_book_writer_update",
-        author="system",  # 或 'agent', 'tool' 等
-        actions=actions_with_update,
-        timestamp=time.time(),
-        # content 可能为 None 或表示所采取的操作
-      )
-      ctx.session_service.append_event(ctx.session, system_event)
+      # system_event = Event(
+      #   invocation_id="inv_book_writer_update",
+      #   author="system",  # 或 'agent', 'tool' 等
+      #   actions=actions_with_update,
+      #   timestamp=time.time(),
+      #   # content 可能为 None 或表示所采取的操作
+      # )
+      # ctx.session_service.append_event(ctx.session, system_event)
     # os.makedirs(state["output_dir"], exist_ok=True)
     return state
 
