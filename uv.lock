@@ -1564,6 +1564,18 @@ wheels = [
 ]
 
 [[package]]
+name = "ffmpeg-python"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "future" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dd/5e/d5f9105d59c1325759d838af4e973695081fbbc97182baf73afc78dec266/ffmpeg-python-0.2.0.tar.gz", hash = "sha256:65225db34627c578ef0e11c8b1eb528bb35e024752f6f10b78c011f6f64c4127", size = 21543, upload_time = "2019-07-06T00:19:08.989Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/0c/56be52741f75bad4dc6555991fabd2e07b432d333da82c11ad701123888a/ffmpeg_python-0.2.0-py3-none-any.whl", hash = "sha256:ac441a0404e053f8b6a1113a77c0f452f1cfc62f6344a769475ffdc0f56c23c5", size = 25024, upload_time = "2019-07-06T00:19:07.215Z" },
+]
+
+[[package]]
 name = "ffmpy"
 version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1707,6 +1719,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/79/68612ed99700e6413de42895aa725463e821a6b3be75c87fcce1b4af4c70/fsspec-2025.2.0.tar.gz", hash = "sha256:1c24b16eaa0a1798afa0337aa0db9b256718ab2a89c425371f5628d22c3b6afd", size = 292283, upload_time = "2025-02-01T18:30:26.893Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e2/94/758680531a00d06e471ef649e4ec2ed6bf185356a7f9fbfbb7368a40bd49/fsspec-2025.2.0-py3-none-any.whl", hash = "sha256:9de2ad9ce1f85e1931858535bc882543171d197001a0a5eb2ddc04f1781ab95b", size = 184484, upload_time = "2025-02-01T18:30:19.802Z" },
+]
+
+[[package]]
+name = "future"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/b2/4140c69c6a66432916b26158687e821ba631a4c9273c474343badf84d3ba/future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05", size = 1228490, upload_time = "2024-02-21T11:52:38.461Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216", size = 491326, upload_time = "2024-02-21T11:52:35.956Z" },
 ]
 
 [[package]]
@@ -3811,6 +3832,7 @@ dependencies = [
     { name = "faster-whisper" },
     { name = "fastmcp" },
     { name = "faust-cchardet" },
+    { name = "ffmpeg-python" },
     { name = "free-proxy" },
     { name = "g4f", extra = ["webview"] },
     { name = "google-adk" },
@@ -3884,6 +3906,7 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "python-dotenv" },
     { name = "python-pptx" },
+    { name = "pytubefix" },
     { name = "pyyaml" },
     { name = "quantstats" },
     { name = "rank-bm25" },
@@ -3987,6 +4010,7 @@ requires-dist = [
     { name = "faster-whisper", specifier = "~=1.0.1" },
     { name = "fastmcp", specifier = ">=2.2.7" },
     { name = "faust-cchardet", specifier = ">=2.1.19" },
+    { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "free-proxy", specifier = ">=1.1.1" },
     { name = "g4f", extras = ["webview"], specifier = ">=0.5.2.1" },
     { name = "google-adk", specifier = ">=0.5.0" },
@@ -4063,6 +4087,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "python-pptx", specifier = ">=1.0.2" },
+    { name = "pytubefix", specifier = ">=8.13.1" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "quantstats", git = "https://github.com/PowerInsight/quantstats.git" },
     { name = "rank-bm25", specifier = "~=0.2" },
@@ -8401,6 +8426,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9a/d6/1afd75edd932306ae9bd2c2d961d603dc2b52fcec51b04afea464f1f6646/pythonnet-3.0.5.tar.gz", hash = "sha256:48e43ca463941b3608b32b4e236db92d8d40db4c58a75ace902985f76dac21cf", size = 239212, upload_time = "2024-12-13T08:30:44.393Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cd/f1/bfb6811df4745f92f14c47a29e50e89a36b1533130fcc56452d4660bd2d6/pythonnet-3.0.5-py3-none-any.whl", hash = "sha256:f6702d694d5d5b163c9f3f5cc34e0bed8d6857150237fae411fefb883a656d20", size = 297506, upload_time = "2024-12-13T08:30:40.661Z" },
+]
+
+[[package]]
+name = "pytubefix"
+version = "8.13.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/9a/888947683e333bd3d20a3958115b6c4229d3cd6ff0f75423e841e8606da2/pytubefix-8.13.1.tar.gz", hash = "sha256:c5de0761101a78cb189eec88163368d2300bd86d3c7826ba0e1addb310c58d9c", size = 733912, upload_time = "2025-04-28T23:12:25.989Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c1/76/a9ba64e808f53b7d491c99afc47f4364a0b841bc31d78cc0cd6706ce6520/pytubefix-8.13.1-py3-none-any.whl", hash = "sha256:302eb359d0e2c9fbe25e88439c731d066cc8e5c10dd6a7bac2ce964ff9695255", size = 731504, upload_time = "2025-04-28T23:12:23.792Z" },
 ]
 
 [[package]]

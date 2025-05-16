@@ -555,7 +555,6 @@ def configure_adk_web_api(
           new_message=req.new_message,
           run_config=RunConfig(streaming_mode=stream_mode),
         )
-        logger.info("\nRunning agent...")
         events_async = runner.run_async(session_id=session.id, user_id=user_id, new_message=req.new_message)
         async for event in events_async:
           if not long_running_function_call:

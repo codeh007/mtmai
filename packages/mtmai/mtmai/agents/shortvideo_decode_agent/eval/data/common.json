@@ -1,0 +1,20 @@
+[
+  {
+    "query": "我需要知道这个短视频说了什么内容: https://www.youtube.com/shorts/oGAAomj2aQ8, 现在你下载这个视频经过分析后告诉我答案",
+    "expected_tool_use": [
+      {
+        "tool_name": "transfer_to_agent",
+        "tool_input": {
+          "agent_name":"shortvideo_decode_agent"
+        }
+      },
+      {
+        "tool_name": "download_video_tool",
+        "tool_input": {
+          "url":"https://www.youtube.com/shorts/oGAAomj2aQ8"
+        }
+      }
+    ],
+    "reference": "这个视频是关于AI的, 视频中提到了AI的发展历程, 以及AI在未来的发展趋势"
+  }
+]

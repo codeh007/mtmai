@@ -6,7 +6,7 @@ from typing import Any, AsyncGenerator, List, override
 from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
-from google.adk.tools import LongRunningFunctionTool, ToolContext
+from google.adk.tools import LongRunningFunctionTool
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.open_deep_research.open_deep_research import AdkOpenDeepResearch
@@ -19,8 +19,8 @@ from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 from pydantic import BaseModel, Field
 
 
-# Define your long running function (see example below)
-def ask_for_approval(purpose: str, amount: float, tool_context: ToolContext) -> dict[str, Any]:
+# 1. Define the long running function
+def ask_for_approval(purpose: str, amount: float) -> dict[str, Any]:
   """Ask for approval for the reimbursement."""
   # create a ticket for the approval
   # Send a notification to the approver with the link of the ticket
@@ -33,31 +33,14 @@ def ask_for_approval(purpose: str, amount: float, tool_context: ToolContext) -> 
   }
 
 
-def get_long_running_function_call(event: Event) -> types.FunctionCall:
-  # Get the long running function call from the event
-  if not event.long_running_tool_ids or not event.content or not event.content.parts:
-    return
-  for part in event.content.parts:
-    if (
-      part
-      and part.function_call
-      and event.long_running_tool_ids
-      and part.function_call.id in event.long_running_tool_ids
-    ):
-      return part.function_call
+def reimburse(purpose: str, amount: float) -> str:
+  """Reimburse the amount of money to the employee."""
+  # send the reimbrusement request to payment vendor
+  return {"status": "ok"}
 
 
-def get_function_response(event: Event, function_call_id: str) -> types.FunctionResponse:
-  # Get the function response for the fuction call with specified id.
-  if not event.content or not event.content.parts:
-    return
-  for part in event.content.parts:
-    if part and part.function_response and part.function_response.id == function_call_id:
-      return part.function_response
-
-
-# Wrap the function
-approve_tool = LongRunningFunctionTool(func=ask_for_approval)
+# 2. Wrap the function with LongRunningFunctionTool
+long_running_tool = LongRunningFunctionTool(func=ask_for_approval)
 
 
 video_script_agent = LlmAgent(
@@ -142,6 +125,7 @@ class ShortvideoAgent(LlmAgent):
         AgentTool(video_terms_agent),
         combin_video_tool,
         speech_tool,
+        long_running_tool,
       ],
       sub_agents=sub_agents,
       **kwargs,
