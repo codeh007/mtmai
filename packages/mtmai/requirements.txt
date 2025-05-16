@@ -10,12 +10,17 @@ aiohttp==3.11.11
     #   aiohttp-retry
     #   edge-tts
     #   g4f
+    #   hatchet-sdk
     #   langchain-community
     #   langchain-nvidia-ai-endpoints
     #   litellm
     #   scrapegraph-py
+    #   toolbox-core
+    #   toolbox-langchain
 aiohttp-retry==2.9.1
-    # via mtmai (pyproject.toml)
+    # via
+    #   mtmai (pyproject.toml)
+    #   hatchet-sdk
 aioitertools==0.12.0
     # via arize-phoenix
 aiosignal==1.3.2
@@ -24,8 +29,10 @@ aiosqlite==0.21.0
     # via
     #   mtmai (pyproject.toml)
     #   arize-phoenix
-aiostream==0.6.4
-    # via mtmai (pyproject.toml)
+aiostream==0.5.2
+    # via
+    #   mtmai (pyproject.toml)
+    #   hatchet-sdk
 alembic==1.14.1
     # via
     #   mtmai (pyproject.toml)
@@ -42,6 +49,7 @@ anyio==4.9.0
     #   browser-use
     #   google-genai
     #   httpx
+    #   langfuse
     #   mcp
     #   openai
     #   sse-starlette
@@ -82,10 +90,10 @@ azure-core==1.32.0
     #   azure-identity
 azure-identity==1.21.0
     # via mtmai (pyproject.toml)
-babel==2.16.0
-    # via cel-python
 backoff==2.2.1
-    # via posthog
+    # via
+    #   langfuse
+    #   posthog
 bcrypt==4.3.0
     # via chromadb
 beautifulsoup4==4.13.4
@@ -104,7 +112,6 @@ boto3==1.38.8
 botocore==1.38.8
     # via
     #   boto3
-    #   browser-use
     #   s3transfer
 bottle==0.13.3
     # via pywebview
@@ -117,7 +124,7 @@ brotli-asgi==1.4.0
     # via connecpy
 browser-cookie3==0.20.1
     # via mtmai (pyproject.toml)
-browser-use==0.1.45
+browser-use==0.1.48
     # via mtmai (pyproject.toml)
 build==1.2.2.post1
     # via chromadb
@@ -125,8 +132,10 @@ cachetools==5.5.1
     # via
     #   arize-phoenix
     #   google-auth
-cel-python==0.1.5
-    # via mtmai (pyproject.toml)
+cel-python==0.2.0
+    # via
+    #   mtmai (pyproject.toml)
+    #   hatchet-sdk
 certifi==2024.12.14
     # via
     #   edge-tts
@@ -151,8 +160,6 @@ chromadb==1.0.7
 click==8.1.8
     # via
     #   mtmai (pyproject.toml)
-    #   browser-use
-    #   duckduckgo-search
     #   google-adk
     #   litellm
     #   magika
@@ -198,6 +205,7 @@ deprecated==1.2.15
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-semantic-conventions
+    #   toolbox-langchain
 diff-match-patch==20241021
     # via mtmai (pyproject.toml)
 dill==0.3.9
@@ -212,8 +220,6 @@ docker==7.1.0
     # via mtmai (pyproject.toml)
 docstring-parser==0.16
     # via google-cloud-aiplatform
-duckduckgo-search==8.0.1
-    # via smolagents
 durationpy==0.9
     # via kubernetes
 edge-tts==6.1.19
@@ -245,6 +251,8 @@ fastmcp==2.2.7
     # via mtmai (pyproject.toml)
 faust-cchardet==2.1.19
     # via mtmai (pyproject.toml)
+ffmpeg-python==0.2.0
+    # via mtmai (pyproject.toml)
 filelock==3.17.0
     # via
     #   huggingface-hub
@@ -265,6 +273,8 @@ frozenlist==1.5.0
     #   aiosignal
 fsspec==2024.12.0
     # via huggingface-hub
+future==1.0.0
+    # via ffmpeg-python
 g4f==0.5.2.1
     # via mtmai (pyproject.toml)
 google-adk==0.5.0
@@ -351,7 +361,6 @@ graphviz==0.20.3
     # via google-adk
 greenlet==3.1.1
     # via
-    #   patchright
     #   playwright
     #   rebrowser-playwright
     #   sqlalchemy
@@ -363,7 +372,6 @@ grpc-interceptor==0.15.4
     # via arize-phoenix
 grpcio==1.70.0
     # via
-    #   mtmai (pyproject.toml)
     #   arize-phoenix
     #   chromadb
     #   google-api-core
@@ -372,12 +380,13 @@ grpcio==1.70.0
     #   grpc-interceptor
     #   grpcio-status
     #   grpcio-tools
+    #   hatchet-sdk
     #   opentelemetry-exporter-otlp-proto-grpc
     #   qdrant-client
 grpcio-status==1.62.3
     # via google-api-core
 grpcio-tools==1.70.0
-    # via mtmai (pyproject.toml)
+    # via hatchet-sdk
 h11==0.14.0
     # via
     #   httpcore
@@ -385,6 +394,8 @@ h11==0.14.0
     #   wsproto
 h2==4.2.0
     # via httpx
+hatchet-sdk==1.9.1
+    # via mtmai (pyproject.toml)
 helium==5.1.1
     # via mtmai (pyproject.toml)
 hpack==4.1.0
@@ -415,6 +426,7 @@ httpx==0.28.1
     #   fastapi-mcp
     #   fastmcp
     #   google-genai
+    #   langfuse
     #   langgraph-sdk
     #   langsmith
     #   litellm
@@ -427,7 +439,7 @@ httpx-sse==0.4.0
     # via
     #   langchain-community
     #   mcp
-huggingface-hub==0.30.2
+huggingface-hub==0.31.2
     # via
     #   mtmai (pyproject.toml)
     #   faster-whisper
@@ -445,6 +457,7 @@ idna==3.10
     #   anyio
     #   email-validator
     #   httpx
+    #   langfuse
     #   requests
     #   trio
     #   yarl
@@ -527,6 +540,7 @@ langchain-core==0.3.49
     #   langchain-text-splitters
     #   langgraph
     #   langgraph-checkpoint
+    #   toolbox-langchain
 langchain-deepseek==0.1.3
     # via browser-use
 langchain-google-genai==2.1.2
@@ -544,6 +558,8 @@ langchain-openai==0.3.11
     #   langchain-deepseek
 langchain-text-splitters==0.3.7
     # via langchain
+langfuse==2.60.5
+    # via mtmai (pyproject.toml)
 langgraph==0.2.67
     # via mtmai (pyproject.toml)
 langgraph-checkpoint==2.0.10
@@ -559,20 +575,17 @@ langsmith==0.3.1
     #   langchain
     #   langchain-community
     #   langchain-core
-lark-parser==0.12.0
+lark==0.12.0
     # via cel-python
 lazify==0.4.0
     # via mtmai (pyproject.toml)
-linkify-it-py==2.0.3
-    # via markdown-it-py
-litellm==1.68.0
+litellm==1.69.3
     # via mtmai (pyproject.toml)
 loguru==0.7.3
     # via mtmai (pyproject.toml)
 lxml==5.3.0
     # via
     #   mtmai (pyproject.toml)
-    #   duckduckgo-search
     #   free-proxy
     #   lxml-html-clean
     #   python-pptx
@@ -591,17 +604,13 @@ mako==1.3.8
 mammoth==1.9.0
     # via mtmai (pyproject.toml)
 markdown-it-py==3.0.0
-    # via
-    #   mdit-py-plugins
-    #   rich
-    #   textual
+    # via rich
 markdownify==1.1.0
     # via
     #   mtmai (pyproject.toml)
     #   browser-use
     #   markitdown
     #   mcp-server-fetch
-    #   smolagents
 markitdown==0.1.1
     # via mtmai (pyproject.toml)
 markupsafe==3.0.2
@@ -622,8 +631,6 @@ mcp==1.7.1
     #   mcp-server-fetch
 mcp-server-fetch==2025.1.17
     # via mtmai (pyproject.toml)
-mdit-py-plugins==0.4.2
-    # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
 mem0ai==0.1.93
@@ -722,7 +729,9 @@ openinference-instrumentation==0.1.28
     #   arize-phoenix-otel
     #   openinference-instrumentation-smolagents
 openinference-instrumentation-smolagents==0.1.11
-    # via smolagents
+    # via
+    #   mtmai (pyproject.toml)
+    #   smolagents
 openinference-semantic-conventions==0.1.17
     # via
     #   arize-phoenix
@@ -788,6 +797,7 @@ opentelemetry-resourcedetector-gcp==1.9.0a0
     # via opentelemetry-exporter-gcp-trace
 opentelemetry-sdk==1.32.1
     # via
+    #   mtmai (pyproject.toml)
     #   arize-phoenix
     #   arize-phoenix-otel
     #   chromadb
@@ -835,6 +845,7 @@ packaging==24.2
     #   google-cloud-bigquery
     #   huggingface-hub
     #   langchain-core
+    #   langfuse
     #   marshmallow
     #   matplotlib
     #   onnxruntime
@@ -851,8 +862,6 @@ pandas==2.2.3
     #   yfinance
 passlib==1.7.4
     # via mtmai (pyproject.toml)
-patchright==1.51.3
-    # via browser-use
 pathvalidate==3.2.3
     # via mtmai (pyproject.toml)
 pdfminer-six==20250327
@@ -863,8 +872,6 @@ pdfplumber==0.11.6
     # via mtmai (pyproject.toml)
 peewee==3.17.9
     # via yfinance
-pgmq-sqlalchemy==0.1.2
-    # via mtmai (pyproject.toml)
 pgvector==0.3.6
     # via mtmai (pyproject.toml)
 pillow==11.1.0
@@ -877,11 +884,11 @@ pillow==11.1.0
 platformdirs==4.3.6
     # via
     #   g4f
-    #   textual
     #   yfinance
-playwright==1.49.1
+playwright==1.52.0
     # via
     #   mtmai (pyproject.toml)
+    #   browser-use
     #   playwright-stealth
     #   tiktokapi
     #   undetected-playwright
@@ -900,10 +907,10 @@ posthog==3.9.3
     #   browser-use
     #   chromadb
     #   mem0ai
-primp==0.15.0
-    # via duckduckgo-search
 proglog==0.1.12
     # via moviepy
+prometheus-client==0.21.1
+    # via hatchet-sdk
 propcache==0.2.1
     # via
     #   aiohttp
@@ -934,6 +941,7 @@ protobuf==5.29.3
     #   grpc-google-iam-v1
     #   grpcio-status
     #   grpcio-tools
+    #   hatchet-sdk
     #   onnxruntime
     #   opentelemetry-proto
     #   proto-plus
@@ -987,12 +995,14 @@ pydantic==2.10.6
     #   google-adk
     #   google-cloud-aiplatform
     #   google-genai
+    #   hatchet-sdk
     #   json-schema-to-pydantic
     #   langchain
     #   langchain-anthropic
     #   langchain-aws
     #   langchain-core
     #   langchain-google-genai
+    #   langfuse
     #   langsmith
     #   litellm
     #   mcp
@@ -1005,19 +1015,21 @@ pydantic==2.10.6
     #   qdrant-client
     #   scrapegraph-py
     #   sqlmodel
+    #   toolbox-core
+    #   toolbox-langchain
 pydantic-core==2.27.2
     # via pydantic
 pydantic-settings==2.7.1
     # via
     #   mtmai (pyproject.toml)
     #   fastapi-mcp
+    #   hatchet-sdk
     #   langchain-community
     #   mcp
 pydub==0.25.1
     # via mtmai (pyproject.toml)
-pyee==12.0.0
+pyee==13.0.0
     # via
-    #   patchright
     #   playwright
     #   rebrowser-playwright
 pygments==2.19.1
@@ -1056,6 +1068,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   cel-python
     #   google-cloud-bigquery
+    #   hatchet-sdk
     #   kubernetes
     #   matplotlib
     #   pandas
@@ -1082,6 +1095,8 @@ python-pptx==1.0.2
     # via mtmai (pyproject.toml)
 python-socks==2.7.1
     # via websockets-proxy
+pytubefix==8.13.1
+    # via mtmai (pyproject.toml)
 pytz==2024.2
     # via
     #   mem0ai
@@ -1101,6 +1116,7 @@ pyyaml==6.0.2
     #   langchain
     #   langchain-community
     #   langchain-core
+    #   toolbox-langchain
     #   transformers
     #   uvicorn
 qdrant-client==1.14.2
@@ -1111,7 +1127,7 @@ rank-bm25==0.2.2
     # via mtmai (pyproject.toml)
 readabilipy==0.3.0
     # via mcp-server-fetch
-rebrowser-playwright==1.49.1
+rebrowser-playwright==1.52.0
     # via mtmai (pyproject.toml)
 redis==6.0.0
     # via mtmai (pyproject.toml)
@@ -1129,7 +1145,6 @@ requests==2.32.3
     # via
     #   azure-core
     #   browser-use
-    #   cel-python
     #   docker
     #   exa-py
     #   fastapi-mcp
@@ -1145,6 +1160,7 @@ requests==2.32.3
     #   kubernetes
     #   langchain
     #   langchain-community
+    #   langfuse
     #   langsmith
     #   markitdown
     #   mcp-server-fetch
@@ -1170,12 +1186,10 @@ requests-toolbelt==1.0.0
 rich==14.0.0
     # via
     #   mtmai (pyproject.toml)
-    #   browser-use
     #   chromadb
     #   fastapi-mcp
     #   fastmcp
     #   smolagents
-    #   textual
     #   typer
 rpds-py==0.22.3
     # via
@@ -1228,7 +1242,7 @@ six==1.17.0
     #   python-dateutil
 slugify==0.0.1
     # via mtmai (pyproject.toml)
-smolagents==1.14.0
+smolagents==1.16.1
     # via mtmai (pyproject.toml)
 sniffio==1.3.1
     # via
@@ -1253,7 +1267,6 @@ sqlalchemy==2.0.37
     #   langchain
     #   langchain-community
     #   mem0ai
-    #   pgmq-sqlalchemy
     #   sqlmodel
 sqlean-py==3.49.1
     # via arize-phoenix
@@ -1282,10 +1295,9 @@ tenacity==9.0.0
     # via
     #   mtmai (pyproject.toml)
     #   chromadb
+    #   hatchet-sdk
     #   langchain-community
     #   langchain-core
-textual==3.2.0
-    # via browser-use
 threadpoolctl==3.6.0
     # via scikit-learn
 tiktokapi==7.1.0
@@ -1304,6 +1316,10 @@ tokenizers==0.21.0
     #   transformers
 tomli==2.2.1
     # via fastapi-mcp
+toolbox-core==0.1.0
+    # via mtmai (pyproject.toml)
+toolbox-langchain==0.1.0
+    # via mtmai (pyproject.toml)
 tqdm==4.67.1
     # via
     #   mtmai (pyproject.toml)
@@ -1331,6 +1347,10 @@ typer==0.15.3
     #   chromadb
     #   fastapi-mcp
     #   fastmcp
+types-python-dateutil==2.9.0.20250516
+    # via cel-python
+types-pyyaml==6.0.12.20250516
+    # via cel-python
 typing-extensions==4.12.2
     # via
     #   aiosqlite
@@ -1370,7 +1390,6 @@ typing-extensions==4.12.2
     #   speechrecognition
     #   sqlalchemy
     #   strawberry-graphql
-    #   textual
     #   typer
     #   typing-inspect
 typing-inspect==0.9.0
@@ -1379,8 +1398,6 @@ tzdata==2025.1
     # via pandas
 tzlocal==5.3.1
     # via google-adk
-uc-micro-py==1.0.3
-    # via linkify-it-py
 undetected-playwright==0.3.0
     # via mtmai (pyproject.toml)
 uritemplate==4.1.1
@@ -1388,8 +1405,8 @@ uritemplate==4.1.1
 urllib3==2.3.0
     # via
     #   botocore
-    #   cel-python
     #   docker
+    #   hatchet-sdk
     #   kubernetes
     #   qdrant-client
     #   requests
@@ -1423,6 +1440,7 @@ wrapt==1.17.2
     # via
     #   arize-phoenix
     #   deprecated
+    #   langfuse
     #   openinference-instrumentation-smolagents
     #   opentelemetry-instrumentation
 wsproto==1.2.0
