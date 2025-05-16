@@ -1,11 +1,12 @@
 import os
 import time
 from datetime import datetime
-from typing import AsyncGenerator, List, override
+from typing import Any, AsyncGenerator, List, override
 
 from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
+from google.adk.tools import LongRunningFunctionTool, ToolContext
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.open_deep_research.open_deep_research import AdkOpenDeepResearch
@@ -17,11 +18,53 @@ from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 from pydantic import BaseModel, Field
 
+
+# Define your long running function (see example below)
+def ask_for_approval(purpose: str, amount: float, tool_context: ToolContext) -> dict[str, Any]:
+  """Ask for approval for the reimbursement."""
+  # create a ticket for the approval
+  # Send a notification to the approver with the link of the ticket
+  return {
+    "status": "pending",
+    "approver": "Sean Zhou",
+    "purpose": purpose,
+    "amount": amount,
+    "ticket-id": "approval-ticket-1",
+  }
+
+
+def get_long_running_function_call(event: Event) -> types.FunctionCall:
+  # Get the long running function call from the event
+  if not event.long_running_tool_ids or not event.content or not event.content.parts:
+    return
+  for part in event.content.parts:
+    if (
+      part
+      and part.function_call
+      and event.long_running_tool_ids
+      and part.function_call.id in event.long_running_tool_ids
+    ):
+      return part.function_call
+
+
+def get_function_response(event: Event, function_call_id: str) -> types.FunctionResponse:
+  # Get the function response for the fuction call with specified id.
+  if not event.content or not event.content.parts:
+    return
+  for part in event.content.parts:
+    if part and part.function_response and part.function_response.id == function_call_id:
+      return part.function_response
+
+
+# Wrap the function
+approve_tool = LongRunningFunctionTool(func=ask_for_approval)
+
+
 video_script_agent = LlmAgent(
-    name="VideoScriptGenerator",
-    model=get_default_litellm_model(),
-    description="视频脚本生成专家",
-    instruction="""
+  name="VideoScriptGenerator",
+  model=get_default_litellm_model(),
+  description="视频脚本生成专家",
+  instruction="""
 # Role: Video Script Generator
 
 ## Goals:
@@ -40,8 +83,8 @@ Generate a script for a video, depending on the subject of the video.
 # Initialization:
 - number of paragraphs: {paragraph_number}
 """.strip(),
-    input_schema=None,
-    output_key="video_script",
+  input_schema=None,
+  output_key="video_script",
 )
 
 
@@ -54,112 +97,108 @@ Generate a script for a video, depending on the subject of the video.
 
 
 class ShortvideoState(BaseModel):
-    id: str = Field(default="1")
-    current_date: str = Field(default=datetime.now().strftime("%Y-%m-%d"))
-    title: str = Field(default="The Current State of AI in September 2024")
-    topic: str = Field(
-        default="Exploring the latest trends in AI across different industries as of September 2024"
-    )
-    goal: str = Field(
-        default="""
+  id: str = Field(default="1")
+  current_date: str = Field(default=datetime.now().strftime("%Y-%m-%d"))
+  title: str = Field(default="The Current State of AI in September 2024")
+  topic: str = Field(default="Exploring the latest trends in AI across different industries as of September 2024")
+  goal: str = Field(
+    default="""
         The goal of this book is to provide a comprehensive overview of the current state of artificial intelligence in September 2024.
         It will delve into the latest trends impacting various industries, analyze significant advancements,
         and discuss potential future developments. The book aims to inform readers about cutting-edge AI technologies
         and prepare them for upcoming innovations in the field.
     """
-    )
-    video_subject: str = Field(default="")
-    video_script: str = Field(default="")
-    video_terms: List[str] = Field(default_factory=list)
-    video_terms_amount: int = Field(default=3)
-    audio_file: str = Field(default="")
-    output_dir: str = Field(default="")
-    voice_name: str = Field(default="zh-CN-XiaoxiaoNeural")
-    voice_llm_provider: str = Field(default="edgetts")
-    paragraph_number: int = Field(default=3)
+  )
+  video_subject: str = Field(default="")
+  video_script: str = Field(default="")
+  video_terms: List[str] = Field(default_factory=list)
+  video_terms_amount: int = Field(default=3)
+  audio_file: str = Field(default="")
+  output_dir: str = Field(default="")
+  voice_name: str = Field(default="zh-CN-XiaoxiaoNeural")
+  voice_llm_provider: str = Field(default="edgetts")
+  paragraph_number: int = Field(default=3)
 
 
 class ShortvideoAgent(LlmAgent):
-    model_config = {"arbitrary_types_allowed": True}
+  model_config = {"arbitrary_types_allowed": True}
 
-    def __init__(
-        self,
-        name: str,
-        description: str = "短视频生成专家",
-        sub_agents: List[LlmAgent] = [],
-        model: str = get_default_litellm_model(),
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            description=description,
-            model=model,
-            instruction=SHORTVIDEO_PROMPT,
-            tools=[
-                # AgentTool(video_subject_generator),
-                AgentTool(video_script_agent),
-                AgentTool(video_terms_agent),
-                combin_video_tool,
-                speech_tool,
-            ],
-            sub_agents=sub_agents,
-            **kwargs,
-        )
+  def __init__(
+    self,
+    name: str,
+    description: str = "短视频生成专家",
+    sub_agents: List[LlmAgent] = [],
+    model: str = get_default_litellm_model(),
+    **kwargs,
+  ):
+    super().__init__(
+      name=name,
+      description=description,
+      model=model,
+      instruction=SHORTVIDEO_PROMPT,
+      tools=[
+        # AgentTool(video_subject_generator),
+        AgentTool(video_script_agent),
+        AgentTool(video_terms_agent),
+        combin_video_tool,
+        speech_tool,
+      ],
+      sub_agents=sub_agents,
+      **kwargs,
+    )
 
-    async def _init_state(self, ctx: InvocationContext):
-        user_content = ctx.user_content
-        user_input_text = user_content.parts[0].text
+  async def _init_state(self, ctx: InvocationContext):
+    user_content = ctx.user_content
+    user_input_text = user_content.parts[0].text
 
-        state = ctx.session.state.get("shortvideo_state")
-        if state is None:
-            state = ShortvideoState(
-                id=ctx.session.id,
-                title=user_input_text,
-                topic=user_input_text,
-                goal=user_input_text,
-                video_subject=user_input_text,
-                video_script=user_input_text,
-                paragraph_number=3,
-                video_terms_amount=3,
-                output_dir=f".vol/short_videos/{ctx.session.id}",
-                voice_name="zh-CN-XiaoxiaoNeural",
-                voice_llm_provider="edgetts",
-            ).model_dump()
-            # --- 创建带有 Actions 的事件 ---
-            actions_with_update = EventActions(state_delta=state)
-            # 此事件可能代表内部系统操作，而不仅仅是智能体响应
-            system_event = Event(
-                invocation_id="inv_book_writer_update",
-                author="system",  # 或 'agent', 'tool' 等
-                actions=actions_with_update,
-                timestamp=time.time(),
-                # content 可能为 None 或表示所采取的操作
-            )
-            ctx.session_service.append_event(ctx.session, system_event)
-        os.makedirs(state["output_dir"], exist_ok=True)
-        return state
+    state = ctx.session.state.get("shortvideo_state")
+    if state is None:
+      state = ShortvideoState(
+        id=ctx.session.id,
+        title=user_input_text,
+        topic=user_input_text,
+        goal=user_input_text,
+        video_subject=user_input_text,
+        video_script=user_input_text,
+        paragraph_number=3,
+        video_terms_amount=3,
+        output_dir=f".vol/short_videos/{ctx.session.id}",
+        voice_name="zh-CN-XiaoxiaoNeural",
+        voice_llm_provider="edgetts",
+      ).model_dump()
+      # --- 创建带有 Actions 的事件 ---
+      actions_with_update = EventActions(state_delta=state)
+      # 此事件可能代表内部系统操作，而不仅仅是智能体响应
+      system_event = Event(
+        invocation_id="inv_book_writer_update",
+        author="system",  # 或 'agent', 'tool' 等
+        actions=actions_with_update,
+        timestamp=time.time(),
+        # content 可能为 None 或表示所采取的操作
+      )
+      ctx.session_service.append_event(ctx.session, system_event)
+    os.makedirs(state["output_dir"], exist_ok=True)
+    return state
 
-    @override
-    async def _run_async_impl(
-        self, ctx: InvocationContext
-    ) -> AsyncGenerator[Event, None]:
-        init_state = await self._init_state(ctx)
-        async for event in super()._run_async_impl(ctx):
-            yield event
+  @override
+  async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+    init_state = await self._init_state(ctx)
+    async for event in super()._run_async_impl(ctx):
+      yield event
 
 
 def new_shortvideo_agent():
-    return ShortvideoAgent(
+  return ShortvideoAgent(
+    model=get_default_litellm_model(),
+    name="shortvideo_generator",
+    description="短视频生成专家",
+    sub_agents=[
+      # new_research_agent(),
+      AdkOpenDeepResearch(
+        name="open_deep_research",
+        description="社交媒体话题调研专家",
         model=get_default_litellm_model(),
-        name="shortvideo_generator",
-        description="短视频生成专家",
-        sub_agents=[
-            # new_research_agent(),
-            AdkOpenDeepResearch(
-                name="open_deep_research",
-                description="社交媒体话题调研专家",
-                model=get_default_litellm_model(),
-            ),
-        ],
-        before_model_callback=[rate_limit_callback],
-    )
+      ),
+    ],
+    before_model_callback=[rate_limit_callback],
+  )

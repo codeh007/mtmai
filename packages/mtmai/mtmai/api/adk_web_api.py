@@ -50,6 +50,29 @@ if agents_dir not in sys.path:
   sys.path.append(agents_dir)
 
 
+def get_long_running_function_call(event: Event) -> types.FunctionCall:
+  # Get the long running function call from the event
+  if not event.long_running_tool_ids or not event.content or not event.content.parts:
+    return
+  for part in event.content.parts:
+    if (
+      part
+      and part.function_call
+      and event.long_running_tool_ids
+      and part.function_call.id in event.long_running_tool_ids
+    ):
+      return part.function_call
+
+
+def get_function_response(event: Event, function_call_id: str) -> types.FunctionResponse:
+  # Get the function response for the fuction call with specified id.
+  if not event.content or not event.content.parts:
+    return
+  for part in event.content.parts:
+    if part and part.function_response and part.function_response.id == function_call_id:
+      return part.function_response
+
+
 class ApiServerSpanExporter(export.SpanExporter):
   def __init__(self, trace_dict):
     self.trace_dict = trace_dict
@@ -522,16 +545,45 @@ def configure_adk_web_api(
       try:
         stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
         runner = _get_runner(req.app_name)
-        async for event in runner.run_async(
+
+        # 新增:
+        long_running_function_call, long_running_function_response, ticket_id = None, None, None
+
+        events = runner.run_async(
           user_id=user_id,
           session_id=req.session_id,
           new_message=req.new_message,
           run_config=RunConfig(streaming_mode=stream_mode),
-        ):
+        )
+        logger.info("\nRunning agent...")
+        events_async = runner.run_async(session_id=session.id, user_id=user_id, new_message=req.new_message)
+        async for event in events_async:
+          if not long_running_function_call:
+            long_running_function_call = get_long_running_function_call(event)
+          else:
+            long_running_function_response = get_function_response(event, long_running_function_call.id)
+          if long_running_function_response:
+            ticket_id = long_running_function_response.response["ticket_id"]
           # Format as SSE data
           sse_event = event.model_dump_json(exclude_none=True, by_alias=True)
           logger.info(f"Generated event in agent run streaming: {sse_event}")
           yield f"data: {sse_event}\n\n"
+
+        # 如果收到人类确认信号(长时任务)
+        if long_running_function_response:
+          # query the status of the correpsonding ticket via tciket_id
+          # send back an intermediate / final response
+          updated_response = long_running_function_response.model_copy(deep=True)
+          updated_response.response = {"status": "approved"}
+          async for event in runner.run_async(
+            session_id=session.id,
+            user_id=user_id,
+            new_message=types.Content(parts=[types.Part(function_response=updated_response)], role="user"),
+          ):
+            if event.content and event.content.parts:
+              if text := "".join(part.text or "" for part in event.content.parts):
+                logger.info(f"[{event.author}]: {text}")
+
       except Exception as e:
         logger.exception(e)
         # You might want to yield an error event here
