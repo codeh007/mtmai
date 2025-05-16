@@ -10,12 +10,13 @@ from google.genai import types  # noqa
 from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 from mtmai.mtlibs.youtube_short_gen.YoutubeDownloader import download_youtube_video
+from mtmai.tools.text2image import image2text_tool, text2image_tool
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 
-class ShortvideoDecodeState(BaseModel):
+class Image2ShortsState(BaseModel):
   id: str = Field(default="1")
   current_date: str = Field(default=datetime.now().strftime("%Y-%m-%d"))
   original_url: str = Field(default="")
@@ -23,28 +24,27 @@ class ShortvideoDecodeState(BaseModel):
   topic: str = Field(default="Exploring the latest trends in AI across different industries as of September 2024")
 
 
-def download_video_tool(url: str, tool_context: ToolContext):
-  """视频下载工具, 给定一个视频的url, 下载视频并返回视频的本地路径,并且返回视频的基本信息
+def download_image_tool(url: str, tool_context: ToolContext):
+  """图片下载工具, 给定一个图片的url, 下载图片并返回图片的本地路径,并且返回图片的基本信息
 
   Args:
       url (str): 视频的url
       tool_context (ToolContext): 工具上下文
 
   Returns:
-      str: 下载结果及视频的基本信息
+      str: 下载结果及图片的基本信息
   """
   try:
     yt = download_youtube_video(url)
-    # logger.info(f"视频下载成功: {yt.t}")
     tool_context.state["original_url"] = url
     return f"视频下载成功, 视频标题: {yt.title}, 视频描述: {yt.description}, 视频时长: {yt.length}"
   except Exception as e:
-    return f"视频下载失败, 错误信息: {e}"
+    return f"图片下载失败, 错误信息: {e}"
 
 
-class ShortvideoDecodeAgent(LlmAgent):
+class Image2ShortsAgent(LlmAgent):
   """
-  给定一个短视频(网址或者附件)，生成一个短视频的脚本
+  输入一张图片, 生成一个短视频
   """
 
   model_config = {"arbitrary_types_allowed": True}
@@ -52,7 +52,7 @@ class ShortvideoDecodeAgent(LlmAgent):
   def __init__(
     self,
     name: str,
-    description: str = "有用的短视频分析专家",
+    description: str = "由一张图片生成一个短视频",
     sub_agents: List[LlmAgent] = [],
     model: str = get_default_litellm_model(),
     **kwargs,
@@ -61,21 +61,19 @@ class ShortvideoDecodeAgent(LlmAgent):
       name=name,
       description=description,
       model=model,
-      instruction="""你是一个短视频解码及分析专家, 职责是协助用户完成短视频的分析
-通常用户会给你网上的短视频网址,同时告诉你希望你对这个短视频如何分析,希望得到什么答案.
+      instruction="""你是短视频生成专家, 职责是协助用户完成短视频的生成
+用户会给你一张图片,并且告诉你具体的要求
 你应该充分使用现有的工具, 来完成用户的请求.
+尽你最大的努力, 使用户满意.
+尽力不要询问用户, 除非用户主动告诉你
 
 **TOOLS**
-- `download_video_tool`: 下载视频工具, 下载视频并返回视频的本地路径,并且返回视频的基本信息
+- text2image_tool: 专用的图片生成工具, 可以根据文本生成对应的图片
 
-**EXAMPLES**
-- 用户: 下载这个视频: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-- 你: 好的, 正在下载...(同时调用工具)
-- 用户: 这个视频的主题是什么?
-- 你: 好的, 正在分析...
-- 用户: 好的, 正在分析...
+- image2text_tool: 专用的图片提示词反推工具, 可以根据图片生成对应的提示词,
+                    生成的提示词可以直接使用 text2image ai 模型生成内容和风格接近的图片
 """,
-      tools=[download_video_tool],
+      tools=[download_image_tool, text2image_tool, image2text_tool],
       sub_agents=sub_agents,
       **kwargs,
     )
@@ -86,23 +84,11 @@ class ShortvideoDecodeAgent(LlmAgent):
 
     state = ctx.session.state.get("shortvideo_state")
     if state is None:
-      state = ShortvideoDecodeState(
+      state = Image2ShortsState(
         id=ctx.session.id,
         title=user_input_text,
         topic=user_input_text,
       ).model_dump()
-      # --- 创建带有 Actions 的事件 ---
-      # actions_with_update = EventActions(state_delta=state)
-      # 此事件可能代表内部系统操作，而不仅仅是智能体响应
-      # system_event = Event(
-      #   invocation_id="inv_book_writer_update",
-      #   author="system",  # 或 'agent', 'tool' 等
-      #   actions=actions_with_update,
-      #   timestamp=time.time(),
-      #   # content 可能为 None 或表示所采取的操作
-      # )
-      # ctx.session_service.append_event(ctx.session, system_event)
-    # os.makedirs(state["output_dir"], exist_ok=True)
     return state
 
   @override
@@ -112,18 +98,11 @@ class ShortvideoDecodeAgent(LlmAgent):
       yield event
 
 
-def new_shortvideo_decode_agent():
-  return ShortvideoDecodeAgent(
+def new_image2shorts_agent():
+  return Image2ShortsAgent(
     model=get_default_litellm_model(),
-    name="shortvideo_decode",
-    description="短视频解码专家, 给定一个短视频(网址或者附件)，生成一段对这个视频的相关描述,例如视频的主题, 分类 之类的",
-    sub_agents=[
-      # new_research_agent(),
-      # AdkOpenDeepResearch(
-      #   name="open_deep_research",
-      #   description="社交媒体话题调研专家",
-      #   model=get_default_litellm_model(),
-      # ),
-    ],
+    name="image2shorts",
+    description="由一张图片生成一个短视频",
+    sub_agents=[],
     before_model_callback=[rate_limit_callback],
   )

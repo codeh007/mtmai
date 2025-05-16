@@ -17,7 +17,7 @@ def download_youtube_video(url, output_dir=".vol/_youtube_videos_cache"):
   video_streams = yt.streams.filter(type="video").order_by("resolution").desc()
   audio_stream = yt.streams.filter(only_audio=True).first()
 
-  logger.info("Available video streams:")
+  # logger.info("Available video streams:")
   for i, stream in enumerate(video_streams):
     size = get_video_size(stream)
     stream_type = "Progressive" if stream.is_progressive else "Adaptive"
@@ -30,14 +30,14 @@ def download_youtube_video(url, output_dir=".vol/_youtube_videos_cache"):
   if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-  logger.info(f"Downloading video: {yt.title}")
+  # logger.info(f"Downloading video: {yt.title}")
   video_file = selected_stream.download(output_path=output_dir, filename_prefix="video_")
 
   if not selected_stream.is_progressive:
-    logger.info("Downloading audio...")
+    # logger.info("Downloading audio...")
     audio_file = audio_stream.download(output_path=output_dir, filename_prefix="audio_")
 
-    logger.info("Merging video and audio...")
+    # logger.info("Merging video and audio...")
     output_file = os.path.join(output_dir, f"{yt.title}.mp4")
 
     stream = ffmpeg.input(video_file)
@@ -57,5 +57,5 @@ def download_youtube_video(url, output_dir=".vol/_youtube_videos_cache"):
   else:
     output_file = video_file
 
-  logger.info(f"Downloaded: {yt.title} to {output_dir} folder, file path: {output_file}")
-  return output_file
+  # logger.info(f"Downloaded: {yt.title} to {output_dir} folder, file path: {output_file}")
+  return yt
