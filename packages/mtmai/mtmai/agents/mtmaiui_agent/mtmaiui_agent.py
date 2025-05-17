@@ -1,24 +1,9 @@
 import time
 
 import httpx
-from loguru import logger
 from smolagents import ActionStep, CodeAgent, ToolCallingAgent, WebSearchTool, tool
 
 from mtmai.model_client import get_default_smolagents_model
-
-# @tool
-# def coding_guide(doc_path: str = "./index.md") -> str:
-#   """执行前必须调用此工具,获取编写代码的指南, 并且严格遵守返回的描述进行后续的代码编写
-
-#   Args:
-#       doc_path: 文档路径, 默认是当前目录下的 index.md, 可以使用linux path 语法获取其他文档,例如: ./some_doc.md
-
-#   Returns:
-#       编写代码风格,约束,技巧,规范等描述
-#   """
-#   doc_root = Path(__file__).parent.parent.parent.parent / "docs"
-#   with open(doc_root / "index.md", "r", encoding="utf-8") as f:
-#     return f.read()
 
 
 @tool
@@ -55,7 +40,7 @@ def save_screenshot(memory_step: ActionStep, agent: CodeAgent) -> None:
   # return
 
 
-async def run():
+async def run(task: str):
   from smolagents import CodeAgent
 
   web_agent = ToolCallingAgent(
@@ -74,5 +59,6 @@ async def run():
     step_callbacks=[save_screenshot],
   )
 
-  result = manager_agent.run("浏览 http://localhost:3600/api/guid 并严格按照返回的提示执行任务")
-  logger.info(f"result: {result}")
+  for step in manager_agent.run(task=task, stream=True):
+    # logger.info(f"step: {step}")
+    yield step

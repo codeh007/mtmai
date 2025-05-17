@@ -180,10 +180,10 @@ def run_short():
 
 
 @app.command()
-def mtmaiui_agent():
-  from mtmai.agents.mtmaiui_agent.mtmaiui_agent import run
+def mtmagent():
+  from mtmai.agents.mtmagent import MtmaiAgent
 
-  asyncio.run(run())
+  asyncio.run(MtmaiAgent().run())
 
 
 if __name__ == "__main__":
