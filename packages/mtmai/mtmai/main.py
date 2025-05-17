@@ -179,6 +179,14 @@ def run_short():
   asyncio.run(run_task())
 
 
+@app.command()
+def run_smolagent_demo1():
+  print("run_smolagent_demo1")
+  from mtmai.agents.smolagent_demo1.smolagent_demo1 import run
+
+  asyncio.run(run())
+
+
 if __name__ == "__main__":
   app()
   # typer.run(main)
