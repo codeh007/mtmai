@@ -3903,7 +3903,7 @@ dependencies = [
     { name = "serpapi" },
     { name = "simpleeval" },
     { name = "slugify" },
-    { name = "smolagents", extra = ["telemetry"] },
+    { name = "smolagents", extra = ["litellm", "telemetry"] },
     { name = "snowballstemmer" },
     { name = "speechrecognition" },
     { name = "sqlalchemy" },
@@ -4084,7 +4084,7 @@ requires-dist = [
     { name = "serpapi", specifier = ">=0.1.5" },
     { name = "simpleeval", specifier = ">=1.0.0" },
     { name = "slugify", specifier = ">=0.0.1" },
-    { name = "smolagents", extras = ["telemetry"], specifier = ">=1.16.1" },
+    { name = "smolagents", extras = ["telemetry", "litellm"], specifier = ">=1.16.1" },
     { name = "snowballstemmer", specifier = "~=2.2" },
     { name = "speechrecognition", specifier = ">=3.14.2" },
     { name = "sqlalchemy", specifier = ">=2.0.37" },
@@ -9118,6 +9118,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+litellm = [
+    { name = "litellm" },
+]
 telemetry = [
     { name = "arize-phoenix" },
     { name = "openinference-instrumentation-smolagents" },

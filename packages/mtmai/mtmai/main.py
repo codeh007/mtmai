@@ -180,9 +180,8 @@ def run_short():
 
 
 @app.command()
-def run_smolagent_demo1():
-  print("run_smolagent_demo1")
-  from mtmai.agents.smolagent_demo1.smolagent_demo1 import run
+def mtmaiui_agent():
+  from mtmai.agents.mtmaiui_agent.mtmaiui_agent import run
 
   asyncio.run(run())
 

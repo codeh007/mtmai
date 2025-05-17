@@ -35,13 +35,13 @@
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		},
 		{
-			"name": "wsworker",
+			"name": "demo1",
 			"type": "debugpy",
 			"request": "launch",
 			"program": "${workspaceFolder}/packages/mtmai/mtmai/main.py",
 			"cwd": "${workspaceFolder}",
 			"args": [
-				"wsworker"
+				"run-smolagent-demo1"
 			],
 			"jinja": true,
 			"justMyCode": false,

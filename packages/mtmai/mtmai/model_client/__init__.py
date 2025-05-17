@@ -30,17 +30,20 @@ def get_model_list():
       "litellm_params": {
         "model": "gemini/gemini-2.0-flash-exp",
         "api_key": settings.GOOGLE_AI_STUDIO_API_KEY,
-        "max_parallel_requests": 2,
+        "max_retries": 6,
+        "max_parallel_requests": 1,
+        "retry_after": 30,
       },
     },
-    {
-      "model_name": "gemini-2.0-flash-exp",
-      "litellm_params": {
-        "api_key": settings.GOOGLE_AI_STUDIO_API_KEY_2,
-        "model": "gemini/gemini-2.0-flash-exp",
-        "max_parallel_requests": 2,
-      },
-    },
+    # {
+    #   "model_name": "gemini-2.0-flash-exp",
+    #   "litellm_params": {
+    #     "api_key": settings.GOOGLE_AI_STUDIO_API_KEY_2,
+    #     "model": "gemini/gemini-2.0-flash-exp",
+    #     "max_parallel_requests": 2,
+    #     "retry_after": 30,
+    #   },
+    # },
   ]
   return model_list
 
@@ -63,13 +66,13 @@ def get_litellm_router():
   return Router(
     model_list=get_model_list(),
     num_retries=6,
-    retry_after=20,
-    cooldown_time=60,  # cooldown the deployment for seconds if it num_fails > allowed_fails
+    # retry_after=30,
+    # cooldown_time=60,  # cooldown the deployment for seconds if it num_fails > allowed_fails
     # fallbacks=[{"gemini-2.0-flash-exp": ["gemini-2.0-flash-exp2"]}],
     # retry_policy=retry_policy,
     # allowed_fails_policy=allowed_fails_policy,
-    cache_responses=True,
-    debug_level="DEBUG",  # defaults to INFO
+    # cache_responses=True,
+    debug_level="INFO",  # defaults to INFO
   )
 
 
@@ -204,19 +207,19 @@ def get_default_litellm_model():
 
 
 def get_default_smolagents_model():
-  router = get_litellm_router()
+  # router = get_litellm_router()
   return LiteLLMRouterModel(
     model_id="gemini-2.0-flash-exp",
     model_list=get_model_list(),
     client_kwargs={
-      "routing_strategy": router.routing_strategy,
-      "num_retries": router.num_retries,
-      "retry_after": router.retry_after,
-      "cooldown_time": router.cooldown_time,
-      "allowed_fails_policy": router.allowed_fails_policy,
-      "retry_policy": router.retry_policy,
-      "fallbacks": router.fallbacks,
-      "cache_responses": router.cache_responses,
-      "debug_level": router.debug_level,
+      # "routing_strategy": router.routing_strategy,
+      "num_retries": 10,
+      "retry_after": 30,
+      # "cooldown_time": router.cooldown_time,
+      # "allowed_fails_policy": router.allowed_fails_policy,
+      # "retry_policy": router.retry_policy,
+      # "fallbacks": router.fallbacks,
+      # "cache_responses": router.cache_responses,
+      # "debug_level": router.debug_level,
     },
   )
