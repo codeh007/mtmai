@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.10"
+version = "0.7.11"
 dependencies = [
     "pydantic-settings",
     "litellm>=1.69.3",
@@ -171,8 +171,8 @@ dependencies = [
     "hatchet-sdk>=1.9.0",
     "toolbox-core>=0.1.0",
     "toolbox-langchain>=0.1.0",
-    "pytubefix>=8.13.1", # youtube下载器(同时能下载字幕)
-    "ffmpeg-python>=0.2.0", # 视频音频处理
+    "pytubefix>=8.13.1",                               # youtube下载器(同时能下载字幕)
+    "ffmpeg-python>=0.2.0",                            # 视频音频处理
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."

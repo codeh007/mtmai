@@ -3780,7 +3780,7 @@ wheels = [
 
 [[package]]
 name = "mtmai"
-version = "0.7.10"
+version = "0.7.11"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "absl-py" },
