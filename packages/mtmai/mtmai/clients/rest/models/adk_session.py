@@ -19,8 +19,8 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.adk_session_state import AdkSessionState
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.root_agent_state import RootAgentState
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,7 +32,7 @@ class AdkSession(BaseModel):
     id: StrictStr
     app_name: StrictStr
     user_id: StrictStr
-    state: RootAgentState
+    state: AdkSessionState
     title: Optional[StrictStr] = None
     create_time: StrictStr
     update_time: StrictStr
@@ -104,7 +104,7 @@ class AdkSession(BaseModel):
             "id": obj.get("id"),
             "app_name": obj.get("app_name"),
             "user_id": obj.get("user_id"),
-            "state": RootAgentState.from_dict(obj["state"]) if obj.get("state") is not None else None,
+            "state": AdkSessionState.from_dict(obj["state"]) if obj.get("state") is not None else None,
             "title": obj.get("title"),
             "create_time": obj.get("create_time"),
             "update_time": obj.get("update_time")
