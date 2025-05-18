@@ -17,23 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Site(BaseModel):
+class SitePropertiesState(BaseModel):
     """
-    Site
+    站点状态
     """ # noqa: E501
-    metadata: APIResourceMeta
-    title: StrictStr = Field(description="site 标题")
-    description: StrictStr = Field(description="site 描述")
-    automation_enabled: StrictBool = Field(description="是否启用自动化")
-    state: SitePropertiesState
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "automation_enabled", "state"]
+    status: Optional[StrictStr] = Field(default=None, description="站点状态")
+    __properties: ClassVar[List[str]] = ["status"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +47,7 @@ class Site(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Site from a JSON string"""
+        """Create an instance of SitePropertiesState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,17 +68,11 @@ class Site(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of state
-        if self.state:
-            _dict['state'] = self.state.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Site from a dict"""
+        """Create an instance of SitePropertiesState from a dict"""
         if obj is None:
             return None
 
@@ -94,14 +82,10 @@ class Site(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Site) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SitePropertiesState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "description": obj.get("description"),
-            "automation_enabled": obj.get("automation_enabled"),
-            "state": SitePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None
+            "status": obj.get("status")
         })
         return _obj
 

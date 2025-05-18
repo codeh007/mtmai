@@ -24,9 +24,9 @@ from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Site(BaseModel):
+class SiteProperties(BaseModel):
     """
-    Site
+    SiteProperties
     """ # noqa: E501
     metadata: APIResourceMeta
     title: StrictStr = Field(description="site 标题")
@@ -53,7 +53,7 @@ class Site(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Site from a JSON string"""
+        """Create an instance of SiteProperties from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +84,7 @@ class Site(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Site from a dict"""
+        """Create an instance of SiteProperties from a dict"""
         if obj is None:
             return None
 
@@ -94,7 +94,7 @@ class Site(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Site) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SiteProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,

@@ -296,6 +296,8 @@ from mtmai.clients.rest.models.site import Site
 from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
 from mtmai.clients.rest.models.site_list import SiteList
+from mtmai.clients.rest.models.site_properties import SiteProperties
+from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
 from mtmai.clients.rest.models.slack_webhook import SlackWebhook
 from mtmai.clients.rest.models.social_add_followers_input import SocialAddFollowersInput
 from mtmai.clients.rest.models.social_login_input import SocialLoginInput
