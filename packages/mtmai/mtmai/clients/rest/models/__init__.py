@@ -236,6 +236,11 @@ from mtmai.clients.rest.models.model_run_list import ModelRunList
 from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.model_usage import ModelUsage
+from mtmai.clients.rest.models.mt_task import MtTask
+from mtmai.clients.rest.models.mt_task_list import MtTaskList
+from mtmai.clients.rest.models.mt_task_properties import MtTaskProperties
+from mtmai.clients.rest.models.mt_workflow_run_request import MtWorkflowRunRequest
+from mtmai.clients.rest.models.mt_workflow_run_response import MtWorkflowRunResponse
 from mtmai.clients.rest.models.multi_modal_message import MultiModalMessage
 from mtmai.clients.rest.models.my_demo_agent_event import MyDemoAgentEvent
 from mtmai.clients.rest.models.open_ai_chat_completion_client import OpenAIChatCompletionClient
