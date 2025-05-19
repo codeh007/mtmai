@@ -30,6 +30,7 @@ python_client_gen(){
     cp -r $tmp_dir/mtmai/clients/rest/models $dst_dir/
 
     rm -rf $tmp_dir
+    echo "python_client_gen 完成"
 
     # GRPC_OUT=${GEN_DIR}/contracts
     # mkdir -p $GRPC_OUT

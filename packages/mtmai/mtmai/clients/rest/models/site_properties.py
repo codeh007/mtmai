@@ -17,26 +17,23 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.adk_session_state import AdkSessionState
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
 from typing import Optional, Set
 from typing_extensions import Self
 
-class AdkSession(BaseModel):
+class SiteProperties(BaseModel):
     """
-    AdkSession
+    SiteProperties
     """ # noqa: E501
     metadata: APIResourceMeta
-    id: StrictStr
-    app_name: StrictStr
-    user_id: StrictStr
-    state: AdkSessionState
-    title: Optional[StrictStr] = None
-    create_time: StrictStr
-    update_time: StrictStr
-    __properties: ClassVar[List[str]] = ["metadata", "id", "app_name", "user_id", "state", "title", "create_time", "update_time"]
+    title: StrictStr = Field(description="site 标题")
+    description: StrictStr = Field(description="site 描述")
+    automation_enabled: StrictBool = Field(description="是否启用自动化")
+    state: SitePropertiesState
+    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "automation_enabled", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +53,7 @@ class AdkSession(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of AdkSession from a JSON string"""
+        """Create an instance of SiteProperties from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -87,7 +84,7 @@ class AdkSession(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of AdkSession from a dict"""
+        """Create an instance of SiteProperties from a dict"""
         if obj is None:
             return None
 
@@ -97,17 +94,14 @@ class AdkSession(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in AdkSession) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SiteProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "id": obj.get("id"),
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
-            "state": AdkSessionState.from_dict(obj["state"]) if obj.get("state") is not None else None,
             "title": obj.get("title"),
-            "create_time": obj.get("create_time"),
-            "update_time": obj.get("update_time")
+            "description": obj.get("description"),
+            "automation_enabled": obj.get("automation_enabled"),
+            "state": SitePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None
         })
         return _obj
 

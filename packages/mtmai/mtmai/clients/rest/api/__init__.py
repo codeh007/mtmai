@@ -43,6 +43,7 @@ from mtmai.clients.rest.api.proxy_api import ProxyApi
 from mtmai.clients.rest.api.resource_api import ResourceApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
+from mtmai.clients.rest.api.task_api import TaskApi
 from mtmai.clients.rest.api.tenant_settings_api import TenantSettingsApi
 from mtmai.clients.rest.api.tk_api import TkApi
 from mtmai.clients.rest.api.ui_agent_api import UiAgentApi
