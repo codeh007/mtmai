@@ -22,6 +22,7 @@ from mtmai.clients.rest.api.workflow_runs_api import WorkflowRunsApi
 from mtmai.clients.rest.api.default_api import DefaultApi
 from mtmai.clients.rest.api.endpoint_api import EndpointApi
 from mtmai.clients.rest.api.frontend_api import FrontendApi
+from mtmai.clients.rest.api.mtworker_api import MtworkerApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
 

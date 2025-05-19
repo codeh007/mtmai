@@ -70,6 +70,8 @@ from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
 from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmai.clients.rest.models.mt_worker_properties import MtWorkerProperties
+from mtmai.clients.rest.models.mt_worker_task import MtWorkerTask
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.pull_request import PullRequest
 from mtmai.clients.rest.models.pull_request_state import PullRequestState
