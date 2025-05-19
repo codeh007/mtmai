@@ -42,6 +42,10 @@ from mtmai.clients.rest.models.cron_workflows import CronWorkflows
 from mtmai.clients.rest.models.cron_workflows_list import CronWorkflowsList
 from mtmai.clients.rest.models.cron_workflows_method import CronWorkflowsMethod
 from mtmai.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
+from mtmai.clients.rest.models.dash_sidebar_item import DashSidebarItem
+from mtmai.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
+from mtmai.clients.rest.models.endpoint import Endpoint
+from mtmai.clients.rest.models.endpoint_list import EndpointList
 from mtmai.clients.rest.models.event import Event
 from mtmai.clients.rest.models.event_data import EventData
 from mtmai.clients.rest.models.event_key_list import EventKeyList
@@ -51,6 +55,7 @@ from mtmai.clients.rest.models.event_order_by_field import EventOrderByField
 from mtmai.clients.rest.models.event_update_cancel200_response import EventUpdateCancel200Response
 from mtmai.clients.rest.models.event_workflow_run_summary import EventWorkflowRunSummary
 from mtmai.clients.rest.models.events import Events
+from mtmai.clients.rest.models.frontend_config import FrontendConfig
 from mtmai.clients.rest.models.get_step_run_diff_response import GetStepRunDiffResponse
 from mtmai.clients.rest.models.info_get_version200_response import InfoGetVersion200Response
 from mtmai.clients.rest.models.job import Job
@@ -87,6 +92,7 @@ from mtmai.clients.rest.models.scheduled_workflows_list import ScheduledWorkflow
 from mtmai.clients.rest.models.scheduled_workflows_method import ScheduledWorkflowsMethod
 from mtmai.clients.rest.models.scheduled_workflows_order_by_field import ScheduledWorkflowsOrderByField
 from mtmai.clients.rest.models.semaphore_slots import SemaphoreSlots
+from mtmai.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmai.clients.rest.models.site import Site
 from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
@@ -121,6 +127,7 @@ from mtmai.clients.rest.models.tenant_resource_policy import TenantResourcePolic
 from mtmai.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmai.clients.rest.models.tenant_version import TenantVersion
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
+from mtmai.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
 from mtmai.clients.rest.models.update_site_request import UpdateSiteRequest
 from mtmai.clients.rest.models.update_tenant_alert_email_group_request import UpdateTenantAlertEmailGroupRequest
 from mtmai.clients.rest.models.update_tenant_invite_request import UpdateTenantInviteRequest
