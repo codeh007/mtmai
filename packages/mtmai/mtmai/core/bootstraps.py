@@ -19,9 +19,9 @@ is_bootstraped = False
 default_env_files = [
   ".env",
   ".env.local",
-  "../gomtm2/env/dev.env",
-  "../../gomtm2/env/dev.env",
-  "../../../gomtm2/env/dev.env",
+  "../gomtm/env/dev.env",
+  "../../gomtm/env/dev.env",
+  "../../../gomtm/env/dev.env",
 ]
 # load_dotenv(override=True)
 for env_file in default_env_files:
