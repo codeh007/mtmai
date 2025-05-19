@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.dash_sidebar_item import DashSidebarItem
+from mtmai.clients.rest.models.siderbar_config_other import SiderbarConfigOther
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +30,8 @@ class SiderbarConfig(BaseModel):
     """ # noqa: E501
     logo: Optional[StrictStr] = Field(default=None, description="logo")
     sideritems: Optional[List[DashSidebarItem]] = None
-    __properties: ClassVar[List[str]] = ["logo", "sideritems"]
+    other: Optional[SiderbarConfigOther] = None
+    __properties: ClassVar[List[str]] = ["logo", "sideritems", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,6 +79,9 @@ class SiderbarConfig(BaseModel):
                 if _item_sideritems:
                     _items.append(_item_sideritems.to_dict())
             _dict['sideritems'] = _items
+        # override the default output from pydantic by calling `to_dict()` of other
+        if self.other:
+            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
@@ -95,7 +100,8 @@ class SiderbarConfig(BaseModel):
 
         _obj = cls.model_validate({
             "logo": obj.get("logo"),
-            "sideritems": [DashSidebarItem.from_dict(_item) for _item in obj["sideritems"]] if obj.get("sideritems") is not None else None
+            "sideritems": [DashSidebarItem.from_dict(_item) for _item in obj["sideritems"]] if obj.get("sideritems") is not None else None,
+            "other": SiderbarConfigOther.from_dict(obj["other"]) if obj.get("other") is not None else None
         })
         return _obj
 
