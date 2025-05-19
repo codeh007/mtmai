@@ -2348,7 +2348,7 @@ wheels = [
 
 [[package]]
 name = "hatchet-sdk"
-version = "1.9.0"
+version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2365,9 +2365,9 @@ dependencies = [
     { name = "tenacity" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f5/f0/6eaa48b5d58e071803e304e17f49842a9b96fc313adc7d8413ba65fbc10b/hatchet_sdk-1.9.0.tar.gz", hash = "sha256:c9065b34e0aeb92e04ee4fd9476de14dfa7a1970a2e15f3c19eca62087dfd70a", size = 329029, upload-time = "2025-05-14T15:16:46.922Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/0b/06a05215c020c0dbecf4b8f99a8e688ccd8cdc80c7ba4eb894205ee277a3/hatchet_sdk-1.10.1.tar.gz", hash = "sha256:38a49280fb4708496641e4d9f4b5615a5a8cae2895fa528ac7601c09644f85de", size = 335429, upload-time = "2025-05-16T20:44:56.123Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e6/3d/99dc92d033ca9e02fcb0967c677c14ffb81360ca0bd2fbd38b30b8f7b2eb/hatchet_sdk-1.9.0-py3-none-any.whl", hash = "sha256:508b6fefdb41d1df52fb6d32e9dadd2de2d616b75b2ded317c88416a4f0e6573", size = 799967, upload-time = "2025-05-14T15:16:45.028Z" },
+    { url = "https://files.pythonhosted.org/packages/bb/5e/781b728104d67bcbc8e8621e1e87167fb672d0d1d80a92bd009314a3462c/hatchet_sdk-1.10.1-py3-none-any.whl", hash = "sha256:f3f354fd89587b04dbd32528ff1bcaa0c6a80b6b056acc989265e09a84c901bd", size = 816448, upload-time = "2025-05-16T20:44:54.219Z" },
 ]
 
 [[package]]
@@ -3841,6 +3841,7 @@ dependencies = [
     { name = "langfuse" },
     { name = "langgraph" },
     { name = "langgraph-checkpoint-postgres" },
+    { name = "lark" },
     { name = "lazify" },
     { name = "litellm" },
     { name = "loguru" },
@@ -4000,7 +4001,7 @@ requires-dist = [
     { name = "google-adk", specifier = ">=0.5.0" },
     { name = "google-search-results", specifier = ">=2.4.2" },
     { name = "googlesearch-python", specifier = ">=1.2.5" },
-    { name = "hatchet-sdk", specifier = ">=1.9.0" },
+    { name = "hatchet-sdk", specifier = ">=1.10.1" },
     { name = "helium", specifier = ">=5.1.1" },
     { name = "html2text", specifier = ">=2024.2.26" },
     { name = "httpx", specifier = ">=0.27.2" },
@@ -4020,6 +4021,7 @@ requires-dist = [
     { name = "langfuse", specifier = ">=2.60.4" },
     { name = "langgraph", specifier = ">=0.2.63" },
     { name = "langgraph-checkpoint-postgres", specifier = ">=2.0.13" },
+    { name = "lark", specifier = ">=0.12.0" },
     { name = "lazify", specifier = ">=0.4.0" },
     { name = "litellm", specifier = ">=1.69.3" },
     { name = "loguru", specifier = ">=0.7.3" },

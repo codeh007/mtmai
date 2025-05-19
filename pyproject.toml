@@ -51,7 +51,7 @@ exclude = [
 
 [tool.setuptools]
 packages = ["mtmairoot", "packages/mtmai"]
-package-dir = { "" = "." }
+# package-dir = { "" = "." }
 namespace-packages = ["packages"]
 
 

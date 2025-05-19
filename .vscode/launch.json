@@ -13,6 +13,17 @@
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		},
 		{
+			"name": "worker",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/main.py",
+			"cwd": "${workspaceFolder}",
+			"args": ["worker"],
+			"jinja": true,
+			"justMyCode": false,
+			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
+		},
+		{
 			"name": "mcpserver",
 			"type": "debugpy",
 			"request": "launch",
