@@ -28,6 +28,13 @@ def run():
 
 
 @app.command()
+def version():
+  from ._version import __version__
+
+  print(__version__)
+
+
+@app.command()
 def serve(
   host: Annotated[
     str,
