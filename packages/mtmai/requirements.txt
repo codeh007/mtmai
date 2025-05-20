@@ -26,9 +26,7 @@ aioitertools==0.12.0
 aiosignal==1.3.2
     # via aiohttp
 aiosqlite==0.21.0
-    # via
-    #   mtmai (pyproject.toml)
-    #   arize-phoenix
+    # via arize-phoenix
 aiostream==0.5.2
     # via
     #   mtmai (pyproject.toml)
@@ -216,8 +214,6 @@ distro==1.9.0
     #   openai
 dnspython==2.7.0
     # via email-validator
-docker==7.1.0
-    # via mtmai (pyproject.toml)
 docstring-parser==0.16
     # via google-cloud-aiplatform
 durationpy==0.9
@@ -563,11 +559,7 @@ langfuse==2.60.5
 langgraph==0.2.67
     # via mtmai (pyproject.toml)
 langgraph-checkpoint==2.0.10
-    # via
-    #   langgraph
-    #   langgraph-checkpoint-postgres
-langgraph-checkpoint-postgres==2.0.13
-    # via mtmai (pyproject.toml)
+    # via langgraph
 langgraph-sdk==0.1.51
     # via langgraph
 langsmith==0.3.1
@@ -576,9 +568,7 @@ langsmith==0.3.1
     #   langchain-community
     #   langchain-core
 lark==0.12.0
-    # via
-    #   mtmai (pyproject.toml)
-    #   cel-python
+    # via cel-python
 lazify==0.4.0
     # via mtmai (pyproject.toml)
 litellm==1.69.3
@@ -592,7 +582,6 @@ lxml==5.3.0
     #   mtmai (pyproject.toml)
     #   free-proxy
     #   lxml-html-clean
-    #   python-pptx
     #   readabilipy
     #   yfinance
 lxml-html-clean==0.4.1
@@ -832,7 +821,6 @@ orjson==3.10.15
     # via
     #   mtmai (pyproject.toml)
     #   chromadb
-    #   langgraph-checkpoint-postgres
     #   langgraph-sdk
     #   langsmith
 outcome==1.3.0.post0
@@ -883,7 +871,6 @@ pillow==11.1.0
     #   imageio
     #   matplotlib
     #   pdfplumber
-    #   python-pptx
     #   smolagents
 platformdirs==4.3.6
     # via
@@ -957,12 +944,8 @@ psutil==7.0.0
     #   mtmai (pyproject.toml)
     #   arize-phoenix
     #   browser-use
-psycopg==3.2.4
-    # via langgraph-checkpoint-postgres
 psycopg-binary==3.2.7
     # via mtmai (pyproject.toml)
-psycopg-pool==3.2.4
-    # via langgraph-checkpoint-postgres
 psycopg2-binary==2.9.10
     # via
     #   mtmai (pyproject.toml)
@@ -1095,8 +1078,6 @@ python-multipart==0.0.20
     # via
     #   arize-phoenix
     #   mcp
-python-pptx==1.0.2
-    # via mtmai (pyproject.toml)
 python-socks==2.7.1
     # via websockets-proxy
 pytubefix==8.13.1
@@ -1149,7 +1130,6 @@ requests==2.32.3
     # via
     #   azure-core
     #   browser-use
-    #   docker
     #   exa-py
     #   fastapi-mcp
     #   free-proxy
@@ -1381,13 +1361,10 @@ typing-extensions==4.12.2
     #   openinference-instrumentation-smolagents
     #   opentelemetry-resourcedetector-gcp
     #   opentelemetry-sdk
-    #   psycopg
-    #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   pyee
     #   pyopenssl
-    #   python-pptx
     #   pywebview
     #   referencing
     #   selenium
@@ -1409,7 +1386,6 @@ uritemplate==4.1.1
 urllib3==2.3.0
     # via
     #   botocore
-    #   docker
     #   hatchet-sdk
     #   kubernetes
     #   qdrant-client
@@ -1451,8 +1427,6 @@ wsproto==1.2.0
     # via trio-websocket
 xlrd==2.0.1
     # via mtmai (pyproject.toml)
-xlsxwriter==3.2.2
-    # via python-pptx
 xxhash==3.5.0
     # via mtmai (pyproject.toml)
 yarl==1.18.3

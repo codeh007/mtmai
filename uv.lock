@@ -1334,20 +1334,6 @@ wheels = [
 ]
 
 [[package]]
-name = "docker"
-version = "7.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
-    { name = "requests" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834, upload-time = "2024-05-23T11:13:57.216Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774, upload-time = "2024-05-23T11:13:55.01Z" },
-]
-
-[[package]]
 name = "docstring-parser"
 version = "0.16"
 source = { registry = "https://pypi.org/simple" }
@@ -3199,21 +3185,6 @@ wheels = [
 ]
 
 [[package]]
-name = "langgraph-checkpoint-postgres"
-version = "2.0.13"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "langgraph-checkpoint" },
-    { name = "orjson" },
-    { name = "psycopg" },
-    { name = "psycopg-pool" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/d5/a364c4944e2734f685ede723fc12b761dcdaec851ad06708be161a9f2195/langgraph_checkpoint_postgres-2.0.13.tar.gz", hash = "sha256:cadab495a0b3d13534178ab3bd711f12dbfeccb9e5d0fb24905ea809a700b137", size = 26601, upload-time = "2025-01-16T14:22:09.357Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/2d/ae9a6905f1130944b2651717477b0b2267880ca3d53abc0040e5deee6cae/langgraph_checkpoint_postgres-2.0.13-py3-none-any.whl", hash = "sha256:98fe99c07404541d87f50c277a0120f9c4d964b665e5f42aecd911e0f365ae59", size = 35400, upload-time = "2025-01-16T14:22:07.852Z" },
-]
-
-[[package]]
 name = "langgraph-sdk"
 version = "0.1.51"
 source = { registry = "https://pypi.org/simple" }
@@ -3780,13 +3751,12 @@ wheels = [
 
 [[package]]
 name = "mtmai"
-version = "0.7.13"
+version = "0.7.14"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "absl-py" },
     { name = "aiohttp" },
     { name = "aiohttp-retry" },
-    { name = "aiosqlite" },
     { name = "aiostream" },
     { name = "alembic" },
     { name = "anthropic" },
@@ -3806,7 +3776,6 @@ dependencies = [
     { name = "connecpy" },
     { name = "cssselect" },
     { name = "diff-match-patch" },
-    { name = "docker" },
     { name = "edge-tts" },
     { name = "email-validator" },
     { name = "exa-py" },
@@ -3840,8 +3809,6 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langfuse" },
     { name = "langgraph" },
-    { name = "langgraph-checkpoint-postgres" },
-    { name = "lark" },
     { name = "lazify" },
     { name = "litellm" },
     { name = "loguru" },
@@ -3890,7 +3857,6 @@ dependencies = [
     { name = "pysrt" },
     { name = "python-dateutil" },
     { name = "python-dotenv" },
-    { name = "python-pptx" },
     { name = "pytubefix" },
     { name = "pyyaml" },
     { name = "quantstats" },
@@ -3964,7 +3930,6 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.10.5" },
     { name = "aiohttp", specifier = ">=3.11.11" },
     { name = "aiohttp-retry", specifier = ">=2.8.3" },
-    { name = "aiosqlite", specifier = "~=0.20" },
     { name = "aiostream", specifier = ">=0.5.2" },
     { name = "alembic", specifier = ">=1.14.1" },
     { name = "anthropic", specifier = ">=0.49.0" },
@@ -3985,7 +3950,6 @@ requires-dist = [
     { name = "connecpy", specifier = ">=1.4.2" },
     { name = "cssselect", specifier = ">=1.2.0" },
     { name = "diff-match-patch", specifier = ">=20241021" },
-    { name = "docker", specifier = ">=7.1.0" },
     { name = "edge-tts", specifier = ">=6.1.19" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "exa-py", specifier = ">=1.7.2" },
@@ -4020,8 +3984,6 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=0.3.1" },
     { name = "langfuse", specifier = ">=2.60.4" },
     { name = "langgraph", specifier = ">=0.2.63" },
-    { name = "langgraph-checkpoint-postgres", specifier = ">=2.0.13" },
-    { name = "lark", specifier = ">=0.12.0" },
     { name = "lazify", specifier = ">=0.4.0" },
     { name = "litellm", specifier = ">=1.69.3" },
     { name = "loguru", specifier = ">=0.7.3" },
@@ -4072,7 +4034,6 @@ requires-dist = [
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
-    { name = "python-pptx", specifier = ">=1.0.2" },
     { name = "pytubefix", specifier = ">=8.13.1" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "quantstats", git = "https://github.com/PowerInsight/quantstats.git" },
@@ -5292,19 +5253,6 @@ wheels = [
 ]
 
 [[package]]
-name = "psycopg"
-version = "3.2.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
-    { name = "tzdata", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/f2/954b1467b3e2ca5945b83b5e320268be1f4df486c3e8ffc90f4e4b707979/psycopg-3.2.4.tar.gz", hash = "sha256:f26f1346d6bf1ef5f5ef1714dd405c67fb365cfd1c6cea07de1792747b167b92", size = 156109, upload-time = "2025-01-15T19:10:20.656Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/49/15114d5f7ee68983f4e1a24d47e75334568960352a07c6f0e796e912685d/psycopg-3.2.4-py3-none-any.whl", hash = "sha256:43665368ccd48180744cab26b74332f46b63b7e06e8ce0775547a3533883d381", size = 198716, upload-time = "2025-01-15T17:36:56.495Z" },
-]
-
-[[package]]
 name = "psycopg-binary"
 version = "3.2.7"
 source = { registry = "https://pypi.org/simple" }
@@ -5331,18 +5279,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/0e/3f/dd3a912abaa4ff2816e9a1e90c775f33315278f7d01621e874f5b5e83ada/psycopg_binary-3.2.7-cp313-cp313-musllinux_1_2_ppc64le.whl", hash = "sha256:3c02790afcc6d82d1b9d886d9323f955c5c998693966c4c1e6d0ff9a96276a1e", size = 3409378, upload-time = "2025-04-30T13:03:20.422Z" },
     { url = "https://files.pythonhosted.org/packages/35/44/1ee04f0eae2dd9a75cf519792e95a00d5c7eb91b8ec341e2660fd0b4a033/psycopg_binary-3.2.7-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:1d2288a7f1d0dec1ccce50b4470751acb563689048752fdbf7a4a804df3a0e0d", size = 3475892, upload-time = "2025-04-30T13:03:25.686Z" },
     { url = "https://files.pythonhosted.org/packages/11/1e/5133e346f0138f13d04e38f4b3976dc92ab4a1d72fc18f1199552c0bde3c/psycopg_binary-3.2.7-cp313-cp313-win_amd64.whl", hash = "sha256:c3781beaffb33fce17d8f137b003ebd930a7148eab2a1f60628e86c3d67884ea", size = 2927499, upload-time = "2025-04-30T13:03:31.398Z" },
-]
-
-[[package]]
-name = "psycopg-pool"
-version = "3.2.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/49/71/01d4e589dc5fd1f21368b7d2df183ed0e5bbc160ce291d745142b229797b/psycopg_pool-3.2.4.tar.gz", hash = "sha256:61774b5bbf23e8d22bedc7504707135aaf744679f8ef9b3fe29942920746a6ed", size = 29749, upload-time = "2024-11-15T10:02:49.273Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bb/28/2b56ac94c236ee033c7b291bcaa6a83089d0cc0fe7830c35f6521177c199/psycopg_pool-3.2.4-py3-none-any.whl", hash = "sha256:f6a22cff0f21f06d72fb2f5cb48c618946777c49385358e0c88d062c59cbd224", size = 38240, upload-time = "2024-11-15T10:02:47.857Z" },
 ]
 
 [[package]]
@@ -8367,21 +8303,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-pptx"
-version = "1.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "lxml" },
-    { name = "pillow" },
-    { name = "typing-extensions" },
-    { name = "xlsxwriter" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/52/a9/0c0db8d37b2b8a645666f7fd8accea4c6224e013c42b1d5c17c93590cd06/python_pptx-1.0.2.tar.gz", hash = "sha256:479a8af0eaf0f0d76b6f00b0887732874ad2e3188230315290cd1f9dd9cc7095", size = 10109297, upload-time = "2024-08-07T17:33:37.772Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d9/4f/00be2196329ebbff56ce564aa94efb0fbc828d00de250b1980de1a34ab49/python_pptx-1.0.2-py3-none-any.whl", hash = "sha256:160838e0b8565a8b1f67947675886e9fea18aa5e795db7ae531606d68e785cba", size = 472788, upload-time = "2024-08-07T17:33:28.192Z" },
-]
-
-[[package]]
 name = "python-slugify"
 version = "8.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -10083,15 +10004,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a6/b3/19a2540d21dea5f908304375bd43f5ed7a4c28a370dc9122c565423e6b44/xlrd-2.0.1.tar.gz", hash = "sha256:f72f148f54442c6b056bf931dbc34f986fd0c3b0b6b5a58d013c9aef274d0c88", size = 100259, upload-time = "2020-12-11T10:14:22.201Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/0c/c2a72d51fe56e08a08acc85d13013558a2d793028ae7385448a6ccdfae64/xlrd-2.0.1-py2.py3-none-any.whl", hash = "sha256:6a33ee89877bd9abc1158129f6e94be74e2679636b8a205b43b85206c3f0bbdd", size = 96531, upload-time = "2020-12-11T10:14:20.877Z" },
-]
-
-[[package]]
-name = "xlsxwriter"
-version = "3.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a1/08/26f69d1e9264e8107253018de9fc6b96f9219817d01c5f021e927384a8d1/xlsxwriter-3.2.2.tar.gz", hash = "sha256:befc7f92578a85fed261639fb6cde1fd51b79c5e854040847dde59d4317077dc", size = 205202, upload-time = "2025-01-28T20:23:14.387Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9b/07/df054f7413bdfff5e98f75056e4ed0977d0c8716424011fac2587864d1d3/XlsxWriter-3.2.2-py3-none-any.whl", hash = "sha256:272ce861e7fa5e82a4a6ebc24511f2cb952fde3461f6c6e1a1e81d3272db1471", size = 165121, upload-time = "2025-01-28T20:23:11.654Z" },
 ]
 
 [[package]]
