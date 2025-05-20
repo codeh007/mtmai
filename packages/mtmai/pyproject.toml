@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.14"
+version = "0.7.15"
 dependencies = [
     "pydantic-settings",
     "litellm>=1.69.3",
@@ -75,8 +75,8 @@ dependencies = [
     "pyOpenSSL>=24.3.0",
     "alembic>=1.14.1",
     "slugify>=0.0.1",
-    "yfinance>=0.2.52",
-    "mcp-server-fetch>=2025.1.17",
+    # "yfinance>=0.2.52",
+    # "mcp-server-fetch>=2025.1.17",
     "connecpy>=1.4.2",
     "opentelemetry-instrumentation-openai>=0.38.11",
     "opentelemetry-exporter-otlp>=1.30.0",
@@ -154,10 +154,10 @@ dependencies = [
     "jsonpath-ng>=1.7.0",
     "m3u8>=6.0.0",
     "edge-tts>=6.1.19",
-    "redis>=6.0.0",
+    # "redis>=6.0.0",
     "boto3>=1.38",
     "fastmcp>=2.2.7",
-    "g4f[webview]>=0.5.2.1",
+    # "g4f[webview]>=0.5.2.1",
     "moviepy>=2.0.0.dev2",
     "faster-whisper~=1.0.1",
     "pysrt>=1.1.2",
