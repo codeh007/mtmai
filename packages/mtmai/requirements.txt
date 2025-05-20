@@ -9,7 +9,6 @@ aiohttp==3.11.11
     #   mtmai (pyproject.toml)
     #   aiohttp-retry
     #   edge-tts
-    #   g4f
     #   hatchet-sdk
     #   langchain-community
     #   langchain-nvidia-ai-endpoints
@@ -100,7 +99,6 @@ beautifulsoup4==4.13.4
     #   googlesearch-python
     #   markdownify
     #   markitdown
-    #   readabilipy
     #   scrapegraph-py
     #   yfinance
 boto3==1.38.8
@@ -111,13 +109,10 @@ botocore==1.38.8
     # via
     #   boto3
     #   s3transfer
-bottle==0.13.3
-    # via pywebview
 brotli==1.1.0
     # via
     #   brotli-asgi
     #   connecpy
-    #   g4f
 brotli-asgi==1.4.0
     # via connecpy
 browser-cookie3==0.20.1
@@ -178,7 +173,6 @@ cryptography==43.0.3
     # via
     #   authlib
     #   azure-identity
-    #   g4f
     #   msal
     #   pdfminer-six
     #   pyjwt
@@ -271,8 +265,6 @@ fsspec==2024.12.0
     # via huggingface-hub
 future==1.0.0
     # via ffmpeg-python
-g4f==0.5.2.1
-    # via mtmai (pyproject.toml)
 google-adk==0.5.0
     # via mtmai (pyproject.toml)
 google-ai-generativelanguage==0.6.18
@@ -399,9 +391,7 @@ hpack==4.1.0
 html2text==2024.2.26
     # via mtmai (pyproject.toml)
 html5lib==1.1
-    # via
-    #   readabilipy
-    #   yfinance
+    # via yfinance
 httpcore==1.0.7
     # via httpx
 httplib2==0.22.0
@@ -582,7 +572,6 @@ lxml==5.3.0
     #   mtmai (pyproject.toml)
     #   free-proxy
     #   lxml-html-clean
-    #   readabilipy
     #   yfinance
 lxml-html-clean==0.4.1
     # via mtmai (pyproject.toml)
@@ -603,7 +592,6 @@ markdownify==1.1.0
     #   mtmai (pyproject.toml)
     #   browser-use
     #   markitdown
-    #   mcp-server-fetch
 markitdown==0.1.1
     # via mtmai (pyproject.toml)
 markupsafe==3.0.2
@@ -621,9 +609,6 @@ mcp==1.7.1
     #   fastapi-mcp
     #   fastmcp
     #   google-adk
-    #   mcp-server-fetch
-mcp-server-fetch==2025.1.17
-    # via mtmai (pyproject.toml)
 mdurl==0.1.2
     # via markdown-it-py
 mem0ai==0.1.93
@@ -661,9 +646,7 @@ mypy-extensions==1.0.0
 nanoid==2.0.0
     # via mtmai (pyproject.toml)
 nest-asyncio==1.6.0
-    # via
-    #   mtmai (pyproject.toml)
-    #   g4f
+    # via mtmai (pyproject.toml)
 nltk==3.9.1
     # via mtmai (pyproject.toml)
 numpy==2.2.5
@@ -873,9 +856,7 @@ pillow==11.1.0
     #   pdfplumber
     #   smolagents
 platformdirs==4.3.6
-    # via
-    #   g4f
-    #   yfinance
+    # via yfinance
 playwright==1.52.0
     # via
     #   mtmai (pyproject.toml)
@@ -887,8 +868,6 @@ playwright-stealth==1.0.6
     # via mtmai (pyproject.toml)
 ply==3.11
     # via jsonpath-ng
-plyer==2.1.0
-    # via g4f
 portalocker==2.10.1
     # via
     #   msal-extensions
@@ -906,8 +885,6 @@ propcache==0.2.1
     # via
     #   aiohttp
     #   yarl
-protego==0.4.0
-    # via mcp-server-fetch
 proto-plus==1.25.0
     # via
     #   google-ai-generativelanguage
@@ -937,8 +914,6 @@ protobuf==5.29.3
     #   opentelemetry-proto
     #   proto-plus
     #   qdrant-client
-proxy-tools==0.1.0
-    # via pywebview
 psutil==7.0.0
     # via
     #   mtmai (pyproject.toml)
@@ -964,8 +939,6 @@ pyasn1-modules==0.4.1
     # via google-auth
 pycparser==2.22
     # via cffi
-pycryptodome==3.22.0
-    # via g4f
 pycryptodomex==3.22.0
     # via
     #   mtmai (pyproject.toml)
@@ -993,7 +966,6 @@ pydantic==2.10.6
     #   langsmith
     #   litellm
     #   mcp
-    #   mcp-server-fetch
     #   mem0ai
     #   ollama
     #   openai
@@ -1087,8 +1059,6 @@ pytz==2024.2
     #   mem0ai
     #   pandas
     #   yfinance
-pywebview==5.4
-    # via g4f
 pyyaml==6.0.2
     # via
     #   mtmai (pyproject.toml)
@@ -1110,11 +1080,7 @@ quantstats @ git+https://github.com/PowerInsight/quantstats.git@1fa1cafdd81869fb
     # via mtmai (pyproject.toml)
 rank-bm25==0.2.2
     # via mtmai (pyproject.toml)
-readabilipy==0.3.0
-    # via mcp-server-fetch
 rebrowser-playwright==1.52.0
-    # via mtmai (pyproject.toml)
-redis==6.0.0
     # via mtmai (pyproject.toml)
 referencing==0.36.1
     # via
@@ -1123,7 +1089,6 @@ referencing==0.36.1
 regex==2024.11.6
     # via
     #   nltk
-    #   readabilipy
     #   tiktoken
     #   transformers
 requests==2.32.3
@@ -1133,7 +1098,6 @@ requests==2.32.3
     #   exa-py
     #   fastapi-mcp
     #   free-proxy
-    #   g4f
     #   google-api-core
     #   google-cloud-bigquery
     #   google-cloud-storage
@@ -1147,7 +1111,6 @@ requests==2.32.3
     #   langfuse
     #   langsmith
     #   markitdown
-    #   mcp-server-fetch
     #   moviepy
     #   msal
     #   opentelemetry-exporter-otlp-proto-http
@@ -1365,7 +1328,6 @@ typing-extensions==4.12.2
     #   pydantic-core
     #   pyee
     #   pyopenssl
-    #   pywebview
     #   referencing
     #   selenium
     #   speechrecognition
@@ -1432,9 +1394,7 @@ xxhash==3.5.0
 yarl==1.18.3
     # via aiohttp
 yfinance==0.2.52
-    # via
-    #   mtmai (pyproject.toml)
-    #   quantstats
+    # via quantstats
 youtube-transcript-api==1.0.3
     # via mtmai (pyproject.toml)
 zipp==3.21.0
