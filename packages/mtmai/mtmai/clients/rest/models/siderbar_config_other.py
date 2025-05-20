@@ -19,6 +19,8 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, f
 from typing import Any, List, Optional
 from mtmai.clients.rest.models.adk_session_list import AdkSessionList
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
+from mtmai.clients.rest.models.agent_runner_input import AgentRunnerInput
+from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
 from mtmai.clients.rest.models.content import Content
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.part import Part
@@ -27,7 +29,7 @@ from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
-SIDERBARCONFIGOTHER_ONE_OF_SCHEMAS = ["AdkSessionList", "AgentEventType", "Content", "FlowNames", "Part", "PlatformAccountList"]
+SIDERBARCONFIGOTHER_ONE_OF_SCHEMAS = ["AdkSessionList", "AgentEventType", "AgentRunnerInput", "AgentRunnerOutput", "Content", "FlowNames", "Part", "PlatformAccountList"]
 
 class SiderbarConfigOther(BaseModel):
     """
@@ -45,8 +47,12 @@ class SiderbarConfigOther(BaseModel):
     oneof_schema_5_validator: Optional[Part] = None
     # data type: AdkSessionList
     oneof_schema_6_validator: Optional[AdkSessionList] = None
-    actual_instance: Optional[Union[AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList]] = None
-    one_of_schemas: Set[str] = { "AdkSessionList", "AgentEventType", "Content", "FlowNames", "Part", "PlatformAccountList" }
+    # data type: AgentRunnerInput
+    oneof_schema_7_validator: Optional[AgentRunnerInput] = None
+    # data type: AgentRunnerOutput
+    oneof_schema_8_validator: Optional[AgentRunnerOutput] = None
+    actual_instance: Optional[Union[AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList]] = None
+    one_of_schemas: Set[str] = { "AdkSessionList", "AgentEventType", "AgentRunnerInput", "AgentRunnerOutput", "Content", "FlowNames", "Part", "PlatformAccountList" }
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -99,12 +105,22 @@ class SiderbarConfigOther(BaseModel):
             error_messages.append(f"Error! Input type `{type(v)}` is not `AdkSessionList`")
         else:
             match += 1
+        # validate data type: AgentRunnerInput
+        if not isinstance(v, AgentRunnerInput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentRunnerInput`")
+        else:
+            match += 1
+        # validate data type: AgentRunnerOutput
+        if not isinstance(v, AgentRunnerOutput):
+            error_messages.append(f"Error! Input type `{type(v)}` is not `AgentRunnerOutput`")
+        else:
+            match += 1
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when setting `actual_instance` in SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when setting `actual_instance` in SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when setting `actual_instance` in SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when setting `actual_instance` in SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
         else:
             return v
 
@@ -155,13 +171,25 @@ class SiderbarConfigOther(BaseModel):
             match += 1
         except (ValidationError, ValueError) as e:
             error_messages.append(str(e))
+        # deserialize data into AgentRunnerInput
+        try:
+            instance.actual_instance = AgentRunnerInput.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        # deserialize data into AgentRunnerOutput
+        try:
+            instance.actual_instance = AgentRunnerOutput.from_json(json_str)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
 
         if match > 1:
             # more than 1 match
-            raise ValueError("Multiple matches found when deserializing the JSON string into SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
+            raise ValueError("Multiple matches found when deserializing the JSON string into SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
         elif match == 0:
             # no match
-            raise ValueError("No match found when deserializing the JSON string into SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
+            raise ValueError("No match found when deserializing the JSON string into SiderbarConfigOther with oneOf schemas: AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList. Details: " + ", ".join(error_messages))
         else:
             return instance
 
@@ -175,7 +203,7 @@ class SiderbarConfigOther(BaseModel):
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(self) -> Optional[Union[Dict[str, Any], AdkSessionList, AgentEventType, Content, FlowNames, Part, PlatformAccountList]]:
+    def to_dict(self) -> Optional[Union[Dict[str, Any], AdkSessionList, AgentEventType, AgentRunnerInput, AgentRunnerOutput, Content, FlowNames, Part, PlatformAccountList]]:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None

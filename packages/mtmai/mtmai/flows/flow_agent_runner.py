@@ -1,32 +1,32 @@
 import logging
 from datetime import timedelta
 
-from google.adk.events.event import Event
 from google.genai import types  # noqa: F401
 from hatchet_sdk import Context, SleepCondition
+from mtmai.clients.rest.models.agent_runner_input import AgentRunnerInput
+from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
 from mtmai.core.config import settings
 from mtmai.hatchet_client import hatchet
 from mtmai.services.artifact_service import MtmArtifactService
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class ShortVideoGenInput(BaseModel):
-  topic: str | None = None
+# class ShortVideoGenInput(BaseModel):
+#   topic: str | None = None
 
 
-class StepOutput(BaseModel):
-  # random_number: int
-  events: list[Event]
+# class StepOutput(BaseModel):
+#   # random_number: int
+#   events: list[Event]
 
 
-class RandomSum(BaseModel):
-  sum: int
+# class RandomSum(BaseModel):
+#   sum: int
 
 
-short_video_gen_workflow = hatchet.workflow(name="AgentRunnerWorkflow", input_validator=ShortVideoGenInput)
+agent_runner_workflow = hatchet.workflow(name="AgentRunnerWorkflow", input_validator=AgentRunnerInput)
 
 
 session_service = GomtmDatabaseSessionService(
@@ -38,16 +38,15 @@ artifact_service = MtmArtifactService(
 )
 
 
-@short_video_gen_workflow.task()
-async def start(input: ShortVideoGenInput, ctx: Context) -> StepOutput:
-  """ """
-
+@agent_runner_workflow.task()
+async def start(input: AgentRunnerInput, ctx: Context) -> AgentRunnerOutput:
   logger.info("开始执行 AgentRunnerWorkflow")
+  return AgentRunnerOutput(
+    content="hello1 result",
+  )
 
-  return {"events": "hello1"}
 
-
-@short_video_gen_workflow.task(
+@agent_runner_workflow.task(
   parents=[start],
   wait_for=[
     SleepCondition(

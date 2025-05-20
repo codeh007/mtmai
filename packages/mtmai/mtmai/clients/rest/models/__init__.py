@@ -47,7 +47,8 @@ from mtmai.clients.rest.models.agent import Agent
 from mtmai.clients.rest.models.agent_event_type import AgentEventType
 from mtmai.clients.rest.models.agent_list import AgentList
 from mtmai.clients.rest.models.agent_properties import AgentProperties
-from mtmai.clients.rest.models.agent_run_request_v3 import AgentRunRequestV3
+from mtmai.clients.rest.models.agent_runner_input import AgentRunnerInput
+from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
