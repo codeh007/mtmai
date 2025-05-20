@@ -19,10 +19,13 @@ from mtmai.clients.rest.api.worker_api import WorkerApi
 from mtmai.clients.rest.api.workflow_api import WorkflowApi
 from mtmai.clients.rest.api.workflow_run_api import WorkflowRunApi
 from mtmai.clients.rest.api.workflow_runs_api import WorkflowRunsApi
+from mtmai.clients.rest.api.artifact_api import ArtifactApi
 from mtmai.clients.rest.api.default_api import DefaultApi
 from mtmai.clients.rest.api.endpoint_api import EndpointApi
 from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.mtworker_api import MtworkerApi
+from mtmai.clients.rest.api.post_api import PostApi
+from mtmai.clients.rest.api.posts_api import PostsApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
 

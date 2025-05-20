@@ -19,18 +19,15 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Post(BaseModel):
+class DemoResponse(BaseModel):
     """
-    Post
+    DemoResponse
     """ # noqa: E501
-    metadata: APIResourceMeta
-    title: StrictStr
-    content: StrictStr = Field(description="The tenant associated with this tenant blog")
-    __properties: ClassVar[List[str]] = ["metadata", "title", "content"]
+    message: StrictStr = Field(description="The message to return")
+    __properties: ClassVar[List[str]] = ["message"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,7 +47,7 @@ class Post(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Post from a JSON string"""
+        """Create an instance of DemoResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,14 +68,11 @@ class Post(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Post from a dict"""
+        """Create an instance of DemoResponse from a dict"""
         if obj is None:
             return None
 
@@ -88,12 +82,10 @@ class Post(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Post) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in DemoResponse) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "title": obj.get("title"),
-            "content": obj.get("content")
+            "message": obj.get("message")
         })
         return _obj
 
