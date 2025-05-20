@@ -394,7 +394,7 @@ h11==0.14.0
     #   wsproto
 h2==4.2.0
     # via httpx
-hatchet-sdk==1.9.1
+hatchet-sdk==1.10.2
     # via mtmai (pyproject.toml)
 helium==5.1.1
     # via mtmai (pyproject.toml)
@@ -576,7 +576,9 @@ langsmith==0.3.1
     #   langchain-community
     #   langchain-core
 lark==0.12.0
-    # via cel-python
+    # via
+    #   mtmai (pyproject.toml)
+    #   cel-python
 lazify==0.4.0
     # via mtmai (pyproject.toml)
 litellm==1.69.3
