@@ -7,7 +7,7 @@ root_logger = logging.getLogger()
 
 # Initialize Hatchet client
 hatchet = Hatchet(
-  debug=True,
+  debug=False,
   config=ClientConfig(
     logger=root_logger,
     # server_url=settings.GOMTM_URL,

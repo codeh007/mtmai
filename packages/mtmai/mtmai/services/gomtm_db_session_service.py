@@ -10,21 +10,25 @@ from google.adk.sessions import _session_util
 from google.adk.sessions.base_session_service import BaseSessionService, GetSessionConfig, ListSessionsResponse
 from google.adk.sessions.session import Session
 from google.adk.sessions.state import State
+from mtmai.db.db import with_db_retry
 from sqlalchemy import Boolean, Dialect, ForeignKeyConstraint, Text, delete, func
 from sqlalchemy.dialects import mysql, postgresql
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.exc import ArgumentError
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import DeclarativeBase, Mapped
-from sqlalchemy.orm import Session as DatabaseSessionFactory
-from sqlalchemy.orm import mapped_column, relationship, sessionmaker
+from sqlalchemy.orm import (
+  DeclarativeBase,
+  Mapped,
+  Session as DatabaseSessionFactory,
+  mapped_column,
+  relationship,
+  sessionmaker,
+)
 from sqlalchemy.schema import MetaData
 from sqlalchemy.types import DateTime, PickleType, String, TypeDecorator
 from typing_extensions import override
 from tzlocal import get_localzone
-
-from mtmai.db.db import with_db_retry
 
 logger = logging.getLogger(__name__)
 
@@ -284,7 +288,7 @@ class GomtmDatabaseSessionService(BaseSessionService):
 
   @override
   @with_db_retry()
-  def get_session(
+  async def get_session(
     self,
     *,
     app_name: str,
@@ -351,7 +355,7 @@ class GomtmDatabaseSessionService(BaseSessionService):
 
   @override
   @with_db_retry()
-  def list_sessions(self, *, app_name: str, user_id: str) -> ListSessionsResponse:
+  async def list_sessions(self, *, app_name: str, user_id: str) -> ListSessionsResponse:
     with self.DatabaseSessionFactory() as sessionFactory:
       results = (
         sessionFactory.query(StorageSession)
@@ -373,7 +377,7 @@ class GomtmDatabaseSessionService(BaseSessionService):
 
   @override
   @with_db_retry()
-  def delete_session(self, app_name: str, user_id: str, session_id: str) -> None:
+  async def delete_session(self, app_name: str, user_id: str, session_id: str) -> None:
     with self.DatabaseSessionFactory() as sessionFactory:
       stmt = delete(StorageSession).where(
         StorageSession.app_name == app_name,
@@ -385,7 +389,7 @@ class GomtmDatabaseSessionService(BaseSessionService):
 
   @override
   @with_db_retry()
-  def append_event(self, session: Session, event: Event) -> Event:
+  async def append_event(self, session: Session, event: Event) -> Event:
     logger.info(f"Append event: {event} to session {session.id}")
 
     if event.partial:

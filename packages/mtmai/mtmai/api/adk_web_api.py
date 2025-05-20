@@ -160,7 +160,7 @@ def configure_adk_web_api(
     return agent_names
 
   @app.get("/debug/trace/{event_id}")
-  def get_trace_dict(event_id: str) -> Any:
+  async def get_trace_dict(event_id: str) -> Any:
     event_dict = trace_dict.get(event_id, None)
     if event_dict is None:
       raise HTTPException(status_code=404, detail="Trace not found")
@@ -170,10 +170,10 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}",
     response_model_exclude_none=True,
   )
-  def get_session(app_name: str, user_id: str, session_id: str) -> Session:
+  async def get_session(app_name: str, user_id: str, session_id: str) -> Session:
     # Connect to managed session if agent_engine_id is set.
     app_name = agent_engine_id if agent_engine_id else app_name
-    session = session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id)
+    session = await session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id)
     if not session:
       raise HTTPException(status_code=404, detail="Session not found")
     return session
@@ -182,12 +182,12 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions",
     response_model_exclude_none=True,
   )
-  def list_sessions(app_name: str, user_id: str) -> list[Session]:
+  async def list_sessions(app_name: str, user_id: str) -> list[Session]:
     # Connect to managed session if agent_engine_id is set.
     app_name = agent_engine_id if agent_engine_id else app_name
     return [
       session
-      for session in session_service.list_sessions(app_name=app_name, user_id=user_id).sessions
+      for session in await session_service.list_sessions(app_name=app_name, user_id=user_id).sessions
       # Remove sessions that were generated as a part of Eval.
       if not session.id.startswith(EVAL_SESSION_ID_PREFIX)
     ]
