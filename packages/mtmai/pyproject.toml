@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.13"
+version = "0.7.14"
 dependencies = [
     "pydantic-settings",
     "litellm>=1.69.3",
@@ -28,7 +28,7 @@ dependencies = [
     # "crewai>=0.95.0",
     "structlog>=24.4.0",
     "langgraph>=0.2.63",
-    "langgraph-checkpoint-postgres>=2.0.13",
+    # "langgraph-checkpoint-postgres>=2.0.13",
     "lazify>=0.4.0",
     # docling 这个库,依赖项很庞大.其中有torch接近1G体积
     # "docling>=2.14.0",
@@ -99,7 +99,7 @@ dependencies = [
     "azure-identity>=1.21.0",
     "pycryptodomex>=3.22.0",
     "pyotp>=2.9.0",
-    "docker>=7.1.0",
+    # "docker>=7.1.0",
     "asyncio-atexit>=1.0.1",
     "chromadb>=1.0.4",
     "markitdown>=0.1.1",
@@ -112,7 +112,7 @@ dependencies = [
     "colorama>=0.4.6",
     "xxhash>=3.5.0",
     # crawl4ai ========================================
-    "aiosqlite~=0.20",
+    # "aiosqlite~=0.20",
     "lxml~=5.3",
     "numpy>=1.26.0,<3",
     "xxhash~=3.4",
@@ -140,7 +140,7 @@ dependencies = [
     "mammoth>=1.9.0",
     "youtube-transcript-api>=1.0.3",
     "speechrecognition>=3.14.2",
-    "python-pptx>=1.0.2",
+    # "python-pptx>=1.0.2",
     "pypdf>=5.4.0",
     "puremagic>=1.28",
     "xlrd>=2.0.1",
@@ -173,7 +173,7 @@ dependencies = [
     "toolbox-langchain>=0.1.0",
     "pytubefix>=8.13.1",                               # youtube下载器(同时能下载字幕)
     "ffmpeg-python>=0.2.0",                            # 视频音频处理
-    "lark>=0.12.0",
+    # "lark>=0.12.0",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
