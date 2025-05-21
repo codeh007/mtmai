@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field
+from pydantic import Field, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.accept_invite_request import AcceptInviteRequest
@@ -1191,6 +1191,7 @@ class TenantApi:
         self,
         site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -1213,6 +1214,8 @@ class TenantApi:
         :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1240,6 +1243,7 @@ class TenantApi:
         _param = self._site_host_update_serialize(
             site_host=site_host,
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1268,6 +1272,7 @@ class TenantApi:
         self,
         site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -1290,6 +1295,8 @@ class TenantApi:
         :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1317,6 +1324,7 @@ class TenantApi:
         _param = self._site_host_update_serialize(
             site_host=site_host,
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1345,6 +1353,7 @@ class TenantApi:
         self,
         site_host: Annotated[SiteHost, Field(description="The tenant properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -1367,6 +1376,8 @@ class TenantApi:
         :type site_host: SiteHost
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -1394,6 +1405,7 @@ class TenantApi:
         _param = self._site_host_update_serialize(
             site_host=site_host,
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1417,6 +1429,7 @@ class TenantApi:
         self,
         site_host,
         tenant,
+        site,
         host,
         _request_auth,
         _content_type,
@@ -1441,6 +1454,8 @@ class TenantApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if site is not None:
+            _path_params['site'] = site
         if host is not None:
             _path_params['host'] = host
         # process the query parameters
@@ -1481,7 +1496,7 @@ class TenantApi:
 
         return self.api_client.param_serialize(
             method='PATCH',
-            resource_path='/api/v1/tenants/{tenant}/site-hosts/{host}',
+            resource_path='/api/v1/tenants/{tenant}/sites/{site}/site-hosts/{host}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

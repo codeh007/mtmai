@@ -19,9 +19,9 @@ from typing_extensions import Annotated
 from pydantic import Field, StrictInt, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.create_site_host_request import CreateSiteHostRequest
 from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
+from mtmai.clients.rest.models.site_host_properties import SiteHostProperties
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -44,8 +44,9 @@ class SiteHostApi:
     @validate_call
     async def site_host_create(
         self,
-        create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        site_host_properties: Annotated[SiteHostProperties, Field(description="创建agentnode")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -63,10 +64,12 @@ class SiteHostApi:
 
         create site-host
 
-        :param create_site_host_request: 创建agentnode (required)
-        :type create_site_host_request: CreateSiteHostRequest
+        :param site_host_properties: 创建agentnode (required)
+        :type site_host_properties: SiteHostProperties
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,8 +93,9 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            create_site_host_request=create_site_host_request,
+            site_host_properties=site_host_properties,
             tenant=tenant,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -117,8 +121,9 @@ class SiteHostApi:
     @validate_call
     async def site_host_create_with_http_info(
         self,
-        create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        site_host_properties: Annotated[SiteHostProperties, Field(description="创建agentnode")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -136,10 +141,12 @@ class SiteHostApi:
 
         create site-host
 
-        :param create_site_host_request: 创建agentnode (required)
-        :type create_site_host_request: CreateSiteHostRequest
+        :param site_host_properties: 创建agentnode (required)
+        :type site_host_properties: SiteHostProperties
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -163,8 +170,9 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            create_site_host_request=create_site_host_request,
+            site_host_properties=site_host_properties,
             tenant=tenant,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -190,8 +198,9 @@ class SiteHostApi:
     @validate_call
     async def site_host_create_without_preload_content(
         self,
-        create_site_host_request: Annotated[CreateSiteHostRequest, Field(description="创建agentnode")],
+        site_host_properties: Annotated[SiteHostProperties, Field(description="创建agentnode")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -209,10 +218,12 @@ class SiteHostApi:
 
         create site-host
 
-        :param create_site_host_request: 创建agentnode (required)
-        :type create_site_host_request: CreateSiteHostRequest
+        :param site_host_properties: 创建agentnode (required)
+        :type site_host_properties: SiteHostProperties
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -236,8 +247,9 @@ class SiteHostApi:
         """ # noqa: E501
 
         _param = self._site_host_create_serialize(
-            create_site_host_request=create_site_host_request,
+            site_host_properties=site_host_properties,
             tenant=tenant,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -258,8 +270,9 @@ class SiteHostApi:
 
     def _site_host_create_serialize(
         self,
-        create_site_host_request,
+        site_host_properties,
         tenant,
+        site,
         _request_auth,
         _content_type,
         _headers,
@@ -283,12 +296,14 @@ class SiteHostApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if site is not None:
+            _path_params['site'] = site
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if create_site_host_request is not None:
-            _body_params = create_site_host_request
+        if site_host_properties is not None:
+            _body_params = site_host_properties
 
 
         # set the HTTP header `Accept`
@@ -321,7 +336,7 @@ class SiteHostApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/site-hosts',
+            resource_path='/api/v1/tenants/{tenant}/sites/{site}/site-hosts',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -341,6 +356,7 @@ class SiteHostApi:
     async def site_host_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -361,6 +377,8 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -387,6 +405,7 @@ class SiteHostApi:
 
         _param = self._site_host_get_serialize(
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -415,6 +434,7 @@ class SiteHostApi:
     async def site_host_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -435,6 +455,8 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -461,6 +483,7 @@ class SiteHostApi:
 
         _param = self._site_host_get_serialize(
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -489,6 +512,7 @@ class SiteHostApi:
     async def site_host_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        site: Annotated[StrictStr, Field(description="The site id")],
         host: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The site-host id")],
         _request_timeout: Union[
             None,
@@ -509,6 +533,8 @@ class SiteHostApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param site: The site id (required)
+        :type site: str
         :param host: The site-host id (required)
         :type host: str
         :param _request_timeout: timeout setting for this request. If one
@@ -535,6 +561,7 @@ class SiteHostApi:
 
         _param = self._site_host_get_serialize(
             tenant=tenant,
+            site=site,
             host=host,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -558,6 +585,7 @@ class SiteHostApi:
     def _site_host_get_serialize(
         self,
         tenant,
+        site,
         host,
         _request_auth,
         _content_type,
@@ -582,6 +610,8 @@ class SiteHostApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if site is not None:
+            _path_params['site'] = site
         if host is not None:
             _path_params['host'] = host
         # process the query parameters
@@ -607,7 +637,7 @@ class SiteHostApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/site-hosts/{host}',
+            resource_path='/api/v1/tenants/{tenant}/sites/{site}/site-hosts/{host}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -629,7 +659,7 @@ class SiteHostApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
         host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
-        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
+        site: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -653,8 +683,8 @@ class SiteHostApi:
         :type offset: int
         :param host: The host name
         :type host: str
-        :param site_id: The site id
-        :type site_id: str
+        :param site: The site id
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -681,7 +711,7 @@ class SiteHostApi:
             tenant=tenant,
             offset=offset,
             host=host,
-            site_id=site_id,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -711,7 +741,7 @@ class SiteHostApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
         host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
-        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
+        site: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -735,8 +765,8 @@ class SiteHostApi:
         :type offset: int
         :param host: The host name
         :type host: str
-        :param site_id: The site id
-        :type site_id: str
+        :param site: The site id
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -763,7 +793,7 @@ class SiteHostApi:
             tenant=tenant,
             offset=offset,
             host=host,
-            site_id=site_id,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -793,7 +823,7 @@ class SiteHostApi:
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         offset: Annotated[Optional[StrictInt], Field(description="The number to skip")] = None,
         host: Annotated[Optional[StrictStr], Field(description="The host name")] = None,
-        site_id: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
+        site: Annotated[Optional[StrictStr], Field(description="The site id")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -817,8 +847,8 @@ class SiteHostApi:
         :type offset: int
         :param host: The host name
         :type host: str
-        :param site_id: The site id
-        :type site_id: str
+        :param site: The site id
+        :type site: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -845,7 +875,7 @@ class SiteHostApi:
             tenant=tenant,
             offset=offset,
             host=host,
-            site_id=site_id,
+            site=site,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -870,7 +900,7 @@ class SiteHostApi:
         tenant,
         offset,
         host,
-        site_id,
+        site,
         _request_auth,
         _content_type,
         _headers,
@@ -894,6 +924,8 @@ class SiteHostApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if site is not None:
+            _path_params['site'] = site
         # process the query parameters
         if offset is not None:
             
@@ -902,10 +934,6 @@ class SiteHostApi:
         if host is not None:
             
             _query_params.append(('host', host))
-            
-        if site_id is not None:
-            
-            _query_params.append(('siteId', site_id))
             
         # process the header parameters
         # process the form parameters
@@ -929,7 +957,7 @@ class SiteHostApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/site-hosts',
+            resource_path='/api/v1/tenants/{tenant}/sites/{site}/site-hosts',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

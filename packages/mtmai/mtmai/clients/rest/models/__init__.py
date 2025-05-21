@@ -69,7 +69,6 @@ from mtmai.clients.rest.models.create_event_request import CreateEventRequest
 from mtmai.clients.rest.models.create_post_request import CreatePostRequest
 from mtmai.clients.rest.models.create_pull_request_from_step_run import CreatePullRequestFromStepRun
 from mtmai.clients.rest.models.create_sns_integration_request import CreateSNSIntegrationRequest
-from mtmai.clients.rest.models.create_site_host_request import CreateSiteHostRequest
 from mtmai.clients.rest.models.create_site_request import CreateSiteRequest
 from mtmai.clients.rest.models.create_tenant_alert_email_group_request import CreateTenantAlertEmailGroupRequest
 from mtmai.clients.rest.models.create_tenant_invite_request import CreateTenantInviteRequest
@@ -161,6 +160,7 @@ from mtmai.clients.rest.models.siderbar_config_other import SiderbarConfigOther
 from mtmai.clients.rest.models.site import Site
 from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList
+from mtmai.clients.rest.models.site_host_properties import SiteHostProperties
 from mtmai.clients.rest.models.site_list import SiteList
 from mtmai.clients.rest.models.site_properties import SiteProperties
 from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
