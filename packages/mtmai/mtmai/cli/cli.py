@@ -166,7 +166,7 @@ async def run_cli(
       session_path = f"{agent_module_path}/{session_id}.session.json"
 
     # Fetch the session again to get all the details.
-    session = session_service.get_session(
+    session = await session_service.get_session(
       app_name=session.app_name,
       user_id=session.user_id,
       session_id=session.id,

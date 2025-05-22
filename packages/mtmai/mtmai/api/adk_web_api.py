@@ -9,7 +9,6 @@ import re
 import sys
 import time
 import traceback
-import typing
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
@@ -23,17 +22,25 @@ from google.adk.agents.live_request_queue import LiveRequest, LiveRequestQueue
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents.run_config import StreamingMode
 from google.adk.artifacts import BaseArtifactService
-from google.adk.cli.cli_eval import EVAL_SESSION_ID_PREFIX, EvalMetric, EvalMetricResult, EvalSetResult, EvalStatus
+from google.adk.cli.cli_eval import EVAL_SESSION_ID_PREFIX, EvalSetResult
+from google.adk.cli.fast_api import (
+  AddSessionToEvalSetRequest,
+  AgentRunRequest,
+  ApiServerSpanExporter,
+  RunEvalRequest,
+  RunEvalResult,
+)
 from google.adk.cli.utils import create_empty_state, envs, evals
 from google.adk.evaluation.local_eval_sets_manager import LocalEvalSetsManager
 from google.adk.events.event import Event
+from google.adk.memory import BaseMemoryService
 from google.adk.runners import Runner
 from google.adk.sessions import BaseSessionService
 from google.adk.sessions.session import Session
 from google.genai import types  # type: ignore
 from mtmai.core.config import settings
-from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
-from pydantic import BaseModel, ValidationError
+from opentelemetry.sdk.trace import TracerProvider, export
+from pydantic import ValidationError
 from starlette.types import Lifespan
 
 BASE_DIR = Path(__file__).parent.resolve()
@@ -73,51 +80,6 @@ def get_function_response(event: Event, function_call_id: str) -> types.Function
       return part.function_response
 
 
-class ApiServerSpanExporter(export.SpanExporter):
-  def __init__(self, trace_dict):
-    self.trace_dict = trace_dict
-
-  def export(self, spans: typing.Sequence[ReadableSpan]) -> export.SpanExportResult:
-    for span in spans:
-      if span.name == "call_llm" or span.name == "send_data" or span.name.startswith("tool_response"):
-        attributes = dict(span.attributes)
-        attributes["trace_id"] = span.get_span_context().trace_id
-        attributes["span_id"] = span.get_span_context().span_id
-        if attributes.get("gcp.vertex.agent.event_id", None):
-          self.trace_dict[attributes["gcp.vertex.agent.event_id"]] = attributes
-    return export.SpanExportResult.SUCCESS
-
-  def force_flush(self, timeout_millis: int = 30000) -> bool:
-    return True
-
-
-class AgentRunRequest(BaseModel):
-  app_name: str
-  user_id: str
-  session_id: str
-  new_message: types.Content
-  streaming: bool = False
-
-
-class AddSessionToEvalSetRequest(BaseModel):
-  eval_id: str
-  session_id: str
-  user_id: str
-
-
-class RunEvalRequest(BaseModel):
-  eval_ids: list[str]  # if empty, then all evals in the eval set are run.
-  eval_metrics: list[EvalMetric]
-
-
-class RunEvalResult(BaseModel):
-  eval_set_id: str
-  eval_id: str
-  final_eval_status: EvalStatus
-  eval_metric_results: list[tuple[EvalMetric, EvalMetricResult]]
-  session_id: str
-
-
 default_agents_dir = str(Path(os.path.dirname(__file__), "..", "agents").resolve())
 
 
@@ -126,6 +88,7 @@ def configure_adk_web_api(
   app: FastAPI,
   session_service: BaseSessionService,
   artifact_service: BaseArtifactService,
+  memory_service: BaseMemoryService,
   agent_dir: str = default_agents_dir,
   # session_db_url: str = "",
   web: bool = True,
@@ -185,9 +148,10 @@ def configure_adk_web_api(
   async def list_sessions(app_name: str, user_id: str) -> list[Session]:
     # Connect to managed session if agent_engine_id is set.
     app_name = agent_engine_id if agent_engine_id else app_name
+    list_sessions_response = await session_service.list_sessions(app_name=app_name, user_id=user_id)
     return [
       session
-      for session in await session_service.list_sessions(app_name=app_name, user_id=user_id).sessions
+      for session in list_sessions_response.sessions
       # Remove sessions that were generated as a part of Eval.
       if not session.id.startswith(EVAL_SESSION_ID_PREFIX)
     ]
@@ -196,7 +160,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}",
     response_model_exclude_none=True,
   )
-  def create_session_with_id(
+  async def create_session_with_id(
     app_name: str,
     user_id: str,
     session_id: str,
@@ -204,12 +168,12 @@ def configure_adk_web_api(
   ) -> Session:
     # Connect to managed session if agent_engine_id is set.
     app_name = agent_engine_id if agent_engine_id else app_name
-    if session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id) is not None:
+    if await session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id) is not None:
       logger.warning("Session already exists: %s", session_id)
       raise HTTPException(status_code=400, detail=f"Session already exists: {session_id}")
 
     logger.info(f"New session created: {session_id}, user_id: {user_id}")
-    return session_service.create_session(app_name=app_name, user_id=user_id, state=state, session_id=session_id)
+    return await session_service.create_session(app_name=app_name, user_id=user_id, state=state, session_id=session_id)
 
   @app.post(
     "/apps/{app_name}/users/{user_id}/sessions",
@@ -237,7 +201,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/eval_sets/{eval_set_id}",
     response_model_exclude_none=True,
   )
-  def create_eval_set(
+  async def create_eval_set(
     app_name: str,
     eval_set_id: str,
   ):
@@ -278,7 +242,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/eval_sets/{eval_set_id}/add_session",
     response_model_exclude_none=True,
   )
-  def add_session_to_eval_set(app_name: str, eval_set_id: str, req: AddSessionToEvalSetRequest):
+  async def add_session_to_eval_set(app_name: str, eval_set_id: str, req: AddSessionToEvalSetRequest):
     pattern = r"^[a-zA-Z0-9_]+$"
     if not bool(re.fullmatch(pattern, req.eval_id)):
       raise HTTPException(
@@ -287,7 +251,7 @@ def configure_adk_web_api(
       )
 
     # Get the session
-    session = session_service.get_session(app_name=app_name, user_id=req.user_id, session_id=req.session_id)
+    session = await session_service.get_session(app_name=app_name, user_id=req.user_id, session_id=req.session_id)
     assert session, "Session not found."
     # Load the eval set file data
     eval_set_file_path = _get_eval_set_file_path(app_name, agent_dir, eval_set_id)
@@ -383,7 +347,7 @@ def configure_adk_web_api(
           session_id=eval_case_result.session_id,
         )
       )
-      eval_case_result.session_details = session_service.get_session(
+      eval_case_result.session_details = await session_service.get_session(
         app_name=app_name,
         user_id=eval_case_result.user_id,
         session_id=eval_case_result.session_id,
@@ -415,6 +379,32 @@ def configure_adk_web_api(
       f.write(json.dumps(eval_set_result_json, indent=2))
 
     return run_eval_results
+
+  @app.get(
+    "/apps/{app_name}/eval_results/{eval_result_id}",
+    response_model_exclude_none=True,
+  )
+  def get_eval_result(
+    app_name: str,
+    eval_result_id: str,
+  ) -> EvalSetResult:
+    """Gets the eval result for the given eval id."""
+    # Load the eval set file data
+    maybe_eval_result_file_path = (
+      os.path.join(agent_dir, app_name, ".adk", "eval_history", eval_result_id) + _EVAL_SET_RESULT_FILE_EXTENSION
+    )
+    if not os.path.exists(maybe_eval_result_file_path):
+      raise HTTPException(
+        status_code=404,
+        detail=f"Eval result `{eval_result_id}` not found.",
+      )
+    with open(maybe_eval_result_file_path, "r") as file:
+      eval_result_data = json.load(file)  # Load JSON into a list
+    try:
+      eval_result = EvalSetResult.model_validate_json(eval_result_data)
+      return eval_result
+    except ValidationError as e:
+      logger.exception("get_eval_result validation error: %s", e)
 
   @app.delete("/apps/{app_name}/users/{user_id}/sessions/{session_id}")
   def delete_session(app_name: str, user_id: str, session_id: str):
@@ -449,7 +439,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}/versions/{version_id}",
     response_model_exclude_none=True,
   )
-  def load_artifact_version(
+  async def load_artifact_version(
     app_name: str,
     user_id: str,
     session_id: str,
@@ -457,7 +447,7 @@ def configure_adk_web_api(
     version_id: int,
   ) -> Optional[types.Part]:
     app_name = agent_engine_id if agent_engine_id else app_name
-    artifact = artifact_service.load_artifact(
+    artifact = await artifact_service.load_artifact(
       app_name=app_name,
       user_id=user_id,
       session_id=session_id,
@@ -472,17 +462,17 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts",
     response_model_exclude_none=True,
   )
-  def list_artifact_names(app_name: str, user_id: str, session_id: str) -> list[str]:
+  async def list_artifact_names(app_name: str, user_id: str, session_id: str) -> list[str]:
     app_name = agent_engine_id if agent_engine_id else app_name
-    return artifact_service.list_artifact_keys(app_name=app_name, user_id=user_id, session_id=session_id)
+    return await artifact_service.list_artifact_keys(app_name=app_name, user_id=user_id, session_id=session_id)
 
   @app.get(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}/versions",
     response_model_exclude_none=True,
   )
-  def list_artifact_versions(app_name: str, user_id: str, session_id: str, artifact_name: str) -> list[int]:
+  async def list_artifact_versions(app_name: str, user_id: str, session_id: str, artifact_name: str) -> list[int]:
     app_name = agent_engine_id if agent_engine_id else app_name
-    return artifact_service.list_versions(
+    return await artifact_service.list_versions(
       app_name=app_name,
       user_id=user_id,
       session_id=session_id,
@@ -492,9 +482,9 @@ def configure_adk_web_api(
   @app.delete(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}",
   )
-  def delete_artifact(app_name: str, user_id: str, session_id: str, artifact_name: str):
+  async def delete_artifact(app_name: str, user_id: str, session_id: str, artifact_name: str):
     app_name = agent_engine_id if agent_engine_id else app_name
-    artifact_service.delete_artifact(
+    await artifact_service.delete_artifact(
       app_name=app_name,
       user_id=user_id,
       session_id=session_id,
@@ -505,10 +495,10 @@ def configure_adk_web_api(
   async def agent_run(req: AgentRunRequest) -> list[Event]:
     # Connect to managed session if agent_engine_id is set.
     app_id = agent_engine_id if agent_engine_id else req.app_name
-    session = session_service.get_session(app_name=app_id, user_id=req.user_id, session_id=req.session_id)
+    session = await session_service.get_session(app_name=app_id, user_id=req.user_id, session_id=req.session_id)
     if not session:
       raise HTTPException(status_code=404, detail="Session not found")
-    runner = _get_runner(req.app_name)
+    runner = await _get_runner_async(req.app_name)
     events = [
       event
       async for event in runner.run_async(
@@ -526,7 +516,7 @@ def configure_adk_web_api(
     app_id = agent_engine_id if agent_engine_id else req.app_name
     user_id = settings.DEMO_USER_ID
     # SSE endpoint
-    session = session_service.get_session(app_name=app_id, user_id=user_id, session_id=req.session_id)
+    session = await session_service.get_session(app_name=app_id, user_id=user_id, session_id=req.session_id)
 
     # 新增代码
     if not session:
@@ -544,7 +534,7 @@ def configure_adk_web_api(
     async def event_generator():
       try:
         stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
-        runner = _get_runner(req.app_name)
+        runner = await _get_runner_async(req.app_name)
 
         # 新增:
         long_running_function_call, long_running_function_response, ticket_id = None, None, None
@@ -598,10 +588,10 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/events/{event_id}/graph",
     response_model_exclude_none=True,
   )
-  def get_event_graph(app_name: str, user_id: str, session_id: str, event_id: str):
+  async def get_event_graph(app_name: str, user_id: str, session_id: str, event_id: str):
     # Connect to managed session if agent_engine_id is set.
     app_id = agent_engine_id if agent_engine_id else app_name
-    session = session_service.get_session(app_name=app_id, user_id=user_id, session_id=session_id)
+    session = await session_service.get_session(app_name=app_id, user_id=user_id, session_id=session_id)
     session_events = session.events if session else []
     event = next((x for x in session_events if x.id == event_id), None)
     if not event:
@@ -648,7 +638,7 @@ def configure_adk_web_api(
 
     # Connect to managed session if agent_engine_id is set.
     app_id = agent_engine_id if agent_engine_id else app_name
-    session = session_service.get_session(app_name=app_id, user_id=user_id, session_id=session_id)
+    session = await session_service.get_session(app_name=app_id, user_id=user_id, session_id=session_id)
     if not session:
       # Accept first so that the client is aware of connection establishment,
       # then close with a specific code.
@@ -658,7 +648,7 @@ def configure_adk_web_api(
     live_request_queue = LiveRequestQueue()
 
     async def forward_events():
-      runner = _get_runner(app_name)
+      runner = await _get_runner_async(app_name)
       async for event in runner.run_live(session=session, live_request_queue=live_request_queue):
         await websocket.send_text(event.model_dump_json(exclude_none=True, by_alias=True))
 
@@ -722,16 +712,32 @@ def configure_adk_web_api(
     root_agent_dict[app_name] = root_agent
     return root_agent
 
-  def _get_runner(app_name: str) -> Runner:
+  # def _get_runner(app_name: str) -> Runner:
+  #   """Returns the runner for the given app."""
+  #   if app_name in runner_dict:
+  #     return runner_dict[app_name]
+  #   root_agent = _get_root_agent(app_name)
+  #   runner = Runner(
+  #     app_name=agent_engine_id if agent_engine_id else app_name,
+  #     agent=root_agent,
+  #     artifact_service=artifact_service,
+  #     session_service=session_service,
+  #   )
+  #   runner_dict[app_name] = runner
+  #   return runner
+
+  async def _get_runner_async(app_name: str) -> Runner:
     """Returns the runner for the given app."""
+    envs.load_dotenv_for_agent(os.path.basename(app_name), agent_dir)
     if app_name in runner_dict:
       return runner_dict[app_name]
-    root_agent = _get_root_agent(app_name)
+    root_agent = await _get_root_agent_async(app_name)
     runner = Runner(
       app_name=agent_engine_id if agent_engine_id else app_name,
       agent=root_agent,
       artifact_service=artifact_service,
       session_service=session_service,
+      memory_service=memory_service,
     )
     runner_dict[app_name] = runner
     return runner

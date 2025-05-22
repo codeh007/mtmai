@@ -127,14 +127,14 @@ class WSAgentWorker:
         # Connect to managed session if agent_engine_id is set.
         app_id = agent_name
         # SSE endpoint
-        session = session_service.get_session(
+        session = await session_service.get_session(
             app_name=app_id, user_id=user_id, session_id=session_id
         )
 
         # 新增代码
         if not session:
             logger.info("New session created: %s", session_id)
-            session = session_service.create_session(
+            session = await session_service.create_session(
                 app_name=app_id,
                 user_id=user_id,
                 state={},
