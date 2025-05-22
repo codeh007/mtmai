@@ -18,8 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,12 +27,16 @@ class Site(BaseModel):
     """
     Site
     """ # noqa: E501
-    metadata: APIResourceMeta
+    id: StrictStr = Field(description="站点ID")
+    tenant_id: StrictStr = Field(description="租户ID")
+    updated_at: Optional[StrictStr] = Field(default=None, description="更新时间")
+    created_at: Optional[StrictStr] = Field(default=None, description="创建时间")
+    enabled: StrictBool = Field(description="是否启用")
     title: StrictStr = Field(description="site 标题")
     description: StrictStr = Field(description="site 描述")
     automation_enabled: StrictBool = Field(description="是否启用自动化")
     state: SitePropertiesState
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "automation_enabled", "state"]
+    __properties: ClassVar[List[str]] = ["id", "tenant_id", "updated_at", "created_at", "enabled", "title", "description", "automation_enabled", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -74,9 +77,6 @@ class Site(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         # override the default output from pydantic by calling `to_dict()` of state
         if self.state:
             _dict['state'] = self.state.to_dict()
@@ -97,7 +97,11 @@ class Site(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in Site) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "id": obj.get("id"),
+            "tenant_id": obj.get("tenant_id"),
+            "updated_at": obj.get("updated_at"),
+            "created_at": obj.get("created_at"),
+            "enabled": obj.get("enabled"),
             "title": obj.get("title"),
             "description": obj.get("description"),
             "automation_enabled": obj.get("automation_enabled"),

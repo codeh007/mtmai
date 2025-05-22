@@ -26,10 +26,11 @@ class SiteHostProperties(BaseModel):
     """
     SiteHostProperties
     """ # noqa: E501
+    id: StrictStr = Field(description="site-host id")
     title: Optional[StrictStr] = Field(default=None, description="site-host 标题")
     description: Optional[StrictStr] = Field(default=None, description="site-host 描述")
     host: StrictStr = Field(description="绑定域名")
-    __properties: ClassVar[List[str]] = ["title", "description", "host"]
+    __properties: ClassVar[List[str]] = ["id", "title", "description", "host"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,6 +88,7 @@ class SiteHostProperties(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SiteHostProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
+            "id": obj.get("id"),
             "title": obj.get("title"),
             "description": obj.get("description"),
             "host": obj.get("host")

@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,11 +26,11 @@ class SiteHost(BaseModel):
     """
     SiteHost
     """ # noqa: E501
-    metadata: APIResourceMeta
+    id: StrictStr = Field(description="site-host id")
     title: Optional[StrictStr] = Field(default=None, description="site-host 标题")
     description: Optional[StrictStr] = Field(default=None, description="site-host 描述")
     host: StrictStr = Field(description="绑定域名")
-    __properties: ClassVar[List[str]] = ["metadata", "title", "description", "host"]
+    __properties: ClassVar[List[str]] = ["id", "title", "description", "host"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -72,9 +71,6 @@ class SiteHost(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
@@ -92,7 +88,7 @@ class SiteHost(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in SiteHost) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "id": obj.get("id"),
             "title": obj.get("title"),
             "description": obj.get("description"),
             "host": obj.get("host")

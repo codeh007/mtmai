@@ -23,20 +23,16 @@ from mtmai.clients.rest.models.site_properties_state import SitePropertiesState
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SiteProperties(BaseModel):
+class SiteV2(BaseModel):
     """
-    SiteProperties
+    SiteV2
     """ # noqa: E501
-    id: StrictStr = Field(description="站点ID")
-    tenant_id: StrictStr = Field(description="租户ID")
-    updated_at: Optional[StrictStr] = Field(default=None, description="更新时间")
-    created_at: Optional[StrictStr] = Field(default=None, description="创建时间")
-    enabled: StrictBool = Field(description="是否启用")
     title: StrictStr = Field(description="site 标题")
     description: StrictStr = Field(description="site 描述")
     automation_enabled: StrictBool = Field(description="是否启用自动化")
     state: SitePropertiesState
-    __properties: ClassVar[List[str]] = ["id", "tenant_id", "updated_at", "created_at", "enabled", "title", "description", "automation_enabled", "state"]
+    id: Optional[StrictStr] = Field(default=None, description="站点ID")
+    __properties: ClassVar[List[str]] = ["title", "description", "automation_enabled", "state", "id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +52,7 @@ class SiteProperties(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SiteProperties from a JSON string"""
+        """Create an instance of SiteV2 from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +80,7 @@ class SiteProperties(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SiteProperties from a dict"""
+        """Create an instance of SiteV2 from a dict"""
         if obj is None:
             return None
 
@@ -94,18 +90,14 @@ class SiteProperties(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in SiteProperties) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SiteV2) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "tenant_id": obj.get("tenant_id"),
-            "updated_at": obj.get("updated_at"),
-            "created_at": obj.get("created_at"),
-            "enabled": obj.get("enabled"),
             "title": obj.get("title"),
             "description": obj.get("description"),
             "automation_enabled": obj.get("automation_enabled"),
-            "state": SitePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None
+            "state": SitePropertiesState.from_dict(obj["state"]) if obj.get("state") is not None else None,
+            "id": obj.get("id")
         })
         return _obj
 

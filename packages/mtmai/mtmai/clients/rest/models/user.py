@@ -33,7 +33,8 @@ class User(BaseModel):
     email_verified: StrictBool = Field(description="Whether the user has verified their email address.", alias="emailVerified")
     has_password: Optional[StrictBool] = Field(default=None, description="Whether the user has a password set.", alias="hasPassword")
     email_hash: Optional[StrictStr] = Field(default=None, description="A hash of the user's email address for use with Pylon Support Chat", alias="emailHash")
-    __properties: ClassVar[List[str]] = ["metadata", "name", "email", "emailVerified", "hasPassword", "emailHash"]
+    user_token: StrictStr = Field(description="The user's token for use with Pylon Support Chat", alias="userToken")
+    __properties: ClassVar[List[str]] = ["metadata", "name", "email", "emailVerified", "hasPassword", "emailHash", "userToken"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,7 +100,8 @@ class User(BaseModel):
             "email": obj.get("email"),
             "emailVerified": obj.get("emailVerified"),
             "hasPassword": obj.get("hasPassword"),
-            "emailHash": obj.get("emailHash")
+            "emailHash": obj.get("emailHash"),
+            "userToken": obj.get("userToken")
         })
         return _obj
 
