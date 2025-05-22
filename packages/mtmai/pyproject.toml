@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.17"
+version = "0.7.19"
 dependencies = [
     "pydantic-settings",
     "litellm>=1.69.3",
@@ -76,7 +76,7 @@ dependencies = [
     # "slugify>=0.0.1",
     # "yfinance>=0.2.52",
     # "mcp-server-fetch>=2025.1.17",
-    "connecpy>=1.4.2",
+    # "connecpy>=1.4.2",
     "opentelemetry-instrumentation-openai>=0.38.11",
     "opentelemetry-exporter-otlp>=1.30.0",
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
@@ -150,13 +150,12 @@ dependencies = [
     "browser-cookie3>=0.20.1",
     # "websockets-proxy>=0.1.3",
     "jsonpath-ng>=1.7.0",
-    "m3u8>=6.0.0",
-    "edge-tts>=6.1.19",
+
     # "redis>=6.0.0",
     "boto3>=1.38",
     "fastmcp>=2.2.7",
     # "g4f[webview]>=0.5.2.1",
-    "moviepy>=2.0.0.dev2",
+
     "faster-whisper~=1.0.1",
     "pysrt>=1.1.2",
     "opencv-python~=4.10.0.84",
@@ -170,7 +169,7 @@ dependencies = [
     "toolbox-core>=0.1.0",
     "toolbox-langchain>=0.1.0",
     "pytubefix>=8.13.1",                               # youtube下载器(同时能下载字幕)
-    "ffmpeg-python>=0.2.0",                            # 视频音频处理
+    # "ffmpeg-python>=0.2.0",                            # 视频音频处理
     # "lark>=0.12.0",
     "psycopg-pool>=3.2.6",
     "psycopg>=3.2.9",
@@ -210,12 +209,21 @@ dev = [
     "gradio>=5.12.0",
     "prometheus-client>=0.21.1",
     "pytest-watcher>=0.4.3",
-
     # other
     # "prefect>=3.1.13",
     # "opentelemetry-instrumentation-openai>=0.33.9",
     # "markitdown",
+]
 
+media = [
+    "moviepy>=2.0.0.dev2",
+    "ffmpeg-python>=0.2.0",
+    "pydub>=0.25.1",
+    "pytube>=12.0.0",
+    "pytubefix>=8.13.1",
+    "youtube-transcript-api>=1.0.3",
+    "m3u8>=6.0.0",
+    "edge-tts>=6.1.19",
 ]
 
 # Group 1: Other Language Models
