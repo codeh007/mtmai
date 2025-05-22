@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from google.adk.memory import InMemoryMemoryService
 from loguru import logger
 from pydantic import BaseModel
 
@@ -176,12 +177,19 @@ def build_app(enable_worker: bool = True):
   artifact_service = MtmArtifactService(
     db_url=settings.MTM_DATABASE_URL,
   )
+  # from mtmai.services.memory_service import MtmMemoryService
+
+  # memory_service = MtmMemoryService(
+  #   db_url=settings.MTM_DATABASE_URL,
+  # )
+  memory_service = InMemoryMemoryService()
   from mtmai.api import adk_web_api
 
   adk_web_api.configure_adk_web_api(
     app=app,
     session_service=session_service,
     artifact_service=artifact_service,
+    memory_service=memory_service,
   )
 
   # from .gradio_app import mount_gradio_app

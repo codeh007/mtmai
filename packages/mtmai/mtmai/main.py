@@ -188,13 +188,6 @@ def run_short():
   asyncio.run(run_task())
 
 
-# @app.command()
-# def mtmagent():
-#   from mtmai.agents.mtmagent import MtmaiAgent
-
-#   asyncio.run(MtmaiAgent().run())
-
-
 if __name__ == "__main__":
   app()
   # typer.run(main)

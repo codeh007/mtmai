@@ -27,6 +27,7 @@ from google.adk.cli.fast_api import (
   AddSessionToEvalSetRequest,
   AgentRunRequest,
   ApiServerSpanExporter,
+  InMemoryExporter,
   RunEvalRequest,
   RunEvalResult,
 )
@@ -106,6 +107,10 @@ def configure_adk_web_api(
   root_agent_dict = {}
   agent_engine_id = ""
   exit_stacks = []
+  session_trace_dict: dict[str, Any] = {}
+
+  memory_exporter = InMemoryExporter(session_trace_dict)
+  provider.add_span_processor(export.SimpleSpanProcessor(memory_exporter))
 
   @app.get("/list-apps")
   def list_apps() -> list[str]:
@@ -123,11 +128,29 @@ def configure_adk_web_api(
     return agent_names
 
   @app.get("/debug/trace/{event_id}")
-  async def get_trace_dict(event_id: str) -> Any:
+  def get_trace_dict(event_id: str) -> Any:
     event_dict = trace_dict.get(event_id, None)
     if event_dict is None:
       raise HTTPException(status_code=404, detail="Trace not found")
     return event_dict
+
+  @app.get("/debug/trace/session/{session_id}")
+  def get_session_trace(session_id: str) -> Any:
+    spans = memory_exporter.get_finished_spans(session_id)
+    if not spans:
+      return []
+    return [
+      {
+        "name": s.name,
+        "span_id": s.context.span_id,
+        "trace_id": s.context.trace_id,
+        "start_time": s.start_time,
+        "end_time": s.end_time,
+        "attributes": dict(s.attributes),
+        "parent_span_id": s.parent.span_id if s.parent else None,
+      }
+      for s in spans
+    ]
 
   @app.get(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}",
@@ -171,8 +194,7 @@ def configure_adk_web_api(
     if await session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id) is not None:
       logger.warning("Session already exists: %s", session_id)
       raise HTTPException(status_code=400, detail=f"Session already exists: {session_id}")
-
-    logger.info(f"New session created: {session_id}, user_id: {user_id}")
+    logger.info("New session created: %s", session_id)
     return await session_service.create_session(app_name=app_name, user_id=user_id, state=state, session_id=session_id)
 
   @app.post(
