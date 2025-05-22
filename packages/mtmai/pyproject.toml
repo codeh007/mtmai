@@ -1,6 +1,6 @@
 [project]
 name = "mtmai"
-version = "0.7.16"
+version = "0.7.17"
 dependencies = [
     "pydantic-settings",
     "litellm>=1.69.3",
@@ -39,7 +39,6 @@ dependencies = [
     # "opentelemetry-distro>=0.49b0",
     # "opentelemetry-exporter-otlp>=1.28.0",
     # "opentelemetry-exporter-otlp-proto-http>=1.28.0",
-
     # "protobuf>=5.29.1",
     # "grpcio-tools>=1.68.1",
     "pyyaml>=6.0.1",
@@ -173,6 +172,8 @@ dependencies = [
     "pytubefix>=8.13.1",                               # youtube下载器(同时能下载字幕)
     "ffmpeg-python>=0.2.0",                            # 视频音频处理
     # "lark>=0.12.0",
+    "psycopg-pool>=3.2.6",
+    "psycopg>=3.2.9",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
