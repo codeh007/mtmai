@@ -30,9 +30,12 @@ class ProductManagerState(BaseModel):
   idea: str = Field(default="")
 
 
-async def save_artifacts(path: str, content: str, tool_context: ToolContext) -> dict[str, Any]:
+async def save_artifacts(path: str, content: str, mime_type: str, tool_context: ToolContext) -> dict[str, Any]:
   """保存构建的文档"""
-  await tool_context.save_artifact(path, types.Part(text=content))
+  await tool_context.save_artifact(
+    path,
+    types.Part(text=f"保存 {path} 成功", inline_data=types.Blob(mime_type=mime_type, data=content.encode("utf-8"))),
+  )
   return "ok"
 
 
@@ -54,7 +57,7 @@ def new_pm_agent():
     description="产品经理",
     instruction="""你是有10年以上经验产品经理, 请根据用户输入的初始想法, 结合产品经理手册, 生成一个产品需求文档
 **工具**
-- save_artifacts(path: str, content: str)
+- save_artifacts: 保存构建的文档
 
 ** 产品经理手册**
 
