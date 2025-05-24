@@ -189,11 +189,7 @@ requires-python = ">=3.12,<4.0"
 
 [project.scripts]
 mtmai = "mtmai.main:app"
-# [project.optional-dependencies]
-#     burr = ["burr[start]==0.22.1"]
-# docs = ["sphinx==6.0", "furo==2024.5.6"]
 
-# [project.optional-dependencies]
 [dependency-groups]
 dev = [
     "aiofiles>=0.8.0",
@@ -214,7 +210,7 @@ dev = [
 ]
 
 media = [
-    "moviepy>=2.0.0.dev2",
+    "moviepy>=2.2.1",
     "ffmpeg-python>=0.2.0",
     "pydub>=0.25.1",
     "pytube>=12.0.0",

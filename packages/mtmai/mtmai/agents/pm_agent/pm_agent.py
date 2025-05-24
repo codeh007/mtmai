@@ -15,7 +15,8 @@ from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
 from pydantic import BaseModel, Field
 
-# 测试用例: 我想创作一个基于 nextjs 的简单的 todolist 网站,使用典型的 nextjs 技术站, 使用 tailwindcss, 数据库使用 postgresql 16
+# 测试用例:
+# 我想创作一个基于 nextjs 的简单的 todolist 网站,使用典型的 nextjs 技术站, 使用 tailwindcss, 数据库使用 postgresql 16
 
 
 class ProductManagerState(BaseModel):
