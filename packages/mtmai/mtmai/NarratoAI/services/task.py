@@ -8,8 +8,15 @@ from os import path
 from app.config import config
 from app.models import const
 from app.models.schema import VideoClipParams
-from app.services import audio_merger, llm, material, subtitle, video, voice
-from app.services import state as sm
+from app.services import (
+    audio_merger,
+    llm,
+    material,
+    state as sm,
+    subtitle,
+    video,
+    voice,
+)
 from app.utils import utils
 from loguru import logger
 
@@ -243,7 +250,7 @@ def start_subclip(task_id: str, params: VideoClipParams, subclip_path_videos: di
         logger.info("没有需要生成TTS的片段，将保留原声和背景音乐")
         final_audio = path.join(utils.task_dir(task_id), "empty.mp3")
         try:
-            from moviepy.editor import AudioClip
+            from moviepy import AudioClip
 
             # 创建一个与视频等长的空白音频
             empty_audio = AudioClip(make_frame=lambda t: 0, duration=total_duration)

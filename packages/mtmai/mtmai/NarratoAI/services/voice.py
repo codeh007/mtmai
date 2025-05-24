@@ -9,7 +9,8 @@ from xml.sax.saxutils import unescape
 
 import edge_tts
 from edge_tts import SubMaker, submaker
-from edge_tts.submaker import mktimestamp
+
+# from edge_tts.submaker import mktimestamp
 from loguru import logger
 from moviepy.video.tools import subtitles
 from mtmai.NarratoAI import config
@@ -17,9 +18,9 @@ from mtmai.NarratoAI.utils import utils
 
 
 def get_all_azure_voices(filter_locals=None) -> list[str]:
-    if filter_locals is None:
-        filter_locals = ["zh-CN", "en-US", "zh-HK", "zh-TW", "vi-VN"]
-    voices_str = """
+  if filter_locals is None:
+    filter_locals = ["zh-CN", "en-US", "zh-HK", "zh-TW", "vi-VN"]
+  voices_str = """
 Name: af-ZA-AdriNeural
 Gender: Female
 
@@ -993,531 +994,490 @@ Gender: Female
 Name: zh-CN-YunxiNeural-V2
 Gender: Male
     """.strip()
-    voices = []
-    name = ""
-    for line in voices_str.split("\n"):
-        line = line.strip()
-        if not line:
-            continue
-        if line.startswith("Name: "):
-            name = line[6:].strip()
-        if line.startswith("Gender: "):
-            gender = line[8:].strip()
-            if name and gender:
-                # voices.append({
-                #     "name": name,
-                #     "gender": gender,
-                # })
-                if filter_locals:
-                    for filter_local in filter_locals:
-                        if name.lower().startswith(filter_local.lower()):
-                            voices.append(f"{name}-{gender}")
-                else:
-                    voices.append(f"{name}-{gender}")
-                name = ""
-    voices.sort()
-    return voices
+  voices = []
+  name = ""
+  for line in voices_str.split("\n"):
+    line = line.strip()
+    if not line:
+      continue
+    if line.startswith("Name: "):
+      name = line[6:].strip()
+    if line.startswith("Gender: "):
+      gender = line[8:].strip()
+      if name and gender:
+        # voices.append({
+        #     "name": name,
+        #     "gender": gender,
+        # })
+        if filter_locals:
+          for filter_local in filter_locals:
+            if name.lower().startswith(filter_local.lower()):
+              voices.append(f"{name}-{gender}")
+        else:
+          voices.append(f"{name}-{gender}")
+        name = ""
+  voices.sort()
+  return voices
 
 
 def parse_voice_name(name: str):
-    # zh-CN-XiaoyiNeural-Female
-    # zh-CN-YunxiNeural-Male
-    # zh-CN-XiaoxiaoMultilingualNeural-V2-Female
-    name = name.replace("-Female", "").replace("-Male", "").strip()
-    return name
+  # zh-CN-XiaoyiNeural-Female
+  # zh-CN-YunxiNeural-Male
+  # zh-CN-XiaoxiaoMultilingualNeural-V2-Female
+  name = name.replace("-Female", "").replace("-Male", "").strip()
+  return name
 
 
 def is_azure_v2_voice(voice_name: str):
-    voice_name = parse_voice_name(voice_name)
-    if voice_name.endswith("-V2"):
-        return voice_name.replace("-V2", "").strip()
-    return ""
+  voice_name = parse_voice_name(voice_name)
+  if voice_name.endswith("-V2"):
+    return voice_name.replace("-V2", "").strip()
+  return ""
 
 
-def tts(
-    text: str, voice_name: str, voice_rate: float, voice_pitch: float, voice_file: str
-) -> [SubMaker, None]:
-    if is_azure_v2_voice(voice_name):
-        return azure_tts_v2(text, voice_name, voice_file)
-    return azure_tts_v1(text, voice_name, voice_rate, voice_pitch, voice_file)
+def tts(text: str, voice_name: str, voice_rate: float, voice_pitch: float, voice_file: str) -> [SubMaker, None]:
+  if is_azure_v2_voice(voice_name):
+    return azure_tts_v2(text, voice_name, voice_file)
+  return azure_tts_v1(text, voice_name, voice_rate, voice_pitch, voice_file)
 
 
 def convert_rate_to_percent(rate: float) -> str:
-    if rate == 1.0:
-        return "+0%"
-    percent = round((rate - 1.0) * 100)
-    if percent > 0:
-        return f"+{percent}%"
-    else:
-        return f"{percent}%"
+  if rate == 1.0:
+    return "+0%"
+  percent = round((rate - 1.0) * 100)
+  if percent > 0:
+    return f"+{percent}%"
+  else:
+    return f"{percent}%"
 
 
 def convert_pitch_to_percent(rate: float) -> str:
-    if rate == 1.0:
-        return "+0Hz"
-    percent = round((rate - 1.0) * 100)
-    if percent > 0:
-        return f"+{percent}Hz"
-    else:
-        return f"{percent}Hz"
+  if rate == 1.0:
+    return "+0Hz"
+  percent = round((rate - 1.0) * 100)
+  if percent > 0:
+    return f"+{percent}Hz"
+  else:
+    return f"{percent}Hz"
 
 
-async def tts_edgetts(
-    text: str, voice_name: str, voice_file: str
-) -> Union[SubMaker, None]:
-    """
-    使用 edge_tts 库实现文本转语音,并生成字幕
-    """
-    sub_maker = edge_tts.SubMaker()
-    communicate = edge_tts.Communicate(text, voice_name)
+async def tts_edgetts(text: str, voice_name: str, voice_file: str) -> Union[SubMaker, None]:
+  """
+  使用 edge_tts 库实现文本转语音,并生成字幕
+  """
+  sub_maker = edge_tts.SubMaker()
+  communicate = edge_tts.Communicate(text, voice_name)
 
-    os.makedirs(os.path.dirname(voice_file), exist_ok=True)
-    with open(voice_file, "wb") as file:
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                file.write(chunk["data"])
-            elif chunk["type"] == "WordBoundary":
-                sub_maker.create_sub(
-                    (chunk["offset"], chunk["duration"]), chunk["text"]
-                )
+  os.makedirs(os.path.dirname(voice_file), exist_ok=True)
+  with open(voice_file, "wb") as file:
+    async for chunk in communicate.stream():
+      if chunk["type"] == "audio":
+        file.write(chunk["data"])
+      elif chunk["type"] == "WordBoundary":
+        sub_maker.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
 
-    logger.success(f"edge tts speech synthesis succeeded: {voice_file}")
-    return sub_maker
+  logger.success(f"edge tts speech synthesis succeeded: {voice_file}")
+  return sub_maker
 
 
 def azure_tts_v1(
-    text: str, voice_name: str, voice_rate: float, voice_pitch: float, voice_file: str
+  text: str, voice_name: str, voice_rate: float, voice_pitch: float, voice_file: str
 ) -> [SubMaker, None]:
-    voice_name = parse_voice_name(voice_name)
-    text = text.strip()
-    rate_str = convert_rate_to_percent(voice_rate)
-    pitch_str = convert_pitch_to_percent(voice_pitch)
-    for i in range(3):
-        try:
-            logger.info(f"第 {i+1} 次使用 edge_tts 生成音频")
+  voice_name = parse_voice_name(voice_name)
+  text = text.strip()
+  rate_str = convert_rate_to_percent(voice_rate)
+  pitch_str = convert_pitch_to_percent(voice_pitch)
+  for i in range(3):
+    try:
+      logger.info(f"第 {i+1} 次使用 edge_tts 生成音频")
 
-            async def _do() -> tuple[SubMaker, bytes]:
-                communicate = edge_tts.Communicate(
-                    text,
-                    voice_name,
-                    rate=rate_str,
-                    pitch=pitch_str,
-                    proxy=config.proxy.get("http"),
-                )
-                sub_maker = edge_tts.SubMaker()
-                audio_data = bytes()  # 用于存储音频数据
+      async def _do() -> tuple[SubMaker, bytes]:
+        communicate = edge_tts.Communicate(
+          text,
+          voice_name,
+          rate=rate_str,
+          pitch=pitch_str,
+          proxy=config.proxy.get("http"),
+        )
+        sub_maker = edge_tts.SubMaker()
+        audio_data = bytes()  # 用于存储音频数据
 
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        audio_data += chunk["data"]
-                    elif chunk["type"] == "WordBoundary":
-                        sub_maker.create_sub(
-                            (chunk["offset"], chunk["duration"]), chunk["text"]
-                        )
-                return sub_maker, audio_data
+        async for chunk in communicate.stream():
+          if chunk["type"] == "audio":
+            audio_data += chunk["data"]
+          elif chunk["type"] == "WordBoundary":
+            sub_maker.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
+        return sub_maker, audio_data
 
-            # 判断音频文件是否已存在
-            if os.path.exists(voice_file):
-                logger.info(f"voice file exists, skip tts: {voice_file}")
-                continue
+      # 判断音频文件是否已存在
+      if os.path.exists(voice_file):
+        logger.info(f"voice file exists, skip tts: {voice_file}")
+        continue
 
-            # 获取音频数据和字幕信息
-            sub_maker, audio_data = asyncio.run(_do())
+      # 获取音频数据和字幕信息
+      sub_maker, audio_data = asyncio.run(_do())
 
-            # 验证数据是否有效
-            if not sub_maker or not sub_maker.subs or not audio_data:
-                logger.warning("failed, invalid data generated")
-                if i < 2:
-                    time.sleep(1)
-                continue
+      # 验证数据是否有效
+      if not sub_maker or not sub_maker.subs or not audio_data:
+        logger.warning("failed, invalid data generated")
+        if i < 2:
+          time.sleep(1)
+        continue
 
-            # 数据有效，写入文件
-            with open(voice_file, "wb") as file:
-                file.write(audio_data)
+      # 数据有效，写入文件
+      with open(voice_file, "wb") as file:
+        file.write(audio_data)
 
-            logger.info(f"completed, output file: {voice_file}")
-            return sub_maker
-        except Exception as e:
-            logger.error(f"生成音频文件时出错: {str(e)}")
-            if i < 2:
-                time.sleep(1)
-    return None
+      logger.info(f"completed, output file: {voice_file}")
+      return sub_maker
+    except Exception as e:
+      logger.error(f"生成音频文件时出错: {str(e)}")
+      if i < 2:
+        time.sleep(1)
+  return None
 
 
 def azure_tts_v2(text: str, voice_name: str, voice_file: str) -> [SubMaker, None]:
-    voice_name = is_azure_v2_voice(voice_name)
-    if not voice_name:
-        logger.error(f"invalid voice name: {voice_name}")
-        raise ValueError(f"invalid voice name: {voice_name}")
-    text = text.strip()
+  voice_name = is_azure_v2_voice(voice_name)
+  if not voice_name:
+    logger.error(f"invalid voice name: {voice_name}")
+    raise ValueError(f"invalid voice name: {voice_name}")
+  text = text.strip()
 
-    def _format_duration_to_offset(duration) -> int:
-        if isinstance(duration, str):
-            time_obj = datetime.strptime(duration, "%H:%M:%S.%f")
-            milliseconds = (
-                (time_obj.hour * 3600000)
-                + (time_obj.minute * 60000)
-                + (time_obj.second * 1000)
-                + (time_obj.microsecond // 1000)
-            )
-            return milliseconds * 10000
+  def _format_duration_to_offset(duration) -> int:
+    if isinstance(duration, str):
+      time_obj = datetime.strptime(duration, "%H:%M:%S.%f")
+      milliseconds = (
+        (time_obj.hour * 3600000)
+        + (time_obj.minute * 60000)
+        + (time_obj.second * 1000)
+        + (time_obj.microsecond // 1000)
+      )
+      return milliseconds * 10000
 
-        if isinstance(duration, int):
-            return duration
+    if isinstance(duration, int):
+      return duration
 
-        return 0
+    return 0
 
-    for i in range(3):
-        try:
-            logger.info(f"start, voice name: {voice_name}, try: {i + 1}")
+  for i in range(3):
+    try:
+      logger.info(f"start, voice name: {voice_name}, try: {i + 1}")
 
-            import azure.cognitiveservices.speech as speechsdk
+      import azure.cognitiveservices.speech as speechsdk
 
-            sub_maker = SubMaker()
+      sub_maker = SubMaker()
 
-            def speech_synthesizer_word_boundary_cb(evt: speechsdk.SessionEventArgs):
-                duration = _format_duration_to_offset(str(evt.duration))
-                offset = _format_duration_to_offset(evt.audio_offset)
-                sub_maker.subs.append(evt.text)
-                sub_maker.offset.append((offset, offset + duration))
+      def speech_synthesizer_word_boundary_cb(evt: speechsdk.SessionEventArgs):
+        duration = _format_duration_to_offset(str(evt.duration))
+        offset = _format_duration_to_offset(evt.audio_offset)
+        sub_maker.subs.append(evt.text)
+        sub_maker.offset.append((offset, offset + duration))
 
-            # Creates an instance of a speech config with specified subscription key and service region.
-            speech_key = config.azure.get("speech_key", "")
-            service_region = config.azure.get("speech_region", "")
-            audio_config = speechsdk.audio.AudioOutputConfig(
-                filename=voice_file, use_default_speaker=True
-            )
-            speech_config = speechsdk.SpeechConfig(
-                subscription=speech_key, region=service_region
-            )
-            speech_config.speech_synthesis_voice_name = voice_name
-            # speech_config.set_property(property_id=speechsdk.PropertyId.SpeechServiceResponse_RequestSentenceBoundary,
-            #                            value='true')
-            speech_config.set_property(
-                property_id=speechsdk.PropertyId.SpeechServiceResponse_RequestWordBoundary,
-                value="true",
-            )
+      # Creates an instance of a speech config with specified subscription key and service region.
+      speech_key = config.azure.get("speech_key", "")
+      service_region = config.azure.get("speech_region", "")
+      audio_config = speechsdk.audio.AudioOutputConfig(filename=voice_file, use_default_speaker=True)
+      speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
+      speech_config.speech_synthesis_voice_name = voice_name
+      # speech_config.set_property(property_id=speechsdk.PropertyId.SpeechServiceResponse_RequestSentenceBoundary,
+      #                            value='true')
+      speech_config.set_property(
+        property_id=speechsdk.PropertyId.SpeechServiceResponse_RequestWordBoundary,
+        value="true",
+      )
 
-            speech_config.set_speech_synthesis_output_format(
-                speechsdk.SpeechSynthesisOutputFormat.Audio48Khz192KBitRateMonoMp3
-            )
-            speech_synthesizer = speechsdk.SpeechSynthesizer(
-                audio_config=audio_config, speech_config=speech_config
-            )
-            speech_synthesizer.synthesis_word_boundary.connect(
-                speech_synthesizer_word_boundary_cb
-            )
+      speech_config.set_speech_synthesis_output_format(
+        speechsdk.SpeechSynthesisOutputFormat.Audio48Khz192KBitRateMonoMp3
+      )
+      speech_synthesizer = speechsdk.SpeechSynthesizer(audio_config=audio_config, speech_config=speech_config)
+      speech_synthesizer.synthesis_word_boundary.connect(speech_synthesizer_word_boundary_cb)
 
-            result = speech_synthesizer.speak_text_async(text).get()
-            if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-                logger.success(f"azure v2 speech synthesis succeeded: {voice_file}")
-                return sub_maker
-            elif result.reason == speechsdk.ResultReason.Canceled:
-                cancellation_details = result.cancellation_details
-                logger.error(
-                    f"azure v2 speech synthesis canceled: {cancellation_details.reason}"
-                )
-                if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                    logger.error(
-                        f"azure v2 speech synthesis error: {cancellation_details.error_details}"
-                    )
-            if i < 2:  # 如果不是最后一次重试，则等待1秒
-                time.sleep(1)
-            logger.info(f"completed, output file: {voice_file}")
-        except Exception as e:
-            logger.error(f"failed, error: {str(e)}")
-            if i < 2:  # 如果不是最后一次重试，则等待1秒
-                time.sleep(3)
-    return None
+      result = speech_synthesizer.speak_text_async(text).get()
+      if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        logger.success(f"azure v2 speech synthesis succeeded: {voice_file}")
+        return sub_maker
+      elif result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = result.cancellation_details
+        logger.error(f"azure v2 speech synthesis canceled: {cancellation_details.reason}")
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+          logger.error(f"azure v2 speech synthesis error: {cancellation_details.error_details}")
+      if i < 2:  # 如果不是最后一次重试，则等待1秒
+        time.sleep(1)
+      logger.info(f"completed, output file: {voice_file}")
+    except Exception as e:
+      logger.error(f"failed, error: {str(e)}")
+      if i < 2:  # 如果不是最后一次重试，则等待1秒
+        time.sleep(3)
+  return None
 
 
 def _format_text(text: str) -> str:
-    # text = text.replace("\n", " ")
-    text = text.replace("[", " ")
-    text = text.replace("]", " ")
-    text = text.replace("(", " ")
-    text = text.replace(")", " ")
-    text = text.replace("{", " ")
-    text = text.replace("}", " ")
-    text = text.strip()
-    return text
+  # text = text.replace("\n", " ")
+  text = text.replace("[", " ")
+  text = text.replace("]", " ")
+  text = text.replace("(", " ")
+  text = text.replace(")", " ")
+  text = text.replace("{", " ")
+  text = text.replace("}", " ")
+  text = text.strip()
+  return text
 
 
 # 这是旧版的 ,
 def create_subtitle(sub_maker: submaker.SubMaker, text: str, subtitle_file: str):
+  """
+  优化字幕文件
+  1. 将字幕文件按照标点符号分割成多行
+  2. 逐行匹配字幕文件中的文本
+  3. 生成新的字幕文件
+  """
+
+  text = _format_text(text)
+
+  def formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
     """
-    优化字幕文件
-    1. 将字幕文件按照标点符号分割成多行
-    2. 逐行匹配字幕文件中的文本
-    3. 生成新的字幕文件
+    1
+    00:00:00,000 --> 00:00:02,360
+    跑步是一项简单易行的运动
     """
+    start_t = mktimestamp(start_time).replace(".", ",")
+    end_t = mktimestamp(end_time).replace(".", ",")
+    return f"{idx}\n" f"{start_t} --> {end_t}\n" f"{sub_text}\n"
 
-    text = _format_text(text)
+  start_time = -1.0
+  sub_items = []
+  sub_index = 0
 
-    def formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
-        """
-        1
-        00:00:00,000 --> 00:00:02,360
-        跑步是一项简单易行的运动
-        """
-        start_t = mktimestamp(start_time).replace(".", ",")
-        end_t = mktimestamp(end_time).replace(".", ",")
-        return f"{idx}\n" f"{start_t} --> {end_t}\n" f"{sub_text}\n"
+  script_lines = utils.split_string_by_punctuations(text)
 
-    start_time = -1.0
-    sub_items = []
-    sub_index = 0
+  def match_line(_sub_line: str, _sub_index: int):
+    if len(script_lines) <= _sub_index:
+      return ""
 
-    script_lines = utils.split_string_by_punctuations(text)
+    _line = script_lines[_sub_index]
+    if _sub_line == _line:
+      return script_lines[_sub_index].strip()
 
-    def match_line(_sub_line: str, _sub_index: int):
-        if len(script_lines) <= _sub_index:
-            return ""
+    _sub_line_ = re.sub(r"[^\w\s]", "", _sub_line)
+    _line_ = re.sub(r"[^\w\s]", "", _line)
+    if _sub_line_ == _line_:
+      return _line_.strip()
 
-        _line = script_lines[_sub_index]
-        if _sub_line == _line:
-            return script_lines[_sub_index].strip()
+    _sub_line_ = re.sub(r"\W+", "", _sub_line)
+    _line_ = re.sub(r"\W+", "", _line)
+    if _sub_line_ == _line_:
+      return _line.strip()
 
-        _sub_line_ = re.sub(r"[^\w\s]", "", _sub_line)
-        _line_ = re.sub(r"[^\w\s]", "", _line)
-        if _sub_line_ == _line_:
-            return _line_.strip()
+    return ""
 
-        _sub_line_ = re.sub(r"\W+", "", _sub_line)
-        _line_ = re.sub(r"\W+", "", _line)
-        if _sub_line_ == _line_:
-            return _line.strip()
+  sub_line = ""
 
-        return ""
+  try:
+    for _, (offset, sub) in enumerate(zip(sub_maker.offset, sub_maker.subs)):
+      _start_time, end_time = offset
+      if start_time < 0:
+        start_time = _start_time
 
-    sub_line = ""
+      sub = unescape(sub)
+      sub_line += sub
+      sub_text = match_line(sub_line, sub_index)
+      if sub_text:
+        sub_index += 1
+        line = formatter(
+          idx=sub_index,
+          start_time=start_time,
+          end_time=end_time,
+          sub_text=sub_text,
+        )
+        sub_items.append(line)
+        start_time = -1.0
+        sub_line = ""
 
-    try:
-        for _, (offset, sub) in enumerate(zip(sub_maker.offset, sub_maker.subs)):
-            _start_time, end_time = offset
-            if start_time < 0:
-                start_time = _start_time
-
-            sub = unescape(sub)
-            sub_line += sub
-            sub_text = match_line(sub_line, sub_index)
-            if sub_text:
-                sub_index += 1
-                line = formatter(
-                    idx=sub_index,
-                    start_time=start_time,
-                    end_time=end_time,
-                    sub_text=sub_text,
-                )
-                sub_items.append(line)
-                start_time = -1.0
-                sub_line = ""
-
-        if len(sub_items) == len(script_lines):
-            with open(subtitle_file, "w", encoding="utf-8") as file:
-                file.write("\n".join(sub_items) + "\n")
-            try:
-                sbs = subtitles.file_to_subtitles(subtitle_file, encoding="utf-8")
-                duration = max([tb for ((ta, tb), txt) in sbs])
-                logger.info(
-                    f"completed, subtitle file created: {subtitle_file}, duration: {duration}"
-                )
-            except Exception as e:
-                logger.error(f"failed, error: {str(e)}")
-                os.remove(subtitle_file)
-        else:
-            logger.warning(
-                f"failed, sub_items len: {len(sub_items)}, script_lines len: {len(script_lines)}"
-            )
-
-    except Exception as e:
+    if len(sub_items) == len(script_lines):
+      with open(subtitle_file, "w", encoding="utf-8") as file:
+        file.write("\n".join(sub_items) + "\n")
+      try:
+        sbs = subtitles.file_to_subtitles(subtitle_file, encoding="utf-8")
+        duration = max([tb for ((ta, tb), txt) in sbs])
+        logger.info(f"completed, subtitle file created: {subtitle_file}, duration: {duration}")
+      except Exception as e:
         logger.error(f"failed, error: {str(e)}")
+        os.remove(subtitle_file)
+    else:
+      logger.warning(f"failed, sub_items len: {len(sub_items)}, script_lines len: {len(script_lines)}")
+
+  except Exception as e:
+    logger.error(f"failed, error: {str(e)}")
 
 
 def create_subtitle_from_multiple(
-    text: str,
-    sub_maker_list: List[SubMaker],
-    list_script: List[dict],
-    subtitle_file: str,
+  text: str,
+  sub_maker_list: List[SubMaker],
+  list_script: List[dict],
+  subtitle_file: str,
 ):
-    """
-    根据多个 SubMaker 对象、完整文本和原始脚本创建优化的字幕文件
-    1. 使用原始脚本中的时间戳
-    2. 跳过 OST 为 true 的部分
-    3. 将字幕文件按照标点符号分割成多行
-    4. 根据完整文本分段，保持原文的语句结构
-    5. 生成新的字幕文件，时间戳包含小时单位
-    """
-    text = _format_text(text)
-    sentences = utils.split_string_by_punctuations(text)
+  """
+  根据多个 SubMaker 对象、完整文本和原始脚本创建优化的字幕文件
+  1. 使用原始脚本中的时间戳
+  2. 跳过 OST 为 true 的部分
+  3. 将字幕文件按照标点符号分割成多行
+  4. 根据完整文本分段，保持原文的语句结构
+  5. 生成新的字幕文件，时间戳包含小时单位
+  """
+  text = _format_text(text)
+  sentences = utils.split_string_by_punctuations(text)
 
-    def formatter(idx: int, start_time: str, end_time: str, sub_text: str) -> str:
-        return f"{idx}\n{start_time.replace('.', ',')} --> {end_time.replace('.', ',')}\n{sub_text}\n"
+  def formatter(idx: int, start_time: str, end_time: str, sub_text: str) -> str:
+    return f"{idx}\n{start_time.replace('.', ',')} --> {end_time.replace('.', ',')}\n{sub_text}\n"
 
-    sub_items = []
-    sub_index = 0
-    sentence_index = 0
+  sub_items = []
+  sub_index = 0
+  sentence_index = 0
 
-    try:
-        sub_maker_index = 0
-        for script_item in list_script:
-            if script_item["OST"]:
-                continue
+  try:
+    sub_maker_index = 0
+    for script_item in list_script:
+      if script_item["OST"]:
+        continue
 
-            start_time, end_time = script_item["new_timestamp"].split("-")
-            if sub_maker_index >= len(sub_maker_list):
-                logger.error(f"Sub maker list index out of range: {sub_maker_index}")
-                break
-            sub_maker = sub_maker_list[sub_maker_index]
-            sub_maker_index += 1
+      start_time, end_time = script_item["new_timestamp"].split("-")
+      if sub_maker_index >= len(sub_maker_list):
+        logger.error(f"Sub maker list index out of range: {sub_maker_index}")
+        break
+      sub_maker = sub_maker_list[sub_maker_index]
+      sub_maker_index += 1
 
-            script_duration = utils.time_to_seconds(end_time) - utils.time_to_seconds(
-                start_time
-            )
-            audio_duration = get_audio_duration(sub_maker)
-            time_ratio = script_duration / audio_duration if audio_duration > 0 else 1
+      script_duration = utils.time_to_seconds(end_time) - utils.time_to_seconds(start_time)
+      audio_duration = get_audio_duration(sub_maker)
+      time_ratio = script_duration / audio_duration if audio_duration > 0 else 1
 
-            current_sub = ""
-            current_start = None
-            current_end = None
+      current_sub = ""
+      current_start = None
+      current_end = None
 
-            for offset, sub in zip(sub_maker.offset, sub_maker.subs):
-                sub = unescape(sub).strip()
-                sub_start = utils.seconds_to_time(
-                    utils.time_to_seconds(start_time)
-                    + offset[0] / 10000000 * time_ratio
-                )
-                sub_end = utils.seconds_to_time(
-                    utils.time_to_seconds(start_time)
-                    + offset[1] / 10000000 * time_ratio
-                )
+      for offset, sub in zip(sub_maker.offset, sub_maker.subs):
+        sub = unescape(sub).strip()
+        sub_start = utils.seconds_to_time(utils.time_to_seconds(start_time) + offset[0] / 10000000 * time_ratio)
+        sub_end = utils.seconds_to_time(utils.time_to_seconds(start_time) + offset[1] / 10000000 * time_ratio)
 
-                if current_start is None:
-                    current_start = sub_start
-                current_end = sub_end
+        if current_start is None:
+          current_start = sub_start
+        current_end = sub_end
 
-                current_sub += sub
+        current_sub += sub
 
-                # 检查当前累积的字幕是否匹配下一个句子
-                while (
-                    sentence_index < len(sentences)
-                    and sentences[sentence_index] in current_sub
-                ):
-                    sub_index += 1
-                    line = formatter(
-                        idx=sub_index,
-                        start_time=current_start,
-                        end_time=current_end,
-                        sub_text=sentences[sentence_index].strip(),
-                    )
-                    sub_items.append(line)
-                    current_sub = current_sub.replace(
-                        sentences[sentence_index], "", 1
-                    ).strip()
-                    current_start = current_end
-                    sentence_index += 1
+        # 检查当前累积的字幕是否匹配下一个句子
+        while sentence_index < len(sentences) and sentences[sentence_index] in current_sub:
+          sub_index += 1
+          line = formatter(
+            idx=sub_index,
+            start_time=current_start,
+            end_time=current_end,
+            sub_text=sentences[sentence_index].strip(),
+          )
+          sub_items.append(line)
+          current_sub = current_sub.replace(sentences[sentence_index], "", 1).strip()
+          current_start = current_end
+          sentence_index += 1
 
-                # 如果当前字幕长度超过15个字符，也生成一个新的字幕项
-                if len(current_sub) > 15:
-                    sub_index += 1
-                    line = formatter(
-                        idx=sub_index,
-                        start_time=current_start,
-                        end_time=current_end,
-                        sub_text=current_sub.strip(),
-                    )
-                    sub_items.append(line)
-                    current_sub = ""
-                    current_start = current_end
+        # 如果当前字幕长度超过15个字符，也生成一个新的字幕项
+        if len(current_sub) > 15:
+          sub_index += 1
+          line = formatter(
+            idx=sub_index,
+            start_time=current_start,
+            end_time=current_end,
+            sub_text=current_sub.strip(),
+          )
+          sub_items.append(line)
+          current_sub = ""
+          current_start = current_end
 
-            # 处理剩余的文本
-            if current_sub.strip():
-                sub_index += 1
-                line = formatter(
-                    idx=sub_index,
-                    start_time=current_start,
-                    end_time=current_end,
-                    sub_text=current_sub.strip(),
-                )
-                sub_items.append(line)
+      # 处理剩余的文本
+      if current_sub.strip():
+        sub_index += 1
+        line = formatter(
+          idx=sub_index,
+          start_time=current_start,
+          end_time=current_end,
+          sub_text=current_sub.strip(),
+        )
+        sub_items.append(line)
 
-        if len(sub_items) == 0:
-            logger.error("No subtitle items generated")
-            return
+    if len(sub_items) == 0:
+      logger.error("No subtitle items generated")
+      return
 
-        with open(subtitle_file, "w", encoding="utf-8") as file:
-            file.write("\n".join(sub_items))
+    with open(subtitle_file, "w", encoding="utf-8") as file:
+      file.write("\n".join(sub_items))
 
-        logger.info(f"completed, subtitle file created: {subtitle_file}")
-    except Exception as e:
-        logger.error(f"failed, error: {str(e)}")
-        traceback.print_exc()
+    logger.info(f"completed, subtitle file created: {subtitle_file}")
+  except Exception as e:
+    logger.error(f"failed, error: {str(e)}")
+    traceback.print_exc()
 
 
 def get_audio_duration(sub_maker: submaker.SubMaker):
-    """
-    获取音频时长
-    """
-    if not sub_maker.offset:
-        return 0.0
-    return sub_maker.offset[-1][1] / 10000000
+  """
+  获取音频时长
+  """
+  if not sub_maker.offset:
+    return 0.0
+  return sub_maker.offset[-1][1] / 10000000
 
 
 def tts_multiple(
-    task_id: str,
-    list_script: list,
-    voice_name: str,
-    voice_rate: float,
-    voice_pitch: float,
-    force_regenerate: bool = True,
+  task_id: str,
+  list_script: list,
+  voice_name: str,
+  voice_rate: float,
+  voice_pitch: float,
+  force_regenerate: bool = True,
 ):
-    """
-    根据JSON文件中的多段文本进行TTS转换
+  """
+  根据JSON文件中的多段文本进行TTS转换
 
-    :param task_id: 任务ID
-    :param list_script: 脚本列表
-    :param voice_name: 语音名称
-    :param voice_rate: 语音速率
-    :param force_regenerate: 是否强制重新生成已存在的音频文件
-    :return: 生成的音频文件列表
-    """
-    voice_name = parse_voice_name(voice_name)
-    output_dir = utils.task_dir(task_id)
-    audio_files = []
-    sub_maker_list = []
+  :param task_id: 任务ID
+  :param list_script: 脚本列表
+  :param voice_name: 语音名称
+  :param voice_rate: 语音速率
+  :param force_regenerate: 是否强制重新生成已存在的音频文件
+  :return: 生成的音频文件列表
+  """
+  voice_name = parse_voice_name(voice_name)
+  output_dir = utils.task_dir(task_id)
+  audio_files = []
+  sub_maker_list = []
 
-    for item in list_script:
-        if item["OST"] != 1:
-            # 将时间戳中的冒号替换为下划线
-            timestamp = item["new_timestamp"].replace(":", "_")
-            audio_file = os.path.join(output_dir, f"audio_{timestamp}.mp3")
+  for item in list_script:
+    if item["OST"] != 1:
+      # 将时间戳中的冒号替换为下划线
+      timestamp = item["new_timestamp"].replace(":", "_")
+      audio_file = os.path.join(output_dir, f"audio_{timestamp}.mp3")
 
-            # 检查文件是否已存在，如存在且不强制重新生成，则跳过
-            if os.path.exists(audio_file) and not force_regenerate:
-                logger.info(f"音频文件已存在，跳过生成: {audio_file}")
-                audio_files.append(audio_file)
-                continue
+      # 检查文件是否已存在，如存在且不强制重新生成，则跳过
+      if os.path.exists(audio_file) and not force_regenerate:
+        logger.info(f"音频文件已存在，跳过生成: {audio_file}")
+        audio_files.append(audio_file)
+        continue
 
-            text = item["narration"]
+      text = item["narration"]
 
-            sub_maker = tts(
-                text=text,
-                voice_name=voice_name,
-                voice_rate=voice_rate,
-                voice_pitch=voice_pitch,
-                voice_file=audio_file,
-            )
+      sub_maker = tts(
+        text=text,
+        voice_name=voice_name,
+        voice_rate=voice_rate,
+        voice_pitch=voice_pitch,
+        voice_file=audio_file,
+      )
 
-            if sub_maker is None:
-                logger.error(
-                    f"无法为时间戳 {timestamp} 生成音频; "
-                    f"如果您在中国，请使用VPN; "
-                    f"或者使用其他 tts 引擎"
-                )
-                continue
+      if sub_maker is None:
+        logger.error(f"无法为时间戳 {timestamp} 生成音频; " f"如果您在中国，请使用VPN; " f"或者使用其他 tts 引擎")
+        continue
 
-            audio_files.append(audio_file)
-            sub_maker_list.append(sub_maker)
-            logger.info(f"已生成音频文件: {audio_file}")
+      audio_files.append(audio_file)
+      sub_maker_list.append(sub_maker)
+      logger.info(f"已生成音频文件: {audio_file}")
 
-    return audio_files, sub_maker_list
+  return audio_files, sub_maker_list

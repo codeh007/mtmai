@@ -7,7 +7,7 @@ from typing import List, TextIO, Union
 
 from googleapiclient.errors import ResumableUploadError
 from loguru import logger
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from mtmai.NarratoAI import config
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion
@@ -102,410 +102,372 @@ Method = """
 
 
 def handle_exception(err):
-    if isinstance(err, PermissionDenied):
-        raise Exception("403 用户没有权限访问该资源")
-    elif isinstance(err, ResourceExhausted):
-        raise Exception(
-            "429 您的配额已用尽。请稍后重试。请考虑设置自动重试来处理这些错误"
-        )
-    elif isinstance(err, InvalidArgument):
-        raise Exception(
-            "400 参数无效。例如，文件过大，超出了载荷大小限制。另一个事件提供了无效的 API 密钥。"
-        )
-    elif isinstance(err, AlreadyExists):
-        raise Exception(
-            "409 已存在具有相同 ID 的已调参模型。对新模型进行调参时，请指定唯一的模型 ID。"
-        )
-    elif isinstance(err, RetryError):
-        raise Exception(
-            "使用不支持 gRPC 的代理时可能会引起此错误。请尝试将 REST 传输与 genai.configure(..., transport=rest) 搭配使用。"
-        )
-    elif isinstance(err, BlockedPromptException):
-        raise Exception("400 出于安全原因，该提示已被屏蔽。")
-    elif isinstance(err, BrokenResponseError):
-        raise Exception(
-            "500 流式传输响应已损坏。在访问需要完整响应的内容（例如聊天记录）时引发。查看堆栈轨迹中提供的错误详情。"
-        )
-    elif isinstance(err, IncompleteIterationError):
-        raise Exception(
-            "500 访问需要完整 API 响应但流式响应尚未完全迭代的内容时引发。对响应对象调用 resolve() 以使用迭代器。"
-        )
-    elif isinstance(err, ConnectionError):
-        raise Exception(
-            "网络连接错误, 请检查您的网络连接(建议使用 NarratoAI 官方提供的 url)"
-        )
-    else:
-        raise Exception(
-            f"大模型请求失败, 下面是具体报错信息: \n\n{traceback.format_exc()}"
-        )
+  if isinstance(err, PermissionDenied):
+    raise Exception("403 用户没有权限访问该资源")
+  elif isinstance(err, ResourceExhausted):
+    raise Exception("429 您的配额已用尽。请稍后重试。请考虑设置自动重试来处理这些错误")
+  elif isinstance(err, InvalidArgument):
+    raise Exception("400 参数无效。例如，文件过大，超出了载荷大小限制。另一个事件提供了无效的 API 密钥。")
+  elif isinstance(err, AlreadyExists):
+    raise Exception("409 已存在具有相同 ID 的已调参模型。对新模型进行调参时，请指定唯一的模型 ID。")
+  elif isinstance(err, RetryError):
+    raise Exception(
+      "使用不支持 gRPC 的代理时可能会引起此错误。请尝试将 REST 传输与 genai.configure(..., transport=rest) 搭配使用。"
+    )
+  elif isinstance(err, BlockedPromptException):
+    raise Exception("400 出于安全原因，该提示已被屏蔽。")
+  elif isinstance(err, BrokenResponseError):
+    raise Exception(
+      "500 流式传输响应已损坏。在访问需要完整响应的内容（例如聊天记录）时引发。查看堆栈轨迹中提供的错误详情。"
+    )
+  elif isinstance(err, IncompleteIterationError):
+    raise Exception(
+      "500 访问需要完整 API 响应但流式响应尚未完全迭代的内容时引发。对响应对象调用 resolve() 以使用迭代器。"
+    )
+  elif isinstance(err, ConnectionError):
+    raise Exception("网络连接错误, 请检查您的网络连接(建议使用 NarratoAI 官方提供的 url)")
+  else:
+    raise Exception(f"大模型请求失败, 下面是具体报错信息: \n\n{traceback.format_exc()}")
 
 
 def _generate_response(prompt: str, llm_provider: str = None) -> str:
-    """
-    调用大模型通用方法
-        prompt：
-        llm_provider：
-    """
-    content = ""
-    if not llm_provider:
-        llm_provider = config.app.get("llm_provider", "openai")
-    logger.info(f"llm provider: {llm_provider}")
-    if llm_provider == "g4f":
-        model_name = config.app.get("g4f_model_name", "")
-        if not model_name:
-            model_name = "gpt-3.5-turbo-16k-0613"
-        import g4f
+  """
+  调用大模型通用方法
+      prompt：
+      llm_provider：
+  """
+  content = ""
+  if not llm_provider:
+    llm_provider = config.app.get("llm_provider", "openai")
+  logger.info(f"llm provider: {llm_provider}")
+  if llm_provider == "g4f":
+    model_name = config.app.get("g4f_model_name", "")
+    if not model_name:
+      model_name = "gpt-3.5-turbo-16k-0613"
+    import g4f
 
-        content = g4f.ChatCompletion.create(
-            model=model_name,
-            messages=[{"role": "user", "content": prompt}],
-        )
+    content = g4f.ChatCompletion.create(
+      model=model_name,
+      messages=[{"role": "user", "content": prompt}],
+    )
+  else:
+    api_version = ""  # for azure
+    if llm_provider == "moonshot":
+      api_key = config.app.get("moonshot_api_key")
+      model_name = config.app.get("moonshot_model_name")
+      base_url = "https://api.moonshot.cn/v1"
+    elif llm_provider == "ollama":
+      # api_key = config.app.get("openai_api_key")
+      api_key = "ollama"  # any string works but you are required to have one
+      model_name = config.app.get("ollama_model_name")
+      base_url = config.app.get("ollama_base_url", "")
+      if not base_url:
+        base_url = "http://localhost:11434/v1"
+    elif llm_provider == "openai":
+      api_key = config.app.get("openai_api_key")
+      model_name = config.app.get("openai_model_name")
+      base_url = config.app.get("openai_base_url", "")
+      if not base_url:
+        base_url = "https://api.openai.com/v1"
+    elif llm_provider == "oneapi":
+      api_key = config.app.get("oneapi_api_key")
+      model_name = config.app.get("oneapi_model_name")
+      base_url = config.app.get("oneapi_base_url", "")
+    elif llm_provider == "azure":
+      api_key = config.app.get("azure_api_key")
+      model_name = config.app.get("azure_model_name")
+      base_url = config.app.get("azure_base_url", "")
+      api_version = config.app.get("azure_api_version", "2024-02-15-preview")
+    elif llm_provider == "gemini":
+      api_key = config.app.get("gemini_api_key")
+      model_name = config.app.get("gemini_model_name")
+      base_url = "***"
+    elif llm_provider == "qwen":
+      api_key = config.app.get("qwen_api_key")
+      model_name = config.app.get("qwen_model_name")
+      base_url = "***"
+    elif llm_provider == "cloudflare":
+      api_key = config.app.get("cloudflare_api_key")
+      model_name = config.app.get("cloudflare_model_name")
+      account_id = config.app.get("cloudflare_account_id")
+      base_url = "***"
+    elif llm_provider == "deepseek":
+      api_key = config.app.get("deepseek_api_key")
+      model_name = config.app.get("deepseek_model_name")
+      base_url = config.app.get("deepseek_base_url")
+      if not base_url:
+        base_url = "https://api.deepseek.com"
+    elif llm_provider == "ernie":
+      api_key = config.app.get("ernie_api_key")
+      secret_key = config.app.get("ernie_secret_key")
+      base_url = config.app.get("ernie_base_url")
+      model_name = "***"
+      if not secret_key:
+        raise ValueError(f"{llm_provider}: secret_key is not set, please set it in the config.toml file.")
     else:
-        api_version = ""  # for azure
-        if llm_provider == "moonshot":
-            api_key = config.app.get("moonshot_api_key")
-            model_name = config.app.get("moonshot_model_name")
-            base_url = "https://api.moonshot.cn/v1"
-        elif llm_provider == "ollama":
-            # api_key = config.app.get("openai_api_key")
-            api_key = "ollama"  # any string works but you are required to have one
-            model_name = config.app.get("ollama_model_name")
-            base_url = config.app.get("ollama_base_url", "")
-            if not base_url:
-                base_url = "http://localhost:11434/v1"
-        elif llm_provider == "openai":
-            api_key = config.app.get("openai_api_key")
-            model_name = config.app.get("openai_model_name")
-            base_url = config.app.get("openai_base_url", "")
-            if not base_url:
-                base_url = "https://api.openai.com/v1"
-        elif llm_provider == "oneapi":
-            api_key = config.app.get("oneapi_api_key")
-            model_name = config.app.get("oneapi_model_name")
-            base_url = config.app.get("oneapi_base_url", "")
-        elif llm_provider == "azure":
-            api_key = config.app.get("azure_api_key")
-            model_name = config.app.get("azure_model_name")
-            base_url = config.app.get("azure_base_url", "")
-            api_version = config.app.get("azure_api_version", "2024-02-15-preview")
-        elif llm_provider == "gemini":
-            api_key = config.app.get("gemini_api_key")
-            model_name = config.app.get("gemini_model_name")
-            base_url = "***"
-        elif llm_provider == "qwen":
-            api_key = config.app.get("qwen_api_key")
-            model_name = config.app.get("qwen_model_name")
-            base_url = "***"
-        elif llm_provider == "cloudflare":
-            api_key = config.app.get("cloudflare_api_key")
-            model_name = config.app.get("cloudflare_model_name")
-            account_id = config.app.get("cloudflare_account_id")
-            base_url = "***"
-        elif llm_provider == "deepseek":
-            api_key = config.app.get("deepseek_api_key")
-            model_name = config.app.get("deepseek_model_name")
-            base_url = config.app.get("deepseek_base_url")
-            if not base_url:
-                base_url = "https://api.deepseek.com"
-        elif llm_provider == "ernie":
-            api_key = config.app.get("ernie_api_key")
-            secret_key = config.app.get("ernie_secret_key")
-            base_url = config.app.get("ernie_base_url")
-            model_name = "***"
-            if not secret_key:
-                raise ValueError(
-                    f"{llm_provider}: secret_key is not set, please set it in the config.toml file."
-                )
+      raise ValueError("llm_provider is not set, please set it in the config.toml file.")
+
+    if not api_key:
+      raise ValueError(f"{llm_provider}: api_key is not set, please set it in the config.toml file.")
+    if not model_name:
+      raise ValueError(f"{llm_provider}: model_name is not set, please set it in the config.toml file.")
+    if not base_url:
+      raise ValueError(f"{llm_provider}: base_url is not set, please set it in the config.toml file.")
+
+    if llm_provider == "qwen":
+      import dashscope
+      from dashscope.api_entities.dashscope_response import GenerationResponse
+
+      dashscope.api_key = api_key
+      response = dashscope.Generation.call(model=model_name, messages=[{"role": "user", "content": prompt}])
+      if response:
+        if isinstance(response, GenerationResponse):
+          status_code = response.status_code
+          if status_code != 200:
+            raise Exception(f'[{llm_provider}] returned an error response: "{response}"')
+
+          content = response["output"]["text"]
+          return content.replace("\n", "")
         else:
-            raise ValueError(
-                "llm_provider is not set, please set it in the config.toml file."
-            )
+          raise Exception(f'[{llm_provider}] returned an invalid response: "{response}"')
+      else:
+        raise Exception(f"[{llm_provider}] returned an empty response")
 
-        if not api_key:
-            raise ValueError(
-                f"{llm_provider}: api_key is not set, please set it in the config.toml file."
-            )
-        if not model_name:
-            raise ValueError(
-                f"{llm_provider}: model_name is not set, please set it in the config.toml file."
-            )
-        if not base_url:
-            raise ValueError(
-                f"{llm_provider}: base_url is not set, please set it in the config.toml file."
-            )
+    if llm_provider == "gemini":
+      import google.generativeai as genai
 
-        if llm_provider == "qwen":
-            import dashscope
-            from dashscope.api_entities.dashscope_response import GenerationResponse
+      genai.configure(api_key=api_key, transport="rest")
 
-            dashscope.api_key = api_key
-            response = dashscope.Generation.call(
-                model=model_name, messages=[{"role": "user", "content": prompt}]
-            )
-            if response:
-                if isinstance(response, GenerationResponse):
-                    status_code = response.status_code
-                    if status_code != 200:
-                        raise Exception(
-                            f'[{llm_provider}] returned an error response: "{response}"'
-                        )
+      safety_settings = {
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+      }
 
-                    content = response["output"]["text"]
-                    return content.replace("\n", "")
-                else:
-                    raise Exception(
-                        f'[{llm_provider}] returned an invalid response: "{response}"'
-                    )
-            else:
-                raise Exception(f"[{llm_provider}] returned an empty response")
+      model = genai.GenerativeModel(
+        model_name=model_name,
+        safety_settings=safety_settings,
+      )
 
-        if llm_provider == "gemini":
-            import google.generativeai as genai
+      try:
+        response = model.generate_content(prompt)
+        return response.text
+      except Exception as err:
+        return handle_exception(err)
 
-            genai.configure(api_key=api_key, transport="rest")
+    if llm_provider == "cloudflare":
+      import requests
 
-            safety_settings = {
-                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            }
+      response = requests.post(
+        f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model_name}",
+        headers={"Authorization": f"Bearer {api_key}"},
+        json={
+          "messages": [
+            {"role": "system", "content": "You are a friendly assistant"},
+            {"role": "user", "content": prompt},
+          ]
+        },
+      )
+      result = response.json()
+      logger.info(result)
+      return result["result"]["response"]
 
-            model = genai.GenerativeModel(
-                model_name=model_name,
-                safety_settings=safety_settings,
-            )
+    if llm_provider == "ernie":
+      import requests
 
-            try:
-                response = model.generate_content(prompt)
-                return response.text
-            except Exception as err:
-                return handle_exception(err)
+      params = {
+        "grant_type": "client_credentials",
+        "client_id": api_key,
+        "client_secret": secret_key,
+      }
+      access_token = requests.post("https://aip.baidubce.com/oauth/2.0/token", params=params).json().get("access_token")
+      url = f"{base_url}?access_token={access_token}"
 
-        if llm_provider == "cloudflare":
-            import requests
-
-            response = requests.post(
-                f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model_name}",
-                headers={"Authorization": f"Bearer {api_key}"},
-                json={
-                    "messages": [
-                        {"role": "system", "content": "You are a friendly assistant"},
-                        {"role": "user", "content": prompt},
-                    ]
-                },
-            )
-            result = response.json()
-            logger.info(result)
-            return result["result"]["response"]
-
-        if llm_provider == "ernie":
-            import requests
-
-            params = {
-                "grant_type": "client_credentials",
-                "client_id": api_key,
-                "client_secret": secret_key,
-            }
-            access_token = (
-                requests.post("https://aip.baidubce.com/oauth/2.0/token", params=params)
-                .json()
-                .get("access_token")
-            )
-            url = f"{base_url}?access_token={access_token}"
-
-            payload = json.dumps(
-                {
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.5,
-                    "top_p": 0.8,
-                    "penalty_score": 1,
-                    "disable_search": False,
-                    "enable_citation": False,
-                    "response_format": "text",
-                }
-            )
-            headers = {"Content-Type": "application/json"}
-
-            response = requests.request(
-                "POST", url, headers=headers, data=payload
-            ).json()
-            return response.get("result")
-
-        if llm_provider == "azure":
-            client = AzureOpenAI(
-                api_key=api_key,
-                api_version=api_version,
-                azure_endpoint=base_url,
-            )
-        else:
-            client = OpenAI(
-                api_key=api_key,
-                base_url=base_url,
-            )
-
-        response = client.chat.completions.create(
-            model=model_name, messages=[{"role": "user", "content": prompt}]
-        )
-        if response:
-            if isinstance(response, ChatCompletion):
-                content = response.choices[0].message.content
-            else:
-                raise Exception(
-                    f'[{llm_provider}] returned an invalid response: "{response}", please check your network '
-                    f"connection and try again."
-                )
-        else:
-            raise Exception(
-                f"[{llm_provider}] returned an empty response, please check your network connection and try again."
-            )
-
-    return content.replace("\n", "")
-
-
-def _generate_response_video(
-    prompt: str, llm_provider_video: str, video_file: Union[str, TextIO]
-) -> str:
-    """
-    多模态能力大模型
-    """
-    if llm_provider_video == "gemini":
-        api_key = config.app.get("gemini_api_key")
-        model_name = config.app.get("gemini_model_name")
-        base_url = "***"
-    else:
-        raise ValueError("llm_provider 未设置，请在 config.toml 文件中进行设置。")
-
-    if llm_provider_video == "gemini":
-        import google.generativeai as genai
-
-        genai.configure(api_key=api_key, transport="rest")
-
-        safety_settings = {
-            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+      payload = json.dumps(
+        {
+          "messages": [{"role": "user", "content": prompt}],
+          "temperature": 0.5,
+          "top_p": 0.8,
+          "penalty_score": 1,
+          "disable_search": False,
+          "enable_citation": False,
+          "response_format": "text",
         }
+      )
+      headers = {"Content-Type": "application/json"}
 
-        model = genai.GenerativeModel(
-            model_name=model_name,
-            safety_settings=safety_settings,
+      response = requests.request("POST", url, headers=headers, data=payload).json()
+      return response.get("result")
+
+    if llm_provider == "azure":
+      client = AzureOpenAI(
+        api_key=api_key,
+        api_version=api_version,
+        azure_endpoint=base_url,
+      )
+    else:
+      client = OpenAI(
+        api_key=api_key,
+        base_url=base_url,
+      )
+
+    response = client.chat.completions.create(model=model_name, messages=[{"role": "user", "content": prompt}])
+    if response:
+      if isinstance(response, ChatCompletion):
+        content = response.choices[0].message.content
+      else:
+        raise Exception(
+          f'[{llm_provider}] returned an invalid response: "{response}", please check your network '
+          f"connection and try again."
         )
+    else:
+      raise Exception(
+        f"[{llm_provider}] returned an empty response, please check your network connection and try again."
+      )
 
-        try:
-            response = model.generate_content([prompt, video_file])
-            return response.text
-        except Exception as err:
-            return handle_exception(err)
+  return content.replace("\n", "")
+
+
+def _generate_response_video(prompt: str, llm_provider_video: str, video_file: Union[str, TextIO]) -> str:
+  """
+  多模态能力大模型
+  """
+  if llm_provider_video == "gemini":
+    api_key = config.app.get("gemini_api_key")
+    model_name = config.app.get("gemini_model_name")
+    base_url = "***"
+  else:
+    raise ValueError("llm_provider 未设置，请在 config.toml 文件中进行设置。")
+
+  if llm_provider_video == "gemini":
+    import google.generativeai as genai
+
+    genai.configure(api_key=api_key, transport="rest")
+
+    safety_settings = {
+      HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+      HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+      HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+      HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+    }
+
+    model = genai.GenerativeModel(
+      model_name=model_name,
+      safety_settings=safety_settings,
+    )
+
+    try:
+      response = model.generate_content([prompt, video_file])
+      return response.text
+    except Exception as err:
+      return handle_exception(err)
 
 
 def compress_video(input_path: str, output_path: str):
-    """
-    压缩视频文件
-    Args:
-        input_path: 输入视频文件路径
-        output_path: 输出压缩后的视频文件路径
-    """
-    # 如果压缩后的视频文件已经存在，则直接使用
-    if os.path.exists(output_path):
-        logger.info(f"压缩视频文件已存在: {output_path}")
-        return
+  """
+  压缩视频文件
+  Args:
+      input_path: 输入视频文件路径
+      output_path: 输出压缩后的视频文件路径
+  """
+  # 如果压缩后的视频文件已经存在，则直接使用
+  if os.path.exists(output_path):
+    logger.info(f"压缩视频文件已存在: {output_path}")
+    return
 
-    try:
-        clip = VideoFileClip(input_path)
-        clip.write_videofile(
-            output_path,
-            codec="libx264",
-            audio_codec="aac",
-            bitrate="500k",
-            audio_bitrate="128k",
-        )
-    except subprocess.CalledProcessError as e:
-        logger.error(f"视频压缩失败: {e}")
-        raise
+  try:
+    clip = VideoFileClip(input_path)
+    clip.write_videofile(
+      output_path,
+      codec="libx264",
+      audio_codec="aac",
+      bitrate="500k",
+      audio_bitrate="128k",
+    )
+  except subprocess.CalledProcessError as e:
+    logger.error(f"视频压缩失败: {e}")
+    raise
 
 
 def generate_script(
-    video_path: str,
-    video_plot: str,
-    video_name: str,
-    language: str = "zh-CN",
-    progress_callback=None,
+  video_path: str,
+  video_plot: str,
+  video_name: str,
+  language: str = "zh-CN",
+  progress_callback=None,
 ) -> str:
-    """
-    生成视频剪辑脚本
-    Args:
-        video_path: 视频文件路径
-        video_plot: 视频剧情内容
-        video_name: 视频名称
-        language: 语言
-        progress_callback: 进度回调函数
+  """
+  生成视频剪辑脚本
+  Args:
+      video_path: 视频文件路径
+      video_plot: 视频剧情内容
+      video_name: 视频名称
+      language: 语言
+      progress_callback: 进度回调函数
 
-    Returns:
-        str: 生成的脚本
-    """
-    try:
-        # 1. 压缩视频
-        compressed_video_path = f"{os.path.splitext(video_path)[0]}_compressed.mp4"
-        compress_video(video_path, compressed_video_path)
+  Returns:
+      str: 生成的脚本
+  """
+  try:
+    # 1. 压缩视频
+    compressed_video_path = f"{os.path.splitext(video_path)[0]}_compressed.mp4"
+    compress_video(video_path, compressed_video_path)
 
-        # 在关键步骤更新进度
-        if progress_callback:
-            progress_callback(15, "压缩完成")  # 例如,在压缩视频后
+    # 在关键步骤更新进度
+    if progress_callback:
+      progress_callback(15, "压缩完成")  # 例如,在压缩视频后
 
-        # 2. 转录视频
-        transcription = gemini_video_transcription(
-            video_name=video_name,
-            video_path=compressed_video_path,
-            language=language,
-            llm_provider_video=config.app["video_llm_provider"],
-            progress_callback=progress_callback,
-        )
-        if progress_callback:
-            progress_callback(60, "生成解说文案...")  # 例如,在转录视频后
+    # 2. 转录视频
+    transcription = gemini_video_transcription(
+      video_name=video_name,
+      video_path=compressed_video_path,
+      language=language,
+      llm_provider_video=config.app["video_llm_provider"],
+      progress_callback=progress_callback,
+    )
+    if progress_callback:
+      progress_callback(60, "生成解说文案...")  # 例如,在转录视频后
 
-        # 3. 编写解说文案
-        script = writing_short_play(
-            video_plot, video_name, config.app["llm_provider"], count=300
-        )
+    # 3. 编写解说文案
+    script = writing_short_play(video_plot, video_name, config.app["llm_provider"], count=300)
 
-        # 在关键步骤更新进度
-        if progress_callback:
-            progress_callback(70, "匹配画面...")  # 例如,在生成脚本后
+    # 在关键步骤更新进度
+    if progress_callback:
+      progress_callback(70, "匹配画面...")  # 例如,在生成脚本后
 
-        # 4. 文案匹配画面
-        if transcription != "":
-            matched_script = screen_matching(
-                huamian=transcription,
-                wenan=script,
-                llm_provider=config.app["video_llm_provider"],
-            )
-            # 在关键步骤更新进度
-            if progress_callback:
-                progress_callback(80, "匹配成功")
-            return matched_script
-        else:
-            return ""
-    except Exception as e:
-        handle_exception(e)
-        raise
+    # 4. 文案匹配画面
+    if transcription != "":
+      matched_script = screen_matching(
+        huamian=transcription,
+        wenan=script,
+        llm_provider=config.app["video_llm_provider"],
+      )
+      # 在关键步骤更新进度
+      if progress_callback:
+        progress_callback(80, "匹配成功")
+      return matched_script
+    else:
+      return ""
+  except Exception as e:
+    handle_exception(e)
+    raise
 
 
 def gemini_video_transcription(
-    video_name: str,
-    video_path: str,
-    language: str,
-    llm_provider_video: str,
-    progress_callback=None,
+  video_name: str,
+  video_path: str,
+  language: str,
+  llm_provider_video: str,
+  progress_callback=None,
 ):
-    """
-    使用 gemini-1.5-xxx 进行视频画面转录
-    """
-    api_key = config.app.get("gemini_api_key")
-    gemini.configure(api_key=api_key)
+  """
+  使用 gemini-1.5-xxx 进行视频画面转录
+  """
+  api_key = config.app.get("gemini_api_key")
+  gemini.configure(api_key=api_key)
 
-    prompt = """
+  prompt = """
     请转录音频，包括时间戳，并提供视觉描述，然后以 JSON 格式输出，当前视频中使用的语言为 %s。
 
     在转录视频时，请通过确保以下条件来完成转录：
@@ -517,51 +479,47 @@ def gemini_video_transcription(
     4. 请以严格的 JSON 格式返回数据，不要包含任何注释、标记或其他字符。数据应符合 JSON 语法，可以被 json.loads() 函数直接解析， 不要添加 ```json 或其他标记。
     """ % (language, language)
 
-    logger.debug(f"视频名称: {video_name}")
-    try:
-        if progress_callback:
-            progress_callback(20, "上传视频至 Google cloud")
-        gemini_video_file = gemini.upload_file(video_path)
-        logger.debug(
-            f"视频 {gemini_video_file.name} 上传至 Google cloud 成功, 开始解析..."
-        )
-        while gemini_video_file.state.name == "PROCESSING":
-            gemini_video_file = gemini.get_file(gemini_video_file.name)
-            if progress_callback:
-                progress_callback(30, "上传成功, 开始解析")  # 更新进度为20%
-        if gemini_video_file.state.name == "FAILED":
-            raise ValueError(gemini_video_file.state.name)
-        elif gemini_video_file.state.name == "ACTIVE":
-            if progress_callback:
-                progress_callback(40, "解析完成, 开始转录...")  # 更新进度为30%
-            logger.debug("解析完成, 开始转录...")
-    except ResumableUploadError:
-        logger.error(
-            f"上传视频至 Google cloud 失败, 用户的位置信息不支持用于该API; \n{traceback.format_exc()}"
-        )
-        return False
-    except FailedPrecondition:
-        logger.error(f"400 用户位置不支持 Google API 使用。\n{traceback.format_exc()}")
-        return False
-
+  logger.debug(f"视频名称: {video_name}")
+  try:
     if progress_callback:
-        progress_callback(50, "开始转录")
-    try:
-        response = _generate_response_video(
-            prompt=prompt,
-            llm_provider_video=llm_provider_video,
-            video_file=gemini_video_file,
-        )
-        logger.success("视频转录成功")
-        logger.debug(response)
-        print(type(response))
-        return response
-    except Exception as err:
-        return handle_exception(err)
+      progress_callback(20, "上传视频至 Google cloud")
+    gemini_video_file = gemini.upload_file(video_path)
+    logger.debug(f"视频 {gemini_video_file.name} 上传至 Google cloud 成功, 开始解析...")
+    while gemini_video_file.state.name == "PROCESSING":
+      gemini_video_file = gemini.get_file(gemini_video_file.name)
+      if progress_callback:
+        progress_callback(30, "上传成功, 开始解析")  # 更新进度为20%
+    if gemini_video_file.state.name == "FAILED":
+      raise ValueError(gemini_video_file.state.name)
+    elif gemini_video_file.state.name == "ACTIVE":
+      if progress_callback:
+        progress_callback(40, "解析完成, 开始转录...")  # 更新进度为30%
+      logger.debug("解析完成, 开始转录...")
+  except ResumableUploadError:
+    logger.error(f"上传视频至 Google cloud 失败, 用户的位置信息不支持用于该API; \n{traceback.format_exc()}")
+    return False
+  except FailedPrecondition:
+    logger.error(f"400 用户位置不支持 Google API 使用。\n{traceback.format_exc()}")
+    return False
+
+  if progress_callback:
+    progress_callback(50, "开始转录")
+  try:
+    response = _generate_response_video(
+      prompt=prompt,
+      llm_provider_video=llm_provider_video,
+      video_file=gemini_video_file,
+    )
+    logger.success("视频转录成功")
+    logger.debug(response)
+    print(type(response))
+    return response
+  except Exception as err:
+    return handle_exception(err)
 
 
 def generate_terms(video_subject: str, video_script: str, amount: int = 5) -> List[str]:
-    prompt = f"""
+  prompt = f"""
 # Role: Video Search Terms Generator
 
 ## Goals:
@@ -587,60 +545,56 @@ Generate {amount} search terms for stock videos, depending on the subject of a v
 Please note that you must use English for generating video search terms; Chinese is not accepted.
 """.strip()
 
-    logger.info(f"subject: {video_subject}")
+  logger.info(f"subject: {video_subject}")
 
-    search_terms = []
-    response = ""
-    for i in range(_max_retries):
-        try:
-            response = _generate_response(prompt)
-            search_terms = json.loads(response)
-            if not isinstance(search_terms, list) or not all(
-                isinstance(term, str) for term in search_terms
-            ):
-                logger.error("response is not a list of strings.")
-                continue
+  search_terms = []
+  response = ""
+  for i in range(_max_retries):
+    try:
+      response = _generate_response(prompt)
+      search_terms = json.loads(response)
+      if not isinstance(search_terms, list) or not all(isinstance(term, str) for term in search_terms):
+        logger.error("response is not a list of strings.")
+        continue
 
-        except Exception as e:
+    except Exception as e:
+      logger.warning(f"failed to generate video terms: {str(e)}")
+      if response:
+        match = re.search(r"\[.*]", response)
+        if match:
+          try:
+            search_terms = json.loads(match.group())
+          except Exception as e:
             logger.warning(f"failed to generate video terms: {str(e)}")
-            if response:
-                match = re.search(r"\[.*]", response)
-                if match:
-                    try:
-                        search_terms = json.loads(match.group())
-                    except Exception as e:
-                        logger.warning(f"failed to generate video terms: {str(e)}")
-                        pass
+            pass
 
-        if search_terms and len(search_terms) > 0:
-            break
-        if i < _max_retries:
-            logger.warning(f"failed to generate video terms, trying again... {i + 1}")
+    if search_terms and len(search_terms) > 0:
+      break
+    if i < _max_retries:
+      logger.warning(f"failed to generate video terms, trying again... {i + 1}")
 
-    logger.success(f"completed: \n{search_terms}")
-    return search_terms
+  logger.success(f"completed: \n{search_terms}")
+  return search_terms
 
 
-def gemini_video2json(
-    video_origin_name: str, video_origin_path: str, video_plot: str, language: str
-) -> str:
-    """
-    使用 gemini-1.5-pro 进行影视解析
-    Args:
-        video_origin_name: str - 影视作品的原始名称
-        video_origin_path: str - 影视作品的原始路径
-        video_plot: str - 影视作品的简介或剧情概述
+def gemini_video2json(video_origin_name: str, video_origin_path: str, video_plot: str, language: str) -> str:
+  """
+  使用 gemini-1.5-pro 进行影视解析
+  Args:
+      video_origin_name: str - 影视作品的原始名称
+      video_origin_path: str - 影视作品的原始路径
+      video_plot: str - 影视作品的简介或剧情概述
 
-    Return:
-        str - 解析后的 JSON 格式字符串
-    """
-    api_key = config.app.get("gemini_api_key")
-    model_name = config.app.get("gemini_model_name")
+  Return:
+      str - 解析后的 JSON 格式字符串
+  """
+  api_key = config.app.get("gemini_api_key")
+  model_name = config.app.get("gemini_model_name")
 
-    gemini.configure(api_key=api_key)
-    model = gemini.GenerativeModel(model_name=model_name)
+  gemini.configure(api_key=api_key)
+  model = gemini.GenerativeModel(model_name=model_name)
 
-    prompt = """
+  prompt = """
 **角色设定：**
 你是一位影视解说专家，擅长根据剧情生成引人入胜的短视频解说文案，特别熟悉适用于TikTok/抖音风格的快速、抓人视频解说。
 
@@ -686,38 +640,38 @@ def gemini_video2json(
 
 """ % (language, video_plot)
 
-    logger.debug(f"视频名称: {video_origin_name}")
-    # try:
-    gemini_video_file = gemini.upload_file(video_origin_path)
-    logger.debug(f"上传视频至 Google cloud 成功: {gemini_video_file.name}")
-    while gemini_video_file.state.name == "PROCESSING":
-        import time
+  logger.debug(f"视频名称: {video_origin_name}")
+  # try:
+  gemini_video_file = gemini.upload_file(video_origin_path)
+  logger.debug(f"上传视频至 Google cloud 成功: {gemini_video_file.name}")
+  while gemini_video_file.state.name == "PROCESSING":
+    import time
 
-        time.sleep(1)
-        gemini_video_file = gemini.get_file(gemini_video_file.name)
-        logger.debug(f"视频当前状态(ACTIVE才可用): {gemini_video_file.state.name}")
-    if gemini_video_file.state.name == "FAILED":
-        raise ValueError(gemini_video_file.state.name)
-    # except Exception as err:
-    #     logger.error(f"上传视频至 Google cloud 失败, 请检查 VPN 配置和 APIKey 是否正确 \n{traceback.format_exc()}")
-    #     raise TimeoutError(f"上传视频至 Google cloud 失败, 请检查 VPN 配置和 APIKey 是否正确; {err}")
+    time.sleep(1)
+    gemini_video_file = gemini.get_file(gemini_video_file.name)
+    logger.debug(f"视频当前状态(ACTIVE才可用): {gemini_video_file.state.name}")
+  if gemini_video_file.state.name == "FAILED":
+    raise ValueError(gemini_video_file.state.name)
+  # except Exception as err:
+  #     logger.error(f"上传视频至 Google cloud 失败, 请检查 VPN 配置和 APIKey 是否正确 \n{traceback.format_exc()}")
+  #     raise TimeoutError(f"上传视频至 Google cloud 失败, 请检查 VPN 配置和 APIKey 是否正确; {err}")
 
-    streams = model.generate_content([prompt, gemini_video_file], stream=True)
-    response = []
-    for chunk in streams:
-        response.append(chunk.text)
+  streams = model.generate_content([prompt, gemini_video_file], stream=True)
+  response = []
+  for chunk in streams:
+    response.append(chunk.text)
 
-    response = "".join(response)
-    logger.success(f"llm response: \n{response}")
+  response = "".join(response)
+  logger.success(f"llm response: \n{response}")
 
-    return response
+  return response
 
 
 def writing_movie(video_plot, video_name, llm_provider):
-    """
-    影视解说（电影解说）
-    """
-    prompt = f"""
+  """
+  影视解说（电影解说）
+  """
+  prompt = f"""
     **角色设定：**
     你是一名有10年经验的影视解说文案的创作者，
     下面是关于如何写解说文案的方法 {Method}，请认真阅读它，之后我会给你一部影视作品的名称，然后让你写一篇文案
@@ -730,26 +684,24 @@ def writing_movie(video_plot, video_name, llm_provider):
     3. 仅输出解说文案，不输出任何其他内容。
     4. 不要包含小标题，每个段落以 \n 进行分隔。
     """
-    try:
-        response = _generate_response(prompt, llm_provider)
-        logger.success("解说文案生成成功")
-        return response
-    except Exception as err:
-        return handle_exception(err)
+  try:
+    response = _generate_response(prompt, llm_provider)
+    logger.success("解说文案生成成功")
+    return response
+  except Exception as err:
+    return handle_exception(err)
 
 
-def writing_short_play(
-    video_plot: str, video_name: str, llm_provider: str, count: int = 500
-):
-    """
-    影视解说（短剧解说）
-    """
-    if not video_plot:
-        raise ValueError("短剧的简介不能为空")
-    if not video_name:
-        raise ValueError("短剧名称不能为空")
+def writing_short_play(video_plot: str, video_name: str, llm_provider: str, count: int = 500):
+  """
+  影视解说（短剧解说）
+  """
+  if not video_plot:
+    raise ValueError("短剧的简介不能为空")
+  if not video_name:
+    raise ValueError("短剧名称不能为空")
 
-    prompt = f"""
+  prompt = f"""
     **角色设定：**
     你是一名有10年经验的短剧解说文案的创作者，
     下面是关于如何写解说文案的方法 {Method}，请认真阅读它，之后我会给你一部短剧作品的简介，然后让你写一篇解说文案
@@ -762,25 +714,25 @@ def writing_short_play(
     3. 仅输出解说文案，不输出任何其他内容。
     4. 不要包含小标题，每个段落以 \\n 进行分隔。
     """
-    try:
-        response = _generate_response(prompt, llm_provider)
-        logger.success("解说文案生成成功")
-        logger.debug(response)
-        return response
-    except Exception as err:
-        return handle_exception(err)
+  try:
+    response = _generate_response(prompt, llm_provider)
+    logger.success("解说文案生成成功")
+    logger.debug(response)
+    return response
+  except Exception as err:
+    return handle_exception(err)
 
 
 def screen_matching(huamian: str, wenan: str, llm_provider: str):
-    """
-    画面匹配（一次性匹配）
-    """
-    if not huamian:
-        raise ValueError("画面不能为空")
-    if not wenan:
-        raise ValueError("文案不能为空")
+  """
+  画面匹配（一次性匹配）
+  """
+  if not huamian:
+    raise ValueError("画面不能为空")
+  if not wenan:
+    raise ValueError("文案不能为空")
 
-    prompt = """
+  prompt = """
     你是一名有10年经验的影视解说创作者，
     你的任务是根据视频转录脚本和解说文案，匹配出每段解说文案对应的画面时间戳, 结果以 json 格式输出。
 
@@ -814,39 +766,39 @@ def screen_matching(huamian: str, wenan: str, llm_provider: str):
     - 请以严格的 JSON 格式返回数据，不要包含任何注释、标记或其他字符。数据应符合 JSON 语法，可以被 json.loads() 函数直接解析， 不要添加 ```json 或其他标记。
     """ % (huamian, wenan)
 
-    try:
-        response = _generate_response(prompt, llm_provider)
-        logger.success("匹配成功")
-        logger.debug(response)
-        return response
-    except Exception as err:
-        return handle_exception(err)
+  try:
+    response = _generate_response(prompt, llm_provider)
+    logger.success("匹配成功")
+    logger.debug(response)
+    return response
+  except Exception as err:
+    return handle_exception(err)
 
 
 if __name__ == "__main__":
-    # 1. 视频转录
-    video_subject = "第二十条之无罪释放"
-    video_path = "/Users/apple/Desktop/home/pipedream_project/downloads/jianzao.mp4"
-    language = "zh-CN"
-    gemini_video_transcription(
-        video_name=video_subject,
-        video_path=video_path,
-        language=language,
-        progress_callback=print,
-        llm_provider_video="gemini",
-    )
+  # 1. 视频转录
+  video_subject = "第二十条之无罪释放"
+  video_path = "/Users/apple/Desktop/home/pipedream_project/downloads/jianzao.mp4"
+  language = "zh-CN"
+  gemini_video_transcription(
+    video_name=video_subject,
+    video_path=video_path,
+    language=language,
+    progress_callback=print,
+    llm_provider_video="gemini",
+  )
 
-    # # 2. 解说文案
-    # video_path = "/Users/apple/Desktop/home/NarratoAI/resource/videos/1.mp4"
-    # # video_path = "E:\\projects\\NarratoAI\\resource\\videos\\1.mp4"
-    # video_plot = """
-    #     李自忠拿着儿子李牧名下的存折，去银行取钱给儿子救命，却被要求证明"你儿子是你儿子"。
-    # 走投无路时碰到银行被抢劫，劫匪给了他两沓钱救命，李自忠却因此被银行以抢劫罪起诉，并顶格判处20年有期徒刑。
-    # 苏醒后的李牧坚决为父亲做无罪辩护，面对银行的顶级律师团队，他一个法学院大一学生，能否力挽狂澜，创作奇迹？挥法律之利剑 ，持正义之天平！
-    # """
-    # res = generate_script(video_path, video_plot, video_name="第二十条之无罪释放")
-    # # res = generate_script(video_path, video_plot, video_name="海岸")
-    # print("脚本生成成功:\n", res)
-    # res = clean_model_output(res)
-    # aaa = json.loads(res)
-    # print(json.dumps(aaa, indent=2, ensure_ascii=False))
+  # # 2. 解说文案
+  # video_path = "/Users/apple/Desktop/home/NarratoAI/resource/videos/1.mp4"
+  # # video_path = "E:\\projects\\NarratoAI\\resource\\videos\\1.mp4"
+  # video_plot = """
+  #     李自忠拿着儿子李牧名下的存折，去银行取钱给儿子救命，却被要求证明"你儿子是你儿子"。
+  # 走投无路时碰到银行被抢劫，劫匪给了他两沓钱救命，李自忠却因此被银行以抢劫罪起诉，并顶格判处20年有期徒刑。
+  # 苏醒后的李牧坚决为父亲做无罪辩护，面对银行的顶级律师团队，他一个法学院大一学生，能否力挽狂澜，创作奇迹？挥法律之利剑 ，持正义之天平！
+  # """
+  # res = generate_script(video_path, video_plot, video_name="第二十条之无罪释放")
+  # # res = generate_script(video_path, video_plot, video_name="海岸")
+  # print("脚本生成成功:\n", res)
+  # res = clean_model_output(res)
+  # aaa = json.loads(res)
+  # print(json.dumps(aaa, indent=2, ensure_ascii=False))

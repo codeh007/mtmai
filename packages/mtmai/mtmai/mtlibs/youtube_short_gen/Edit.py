@@ -1,5 +1,6 @@
-from moviepy.editor import VideoFileClip
-from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy import VideoFileClip
+
+# from moviepy.video.io.VideoFileClip import VideoFileClip
 
 # import subprocess
 

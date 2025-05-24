@@ -1,6 +1,6 @@
 # 来自: AI-Youtube-Shorts-Generator
 import cv2
-from moviepy.editor import *  # noqa
+from moviepy import *  # noqa
 from mtmai.mtlibs.youtube_short_gen.Speaker import Frames, detect_faces_and_speakers
 
 global Fps
