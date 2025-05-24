@@ -2,7 +2,7 @@ import copy
 import json
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Optional
 
 from google.adk.events.event import Event
@@ -24,14 +24,19 @@ from sqlalchemy.types import DateTime, PickleType, String, TypeDecorator
 from typing_extensions import override
 from tzlocal import get_localzone
 
-logger = logging.getLogger("google_adk." + __name__)
+from mtmai.db.db import with_db_retry
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_KEY_LENGTH = 128
 DEFAULT_MAX_VARCHAR_LENGTH = 256
 
 
 class DynamicJSON(TypeDecorator):
-  """A JSON-like type that uses JSONB on PostgreSQL and TEXT with JSON serialization for other databases."""
+  """A JSON-like type that uses JSONB on PostgreSQL and TEXT with JSON
+
+  serialization for other databases.
+  """
 
   impl = Text  # Default implementation is TEXT
 
@@ -125,7 +130,7 @@ class StorageEvent(Base):
   __table_args__ = (
     ForeignKeyConstraint(
       ["app_name", "user_id", "session_id"],
-      ["adk_sessions.app_name", "adk_sessions.user_id", "adk_sessions.id"],
+      ["sessions.app_name", "sessions.user_id", "sessions.id"],
       ondelete="CASCADE",
     ),
   )
@@ -152,6 +157,10 @@ class StorageAppState(Base):
   update_time: Mapped[DateTime] = mapped_column(DateTime(), default=func.now(), onupdate=func.now())
 
 
+class Base(DeclarativeBase):
+  """Base class for database tables."""
+
+
 class StorageUserState(Base):
   """Represents a user state stored in the database."""
 
@@ -167,13 +176,22 @@ class GomtmDatabaseSessionService(BaseSessionService):
   """A session service that uses a database for storage."""
 
   def __init__(self, db_url: str):
-    """Initializes the database session service with a database URL."""
+    """
+    Args:
+        db_url: The database URL to connect to.
+    """
     # 1. Create DB engine for db connection
     # 2. Create all tables based on schema
     # 3. Initialize all properties
 
     try:
-      db_engine = create_engine(db_url)
+      db_engine = create_engine(
+        db_url,
+        pool_pre_ping=True,  # 启用连接池预检
+        pool_recycle=3600,  # 一小时后回收连接
+        pool_size=5,  # 连接池大小
+        max_overflow=10,  # 最大溢出连接数
+      )
     except Exception as e:
       if isinstance(e, ArgumentError):
         raise ValueError(f"Invalid database URL format or argument '{db_url}'.") from e
@@ -190,14 +208,15 @@ class GomtmDatabaseSessionService(BaseSessionService):
     self.inspector = inspect(self.db_engine)
 
     # DB session factory method
-    self.database_session_factory: sessionmaker[DatabaseSessionFactory] = sessionmaker(bind=self.db_engine)
+    self.DatabaseSessionFactory: sessionmaker[DatabaseSessionFactory] = sessionmaker(bind=self.db_engine)
 
     # Uncomment to recreate DB every time
     # Base.metadata.drop_all(self.db_engine)
     Base.metadata.create_all(self.db_engine)
 
   @override
-  async def create_session(
+  @with_db_retry()
+  def create_session(
     self,
     *,
     app_name: str,
@@ -211,10 +230,10 @@ class GomtmDatabaseSessionService(BaseSessionService):
     # 4. Build the session object with generated id
     # 5. Return the session
 
-    with self.database_session_factory() as session_factory:
+    with self.DatabaseSessionFactory() as sessionFactory:
       # Fetch app and user states from storage
-      storage_app_state = session_factory.get(StorageAppState, (app_name))
-      storage_user_state = session_factory.get(StorageUserState, (app_name, user_id))
+      storage_app_state = sessionFactory.get(StorageAppState, (app_name))
+      storage_user_state = sessionFactory.get(StorageUserState, (app_name, user_id))
 
       app_state = storage_app_state.state if storage_app_state else {}
       user_state = storage_user_state.state if storage_user_state else {}
@@ -222,10 +241,10 @@ class GomtmDatabaseSessionService(BaseSessionService):
       # Create state tables if not exist
       if not storage_app_state:
         storage_app_state = StorageAppState(app_name=app_name, state={})
-        session_factory.add(storage_app_state)
+        sessionFactory.add(storage_app_state)
       if not storage_user_state:
         storage_user_state = StorageUserState(app_name=app_name, user_id=user_id, state={})
-        session_factory.add(storage_user_state)
+        sessionFactory.add(storage_user_state)
 
       # Extract state deltas
       app_state_delta, user_state_delta, session_state = _extract_state_delta(state)
@@ -247,10 +266,10 @@ class GomtmDatabaseSessionService(BaseSessionService):
         id=session_id,
         state=session_state,
       )
-      session_factory.add(storage_session)
-      session_factory.commit()
+      sessionFactory.add(storage_session)
+      sessionFactory.commit()
 
-      session_factory.refresh(storage_session)
+      sessionFactory.refresh(storage_session)
 
       # Merge states for response
       merged_state = _merge_state(app_state, user_state, session_state)
@@ -264,6 +283,7 @@ class GomtmDatabaseSessionService(BaseSessionService):
       return session
 
   @override
+  @with_db_retry()
   async def get_session(
     self,
     *,
@@ -275,29 +295,23 @@ class GomtmDatabaseSessionService(BaseSessionService):
     # 1. Get the storage session entry from session table
     # 2. Get all the events based on session id and filtering config
     # 3. Convert and return the session
-    with self.database_session_factory() as session_factory:
-      storage_session = session_factory.get(StorageSession, (app_name, user_id, session_id))
+    with self.DatabaseSessionFactory() as sessionFactory:
+      storage_session = sessionFactory.get(StorageSession, (app_name, user_id, session_id))
       if storage_session is None:
         return None
 
-      if config and config.after_timestamp:
-        after_dt = datetime.fromtimestamp(config.after_timestamp, tz=timezone.utc)
-        timestamp_filter = StorageEvent.timestamp > after_dt
-      else:
-        timestamp_filter = True
-
       storage_events = (
-        session_factory.query(StorageEvent)
+        sessionFactory.query(StorageEvent)
         .filter(StorageEvent.session_id == storage_session.id)
-        .filter(timestamp_filter)
+        .filter(StorageEvent.timestamp < config.after_timestamp if config else True)
+        .limit(config.num_recent_events if config else None)
         .order_by(StorageEvent.timestamp.asc())
-        .limit(config.num_recent_events if config and config.num_recent_events else None)
         .all()
       )
 
       # Fetch states from storage
-      storage_app_state = session_factory.get(StorageAppState, (app_name))
-      storage_user_state = session_factory.get(StorageUserState, (app_name, user_id))
+      storage_app_state = sessionFactory.get(StorageAppState, (app_name))
+      storage_user_state = sessionFactory.get(StorageUserState, (app_name, user_id))
 
       app_state = storage_app_state.state if storage_app_state else {}
       user_state = storage_user_state.state if storage_user_state else {}
@@ -336,10 +350,11 @@ class GomtmDatabaseSessionService(BaseSessionService):
     return session
 
   @override
+  @with_db_retry()
   async def list_sessions(self, *, app_name: str, user_id: str) -> ListSessionsResponse:
-    with self.database_session_factory() as session_factory:
+    with self.DatabaseSessionFactory() as sessionFactory:
       results = (
-        session_factory.query(StorageSession)
+        sessionFactory.query(StorageSession)
         .filter(StorageSession.app_name == app_name)
         .filter(StorageSession.user_id == user_id)
         .all()
@@ -357,17 +372,19 @@ class GomtmDatabaseSessionService(BaseSessionService):
       return ListSessionsResponse(sessions=sessions)
 
   @override
+  @with_db_retry()
   async def delete_session(self, app_name: str, user_id: str, session_id: str) -> None:
-    with self.database_session_factory() as session_factory:
+    with self.DatabaseSessionFactory() as sessionFactory:
       stmt = delete(StorageSession).where(
         StorageSession.app_name == app_name,
         StorageSession.user_id == user_id,
         StorageSession.id == session_id,
       )
-      session_factory.execute(stmt)
-      session_factory.commit()
+      sessionFactory.execute(stmt)
+      sessionFactory.commit()
 
   @override
+  @with_db_retry()
   async def append_event(self, session: Session, event: Event) -> Event:
     logger.info(f"Append event: {event} to session {session.id}")
 
@@ -377,21 +394,20 @@ class GomtmDatabaseSessionService(BaseSessionService):
     # 1. Check if timestamp is stale
     # 2. Update session attributes based on event config
     # 3. Store event to table
-    with self.database_session_factory() as session_factory:
-      storage_session = session_factory.get(StorageSession, (session.app_name, session.user_id, session.id))
+    with self.DatabaseSessionFactory() as sessionFactory:
+      storage_session = sessionFactory.get(StorageSession, (session.app_name, session.user_id, session.id))
 
       if storage_session.update_time.timestamp() > session.last_update_time:
         raise ValueError(
-          "The last_update_time provided in the session object"
-          f" {datetime.fromtimestamp(session.last_update_time):'%Y-%m-%d %H:%M:%S'} is"
-          " earlier than the update_time in the storage_session"
-          f" {storage_session.update_time:'%Y-%m-%d %H:%M:%S'}. Please check"
-          " if it is a stale session."
+          f"Session last_update_time "
+          f"{datetime.fromtimestamp(session.last_update_time):%Y-%m-%d %H:%M:%S} "
+          f"is later than the update_time in storage "
+          f"{storage_session.update_time:%Y-%m-%d %H:%M:%S}"
         )
 
       # Fetch states from storage
-      storage_app_state = session_factory.get(StorageAppState, (session.app_name))
-      storage_user_state = session_factory.get(StorageUserState, (session.app_name, session.user_id))
+      storage_app_state = sessionFactory.get(StorageAppState, (session.app_name))
+      storage_user_state = sessionFactory.get(StorageUserState, (session.app_name, session.user_id))
 
       app_state = storage_app_state.state if storage_app_state else {}
       user_state = storage_user_state.state if storage_user_state else {}
@@ -436,16 +452,16 @@ class GomtmDatabaseSessionService(BaseSessionService):
       if event.content:
         storage_event.content = _session_util.encode_content(event.content)
 
-      session_factory.add(storage_event)
+      sessionFactory.add(storage_event)
 
-      session_factory.commit()
-      session_factory.refresh(storage_session)
+      sessionFactory.commit()
+      sessionFactory.refresh(storage_session)
 
       # Update timestamp with commit time
       session.last_update_time = storage_session.update_time.timestamp()
 
     # Also update the in-memory session
-    await super().append_event(session=session, event=event)
+    super().append_event(session=session, event=event)
     return event
 
 
@@ -480,11 +496,6 @@ def _extract_state_delta(state: dict[str, Any]):
 def _merge_state(app_state, user_state, session_state):
   # Merge states for response
   merged_state = copy.deepcopy(session_state)
-  for key in app_state.keys():
-    merged_state[State.APP_PREFIX + key] = app_state[key]
-  for key in user_state.keys():
-    merged_state[State.USER_PREFIX + key] = user_state[key]
-  return merged_state
   for key in app_state.keys():
     merged_state[State.APP_PREFIX + key] = app_state[key]
   for key in user_state.keys():
