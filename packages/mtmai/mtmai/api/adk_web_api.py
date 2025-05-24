@@ -39,10 +39,11 @@ from google.adk.runners import Runner
 from google.adk.sessions import BaseSessionService
 from google.adk.sessions.session import Session
 from google.genai import types  # type: ignore
-from mtmai.core.config import settings
 from opentelemetry.sdk.trace import TracerProvider, export
 from pydantic import ValidationError
 from starlette.types import Lifespan
+
+from mtmai.core.config import settings
 
 BASE_DIR = Path(__file__).parent.resolve()
 ANGULAR_DIST_PATH = BASE_DIR / "browser"
@@ -543,7 +544,7 @@ def configure_adk_web_api(
     # 新增代码
     if not session:
       logger.info(f"New session created: {req.session_id}")
-      session = session_service.create_session(
+      session = await session_service.create_session(
         app_name=app_id,
         user_id=user_id,
         state={},
