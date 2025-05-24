@@ -1,15 +1,13 @@
 import os
-import time
 from datetime import datetime
 from typing import AsyncGenerator, List, override
 
 from google.adk.agents import LlmAgent
 from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event, EventActions
+from google.adk.events import Event
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import types  # noqa
 from mtmai.agents.open_deep_research.open_deep_research import AdkOpenDeepResearch
-from mtmai.agents.shortvideo_agent.shortvideo_prompts import SHORTVIDEO_PROMPT
 from mtmai.agents.shortvideo_agent.sub_agents.video_terms_agent import video_terms_agent
 from mtmai.model_client import get_default_litellm_model
 from mtmai.mtlibs.adk_utils.callbacks import rate_limit_callback
@@ -41,7 +39,7 @@ class ProductManagerAgent(LlmAgent):
       name=name,
       description=description,
       model=model,
-      instruction=SHORTVIDEO_PROMPT,
+      instruction=self.load_pm_prompt(),
       tools=[
         # AgentTool(video_subject_generator),
         # AgentTool(video_script_agent),
@@ -54,29 +52,34 @@ class ProductManagerAgent(LlmAgent):
       **kwargs,
     )
 
+  def load_pm_prompt(self):
+    prompt_path = os.path.join(os.path.dirname(__file__), "pm_prompt.md")
+    with open(prompt_path, "r") as f:
+      return f.read()
+
   async def _init_state(self, ctx: InvocationContext):
     user_content = ctx.user_content
     user_input_text = user_content.parts[0].text
 
-    state = ctx.session.state.get("shortvideo_state")
-    if state is None:
-      state = ProductManagerState(
-        id=ctx.session.id,
-        idea=user_input_text,
-      ).model_dump()
-      # --- 创建带有 Actions 的事件 ---
-      actions_with_update = EventActions(state_delta=state)
-      # 此事件可能代表内部系统操作，而不仅仅是智能体响应
-      system_event = Event(
-        invocation_id="inv_book_writer_update",
-        author="system",  # 或 'agent', 'tool' 等
-        actions=actions_with_update,
-        timestamp=time.time(),
-        # content 可能为 None 或表示所采取的操作
-      )
-      ctx.session_service.append_event(ctx.session, system_event)
-    os.makedirs(state["output_dir"], exist_ok=True)
-    return state
+    # state = ctx.session.state.get("shortvideo_state")
+    # if state is None:
+    #   state = ProductManagerState(
+    #     id=ctx.session.id,
+    #     idea=user_input_text,
+    #   ).model_dump()
+    #   # --- 创建带有 Actions 的事件 ---
+    #   actions_with_update = EventActions(state_delta=state)
+    #   # 此事件可能代表内部系统操作，而不仅仅是智能体响应
+    #   system_event = Event(
+    #     invocation_id="inv_book_writer_update",
+    #     author="system",  # 或 'agent', 'tool' 等
+    #     actions=actions_with_update,
+    #     timestamp=time.time(),
+    #     # content 可能为 None 或表示所采取的操作
+    #   )
+    #   ctx.session_service.append_event(ctx.session, system_event)
+    # os.makedirs(state["output_dir"], exist_ok=True)
+    # return state
 
   @override
   async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
@@ -88,7 +91,7 @@ class ProductManagerAgent(LlmAgent):
 def new_pm_agent():
   return ProductManagerAgent(
     model=get_default_litellm_model(),
-    name="shortvideo_generator",
+    name="product_manager",
     description="产品经理",
     sub_agents=[
       # new_research_agent(),
