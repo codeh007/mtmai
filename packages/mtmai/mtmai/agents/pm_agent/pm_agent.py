@@ -29,7 +29,11 @@ class ProductManagerState(BaseModel):
   # 用户输入的初始想法
   idea: str = Field(default="")
 
-  #
+
+async def save_artifacts(path: str, content: str, tool_context: ToolContext) -> dict[str, Any]:
+  """保存构建的文档"""
+  await tool_context.save_artifact(path, types.Part(text=content))
+  return "ok"
 
 
 async def load_pm_prompt():
@@ -41,13 +45,6 @@ async def load_pm_prompt():
 async def before_agent(callback_context: CallbackContext) -> AsyncGenerator[Event, None]:
   # 从 api 中加载 pm 操作手册
   callback_context.state["pm_manual"] = await load_pm_prompt()
-
-
-# 定义你的长时运行函数（见下方示例）
-async def save_artifacts(path: str, content: str, tool_context: ToolContext) -> dict[str, Any]:
-  """保存构建的文档"""
-  await tool_context.save_artifact(path, types.Part(text=content))
-  return "ok"
 
 
 def new_pm_agent():
