@@ -114,7 +114,7 @@ def configure_adk_web_api(
   provider.add_span_processor(export.SimpleSpanProcessor(memory_exporter))
 
   @app.get("/list-apps")
-  def list_apps() -> list[str]:
+  async def list_apps() -> list[str]:
     base_path = Path.cwd() / agent_dir
     if not base_path.exists():
       raise HTTPException(status_code=404, detail="Path not found")
@@ -129,14 +129,14 @@ def configure_adk_web_api(
     return agent_names
 
   @app.get("/debug/trace/{event_id}")
-  def get_trace_dict(event_id: str) -> Any:
+  async def get_trace_dict(event_id: str) -> Any:
     event_dict = trace_dict.get(event_id, None)
     if event_dict is None:
       raise HTTPException(status_code=404, detail="Trace not found")
     return event_dict
 
   @app.get("/debug/trace/session/{session_id}")
-  def get_session_trace(session_id: str) -> Any:
+  async def get_session_trace(session_id: str) -> Any:
     spans = memory_exporter.get_finished_spans(session_id)
     if not spans:
       return []
@@ -202,7 +202,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/users/{user_id}/sessions",
     response_model_exclude_none=True,
   )
-  def create_session(
+  async def create_session(
     app_name: str,
     user_id: str,
     state: Optional[dict[str, Any]] = None,
@@ -211,7 +211,7 @@ def configure_adk_web_api(
     app_name = agent_engine_id if agent_engine_id else app_name
 
     logger.info("New session created")
-    return session_service.create_session(app_name=app_name, user_id=user_id, state=state)
+    return await session_service.create_session(app_name=app_name, user_id=user_id, state=state)
 
   def _get_eval_set_file_path(app_name, agent_dir, eval_set_id) -> str:
     return os.path.join(
@@ -251,7 +251,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/eval_sets",
     response_model_exclude_none=True,
   )
-  def list_eval_sets(app_name: str) -> list[str]:
+  async def list_eval_sets(app_name: str) -> list[str]:
     """Lists all eval sets for the given app."""
     eval_set_file_path = os.path.join(agent_dir, app_name)
     eval_sets = []
@@ -291,7 +291,7 @@ def configure_adk_web_api(
     test_data = evals.convert_session_to_eval_format(session)
 
     # Populate the session with initial session state.
-    initial_session_state = create_empty_state(_get_root_agent(app_name))
+    initial_session_state = create_empty_state(await _get_root_agent_async(app_name))
 
     eval_set_data.append(
       {
@@ -312,7 +312,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/eval_sets/{eval_set_id}/evals",
     response_model_exclude_none=True,
   )
-  def list_evals_in_eval_set(
+  async def list_evals_in_eval_set(
     app_name: str,
     eval_set_id: str,
   ) -> list[str]:
@@ -407,7 +407,7 @@ def configure_adk_web_api(
     "/apps/{app_name}/eval_results/{eval_result_id}",
     response_model_exclude_none=True,
   )
-  def get_eval_result(
+  async def get_eval_result(
     app_name: str,
     eval_result_id: str,
   ) -> EvalSetResult:
@@ -430,16 +430,16 @@ def configure_adk_web_api(
       logger.exception("get_eval_result validation error: %s", e)
 
   @app.delete("/apps/{app_name}/users/{user_id}/sessions/{session_id}")
-  def delete_session(app_name: str, user_id: str, session_id: str):
+  async def delete_session(app_name: str, user_id: str, session_id: str):
     # Connect to managed session if agent_engine_id is set.
     app_name = agent_engine_id if agent_engine_id else app_name
-    session_service.delete_session(app_name=app_name, user_id=user_id, session_id=session_id)
+    await session_service.delete_session(app_name=app_name, user_id=user_id, session_id=session_id)
 
   @app.get(
     "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}",
     response_model_exclude_none=True,
   )
-  def load_artifact(
+  async def load_artifact(
     app_name: str,
     user_id: str,
     session_id: str,
@@ -447,7 +447,7 @@ def configure_adk_web_api(
     version: Optional[int] = Query(None),
   ) -> Optional[types.Part]:
     app_name = agent_engine_id if agent_engine_id else app_name
-    artifact = artifact_service.load_artifact(
+    artifact = await artifact_service.load_artifact(
       app_name=app_name,
       user_id=user_id,
       session_id=session_id,
@@ -624,7 +624,7 @@ def configure_adk_web_api(
 
     function_calls = event.get_function_calls()
     function_responses = event.get_function_responses()
-    root_agent = _get_root_agent(app_name)
+    root_agent = await _get_root_agent_async(app_name)
     dot_graph = None
     if function_calls:
       function_call_highlights = []
@@ -703,16 +703,6 @@ def configure_adk_web_api(
       for task in pending:
         task.cancel()
 
-  def _get_root_agent(app_name: str) -> Agent:
-    """Returns the root agent for the given app."""
-    if app_name in root_agent_dict:
-      return root_agent_dict[app_name]
-    envs.load_dotenv_for_agent(os.path.basename(app_name), agent_dir)
-    agent_module = importlib.import_module(app_name)
-    root_agent: Agent = agent_module.agent.root_agent
-    root_agent_dict[app_name] = root_agent
-    return root_agent
-
   async def _get_root_agent_async(app_name: str) -> Agent:
     """Returns the root agent for the given app."""
     if app_name in root_agent_dict:
@@ -734,20 +724,6 @@ def configure_adk_web_api(
 
     root_agent_dict[app_name] = root_agent
     return root_agent
-
-  # def _get_runner(app_name: str) -> Runner:
-  #   """Returns the runner for the given app."""
-  #   if app_name in runner_dict:
-  #     return runner_dict[app_name]
-  #   root_agent = _get_root_agent(app_name)
-  #   runner = Runner(
-  #     app_name=agent_engine_id if agent_engine_id else app_name,
-  #     agent=root_agent,
-  #     artifact_service=artifact_service,
-  #     session_service=session_service,
-  #   )
-  #   runner_dict[app_name] = runner
-  #   return runner
 
   async def _get_runner_async(app_name: str) -> Runner:
     """Returns the runner for the given app."""
