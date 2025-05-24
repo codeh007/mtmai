@@ -4,6 +4,7 @@ from typing import Optional
 from google.adk.artifacts.base_artifact_service import BaseArtifactService
 from google.genai import types
 from mtmai.clients.mtm_client import MtmClient
+from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.save_artifact_request import SaveArtifactRequest
 from mtmai.db.db import get_async_session
 from mtmai.models.artifact import DBArtifact
@@ -45,16 +46,19 @@ class MtmArtifactService(BaseArtifactService):
       f"{app_name}/{user_id}/{session_id}/{filename}",
     )
 
-    result = await self.mtm_client.artifact_api.artifact_save(
+    result: Artifact = await self.mtm_client.artifact_api.artifact_save(
+      tenant=app_name,
       save_artifact_request=SaveArtifactRequest(
         app_name=app_name,
+        artifact=filename,
         user_id=user_id,
         session_id=session_id,
         filename=filename,
-        content=artifact.inline_data.data,
+        content=artifact.inline_data.data.decode("utf-8"),
         mime_type=artifact.inline_data.mime_type,
-      )
+      ),
     )
+    logger.info(f"save_artifact result: {result}")
     return result.version
 
     # async with get_async_session() as session:

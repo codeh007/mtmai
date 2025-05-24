@@ -63,6 +63,13 @@ def serve(
 
 
 @app.command()
+def login():
+  from mtmai.clients.mtm_client import MtmClient
+
+  asyncio.run(MtmClient.login())
+
+
+@app.command()
 def wsworker():
   from mtmai.ws_worker import WSAgentWorker
 

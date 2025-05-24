@@ -264,9 +264,9 @@ def build_app(enable_worker: bool = True):
 async def serve(options: MtmaiServeOptions):
   setup_instrumentor()
 
-  from mtmai.clients.mtm_client import MtmClient
+  # from mtmai.clients.mtm_client import MtmClient
 
-  await MtmClient.login()
+  # await MtmClient.login()
   app = build_app(enable_worker=options.enable_worker)
   config = uvicorn.Config(
     app,

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import Any
 
@@ -14,99 +15,55 @@ from mtmai.clients.rest.api_client import ApiClient
 from mtmai.clients.rest.configuration import Configuration
 from mtmai.clients.rest.models.user_login_request import UserLoginRequest
 from mtmai.core.config import settings
-from pydantic import BaseModel
 
-# def parser_ctx_from_metas(meta: dict[str, str]):
-#   if META_RUN_BY_TENANT in meta:
-#     set_tenant_id(meta[META_RUN_BY_TENANT])
-#   if META_SESSION_ID in meta:
-#     set_chat_session_id_ctx(meta[META_SESSION_ID])
-#   if META_RUN_BY_USER_ID in meta:
-#     set_run_by_user_id_ctx(meta[META_RUN_BY_USER_ID])
+logger = logging.getLogger(__name__)
 
 
-# def parse_ctx_from_action(action: Action):
-#   set_run_id(action.workflow_run_id)
-#   set_step_run_id(action.step_run_id)
-#   parser_ctx_from_metas(action.additional_metadata)
-
-
-class ClientConfig(BaseModel):
-  server_url: str
-  access_token: str | None = None
+def get_client_config_path():
+  return os.path.expanduser(settings.MTM_CREDENTIALS)
 
 
 class MtmClient:
   def __init__(self, server_url: str | None = None, access_token: str | None = None):
-    # set_server_url_ctx(settings.MTM_SERVER_URL)
-    self.server_url = server_url
-    if not self.server_url:
-      self.server_url = settings.MTM_SERVER_URL
+    self.server_url = server_url or settings.MTM_SERVER_URL
     self.access_token = access_token
     if not self.access_token:
-      if not os.path.exists(settings.MTM_CREDENTIALS):
-        raise ValueError(f"config file not found: {settings.MTM_CREDENTIALS}")
-      with open(settings.MTM_CREDENTIALS, "r") as f:
+      if not os.path.exists(get_client_config_path()):
+        raise ValueError(f"未登录: {get_client_config_path()}")
+      with open(get_client_config_path(), "r") as f:
         config = json.load(f)
         self.access_token = config.get("access_token")
-
-    # self.tenant_id = get_tenant_id()
-    # assert self.tenant_id is not None
-    # self.run_id = get_run_id()
-    # self.step_run_id = get_step_run_id()
-    # self.session_id = get_chat_session_id_ctx()
-    # self.server_url = get_server_url()
-    # if self.server_url is None:
-    #   raise ValueError("server_url context is not set")
-    # self.access_token = get_access_token()
-    # if self.access_token is None:
-    #   raise ValueError("access_token context is not set")
-
-    # server_url = settings.MTM_SERVER_URL
-
-    # access_token = None
-    # if not os.path.exists(settings.MTM_CREDENTIALS):
-    #   raise ValueError(f"config file not found: {settings.MTM_CREDENTIALS}")
-    # with open(settings.MTM_CREDENTIALS, "r") as f:
-    #   config = json.load(f)
-    #   access_token = config.get("access_token")
-    # self.client_config = ClientConfig(server_url=server_url, access_token=access_token)
-
-    # host = urlparse(server_url).netloc
-    # self.client_config = Configuration(
-    #   host=host,
-    #   # access_token=self.access_token,
-    # )
-
-  async def init(self):
-    pass
+        self.tenant_id = config.get("tenant_id")
 
   @classmethod
   async def login(cls):
     """登录"""
-
-    client_config_path = os.path.expanduser(settings.MTM_CREDENTIALS)
-    if not os.path.exists(client_config_path):
-      username = input("请输入用户名: ")
-      password = input("请输入密码: ")
-      user_api = UserApi(
-        ApiClient(
-          configuration=Configuration(
-            host=settings.MTM_SERVER_URL,
-          )
+    username = input("请输入用户名: ")
+    password = input("请输入密码: ")
+    user_api = UserApi(
+      ApiClient(
+        configuration=Configuration(
+          host=settings.MTM_SERVER_URL,
         )
       )
-      login_response = await user_api.user_update_login(UserLoginRequest(email=username, password=password))
-      if not login_response.user_token:
-        raise ValueError(f"登录失败: {login_response.message}")
-      access_token = login_response.user_token
-      with open(client_config_path, "w") as f:
-        json.dump({"email": username, "access_token": access_token}, f)
+    )
+    login_response = await user_api.user_update_login(UserLoginRequest(email=username, password=password))
+    if not login_response.user_token:
+      raise ValueError(f"登录失败: {login_response.message}")
+    access_token = login_response.user_token
+
+    # 获取 tenant 信息
+    tenant_memberships = await user_api.tenant_memberships_list()
+    tenant_id = tenant_memberships.rows[0].metadata.id
+    logger.info(f"登录成功, tenant_id: {tenant_id}")
+    with open(get_client_config_path(), "w") as f:
+      json.dump({"email": username, "access_token": access_token, "tenant_id": tenant_id}, f)
 
   @property
   def api_client(self):
-    if self._api_client is None:
-      self._api_client = ApiClient(configuration=Configuration(host=self.server_url, access_token=self.access_token))
+    if hasattr(self, "_api_client"):
+      return self._api_client
+    self._api_client = ApiClient(configuration=Configuration(host=self.server_url, access_token=self.access_token))
     return self._api_client
 
   @property
@@ -167,10 +124,3 @@ class MtmClient:
 
   async def emit(self, event: Any):
     await self.event.emit(event)
-
-  # async def get_mcp_endpoint(self):
-  #     server_params = SseServerParams(
-  #         url="http://localhost:8383/mcp/sse",
-  #         headers={"Authorization": "Bearer token"},
-  #     )
-  #     return server_params
