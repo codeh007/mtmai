@@ -17,29 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictBytes, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Tuple, Union
-from typing_extensions import Annotated
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Artifact(BaseModel):
+class SaveArtifactRequest(BaseModel):
     """
-    Artifact
+    SaveArtifactRequest
     """ # noqa: E501
-    id: Annotated[str, Field(min_length=36, strict=True, max_length=36)] = Field(description="The artifact id.")
-    created_at: datetime = Field(description="The artifact created at.")
-    updated_at: StrictStr = Field(description="The artifact updated at.")
-    tenant_id: Annotated[str, Field(min_length=36, strict=True, max_length=36)] = Field(description="The artifact tenant id.")
-    user_id: StrictStr
-    version: StrictInt
-    session_id: StrictStr
     app_name: StrictStr
-    filename: StrictStr
-    type: StrictStr
-    content: Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]] = Field(description="The artifact content.")
-    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "tenant_id", "user_id", "version", "session_id", "app_name", "filename", "type", "content"]
+    user_id: StrictStr
+    session_id: Optional[StrictStr] = None
+    filename: Optional[StrictStr] = None
+    content: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "filename", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -59,7 +51,7 @@ class Artifact(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Artifact from a JSON string"""
+        """Create an instance of SaveArtifactRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +76,7 @@ class Artifact(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Artifact from a dict"""
+        """Create an instance of SaveArtifactRequest from a dict"""
         if obj is None:
             return None
 
@@ -94,19 +86,13 @@ class Artifact(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Artifact) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SaveArtifactRequest) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
-            "created_at": obj.get("created_at"),
-            "updated_at": obj.get("updated_at"),
-            "tenant_id": obj.get("tenant_id"),
-            "user_id": obj.get("user_id"),
-            "version": obj.get("version"),
-            "session_id": obj.get("session_id"),
             "app_name": obj.get("app_name"),
+            "user_id": obj.get("user_id"),
+            "session_id": obj.get("session_id"),
             "filename": obj.get("filename"),
-            "type": obj.get("type"),
             "content": obj.get("content")
         })
         return _obj

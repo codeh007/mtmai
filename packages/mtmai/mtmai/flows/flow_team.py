@@ -7,9 +7,9 @@ from google.adk.agents.run_config import StreamingMode
 from google.adk.cli.utils import envs
 from google.adk.runners import Runner
 from loguru import logger
+from mtmai.clients.mtm_client import MtmClient
 from mtmai.clients.rest.models.flow_names import FlowNames
 from mtmai.clients.rest.models.flow_team_input import FlowTeamInput
-from mtmai.clients.tenant_client import TenantClient
 from mtmai.context.context import Context
 from mtmai.core.config import settings
 from mtmai.mtlibs.autogen_utils.cancel_token import MtCancelToken
@@ -62,7 +62,7 @@ class FlowTeam:
   async def step0(self, hatctx: Context):
     input = FlowTeamInput.from_dict(hatctx.input)
 
-    tenant_client = TenantClient()
+    tenant_client = MtmClient()
     session_id = input.session_id
     app_name = input.app_name
     user_id = tenant_client.tenant_id
