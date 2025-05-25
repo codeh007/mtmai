@@ -142,6 +142,7 @@ uv pip install crawl4ai f2 --no-deps
 
 # 原因: moviepy 库 引用了  pillow <=11
 uv pip install "moviepy>=2.1.2" --no-deps
+uv pip install "instagrapi>=2.1.3"
 
 uv add playwright_stealth
 
@@ -193,6 +194,13 @@ def run_short():
     )
 
   asyncio.run(run_task())
+
+
+@app.command()
+def inst_register():
+  from mtmai.mtlibs.instagram_utils.inst_register import main
+
+  main()
 
 
 if __name__ == "__main__":
