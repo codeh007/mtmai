@@ -28,7 +28,7 @@ API_KEY = os.getenv("api-key")
 # Y = "20699d0b4e114c3A999c209028121398"
 # Set up logging configuration
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+# logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 image_folder = "img"
 
@@ -41,7 +41,7 @@ def select_random_image():
 
 
 def load_names():
-  names_file_path = "names.txt"
+  names_file_path = "data/insts/names.txt"
   try:
     with open(names_file_path, "r", encoding="utf-8") as names_file:
       names = [name.strip() for name in names_file.readlines() if name.strip()]
