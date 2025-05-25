@@ -13,6 +13,16 @@
 			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
 		},
 		{
+			"name": "adkweb",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/packages/mtmai/mtmai/debug_adk_web.py",
+			"cwd": "${workspaceFolder}",
+			"jinja": true,
+			"justMyCode": false,
+			"envFile": "${workspaceFolder}/../gomtm/env/dev.env"
+	},
+		{
 			"name": "worker",
 			"type": "debugpy",
 			"request": "launch",

@@ -56,8 +56,6 @@ def new_pm_agent():
     name="product_manager",
     description="产品经理",
     instruction="""你是有10年以上经验产品经理, 请根据用户输入的初始想法, 结合产品经理手册, 生成一个产品需求文档
-**工具**
-- save_artifacts: 保存构建的文档
 
 ** 产品经理手册**
 
@@ -71,7 +69,9 @@ def new_pm_agent():
       #   model=get_default_litellm_model(),
       # ),
     ],
-    tools=[save_artifacts],
+    tools=[
+      # save_artifacts,
+    ],
     before_model_callback=[rate_limit_callback],
     before_agent_callback=[before_agent],
   )

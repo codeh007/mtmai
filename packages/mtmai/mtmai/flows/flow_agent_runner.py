@@ -5,10 +5,7 @@ from google.genai import types  # noqa: F401
 from hatchet_sdk import Context, SleepCondition
 from mtmai.clients.rest.models.agent_runner_input import AgentRunnerInput
 from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
-from mtmai.core.config import settings
 from mtmai.hatchet_client import hatchet
-from mtmai.services.artifact_service import MtmArtifactService
-from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +26,13 @@ logger = logging.getLogger(__name__)
 agent_runner_workflow = hatchet.workflow(name="AgentRunnerWorkflow", input_validator=AgentRunnerInput)
 
 
-session_service = GomtmDatabaseSessionService(
-  db_url=settings.MTM_DATABASE_URL,
-)
+# session_service = GomtmDatabaseSessionService(
+#   db_url=settings.MTM_DATABASE_URL,
+# )
 
-artifact_service = MtmArtifactService(
-  db_url=settings.MTM_DATABASE_URL,
-)
+# artifact_service = MtmArtifactService(
+#   db_url=settings.MTM_DATABASE_URL,
+# )
 
 
 @agent_runner_workflow.task()

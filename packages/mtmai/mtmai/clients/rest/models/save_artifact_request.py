@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictBytes, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,8 +30,9 @@ class SaveArtifactRequest(BaseModel):
     user_id: StrictStr
     session_id: Optional[StrictStr] = None
     filename: Optional[StrictStr] = None
-    content: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "filename", "content"]
+    mime_type: Optional[StrictStr] = None
+    content: Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]] = None
+    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "filename", "mime_type", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -93,6 +94,7 @@ class SaveArtifactRequest(BaseModel):
             "user_id": obj.get("user_id"),
             "session_id": obj.get("session_id"),
             "filename": obj.get("filename"),
+            "mime_type": obj.get("mime_type"),
             "content": obj.get("content")
         })
         return _obj

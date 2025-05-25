@@ -8,6 +8,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from mtmai._version import version
+from mtmai.clients.mtm_client import get_tenant_id
 from mtmai.core.config import settings
 from mtmai.otel import setup_instrumentor
 
@@ -175,13 +176,8 @@ def build_app(enable_worker: bool = True):
   from mtmai.services.artifact_service import MtmArtifactService
 
   artifact_service = MtmArtifactService(
-    db_url=settings.MTM_DATABASE_URL,
+    tenant_id=get_tenant_id(),
   )
-  # from mtmai.services.memory_service import MtmMemoryService
-
-  # memory_service = MtmMemoryService(
-  #   db_url=settings.MTM_DATABASE_URL,
-  # )
   memory_service = InMemoryMemoryService()
   from mtmai.api import adk_web_api
 

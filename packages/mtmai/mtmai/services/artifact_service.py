@@ -19,15 +19,9 @@ logger = logging.getLogger(__name__)
 class MtmArtifactService(BaseArtifactService):
   """An artifact service implementation 使用 postgresql 存储构件, 列表数据存入表, 文件存入第三方aws s3"""
 
-  def __init__(self, db_url: str):
-    """Initializes the MtmArtifactService.
-
-    Args:
-        bucket_name: The name of the bucket to use.
-        **kwargs: Keyword arguments to pass to the Google Cloud Storage client.
-    """
+  def __init__(self, tenant_id: str):
     self.bucket_name = ""
-
+    self.tenant_id = tenant_id
     self.mtm_client = MtmClient()
 
   @override
@@ -47,15 +41,15 @@ class MtmArtifactService(BaseArtifactService):
     )
 
     result: Artifact = await self.mtm_client.artifact_api.artifact_save(
-      tenant=app_name,
+      tenant=self.tenant_id,
       save_artifact_request=SaveArtifactRequest(
         app_name=app_name,
         artifact=filename,
         user_id=user_id,
         session_id=session_id,
         filename=filename,
-        content=artifact.inline_data.data.decode("utf-8"),
-        mime_type=artifact.inline_data.mime_type,
+        content=artifact.inline_data.data,
+        mime_type=artifact.inline_data.mime_type.encode()("utf-8"),
       ),
     )
     logger.info(f"save_artifact result: {result}")

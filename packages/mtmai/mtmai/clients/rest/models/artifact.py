@@ -31,15 +31,14 @@ class Artifact(BaseModel):
     id: Annotated[str, Field(min_length=36, strict=True, max_length=36)] = Field(description="The artifact id.")
     created_at: datetime = Field(description="The artifact created at.")
     updated_at: StrictStr = Field(description="The artifact updated at.")
-    tenant_id: Annotated[str, Field(min_length=36, strict=True, max_length=36)] = Field(description="The artifact tenant id.")
     user_id: StrictStr
     version: StrictInt
     session_id: StrictStr
     app_name: StrictStr
     filename: StrictStr
-    type: StrictStr
+    mime_type: StrictStr
     content: Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]] = Field(description="The artifact content.")
-    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "tenant_id", "user_id", "version", "session_id", "app_name", "filename", "type", "content"]
+    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "user_id", "version", "session_id", "app_name", "filename", "mime_type", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,13 +99,12 @@ class Artifact(BaseModel):
             "id": obj.get("id"),
             "created_at": obj.get("created_at"),
             "updated_at": obj.get("updated_at"),
-            "tenant_id": obj.get("tenant_id"),
             "user_id": obj.get("user_id"),
             "version": obj.get("version"),
             "session_id": obj.get("session_id"),
             "app_name": obj.get("app_name"),
             "filename": obj.get("filename"),
-            "type": obj.get("type"),
+            "mime_type": obj.get("mime_type"),
             "content": obj.get("content")
         })
         return _obj
