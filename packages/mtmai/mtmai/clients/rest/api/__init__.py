@@ -26,6 +26,7 @@ from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.mtworker_api import MtworkerApi
 from mtmai.clients.rest.api.post_api import PostApi
 from mtmai.clients.rest.api.posts_api import PostsApi
+from mtmai.clients.rest.api.script_api import ScriptApi
 from mtmai.clients.rest.api.site_api import SiteApi
 from mtmai.clients.rest.api.site_host_api import SiteHostApi
 

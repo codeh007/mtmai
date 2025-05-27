@@ -22,16 +22,12 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SaveArtifactRequest(BaseModel):
+class ScriptsByName404Response(BaseModel):
     """
-    SaveArtifactRequest
+    ScriptsByName404Response
     """ # noqa: E501
-    app_name: StrictStr
-    user_id: StrictStr
-    session_id: Optional[StrictStr] = None
-    filename: Optional[StrictStr] = None
-    content: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["app_name", "user_id", "session_id", "filename", "content"]
+    error: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["error"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +47,7 @@ class SaveArtifactRequest(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SaveArtifactRequest from a JSON string"""
+        """Create an instance of ScriptsByName404Response from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,7 +72,7 @@ class SaveArtifactRequest(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SaveArtifactRequest from a dict"""
+        """Create an instance of ScriptsByName404Response from a dict"""
         if obj is None:
             return None
 
@@ -86,14 +82,10 @@ class SaveArtifactRequest(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in SaveArtifactRequest) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ScriptsByName404Response) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "app_name": obj.get("app_name"),
-            "user_id": obj.get("user_id"),
-            "session_id": obj.get("session_id"),
-            "filename": obj.get("filename"),
-            "content": obj.get("content")
+            "error": obj.get("error")
         })
         return _obj
 

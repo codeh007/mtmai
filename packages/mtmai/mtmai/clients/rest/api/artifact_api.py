@@ -593,6 +593,7 @@ class ArtifactApi:
         self,
         save_artifact_request: Annotated[SaveArtifactRequest, Field(description="The artifact properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        artifact: Annotated[StrictStr, Field(description="The artifact id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -606,14 +607,16 @@ class ArtifactApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> Artifact:
-        """Save artifact
+        """Update artifact
 
-        Save an existing artifact
+        Update an existing artifact
 
         :param save_artifact_request: The artifact properties to update (required)
         :type save_artifact_request: SaveArtifactRequest
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param artifact: The artifact id (required)
+        :type artifact: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -639,6 +642,7 @@ class ArtifactApi:
         _param = self._artifact_save_serialize(
             save_artifact_request=save_artifact_request,
             tenant=tenant,
+            artifact=artifact,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -666,6 +670,7 @@ class ArtifactApi:
         self,
         save_artifact_request: Annotated[SaveArtifactRequest, Field(description="The artifact properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        artifact: Annotated[StrictStr, Field(description="The artifact id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -679,14 +684,16 @@ class ArtifactApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[Artifact]:
-        """Save artifact
+        """Update artifact
 
-        Save an existing artifact
+        Update an existing artifact
 
         :param save_artifact_request: The artifact properties to update (required)
         :type save_artifact_request: SaveArtifactRequest
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param artifact: The artifact id (required)
+        :type artifact: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -712,6 +719,7 @@ class ArtifactApi:
         _param = self._artifact_save_serialize(
             save_artifact_request=save_artifact_request,
             tenant=tenant,
+            artifact=artifact,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -739,6 +747,7 @@ class ArtifactApi:
         self,
         save_artifact_request: Annotated[SaveArtifactRequest, Field(description="The artifact properties to update")],
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        artifact: Annotated[StrictStr, Field(description="The artifact id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -752,14 +761,16 @@ class ArtifactApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Save artifact
+        """Update artifact
 
-        Save an existing artifact
+        Update an existing artifact
 
         :param save_artifact_request: The artifact properties to update (required)
         :type save_artifact_request: SaveArtifactRequest
         :param tenant: The tenant id (required)
         :type tenant: str
+        :param artifact: The artifact id (required)
+        :type artifact: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -785,6 +796,7 @@ class ArtifactApi:
         _param = self._artifact_save_serialize(
             save_artifact_request=save_artifact_request,
             tenant=tenant,
+            artifact=artifact,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -807,6 +819,7 @@ class ArtifactApi:
         self,
         save_artifact_request,
         tenant,
+        artifact,
         _request_auth,
         _content_type,
         _headers,
@@ -830,6 +843,8 @@ class ArtifactApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
+        if artifact is not None:
+            _path_params['artifact'] = artifact
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -868,7 +883,7 @@ class ArtifactApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/api/v1/tenants/{tenant}/artifacts',
+            resource_path='/api/v1/tenants/{tenant}/artifacts/{artifact}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

@@ -54,9 +54,9 @@
 	"python.testing.unittestEnabled": false,
 	"python.testing.pytestEnabled": true,
 	"python.testing.pytestArgs": [
-		"."
+		"packages"
 	],
-	"python.formatting.provider": "black",
+	// "python.formatting.provider": "black",
 	"editor.formatOnSave": true,
 	"python.formatting.blackArgs": [
 		"--line-length",
