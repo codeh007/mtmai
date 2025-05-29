@@ -52,6 +52,7 @@ from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_list import ArtifactList
+from mtmai.clients.rest.models.bot_config import BotConfig
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask

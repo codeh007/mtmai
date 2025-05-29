@@ -157,6 +157,7 @@ uv sync
 def setup_dev():
   os.system("uv pip install git+https://github.com/google/adk-python.git@main")
   os.system("uv pip install --group media --group dev")
+  os.system("uv pip install lamda[full] --no-deps")
 
 
 @app.command()
@@ -201,6 +202,13 @@ def inst_register():
   from mtmai.mtlibs.instagram_utils.inst_register import main
 
   main()
+
+
+@app.command()
+def inst_rpa():
+  from mtmai.rpa.inst_rpa import InstagramAutomation
+
+  asyncio.run(InstagramAutomation("localhost:31001").start())
 
 
 if __name__ == "__main__":
