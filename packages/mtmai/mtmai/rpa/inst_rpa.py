@@ -1,4 +1,7 @@
+import logging
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
 
 from lamda import client
 
@@ -22,11 +25,14 @@ class InstagramAutomation:
     uri = urlparse(endpoint)
     self.host = uri.hostname
     self.port = uri.port
+    if not self.host or not self.port:
+      raise ValueError("InstagramAutomation Invalid endpoint")
+    logger.info(f"Connecting to {self.host}:{self.port}")
     self.d = client.Device(self.host, self.port)
 
   async def start(self):
     self.app = self.d.application("com.instagram.android")
-    await self.app.start()
+    self.app.start()
 
   async def open_clash(self):
     self.clash_app = self.d.application("com.github.kr328.clash")

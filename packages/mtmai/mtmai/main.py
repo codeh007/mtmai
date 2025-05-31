@@ -208,7 +208,7 @@ def inst_register():
 def inst_rpa():
   from mtmai.rpa.inst_rpa import InstagramAutomation
 
-  asyncio.run(InstagramAutomation("localhost:31001").start())
+  asyncio.run(InstagramAutomation("http://mtw-default-default:65000").start())
 
 
 if __name__ == "__main__":
