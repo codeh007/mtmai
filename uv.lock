@@ -53,6 +53,24 @@ wheels = [
 ]
 
 [[package]]
+name = "adbutils"
+version = "2.8.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "deprecation" },
+    { name = "pillow" },
+    { name = "requests" },
+    { name = "retry2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c9/24/c37bee0adc71f7b2b0b0795be4425a547598c5d28651f803e648dcf2b8ca/adbutils-2.8.11.tar.gz", hash = "sha256:d0f96e5d01e104fb42af6fa1263ff6ab9d2fc719538a11c18b4219a95c0bacc3", size = 187055, upload-time = "2025-05-28T10:03:53.173Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/0f/34132e695fd927498367298e2cd162da8fb5ac99164545e9dd67954d3cc9/adbutils-2.8.11-py3-none-macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:94310cd9246bad1fba44fc5c5834fc43a1c821e966fb22f529aaefe534d353df", size = 6705906, upload-time = "2025-05-28T10:03:46.697Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/e2/e8059c06f53cf8893d5f5b99f83b0d668ff9bdf04b91249a1d62dea184d2/adbutils-2.8.11-py3-none-manylinux1_x86_64.whl", hash = "sha256:752b2c12be979135cf280c15977dd46a8b388ad9c4a54fd3e9ca84e40b9c0a27", size = 3576855, upload-time = "2025-05-28T10:03:48.549Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/43/95ff5d4818a4ebb5eee36157dcb046f2251c7497d8dc2e019e4640209cf4/adbutils-2.8.11-py3-none-win32.whl", hash = "sha256:bf49a96da06fba5d6d3bcdeed62a188bf10c9f6dfc4c880cde4ed25a1b67e295", size = 3337476, upload-time = "2025-05-28T10:03:50.077Z" },
+    { url = "https://files.pythonhosted.org/packages/5b/2f/09090fb2ccd8970666ebc42c505de0a03b787e43af4325f3450aa3c538bf/adbutils-2.8.11-py3-none-win_amd64.whl", hash = "sha256:3029635959695dd677504a9ef6627ee44eb8a6ebee6aad7f55ac3113919b3d01", size = 3337478, upload-time = "2025-05-28T10:03:51.75Z" },
+]
+
+[[package]]
 name = "aiofiles"
 version = "23.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1223,6 +1241,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/98/97/06afe62762c9a8a86af0cfb7bfdab22a43ad17138b07af5b1a58442690a2/deprecated-1.2.18.tar.gz", hash = "sha256:422b6f6d859da6f2ef57857761bfb392480502a64c3028ca9bbe86085d72115d", size = 2928744, upload-time = "2025-01-27T10:46:25.7Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6e/c6/ac0b6c1e2d138f1002bcf799d330bd6d85084fece321e662a14223794041/Deprecated-1.2.18-py2.py3-none-any.whl", hash = "sha256:bd5011788200372a32418f888e326a09ff80d0214bd961147cfed01b5c018eec", size = 9998, upload-time = "2025-01-27T10:46:09.186Z" },
+]
+
+[[package]]
+name = "deprecation"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5a/d3/8ae2869247df154b64c1884d7346d412fed0c49df84db635aab2d1c40e62/deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff", size = 173788, upload-time = "2020-04-20T14:23:38.738Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/c3/253a89ee03fc9b9682f1541728eb66db7db22148cd94f89ab22528cd1e1b/deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a", size = 11178, upload-time = "2020-04-20T14:23:36.581Z" },
 ]
 
 [[package]]
@@ -3671,6 +3701,7 @@ version = "0.7.25"
 source = { editable = "packages/mtmai" }
 dependencies = [
     { name = "absl-py" },
+    { name = "adbutils" },
     { name = "aiohttp" },
     { name = "aiohttp-retry" },
     { name = "aiostream" },
@@ -3785,6 +3816,7 @@ dependencies = [
     { name = "toolbox-langchain" },
     { name = "tqdm" },
     { name = "typer" },
+    { name = "uiautomator2" },
     { name = "undetected-playwright" },
     { name = "xlrd" },
     { name = "xxhash" },
@@ -3837,6 +3869,7 @@ screenshot-scraper = [
 [package.metadata]
 requires-dist = [
     { name = "absl-py", specifier = ">=2.2.2" },
+    { name = "adbutils", extras = ["all"], specifier = ">=2.8.11" },
     { name = "aiohttp", specifier = ">=3.10.5" },
     { name = "aiohttp", specifier = ">=3.11.11" },
     { name = "aiohttp-retry", specifier = ">=2.8.3" },
@@ -3955,6 +3988,7 @@ requires-dist = [
     { name = "toolbox-langchain", specifier = ">=0.1.0" },
     { name = "tqdm", specifier = ">=4.66.4" },
     { name = "typer", specifier = ">=0.13.1" },
+    { name = "uiautomator2", specifier = ">=3.2.10" },
     { name = "undetected-playwright", specifier = ">=0.3.0" },
     { name = "xlrd", specifier = ">=2.0.1" },
     { name = "xxhash", specifier = "~=3.4" },
@@ -8517,6 +8551,17 @@ wheels = [
 ]
 
 [[package]]
+name = "retry2"
+version = "0.9.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "decorator" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/49/1cae6d9b932378cc75f902fa70648945b7ea7190cb0d09ff83b47de3e60a/retry2-0.9.5-py2.py3-none-any.whl", hash = "sha256:f7fee13b1e15d0611c462910a6aa72a8919823988dd0412152bc3719c89a4e55", size = 6013, upload-time = "2023-01-11T21:49:08.397Z" },
+]
+
+[[package]]
 name = "rich"
 version = "14.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -9629,6 +9674,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8b/2e/c14812d3d4d9cd1773c6be938f89e5735a1f11a9f184ac3639b93cef35d5/tzlocal-5.3.1.tar.gz", hash = "sha256:cceffc7edecefea1f595541dbd6e990cb1ea3d19bf01b2809f362a03dd7921fd", size = 30761, upload-time = "2025-03-05T21:17:41.549Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c2/14/e2a54fabd4f08cd7af1c07030603c3356b74da07f7cc056e600436edfa17/tzlocal-5.3.1-py3-none-any.whl", hash = "sha256:eb1a66c3ef5847adf7a834f1be0800581b683b5608e74f86ecbcef8ab91bb85d", size = 18026, upload-time = "2025-03-05T21:17:39.857Z" },
+]
+
+[[package]]
+name = "uiautomator2"
+version = "3.2.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "adbutils" },
+    { name = "lxml" },
+    { name = "pillow" },
+    { name = "requests" },
+    { name = "retry2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f1/c2/a12e92e111e8b159c7ae473e43ac762adb18caf51df57224b38e8be1cd78/uiautomator2-3.2.10.tar.gz", hash = "sha256:863af5ed5623871f3550cb8c587476b3fa722e3127dc973977f14337681a5a38", size = 5203418, upload-time = "2025-05-12T14:08:20.577Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/fe/16ee6c51d2b46e571e3838391aec6137a1fa696e43a50c810e9fd251433d/uiautomator2-3.2.10-py3-none-any.whl", hash = "sha256:703884840146b3188917a66e0d51fd480bae710118edbedbd73d92b8942a13d7", size = 5194588, upload-time = "2025-05-12T14:08:18.466Z" },
 ]
 
 [[package]]
