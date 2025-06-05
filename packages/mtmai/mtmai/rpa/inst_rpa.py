@@ -1,4 +1,6 @@
+import asyncio
 import logging
+from typing import List
 from urllib.parse import urlparse
 
 import adbutils
@@ -7,6 +9,20 @@ logger = logging.getLogger(__name__)
 
 
 class InstagramAutomation:
+  # 关键原理说明:
+  # 1. host="127.0.0.1", port=5037 具体是指本机端口, 也就是本机运行的 adb server
+  # 2. 不管有多少个远程设备,本机只占用一个 5037端口.
+  # 3. 参考 adb connect 和 disconnect 命令的逻辑就很容易理解.
+  # 4. 示意图:
+  # [PC1] (adb server on :5037)
+  #   │
+  #   ├──► [Android1] (:5555)
+  #   │
+  #   ├──► [Android2] (:5555)
+  #   │
+  #   └──► [Android3] (:5555)
+  # 4. 本机连接远程设备, 只需要知道远程设备的 serial 即可.
+
   def __init__(self, endpoint: str):
     uri = urlparse(endpoint)
     self.host = uri.hostname
@@ -14,42 +30,169 @@ class InstagramAutomation:
     if not self.host or not self.port:
       raise ValueError("InstagramAutomation Invalid endpoint")
     logger.info(f"Connecting to {self.host}:{self.port}")
+
     # Initialize ADB client to connect to local ADB server (which runs on 5037)
-    self.adb = adbutils.AdbClient(host="127.0.0.1", port=5037)
+    self.device_serial = f"{self.host}:5555"
+    self.adb = adbutils.AdbClient(host="127.0.0.1", port=5037, socket_timeout=10)
+
+    # 已知设备列表
+    self.known_devices = [
+      "mtw-default-default:5555",
+      # 可以添加更多设备
+    ]
 
   async def start(self):
-    await self.open_clash()
+    """启动群控服务"""
+    # 尝试连接所有已知设备
+    connected_devices = []
+    for device_serial in self.known_devices:
+      try:
+        logger.info(f"Connecting to device: {device_serial}")
+        result = self.adb.connect(device_serial)
+        logger.info(f"Connection result: {result}")
+        connected_devices.append(device_serial)
+      except Exception as e:
+        logger.error(f"Failed to connect to device {device_serial}: {str(e)}")
 
-  async def open_clash(self):
-    logger.info("Connecting to adb")
+    # 获取设备列表并验证连接
+    device_list = await self.device_list()
+    if not device_list:
+      raise Exception("No devices connected")
+
+    logger.info(f"Successfully connected to {len(device_list)} devices")
+
+    # 演示群控功能
+    await self.demo_group_control()
+
+  async def device_list(self) -> List[adbutils.AdbDevice]:
+    """获取所有已连接的设备"""
     try:
-      # Connect to the device using device serial (host:port format)
-      device_serial = f"{self.host}:5555"  # 使用5555端口连接设备
-
-      # First ensure the device is connected via ADB
-      logger.info(f"Attempting to connect to device: {device_serial}")
-      connection_result = self.adb.connect(device_serial)
-      logger.info(f"ADB connect result: {connection_result}")
-
-      # Get the device object
-      device = self.adb.device(serial=device_serial)
-
-      if not device:
-        raise Exception(f"Failed to connect to device {device_serial}")
-
-      logger.info(f"Successfully connected to device {device_serial}")
-
-      # List all connected devices with detailed information
-      logger.info("Connected devices:")
       devices = self.adb.device_list()
-      if not devices:
-        logger.warning("No devices found!")
-
-      for info in devices:
-        logger.info(f"Device: {info.serial}")
-
-      return device
-
+      logger.info(f"Found {len(devices)} devices:")
+      # for device in devices:
+      #   logger.info(f"  • {device.serial} ({device.state})")
+      return devices
     except Exception as e:
-      logger.error(f"Failed to connect to ADB: {str(e)}")
+      logger.error(f"Failed to list devices: {str(e)}")
+      raise
+
+  async def toast(self, message: str):
+    """在所有设备上显示toast消息"""
+    try:
+      device_list = await self.device_list()
+      if not device_list:
+        raise Exception("No devices connected")
+
+      for device in device_list:
+        device.shell(
+          f'am broadcast -a android.intent.action.MAIN -e "message" "{message}" -n com.android.systemui/.ToastBroadcastReceiver'
+        )
+      logger.info(f"Successfully showed toast on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to show toast: {str(e)}")
+      raise
+
+  async def broadcast_click(self, x: int, y: int):
+    """在所有设备上模拟点击"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f"input tap {x} {y}")
+      logger.info(f"Successfully clicked at ({x}, {y}) on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to broadcast click: {str(e)}")
+      raise
+
+  async def broadcast_swipe(self, x1: int, y1: int, x2: int, y2: int, duration_ms: int = 500):
+    """在所有设备上模拟滑动"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f"input swipe {x1} {y1} {x2} {y2} {duration_ms}")
+      logger.info(f"Successfully swiped on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to broadcast swipe: {str(e)}")
+      raise
+
+  async def broadcast_key(self, keycode: int):
+    """在所有设备上模拟按键"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f"input keyevent {keycode}")
+      logger.info(f"Successfully sent keycode {keycode} to {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to broadcast key: {str(e)}")
+      raise
+
+  async def broadcast_text(self, text: str):
+    """在所有设备上输入文本"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f'input text "{text}"')
+      logger.info(f"Successfully input text on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to broadcast text: {str(e)}")
+      raise
+
+  async def start_app(self, package_name: str):
+    """在所有设备上启动应用"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f"monkey -p {package_name} 1")
+      logger.info(f"Successfully started {package_name} on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to start app: {str(e)}")
+      raise
+
+  async def stop_app(self, package_name: str):
+    """在所有设备上停止应用"""
+    try:
+      device_list = await self.device_list()
+      for device in device_list:
+        device.shell(f"am force-stop {package_name}")
+      logger.info(f"Successfully stopped {package_name} on {len(device_list)} devices")
+    except Exception as e:
+      logger.error(f"Failed to stop app: {str(e)}")
+      raise
+
+  async def demo_group_control(self):
+    """演示群控功能"""
+    try:
+      # 1. 显示连接信息
+      await self.toast("群控演示开始")
+      await asyncio.sleep(1)
+
+      # 2. 启动一个应用（以设置为例）
+      await self.start_app("com.android.settings")
+      await asyncio.sleep(2)
+
+      # 3. 模拟点击和滑动操作
+      # 点击屏幕中心
+      await self.broadcast_click(540, 960)
+      await asyncio.sleep(1)
+
+      # 向上滑动
+      await self.broadcast_swipe(540, 1500, 540, 500, 800)
+      await asyncio.sleep(1)
+
+      # 4. 输入一些文本
+      await self.broadcast_text("Hello from group control")
+      await asyncio.sleep(1)
+
+      # 5. 按下返回键
+      await self.broadcast_key(4)  # 4 是返回键的keycode
+      await asyncio.sleep(1)
+
+      # 6. 停止应用
+      await self.stop_app("com.android.settings")
+
+      # 7. 显示完成信息
+      await self.toast("群控演示完成")
+
+      logger.info("Group control demo completed successfully")
+    except Exception as e:
+      logger.error(f"Demo failed: {str(e)}")
       raise

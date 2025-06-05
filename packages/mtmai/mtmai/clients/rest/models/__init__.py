@@ -150,6 +150,7 @@ from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.sandbox import Sandbox
 from mtmai.clients.rest.models.save_artifact_request import SaveArtifactRequest
+from mtmai.clients.rest.models.sb_worker_profile import SbWorkerProfile
 from mtmai.clients.rest.models.schedule_workflow_run_request import ScheduleWorkflowRunRequest
 from mtmai.clients.rest.models.scheduled_item import ScheduledItem
 from mtmai.clients.rest.models.scheduled_run_status import ScheduledRunStatus
