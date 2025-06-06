@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import adbutils
 import uiautomator2 as u2
 from mtmai.rpa.rpa_consts import TESTING_DEVICE_SERIAL
+from mtmai.rpa.u2_tools import launch_app
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,8 @@ class InstagramAutomation:
 
     # 演示群控功能
     # await self.demo_group_control()
-    await self.example_by_u2()
+    device_serial = TESTING_DEVICE_SERIAL
+    await self.example_by_u2(device_serial)
 
   async def device_list(self) -> List[adbutils.AdbDevice]:
     """获取所有已连接的设备"""
@@ -198,14 +200,15 @@ class InstagramAutomation:
       logger.error(f"Demo failed: {str(e)}")
       raise
 
-  async def example_by_u2(self):
-    d = u2.connect("mtw-default-default:5555")
-    app_list = d.app_list()
-    print(app_list)
-    d.app_start("tv.danmaku.bili", stop=True)  # 启动Bilibili
-    d.wait_activity(".MainActivityV2")
-    d.sleep(5)  # 等待开屏广告消失
-    d.xpath('//*[@text="我的"]').click()
-    # 获取粉丝数量
-    fans_count = d.xpath('//*[@resource-id="tv.danmaku.bili:id/fans_count"]').text
-    print(f"粉丝数量: {fans_count}")
+  async def example_by_u2(self, device_serial: str):
+    d = u2.connect(device_serial)
+    launch_app(d, "instagram")
+    # app_list = d.app_list()
+    # print(app_list)
+    # d.app_start("tv.danmaku.bili", stop=True)  # 启动Bilibili
+    # d.wait_activity(".MainActivityV2")
+    # d.sleep(5)  # 等待开屏广告消失
+    # d.xpath('//*[@text="我的"]').click()
+    # # 获取粉丝数量
+    # fans_count = d.xpath('//*[@resource-id="tv.danmaku.bili:id/fans_count"]').text
+    # print(f"粉丝数量: {fans_count}")

@@ -266,15 +266,6 @@ wheels = [
 ]
 
 [[package]]
-name = "appium-python-client"
-version = "5.1.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "selenium" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/26/9c/da7459dcf7e3ac8e7562e58f2e6de1dbd1441822afb7d2636fcc9ada34fd/appium_python_client-5.1.1.tar.gz", hash = "sha256:3f26e244a09217062e19fe71db9c7390be3fab497dd5e16268e7310fa081b711", size = 129186, upload-time = "2025-05-07T05:47:36.876Z" }
-
-[[package]]
 name = "arize-phoenix"
 version = "10.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -3707,7 +3698,6 @@ dependencies = [
     { name = "aiostream" },
     { name = "alembic" },
     { name = "anthropic" },
-    { name = "appium-python-client" },
     { name = "asn1crypto" },
     { name = "asyncio-atexit" },
     { name = "asyncpg" },
@@ -3869,14 +3859,13 @@ screenshot-scraper = [
 [package.metadata]
 requires-dist = [
     { name = "absl-py", specifier = ">=2.2.2" },
-    { name = "adbutils", extras = ["all"], specifier = ">=2.8.11" },
+    { name = "adbutils", specifier = ">=2.8.11" },
     { name = "aiohttp", specifier = ">=3.10.5" },
     { name = "aiohttp", specifier = ">=3.11.11" },
     { name = "aiohttp-retry", specifier = ">=2.8.3" },
     { name = "aiostream", specifier = ">=0.5.2" },
     { name = "alembic", specifier = ">=1.14.1" },
     { name = "anthropic", specifier = ">=0.49.0" },
-    { name = "appium-python-client", specifier = ">=5.1.1" },
     { name = "asn1crypto", specifier = ">=1.5.1" },
     { name = "asyncio-atexit", specifier = ">=1.0.1" },
     { name = "asyncpg", specifier = ">=0.30.0" },
