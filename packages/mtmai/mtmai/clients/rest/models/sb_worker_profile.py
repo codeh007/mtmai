@@ -28,7 +28,10 @@ class SbWorkerProfile(BaseModel):
     """ # noqa: E501
     frontend_url: StrictStr = Field(alias="frontendUrl")
     is_debug: StrictBool = Field(alias="isDebug")
-    __properties: ClassVar[List[str]] = ["frontendUrl", "isDebug"]
+    auto_start: StrictBool = Field(alias="autoStart")
+    default_profile_name: StrictStr = Field(alias="defaultProfileName")
+    default_profile_url: StrictStr = Field(alias="defaultProfileUrl")
+    __properties: ClassVar[List[str]] = ["frontendUrl", "isDebug", "autoStart", "defaultProfileName", "defaultProfileUrl"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,7 +90,10 @@ class SbWorkerProfile(BaseModel):
 
         _obj = cls.model_validate({
             "frontendUrl": obj.get("frontendUrl"),
-            "isDebug": obj.get("isDebug")
+            "isDebug": obj.get("isDebug"),
+            "autoStart": obj.get("autoStart"),
+            "defaultProfileName": obj.get("defaultProfileName"),
+            "defaultProfileUrl": obj.get("defaultProfileUrl")
         })
         return _obj
 
