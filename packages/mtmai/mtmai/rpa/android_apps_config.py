@@ -2,7 +2,8 @@ androidAppConfig = {
   "instagram": {
     "package_name": "com.instagram.android",
     "app_name": "Instagram",
-    "apk_url": "instagram.apk",
+    # "apk_url": "https://mtreleases.yuepa8.com/apk/instgram_v2.apk",
+    "apk_url": "https://apk2.yuepa8.com/apk/instgram_v2.apk",
   },
 }
 

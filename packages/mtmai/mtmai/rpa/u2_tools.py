@@ -2,7 +2,6 @@ import logging
 
 import uiautomator2 as u2
 from mtmai.rpa.android_apps_config import get_android_app_info
-from mtmai.rpa.rpa_consts import ANDROID_LOCAL_SHARED_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -25,5 +24,6 @@ def launch_app(device: u2.Device, package_name: str):
   app_list = device.app_list()
   if package_name not in app_list:
     logger.info(f"App {app_info['app_name']} is not installed, installing...")
-    device.app_install(f"{ANDROID_LOCAL_SHARED_DIR}/apk/{app_info['apk_url']}")
+    apk_path = f"{app_info['apk_url']}"
+    device.app_install(apk_path)
   device.app_start(app_info["package_name"])
