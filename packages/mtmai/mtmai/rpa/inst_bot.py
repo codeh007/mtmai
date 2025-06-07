@@ -1,7 +1,4 @@
-import json
 import logging
-import subprocess
-import time
 
 import uiautomator2 as u2
 from selenium import webdriver
@@ -42,7 +39,7 @@ class InstBot:
       logger.info(f"app {self.android_package_name} is already running")
 
     # 获取应用的登录UI 状态, 如果是登录框,就进行登录
-    login_ui_status = self.device.xpath('//*[@content-desc="登入"]').exists
+    is_login_screen = self.device.xpath('//*[@content-desc="登入"]').exists
     await self.login()
 
   async def login(self):
@@ -143,138 +140,10 @@ class InstBot:
           logger.error(f"断开WebDriver连接时出错: {e}")
         self.driver = None
 
-  async def open_android_chrome_with_cdp(self):
-    """设置并启动支持CDP的Chrome浏览器"""
-    chrome_package = "com.android.chrome"
-
-    # 检查Chrome是否已安装
-    app_list = self.device.app_list()
-    if chrome_package not in app_list:
-      logger.error("Chrome未安装在设备上，请先安装Chrome")
-      return False
-
-    # 检查Chrome是否已在运行，如果没有运行则启动它
-    app_running_list = self.device.app_list_running()
-    if chrome_package not in app_running_list:
-      logger.info("Chrome未运行，现在启动...")
-
-      # 移除现有的端口转发
-      device_serial = self.device.serial
-      logger.info(f"正在移除现有的端口转发 (端口 {self.LOCAL_PORT})...")
-      subprocess.run(
-        f"adb -s {device_serial} forward --remove tcp:{self.LOCAL_PORT}",
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-      )
-      time.sleep(1)
-
-      # 设置新的端口转发
-      logger.info(f"正在设置新的端口转发 ({self.LOCAL_PORT} -> chrome_devtools_remote)...")
-      cmd = f"adb -s {device_serial} forward tcp:{self.LOCAL_PORT} localabstract:chrome_devtools_remote"
-      logger.info(f"执行命令: {cmd}")
-      result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-      if result.returncode != 0:
-        logger.error(f"端口转发失败: {result.stderr}")
-        return False
-
-      # 以远程调试模式启动Chrome
-      logger.info("正在以远程调试模式启动Chrome...")
-      try:
-        # 使用特定的命令行启动Chrome，确保启用远程调试
-        start_cmd = "am start -a android.intent.action.VIEW -d 'about:blank' --ez 'enable-remote-debugging' true com.android.chrome"
-        logger.info(f"执行启动命令: {start_cmd}")
-        self.device.shell(start_cmd)
-        time.sleep(3)
-      except Exception as e:
-        logger.error(f"启动Chrome时出错: {e}")
-        try:
-          # 尝试使用备用方法启动
-          backup_cmd = (
-            'am start -n com.android.chrome/com.google.android.apps.chrome.Main --ez "enable-remote-debugging" true'
-          )
-          logger.info(f"尝试备用启动命令: {backup_cmd}")
-          self.device.shell(backup_cmd)
-          time.sleep(3)
-        except Exception as e2:
-          logger.error(f"备用启动方法也失败: {e2}")
-          return False
-    else:
-      logger.info("Chrome已经在运行")
-
-      # Chrome已在运行，我们只设置端口转发
-      device_serial = self.device.serial
-      logger.info(f"正在设置端口转发 ({self.LOCAL_PORT})...")
-
-      # 先移除现有的转发
-      subprocess.run(
-        f"adb -s {device_serial} forward --remove tcp:{self.LOCAL_PORT}",
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-      )
-      time.sleep(1)
-
-      # 设置新的转发
-      cmd = f"adb -s {device_serial} forward tcp:{self.LOCAL_PORT} localabstract:chrome_devtools_remote"
-      logger.info(f"执行命令: {cmd}")
-      result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-      if result.returncode != 0:
-        logger.error(f"端口转发失败: {result.stderr}")
-        return False
-
-    # 打开一个网页以确保Chrome正常运行
-    logger.info("正在打开测试页面...")
-    self.device.shell("am start -a android.intent.action.VIEW -d 'https://www.baidu.com' com.android.chrome")
-    time.sleep(3)
-
-    # 验证本地端口转发是否成功
-    logger.info("验证CDP服务...")
-    max_retries = 3
-    for i in range(max_retries):
-      try:
-        # 使用curl检查服务可用性
-        local_check_cmd = f"curl -s http://localhost:{self.LOCAL_PORT}/json/version"
-        logger.info(f"执行验证命令: {local_check_cmd}")
-        local_result = subprocess.run(local_check_cmd, shell=True, capture_output=True, text=True)
-
-        if local_result.returncode == 0 and local_result.stdout:
-          logger.info(f"本地CDP服务验证成功: {local_result.stdout[:100]}...")
-          # 解析版本信息
-          try:
-            version_info = json.loads(local_result.stdout)
-            self.cdp_ws_endpoint = version_info.get("webSocketDebuggerUrl")
-            if self.cdp_ws_endpoint:
-              # 更新WebSocket URL中的端口号
-              self.cdp_ws_endpoint = self.cdp_ws_endpoint.replace(":9222", f":{self.LOCAL_PORT}")
-              logger.info(f"获取到WebSocket端点: {self.cdp_ws_endpoint}")
-              return True
-            else:
-              logger.warning("未找到WebSocket端点")
-          except json.JSONDecodeError:
-            logger.warning(f"无法解析版本信息: {local_result.stdout}")
-        else:
-          logger.warning(f"本地CDP服务验证失败: {local_result.stderr}")
-
-        # 如果验证失败，等待一段时间后重试
-        if i < max_retries - 1:
-          logger.info(f"重试验证 ({i+2}/{max_retries})...")
-          time.sleep(3)
-      except Exception as e:
-        logger.error(f"验证CDP服务时出错: {e}")
-        if i < max_retries - 1:
-          logger.info(f"重试验证 ({i+2}/{max_retries})...")
-          time.sleep(3)
-
-    logger.error("无法验证CDP服务，放弃尝试")
-    return False
-
-  async def close(self):
-    """清理资源"""
-    if self.driver:
-      try:
-        self.driver.quit()
-      except Exception as e:
-        logger.error(f"关闭WebDriver时出错: {e}")
-      self.driver = None
-      logger.info("已关闭WebDriver")
+  async def backup_app_data(self):
+    # 确保应用已关闭
+    self.device.app_stop(self.android_package_name)
+    # 使用 shell 命令执行备份
+    self.device.shell("su -c 'tar -czf /sdcard/instagram_backup.tar.gz /data/data/com.instagram.android/'")
+    # 将备份文件拉到电脑上
+    # 这里需要使用 adb 命令，可以通过 subprocess 调用

@@ -177,6 +177,7 @@ dependencies = [
     "asn1crypto>=1.5.1",
     "uiautomator2>=3.2.10",
     "adbutils>=2.8.11",
+    "appium-python-client>=5.1.1",
 ]
 
 description = "A web scraping library based on LangChain which uses LLM and direct graph logic to create scraping pipelines."
