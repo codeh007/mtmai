@@ -202,3 +202,16 @@ class InstagramAutomation:
     except Exception as e:
       logger.error(f"Demo failed: {str(e)}")
       raise
+
+  # async def example_by_u2(self, device_serial: str):
+  #   d = u2.connect(device_serial)
+  #   launch_app(d, "instagram")
+  #   # app_list = d.app_list()
+  #   # print(app_list)
+  #   # d.app_start("tv.danmaku.bili", stop=True)  # 启动Bilibili
+  #   # d.wait_activity(".MainActivityV2")
+  #   # d.sleep(5)  # 等待开屏广告消失
+  #   # d.xpath('//*[@text="我的"]').click()
+  #   # # 获取粉丝数量
+  #   # fans_count = d.xpath('//*[@resource-id="tv.danmaku.bili:id/fans_count"]').text
+  #   # print(f"粉丝数量: {fans_count}")

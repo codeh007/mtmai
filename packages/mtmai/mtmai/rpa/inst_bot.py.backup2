@@ -1,12 +1,11 @@
+import asyncio
 import json
 import logging
 import subprocess
 import time
 
+import requests
 import uiautomator2 as u2
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 
 logger = logging.getLogger(__name__)
 
@@ -54,94 +53,112 @@ class InstBot:
     return await self.selenium_automation()
 
   async def selenium_automation(self):
-    """使用Selenium连接到远程Chrome并进行简单的自动化操作"""
+    """使用CDP直接连接到远程Chrome并进行自动化操作"""
     try:
-      logger.info(f"创建Selenium WebDriver连接到端口 {self.LOCAL_PORT}...")
+      # 获取页面列表
+      logger.info(f"获取页面列表，使用端口 {self.LOCAL_PORT}...")
+      response = requests.get(f"http://localhost:{self.LOCAL_PORT}/json", timeout=10)
+      if response.status_code != 200:
+        logger.error(f"无法获取Chrome页面列表，状态码: {response.status_code}")
+        return False
 
-      # 设置Chrome选项
-      options = Options()
-      # 连接到已经运行的Chrome实例
-      options.add_experimental_option("debuggerAddress", f"localhost:{self.LOCAL_PORT}")
+      pages = response.json()
+      if not pages:
+        logger.error("未找到可用的Chrome页面")
+        return False
 
-      # 创建WebDriver
-      logger.info("初始化WebDriver...")
-      self.driver = webdriver.Chrome(options=options)
+      # 最多显示前5个页面，避免日志过长
+      page_count = min(len(pages), 5)
+      logger.info(f"找到 {len(pages)} 个可用页面，显示前 {page_count} 个:")
+      for i in range(page_count):
+        page = pages[i]
+        logger.info(f"页面 {i+1}: {page.get('title', 'Unknown')} - {page.get('url', 'Unknown')}")
 
-      # 获取基本页面信息
-      logger.info("获取当前页面信息...")
-      current_url = self.driver.current_url
-      page_title = self.driver.title
+      # 尝试找到一个百度页面或使用第一个页面
+      target_page = None
+      for page in pages:
+        if page.get("url", "").startswith("https://www.baidu.com"):
+          target_page = page
+          logger.info(f"找到百度页面: {page.get('title')} - {page.get('url')}")
+          break
 
-      logger.info(f"当前页面URL: {current_url}")
-      logger.info(f"当前页面标题: {page_title}")
+      if not target_page:
+        target_page = pages[0]
+        logger.info(f"使用第一个页面: {target_page.get('title')} - {target_page.get('url')}")
 
-      # 获取页面源代码的前100个字符
-      page_source = (
-        self.driver.page_source[:100] + "..." if len(self.driver.page_source) > 100 else self.driver.page_source
-      )
-      logger.info(f"页面源代码预览: {page_source}")
+      # 获取页面ID和debuggerUrl
+      page_id = target_page.get("id")
+      if not page_id:
+        logger.error("无法获取页面ID")
+        return False
 
-      # 查找并显示页面上的链接数量
-      links = self.driver.find_elements(By.TAG_NAME, "a")
-      logger.info(f"页面上共有 {len(links)} 个链接")
+      debug_url = target_page.get("webSocketDebuggerUrl")
+      if debug_url:
+        logger.info(f"使用页面调试URL: {debug_url}")
 
-      # 显示前5个链接的文本和URL
-      for i, link in enumerate(links[:5]):
-        link_text = link.text.strip() or "[无文本]"
-        link_url = link.get_attribute("href") or "[无URL]"
-        logger.info(f"链接 {i+1}: {link_text} - {link_url}")
+      # 使用CDP命令直接操作页面
+      logger.info("使用CDP命令直接操作页面...")
+      version_info = self.get_cdp_version_info()
+      if version_info:
+        logger.info(f"Chrome版本: {version_info.get('Browser', 'Unknown')}")
 
-      # 查找并显示页面上的图片数量
-      images = self.driver.find_elements(By.TAG_NAME, "img")
-      logger.info(f"页面上共有 {len(images)} 个图片")
+        # 使用CDP命令导航到URL
+        logger.info("使用CDP Navigate命令打开百度...")
+        navigate_result = self.execute_cdp_raw(page_id, "Page.navigate", {"url": "https://www.baidu.com"})
+        if navigate_result:
+          logger.info(f"导航结果: {navigate_result}")
+          # 等待页面加载
+          await asyncio.sleep(5)
 
-      # 显示前3个图片的URL
-      for i, img in enumerate(images[:3]):
-        img_src = img.get_attribute("src") or "[无URL]"
-        img_alt = img.get_attribute("alt") or "[无描述]"
-        logger.info(f"图片 {i+1}: {img_alt} - {img_src}")
+          # 获取页面标题
+          title_result = self.execute_cdp_raw(page_id, "Runtime.evaluate", {"expression": "document.title"})
+          if title_result and "result" in title_result:
+            logger.info(f"页面标题: {title_result['result'].get('value', 'Unknown')}")
 
-      # 获取网页窗口大小
-      window_size = self.driver.get_window_size()
-      logger.info(f"窗口大小: 宽={window_size['width']}px, 高={window_size['height']}px")
+          return True
 
-      # 获取页面Cookie
-      cookies = self.driver.get_cookies()
-      logger.info(f"页面Cookie数量: {len(cookies)}")
-
-      # 执行简单的JavaScript获取页面加载时间
-      load_time = self.driver.execute_script(
-        "return (window.performance.timing.loadEventEnd - window.performance.timing.navigationStart) / 1000"
-      )
-      logger.info(f"页面加载时间: {load_time}秒")
-
-      # 查找一个输入框
-      try:
-        input_elements = self.driver.find_elements(By.TAG_NAME, "input")
-        if input_elements:
-          logger.info(f"找到 {len(input_elements)} 个输入框")
-          input_type = input_elements[0].get_attribute("type") or "[未指定]"
-          input_id = input_elements[0].get_attribute("id") or "[无ID]"
-          input_name = input_elements[0].get_attribute("name") or "[无名称]"
-          logger.info(f"第一个输入框: ID={input_id}, 名称={input_name}, 类型={input_type}")
-      except Exception as e:
-        logger.warning(f"获取输入框信息时出错: {e}")
-
-      logger.info("Selenium自动化操作成功完成")
-      return True
-
-    except Exception as e:
-      logger.error(f"Selenium自动化操作失败: {e}")
+      logger.error("无法使用CDP直接操作页面")
       return False
-    finally:
-      # 断开连接但不关闭浏览器
-      if self.driver:
-        try:
-          logger.info("断开WebDriver连接...")
-          self.driver.quit()
-        except Exception as e:
-          logger.error(f"断开WebDriver连接时出错: {e}")
-        self.driver = None
+    except Exception as e:
+      logger.error(f"CDP操作失败: {e}")
+      return False
+
+  def get_cdp_version_info(self):
+    """获取CDP版本信息"""
+    try:
+      response = requests.get(f"http://localhost:{self.LOCAL_PORT}/json/version", timeout=10)
+      if response.status_code == 200:
+        return response.json()
+      return None
+    except Exception as e:
+      logger.error(f"获取CDP版本信息失败: {e}")
+      return None
+
+  def execute_cdp_raw(self, page_id, method, params=None):
+    """执行CDP命令并返回结果"""
+    try:
+      if not params:
+        params = {}
+
+      # 构建命令URL - 使用新的端口
+      cmd_url = f"http://localhost:{self.LOCAL_PORT}/json/protocol/{page_id}"
+      logger.info(f"发送CDP命令到: {cmd_url}")
+
+      # 发送命令 - 增加超时时间
+      payload = {"method": method, "params": params, "id": 1}
+      logger.info(f"发送CDP命令: {method}, 参数: {params}")
+      cmd_response = requests.post(cmd_url, json=payload, timeout=15)
+
+      if cmd_response.status_code == 200:
+        result = cmd_response.json().get("result")
+        logger.info(f"CDP命令执行成功: {result}")
+        return result
+      else:
+        logger.error(f"CDP命令执行失败: {cmd_response.status_code}")
+        return None
+    except Exception as e:
+      logger.error(f"执行CDP命令异常: {e}")
+      return None
 
   async def open_android_chrome_with_cdp(self):
     """设置并启动支持CDP的Chrome浏览器"""
@@ -268,6 +285,20 @@ class InstBot:
 
     logger.error("无法验证CDP服务，放弃尝试")
     return False
+
+  async def execute_cdp_command(self, command, params=None):
+    """执行CDP命令"""
+    if not self.driver:
+      logger.error("WebDriver未初始化，无法执行CDP命令")
+      return None
+
+    try:
+      params = params or {}
+      result = self.driver.execute_cdp_cmd(command, params)
+      return result
+    except Exception as e:
+      logger.error(f"执行CDP命令 {command} 失败: {e}")
+      return None
 
   async def close(self):
     """清理资源"""
