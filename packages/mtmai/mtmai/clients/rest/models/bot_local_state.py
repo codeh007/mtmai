@@ -17,23 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BotConfig(BaseModel):
+class BotLocalState(BaseModel):
     """
-    BotConfig
+    BotLocalState
     """ # noqa: E501
-    public_server: StrictStr
-    private_server: StrictStr
-    frontend_url: StrictStr
-    local_http_server_enabled: StrictBool
-    local_http_server_port: StrictInt
-    adb_server_enabled: StrictBool
-    adb_server_port: Optional[StrictInt] = 5555
-    __properties: ClassVar[List[str]] = ["public_server", "private_server", "frontend_url", "local_http_server_enabled", "local_http_server_port", "adb_server_enabled", "adb_server_port"]
+    bot_id: StrictStr
+    device_type: StrictStr
+    host_name: StrictStr
+    __properties: ClassVar[List[str]] = ["bot_id", "device_type", "host_name"]
+
+    @field_validator('device_type')
+    def device_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['unknown', 'android', 'ios', 'web']):
+            raise ValueError("must be one of enum values ('unknown', 'android', 'ios', 'web')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +56,7 @@ class BotConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BotConfig from a JSON string"""
+        """Create an instance of BotLocalState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,7 +81,7 @@ class BotConfig(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BotConfig from a dict"""
+        """Create an instance of BotLocalState from a dict"""
         if obj is None:
             return None
 
@@ -88,16 +91,12 @@ class BotConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BotConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in BotLocalState) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "public_server": obj.get("public_server"),
-            "private_server": obj.get("private_server"),
-            "frontend_url": obj.get("frontend_url"),
-            "local_http_server_enabled": obj.get("local_http_server_enabled"),
-            "local_http_server_port": obj.get("local_http_server_port"),
-            "adb_server_enabled": obj.get("adb_server_enabled"),
-            "adb_server_port": obj.get("adb_server_port") if obj.get("adb_server_port") is not None else 5555
+            "bot_id": obj.get("bot_id"),
+            "device_type": obj.get("device_type"),
+            "host_name": obj.get("host_name")
         })
         return _obj
 

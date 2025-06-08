@@ -17,23 +17,24 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class BotConfig(BaseModel):
+class SbOutbound(BaseModel):
     """
-    BotConfig
+    SbOutbound
     """ # noqa: E501
-    public_server: StrictStr
-    private_server: StrictStr
-    frontend_url: StrictStr
-    local_http_server_enabled: StrictBool
-    local_http_server_port: StrictInt
-    adb_server_enabled: StrictBool
-    adb_server_port: Optional[StrictInt] = 5555
-    __properties: ClassVar[List[str]] = ["public_server", "private_server", "frontend_url", "local_http_server_enabled", "local_http_server_port", "adb_server_enabled", "adb_server_port"]
+    id: Optional[StrictStr] = None
+    created_at: Optional[StrictStr] = None
+    updated_at: Optional[StrictStr] = None
+    tag: Optional[StrictStr] = None
+    type: Optional[StrictStr] = None
+    server: Optional[StrictStr] = None
+    server_port: Optional[StrictInt] = None
+    uuid: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "tag", "type", "server", "server_port", "uuid"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -53,7 +54,7 @@ class BotConfig(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of BotConfig from a JSON string"""
+        """Create an instance of SbOutbound from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -78,7 +79,7 @@ class BotConfig(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of BotConfig from a dict"""
+        """Create an instance of SbOutbound from a dict"""
         if obj is None:
             return None
 
@@ -88,16 +89,17 @@ class BotConfig(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in BotConfig) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SbOutbound) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "public_server": obj.get("public_server"),
-            "private_server": obj.get("private_server"),
-            "frontend_url": obj.get("frontend_url"),
-            "local_http_server_enabled": obj.get("local_http_server_enabled"),
-            "local_http_server_port": obj.get("local_http_server_port"),
-            "adb_server_enabled": obj.get("adb_server_enabled"),
-            "adb_server_port": obj.get("adb_server_port") if obj.get("adb_server_port") is not None else 5555
+            "id": obj.get("id"),
+            "created_at": obj.get("created_at"),
+            "updated_at": obj.get("updated_at"),
+            "tag": obj.get("tag"),
+            "type": obj.get("type"),
+            "server": obj.get("server"),
+            "server_port": obj.get("server_port"),
+            "uuid": obj.get("uuid")
         })
         return _obj
 

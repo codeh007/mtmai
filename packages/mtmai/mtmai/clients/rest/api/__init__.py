@@ -2,6 +2,7 @@
 
 # import apis into api package
 from mtmai.clients.rest.api.api_token_api import APITokenApi
+from mtmai.clients.rest.api.bot_api import BotApi
 from mtmai.clients.rest.api.event_api import EventApi
 from mtmai.clients.rest.api.filter_api import FilterApi
 from mtmai.clients.rest.api.github_api import GithubApi

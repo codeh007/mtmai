@@ -53,6 +53,7 @@ from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_list import ArtifactList
 from mtmai.clients.rest.models.bot_config import BotConfig
+from mtmai.clients.rest.models.bot_local_state import BotLocalState
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
 from mtmai.clients.rest.models.browser_task import BrowserTask
@@ -150,6 +151,8 @@ from mtmai.clients.rest.models.rerun_step_run_request import RerunStepRunRequest
 from mtmai.clients.rest.models.sns_integration import SNSIntegration
 from mtmai.clients.rest.models.sandbox import Sandbox
 from mtmai.clients.rest.models.save_artifact_request import SaveArtifactRequest
+from mtmai.clients.rest.models.sb_import_request import SbImportRequest
+from mtmai.clients.rest.models.sb_outbound import SbOutbound
 from mtmai.clients.rest.models.sb_worker_profile import SbWorkerProfile
 from mtmai.clients.rest.models.schedule_workflow_run_request import ScheduleWorkflowRunRequest
 from mtmai.clients.rest.models.scheduled_item import ScheduledItem
