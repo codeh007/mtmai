@@ -16,8 +16,11 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
+from pydantic import StrictBool, StrictStr
 from typing import Optional
+from mtmai.clients.rest.models.bot import Bot
 from mtmai.clients.rest.models.bot_config import BotConfig
+from mtmai.clients.rest.models.bot_list import BotList
 from mtmai.clients.rest.models.bot_local_state import BotLocalState
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
@@ -39,8 +42,10 @@ class BotApi:
 
 
     @validate_call
-    async def bot_get_config(
+    async def bot_get(
         self,
+        bot: StrictStr,
+        auto_create: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -53,11 +58,15 @@ class BotApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BotConfig:
-        """bot_get_config
+    ) -> Bot:
+        """bot_get
 
-        Get bot config for a tenant.
+        Get bot by id.
 
+        :param bot: (required)
+        :type bot: str
+        :param auto_create:
+        :type auto_create: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -80,7 +89,9 @@ class BotApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._bot_get_config_serialize(
+        _param = self._bot_get_serialize(
+            bot=bot,
+            auto_create=auto_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -88,7 +99,7 @@ class BotApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
+            '200': "Bot",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -104,8 +115,10 @@ class BotApi:
 
 
     @validate_call
-    async def bot_get_config_with_http_info(
+    async def bot_get_with_http_info(
         self,
+        bot: StrictStr,
+        auto_create: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -118,11 +131,15 @@ class BotApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BotConfig]:
-        """bot_get_config
+    ) -> ApiResponse[Bot]:
+        """bot_get
 
-        Get bot config for a tenant.
+        Get bot by id.
 
+        :param bot: (required)
+        :type bot: str
+        :param auto_create:
+        :type auto_create: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -145,7 +162,9 @@ class BotApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._bot_get_config_serialize(
+        _param = self._bot_get_serialize(
+            bot=bot,
+            auto_create=auto_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -153,7 +172,7 @@ class BotApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
+            '200': "Bot",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -169,8 +188,10 @@ class BotApi:
 
 
     @validate_call
-    async def bot_get_config_without_preload_content(
+    async def bot_get_without_preload_content(
         self,
+        bot: StrictStr,
+        auto_create: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -184,10 +205,14 @@ class BotApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """bot_get_config
+        """bot_get
 
-        Get bot config for a tenant.
+        Get bot by id.
 
+        :param bot: (required)
+        :type bot: str
+        :param auto_create:
+        :type auto_create: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -210,7 +235,9 @@ class BotApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._bot_get_config_serialize(
+        _param = self._bot_get_serialize(
+            bot=bot,
+            auto_create=auto_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -218,7 +245,7 @@ class BotApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
+            '200': "Bot",
             '400': "APIErrors",
             '403': "APIErrors",
         }
@@ -229,8 +256,10 @@ class BotApi:
         return response_data.response
 
 
-    def _bot_get_config_serialize(
+    def _bot_get_serialize(
         self,
+        bot,
+        auto_create,
         _request_auth,
         _content_type,
         _headers,
@@ -252,7 +281,13 @@ class BotApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
+        if bot is not None:
+            _path_params['bot'] = bot
         # process the query parameters
+        if auto_create is not None:
+            
+            _query_params.append(('autoCreate', auto_create))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -273,7 +308,7 @@ class BotApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/bot/config',
+            resource_path='/api/v1/bot/{bot}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -553,6 +588,257 @@ class BotApi:
         return self.api_client.param_serialize(
             method='POST',
             resource_path='/api/v1/bot/heartbeat',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    async def bot_list(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BotList:
+        """bot_list
+
+        Get bot list for a tenant.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._bot_list_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "BotList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+        }
+        response_data = await self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    async def bot_list_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BotList]:
+        """bot_list
+
+        Get bot list for a tenant.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._bot_list_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "BotList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+        }
+        response_data = await self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    async def bot_list_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """bot_list
+
+        Get bot list for a tenant.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._bot_list_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "BotList",
+            '400': "APIErrors",
+            '403': "APIErrors",
+        }
+        response_data = await self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _bot_list_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='GET',
+            resource_path='/api/v1/bot/list',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

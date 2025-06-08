@@ -52,7 +52,9 @@ from mtmai.clients.rest.models.agent_runner_output import AgentRunnerOutput
 from mtmai.clients.rest.models.agent_topic_types import AgentTopicTypes
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.artifact_list import ArtifactList
+from mtmai.clients.rest.models.bot import Bot
 from mtmai.clients.rest.models.bot_config import BotConfig
+from mtmai.clients.rest.models.bot_list import BotList
 from mtmai.clients.rest.models.bot_local_state import BotLocalState
 from mtmai.clients.rest.models.browser_config import BrowserConfig
 from mtmai.clients.rest.models.browser_open_task import BrowserOpenTask
@@ -81,7 +83,6 @@ from mtmai.clients.rest.models.cron_workflows_method import CronWorkflowsMethod
 from mtmai.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
 from mtmai.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmai.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
-from mtmai.clients.rest.models.demo_response import DemoResponse
 from mtmai.clients.rest.models.endpoint import Endpoint
 from mtmai.clients.rest.models.endpoint_list import EndpointList
 from mtmai.clients.rest.models.event import Event
