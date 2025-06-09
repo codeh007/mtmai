@@ -83,6 +83,7 @@ from mtmai.clients.rest.models.cron_workflows_method import CronWorkflowsMethod
 from mtmai.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
 from mtmai.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmai.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
+from mtmai.clients.rest.models.device import Device
 from mtmai.clients.rest.models.endpoint import Endpoint
 from mtmai.clients.rest.models.endpoint_list import EndpointList
 from mtmai.clients.rest.models.event import Event
@@ -112,6 +113,7 @@ from mtmai.clients.rest.models.log_line_level import LogLineLevel
 from mtmai.clients.rest.models.log_line_list import LogLineList
 from mtmai.clients.rest.models.log_line_order_by_direction import LogLineOrderByDirection
 from mtmai.clients.rest.models.log_line_order_by_field import LogLineOrderByField
+from mtmai.clients.rest.models.mobile_hello import MobileHello
 from mtmai.clients.rest.models.model import Model
 from mtmai.clients.rest.models.model_content import ModelContent
 from mtmai.clients.rest.models.model_family import ModelFamily

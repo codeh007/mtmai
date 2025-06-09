@@ -3,15 +3,16 @@ from typing import Optional
 
 from google.adk.artifacts.base_artifact_service import BaseArtifactService
 from google.genai import types
+from sqlalchemy import delete
+from sqlmodel import select
+from typing_extensions import override
+
 from mtmai.clients.mtm_client import MtmClient
 from mtmai.clients.rest.models.artifact import Artifact
 from mtmai.clients.rest.models.save_artifact_request import SaveArtifactRequest
 from mtmai.db.db import get_async_session
 from mtmai.models.artifact import DBArtifact
 from mtmai.mtlibs.mtfs import get_s3fs
-from sqlalchemy import delete
-from sqlmodel import select
-from typing_extensions import override
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +20,9 @@ logger = logging.getLogger(__name__)
 class MtmArtifactService(BaseArtifactService):
   """An artifact service implementation 使用 postgresql 存储构件, 列表数据存入表, 文件存入第三方aws s3"""
 
-  def __init__(self, tenant_id: str):
+  def __init__(self):
     self.bucket_name = ""
-    self.tenant_id = tenant_id
+    # self.tenant_id = tenant_id
     self.mtm_client = MtmClient()
 
   @override

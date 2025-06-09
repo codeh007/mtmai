@@ -7,13 +7,14 @@ from google.adk.events.event import Event
 from google.adk.runners import Runner
 from google.genai import types  # noqa: F401
 from hatchet_sdk import Context, SleepCondition
+from pydantic import BaseModel
+
 from mtmai.agents.shortvideo_agent.shortvideo_agent import new_shortvideo_agent
 from mtmai.core.config import settings
 from mtmai.hatchet_client import hatchet
 from mtmai.mtlibs.id import generate_uuid
 from mtmai.services.artifact_service import MtmArtifactService
 from mtmai.services.gomtm_db_session_service import GomtmDatabaseSessionService
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ session_service = GomtmDatabaseSessionService(
 )
 
 artifact_service = MtmArtifactService(
-  db_url=settings.MTM_DATABASE_URL,
+  # db_url=settings.MTM_DATABASE_URL,
 )
 
 
