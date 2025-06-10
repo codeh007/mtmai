@@ -83,7 +83,6 @@ from mtmai.clients.rest.models.cron_workflows_method import CronWorkflowsMethod
 from mtmai.clients.rest.models.cron_workflows_order_by_field import CronWorkflowsOrderByField
 from mtmai.clients.rest.models.dash_sidebar_item import DashSidebarItem
 from mtmai.clients.rest.models.dash_sidebar_item_leaf import DashSidebarItemLeaf
-from mtmai.clients.rest.models.device import Device
 from mtmai.clients.rest.models.endpoint import Endpoint
 from mtmai.clients.rest.models.endpoint_list import EndpointList
 from mtmai.clients.rest.models.event import Event
@@ -205,6 +204,8 @@ from mtmai.clients.rest.models.tenant_resource_policy import TenantResourcePolic
 from mtmai.clients.rest.models.tenant_step_run_queue_metrics import TenantStepRunQueueMetrics
 from mtmai.clients.rest.models.tenant_version import TenantVersion
 from mtmai.clients.rest.models.tool_types import ToolTypes
+from mtmai.clients.rest.models.trigger_workflow_request import TriggerWorkflowRequest
+from mtmai.clients.rest.models.trigger_workflow_response import TriggerWorkflowResponse
 from mtmai.clients.rest.models.trigger_workflow_run_request import TriggerWorkflowRunRequest
 from mtmai.clients.rest.models.update_endpoint_request import UpdateEndpointRequest
 from mtmai.clients.rest.models.update_site_request import UpdateSiteRequest

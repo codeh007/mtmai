@@ -170,16 +170,22 @@ def download_models():
 
 
 @app.command()
-def worker():
+def worker(name: str = "mtmai-worker"):
+  from mtmai.flows.flow1 import affinity_worker_workflow
   from mtmai.flows.flow_agent_runner import agent_runner_workflow
   from mtmai.flows.flow_videogen import short_video_gen_workflow
   from mtmai.hatchet_client import hatchet
 
   worker = hatchet.worker(
-    "mtmai-worker",
-    slots=1,
-    workflows=[short_video_gen_workflow, agent_runner_workflow],
+    name,
+    slots=3,
+    labels={
+      "model": "fancy-ai-model-v2",
+      "memory": 512,
+    },
+    workflows=[short_video_gen_workflow, agent_runner_workflow, affinity_worker_workflow],
   )
+
   worker.start()
 
 

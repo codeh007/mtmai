@@ -15,6 +15,7 @@ from mtmai.clients.rest.api.slack_api import SlackApi
 from mtmai.clients.rest.api.step_run_api import StepRunApi
 from mtmai.clients.rest.api.task_api import TaskApi
 from mtmai.clients.rest.api.tenant_api import TenantApi
+from mtmai.clients.rest.api.trigger_api import TriggerApi
 from mtmai.clients.rest.api.user_api import UserApi
 from mtmai.clients.rest.api.worker_api import WorkerApi
 from mtmai.clients.rest.api.workflow_api import WorkflowApi
