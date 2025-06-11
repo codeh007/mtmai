@@ -17,19 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Event(BaseModel):
+class PAccountCreateRequest(BaseModel):
     """
-    Event
+    PAccountCreateRequest
     """ # noqa: E501
-    key: StrictStr = Field(description="The key for the event.")
-    input: Optional[Dict[str, Any]] = Field(default=None, description="The input for the event.")
-    additional_metadata: Dict[str, Any] = Field(description="Additional metadata for the event.", alias="additionalMetadata")
-    __properties: ClassVar[List[str]] = ["key", "input", "additionalMetadata"]
+    name: StrictStr
+    type: StrictStr
+    __properties: ClassVar[List[str]] = ["name", "type"]
+
+    @field_validator('type')
+    def type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['instagram']):
+            raise ValueError("must be one of enum values ('instagram')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +55,7 @@ class Event(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Event from a JSON string"""
+        """Create an instance of PAccountCreateRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +80,7 @@ class Event(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Event from a dict"""
+        """Create an instance of PAccountCreateRequest from a dict"""
         if obj is None:
             return None
 
@@ -84,12 +90,11 @@ class Event(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Event) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in PAccountCreateRequest) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "key": obj.get("key"),
-            "input": obj.get("input"),
-            "additionalMetadata": obj.get("additionalMetadata")
+            "name": obj.get("name"),
+            "type": obj.get("type")
         })
         return _obj
 

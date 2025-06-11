@@ -18,7 +18,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.action_register_instagram import ActionRegisterInstagram
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +29,8 @@ class CommonResult(BaseModel):
     """ # noqa: E501
     success: StrictBool = Field(alias="Success")
     message: StrictStr = Field(alias="Message")
-    __properties: ClassVar[List[str]] = ["Success", "Message"]
+    other: Optional[ActionRegisterInstagram] = None
+    __properties: ClassVar[List[str]] = ["Success", "Message", "other"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,6 +71,9 @@ class CommonResult(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of other
+        if self.other:
+            _dict['other'] = self.other.to_dict()
         return _dict
 
     @classmethod
@@ -87,7 +92,8 @@ class CommonResult(BaseModel):
 
         _obj = cls.model_validate({
             "Success": obj.get("Success"),
-            "Message": obj.get("Message")
+            "Message": obj.get("Message"),
+            "other": ActionRegisterInstagram.from_dict(obj["other"]) if obj.get("other") is not None else None
         })
         return _obj
 

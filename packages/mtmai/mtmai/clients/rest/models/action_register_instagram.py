@@ -17,19 +17,17 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Event(BaseModel):
+class ActionRegisterInstagram(BaseModel):
     """
-    Event
+    (临时演示)注册Instagram账号
     """ # noqa: E501
-    key: StrictStr = Field(description="The key for the event.")
-    input: Optional[Dict[str, Any]] = Field(default=None, description="The input for the event.")
-    additional_metadata: Dict[str, Any] = Field(description="Additional metadata for the event.", alias="additionalMetadata")
-    __properties: ClassVar[List[str]] = ["key", "input", "additionalMetadata"]
+    arg1: StrictStr
+    __properties: ClassVar[List[str]] = ["arg1"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +47,7 @@ class Event(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Event from a JSON string"""
+        """Create an instance of ActionRegisterInstagram from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -74,7 +72,7 @@ class Event(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Event from a dict"""
+        """Create an instance of ActionRegisterInstagram from a dict"""
         if obj is None:
             return None
 
@@ -84,12 +82,10 @@ class Event(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Event) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ActionRegisterInstagram) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "key": obj.get("key"),
-            "input": obj.get("input"),
-            "additionalMetadata": obj.get("additionalMetadata")
+            "arg1": obj.get("arg1")
         })
         return _obj
 

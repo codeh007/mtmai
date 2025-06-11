@@ -24,6 +24,7 @@ from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from mtmai.clients.rest.models.api_resource_meta_properties import APIResourceMetaProperties
 from mtmai.clients.rest.models.api_token import APIToken
 from mtmai.clients.rest.models.accept_invite_request import AcceptInviteRequest
+from mtmai.clients.rest.models.action_register_instagram import ActionRegisterInstagram
 from mtmai.clients.rest.models.adk_app import AdkApp
 from mtmai.clients.rest.models.adk_app_list import AdkAppList
 from mtmai.clients.rest.models.adk_app_properties import AdkAppProperties
@@ -113,7 +114,8 @@ from mtmai.clients.rest.models.model_run_properties import ModelRunProperties
 from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_worker_properties import MtWorkerProperties
 from mtmai.clients.rest.models.mt_worker_task import MtWorkerTask
-from mtmai.clients.rest.models.mtm_info import MtmInfo
+from mtmai.clients.rest.models.p_account_create_request import PAccountCreateRequest
+from mtmai.clients.rest.models.p_account_create_response import PAccountCreateResponse
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.part import Part
 from mtmai.clients.rest.models.platform import Platform
