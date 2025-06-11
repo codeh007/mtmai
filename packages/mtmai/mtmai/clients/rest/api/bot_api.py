@@ -101,7 +101,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Bot",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -174,7 +174,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Bot",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -247,7 +247,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Bot",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -380,7 +380,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotConfig",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -449,7 +449,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotConfig",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -518,7 +518,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotConfig",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -655,7 +655,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -720,7 +720,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -785,7 +785,7 @@ class BotApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "BotList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
         }
         response_data = await self.api_client.call_api(
             *_param,

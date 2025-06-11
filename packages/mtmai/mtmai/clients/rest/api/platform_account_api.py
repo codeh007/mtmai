@@ -19,8 +19,8 @@ from typing_extensions import Annotated
 from pydantic import Field
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.bot_config import BotConfig
-from mtmai.clients.rest.models.bot_local_state import BotLocalState
+from mtmai.clients.rest.models.p_account import PAccount
+from mtmai.clients.rest.models.p_account_create import PAccountCreate
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -44,7 +44,7 @@ class PlatformAccountApi:
     async def p_account_create(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        bot_local_state: Optional[BotLocalState] = None,
+        p_account_create: Optional[PAccountCreate] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -57,15 +57,15 @@ class PlatformAccountApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BotConfig:
+    ) -> PAccount:
         """Create platform account
 
         Create platform account.
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param bot_local_state:
-        :type bot_local_state: BotLocalState
+        :param p_account_create:
+        :type p_account_create: PAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,7 +90,7 @@ class PlatformAccountApi:
 
         _param = self._p_account_create_serialize(
             tenant=tenant,
-            bot_local_state=bot_local_state,
+            p_account_create=p_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -98,9 +98,7 @@ class PlatformAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
-            '400': "APIErrors",
-            '403': "APIErrors",
+            '200': "PAccount",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -117,7 +115,7 @@ class PlatformAccountApi:
     async def p_account_create_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        bot_local_state: Optional[BotLocalState] = None,
+        p_account_create: Optional[PAccountCreate] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -130,15 +128,15 @@ class PlatformAccountApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BotConfig]:
+    ) -> ApiResponse[PAccount]:
         """Create platform account
 
         Create platform account.
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param bot_local_state:
-        :type bot_local_state: BotLocalState
+        :param p_account_create:
+        :type p_account_create: PAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -163,7 +161,7 @@ class PlatformAccountApi:
 
         _param = self._p_account_create_serialize(
             tenant=tenant,
-            bot_local_state=bot_local_state,
+            p_account_create=p_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -171,9 +169,7 @@ class PlatformAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
-            '400': "APIErrors",
-            '403': "APIErrors",
+            '200': "PAccount",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -190,7 +186,7 @@ class PlatformAccountApi:
     async def p_account_create_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        bot_local_state: Optional[BotLocalState] = None,
+        p_account_create: Optional[PAccountCreate] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -210,8 +206,8 @@ class PlatformAccountApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param bot_local_state:
-        :type bot_local_state: BotLocalState
+        :param p_account_create:
+        :type p_account_create: PAccountCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -236,7 +232,7 @@ class PlatformAccountApi:
 
         _param = self._p_account_create_serialize(
             tenant=tenant,
-            bot_local_state=bot_local_state,
+            p_account_create=p_account_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -244,9 +240,7 @@ class PlatformAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BotConfig",
-            '400': "APIErrors",
-            '403': "APIErrors",
+            '200': "PAccount",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -258,7 +252,7 @@ class PlatformAccountApi:
     def _p_account_create_serialize(
         self,
         tenant,
-        bot_local_state,
+        p_account_create,
         _request_auth,
         _content_type,
         _headers,
@@ -286,8 +280,8 @@ class PlatformAccountApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if bot_local_state is not None:
-            _body_params = bot_local_state
+        if p_account_create is not None:
+            _body_params = p_account_create
 
 
         # set the HTTP header `Accept`

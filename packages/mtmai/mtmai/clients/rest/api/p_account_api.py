@@ -94,7 +94,7 @@ class PAccountApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PAccountList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
             '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
@@ -164,7 +164,7 @@ class PAccountApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PAccountList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
             '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(
@@ -234,7 +234,7 @@ class PAccountApi:
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "PAccountList",
             '400': "APIErrors",
-            '403': "APIErrors",
+            '403': "APIError",
             '404': "APIErrors",
         }
         response_data = await self.api_client.call_api(

@@ -115,9 +115,9 @@ from mtmai.clients.rest.models.model_types import ModelTypes
 from mtmai.clients.rest.models.mt_worker_properties import MtWorkerProperties
 from mtmai.clients.rest.models.mt_worker_task import MtWorkerTask
 from mtmai.clients.rest.models.p_account import PAccount
-from mtmai.clients.rest.models.p_account_create_request import PAccountCreateRequest
-from mtmai.clients.rest.models.p_account_create_response import PAccountCreateResponse
+from mtmai.clients.rest.models.p_account_create import PAccountCreate
 from mtmai.clients.rest.models.p_account_list import PAccountList
+from mtmai.clients.rest.models.p_account_properties import PAccountProperties
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.part import Part
 from mtmai.clients.rest.models.platform import Platform
