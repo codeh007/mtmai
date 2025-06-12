@@ -13,6 +13,7 @@ python_client_gen(){
     command -v openapi-generator-cli || bun install @openapitools/openapi-generator-cli -g
     mkdir -p $dst_dir
 
+    export JAVA_OPTS="${JAVA_OPTS} -Dlog.level=error"
     openapi-generator-cli generate -i ${PROJECT_DIR}/bin/oas/openapi.yaml -g python -o ./tmp \
         --skip-validate-spec \
         --library asyncio \

@@ -17,31 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PAccount(BaseModel):
+class Photo(BaseModel):
     """
-    PAccount
+    Photo
     """ # noqa: E501
     metadata: APIResourceMeta
-    username: StrictStr = Field(description="Username for the platform account")
-    password: StrictStr = Field(description="Password for the platform account")
-    email: StrictStr = Field(description="Email for the platform account")
-    enabled: StrictBool = Field(description="Whether the account is enabled")
-    platform: StrictStr = Field(description="Platform name")
-    name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the account")
-    type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")
-    token: Optional[StrictStr] = Field(default=None, description="Authentication token if applicable")
-    otp_seed: Optional[StrictStr] = Field(default=None, description="OTP seed for two-factor authentication", alias="otpSeed")
-    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
-    comment: Optional[StrictStr] = Field(default=None, description="Additional notes or comments about the account")
-    state: Optional[Dict[str, Any]] = Field(default=None, description="Additional state data for the account")
-    __properties: ClassVar[List[str]] = ["metadata", "username", "password", "email", "enabled", "platform", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state"]
+    filename: StrictStr = Field(description="The filename of the photo")
+    album_id: StrictStr = Field(description="The ID of the album this photo belongs to", alias="albumId")
+    url: StrictStr = Field(description="The URL to access the photo")
+    thumbnail_url: StrictStr = Field(description="The URL to access the thumbnail of the photo", alias="thumbnailUrl")
+    description: Optional[Annotated[str, Field(strict=True, max_length=500)]] = Field(default=None, description="The description of the photo")
+    taken_at: Optional[datetime] = Field(default=None, description="The date and time when the photo was taken", alias="takenAt")
+    __properties: ClassVar[List[str]] = ["metadata", "filename", "albumId", "url", "thumbnailUrl", "description", "takenAt"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -61,7 +56,7 @@ class PAccount(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PAccount from a JSON string"""
+        """Create an instance of Photo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -89,7 +84,7 @@ class PAccount(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PAccount from a dict"""
+        """Create an instance of Photo from a dict"""
         if obj is None:
             return None
 
@@ -99,23 +94,16 @@ class PAccount(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in PAccount) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in Photo) in the input: " + _key)
 
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "username": obj.get("username"),
-            "password": obj.get("password"),
-            "email": obj.get("email"),
-            "enabled": obj.get("enabled"),
-            "platform": obj.get("platform"),
-            "name": obj.get("name"),
+            "filename": obj.get("filename"),
+            "albumId": obj.get("albumId"),
+            "url": obj.get("url"),
+            "thumbnailUrl": obj.get("thumbnailUrl"),
             "description": obj.get("description"),
-            "type": obj.get("type"),
-            "token": obj.get("token"),
-            "otpSeed": obj.get("otpSeed"),
-            "tags": obj.get("tags"),
-            "comment": obj.get("comment"),
-            "state": obj.get("state")
+            "takenAt": obj.get("takenAt")
         })
         return _obj
 

@@ -17,29 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PAccountCreate(BaseModel):
+class UpdateAlbumRequest(BaseModel):
     """
-    PAccountCreate
+    UpdateAlbumRequest
     """ # noqa: E501
-    username: StrictStr = Field(description="Username for the platform account")
-    password: StrictStr = Field(description="Password for the platform account")
-    email: StrictStr = Field(description="Email for the platform account")
-    enabled: StrictBool = Field(description="Whether the account is enabled")
-    platform: StrictStr = Field(description="Platform name")
-    name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the account")
-    type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")
-    token: Optional[StrictStr] = Field(default=None, description="Authentication token if applicable")
-    otp_seed: Optional[StrictStr] = Field(default=None, description="OTP seed for two-factor authentication", alias="otpSeed")
-    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
-    comment: Optional[StrictStr] = Field(default=None, description="Additional notes or comments about the account")
-    state: Optional[Dict[str, Any]] = Field(default=None, description="Additional state data for the account")
-    __properties: ClassVar[List[str]] = ["username", "password", "email", "enabled", "platform", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state"]
+    name: Optional[Annotated[str, Field(min_length=1, strict=True, max_length=100)]] = Field(default=None, description="The name of the album")
+    description: Optional[Annotated[str, Field(strict=True, max_length=500)]] = Field(default=None, description="The description of the album")
+    cover_photo_id: Optional[StrictStr] = Field(default=None, description="The ID of the cover photo for this album", alias="coverPhotoId")
+    __properties: ClassVar[List[str]] = ["name", "description", "coverPhotoId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -59,7 +50,7 @@ class PAccountCreate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PAccountCreate from a JSON string"""
+        """Create an instance of UpdateAlbumRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +75,7 @@ class PAccountCreate(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PAccountCreate from a dict"""
+        """Create an instance of UpdateAlbumRequest from a dict"""
         if obj is None:
             return None
 
@@ -94,22 +85,12 @@ class PAccountCreate(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in PAccountCreate) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in UpdateAlbumRequest) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "username": obj.get("username"),
-            "password": obj.get("password"),
-            "email": obj.get("email"),
-            "enabled": obj.get("enabled"),
-            "platform": obj.get("platform"),
             "name": obj.get("name"),
             "description": obj.get("description"),
-            "type": obj.get("type"),
-            "token": obj.get("token"),
-            "otpSeed": obj.get("otpSeed"),
-            "tags": obj.get("tags"),
-            "comment": obj.get("comment"),
-            "state": obj.get("state")
+            "coverPhotoId": obj.get("coverPhotoId")
         })
         return _obj
 

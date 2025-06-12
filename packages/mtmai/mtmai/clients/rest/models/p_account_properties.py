@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,11 +26,20 @@ class PAccountProperties(BaseModel):
     """
     PAccountProperties
     """ # noqa: E501
-    username: StrictStr
-    password: StrictStr
-    email: StrictStr
-    enabled: StrictBool
-    __properties: ClassVar[List[str]] = ["username", "password", "email", "enabled"]
+    username: StrictStr = Field(description="Username for the platform account")
+    password: StrictStr = Field(description="Password for the platform account")
+    email: StrictStr = Field(description="Email for the platform account")
+    enabled: StrictBool = Field(description="Whether the account is enabled")
+    platform: StrictStr = Field(description="Platform name")
+    name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the account")
+    type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")
+    token: Optional[StrictStr] = Field(default=None, description="Authentication token if applicable")
+    otp_seed: Optional[StrictStr] = Field(default=None, description="OTP seed for two-factor authentication", alias="otpSeed")
+    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
+    comment: Optional[StrictStr] = Field(default=None, description="Additional notes or comments about the account")
+    state: Optional[Dict[str, Any]] = Field(default=None, description="Additional state data for the account")
+    __properties: ClassVar[List[str]] = ["username", "password", "email", "enabled", "platform", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,7 +100,16 @@ class PAccountProperties(BaseModel):
             "username": obj.get("username"),
             "password": obj.get("password"),
             "email": obj.get("email"),
-            "enabled": obj.get("enabled")
+            "enabled": obj.get("enabled"),
+            "platform": obj.get("platform"),
+            "name": obj.get("name"),
+            "description": obj.get("description"),
+            "type": obj.get("type"),
+            "token": obj.get("token"),
+            "otpSeed": obj.get("otpSeed"),
+            "tags": obj.get("tags"),
+            "comment": obj.get("comment"),
+            "state": obj.get("state")
         })
         return _obj
 
