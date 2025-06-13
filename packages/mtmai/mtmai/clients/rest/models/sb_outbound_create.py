@@ -17,26 +17,24 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Proxy(BaseModel):
+class SbOutboundCreate(BaseModel):
     """
-    Proxy
+    Create a new sing-box outbound
     """ # noqa: E501
-    metadata: APIResourceMeta
-    name: StrictStr
-    description: StrictStr
-    url: StrictStr
-    login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
-    properties: Optional[Dict[str, Any]] = None
-    tags: Optional[List[StrictStr]] = None
-    enabled: Optional[StrictBool] = None
-    provider: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["metadata", "name", "description", "url", "loginUrl", "properties", "tags", "enabled", "provider"]
+    tag: StrictStr = Field(description="Tag name for this outbound")
+    type: StrictStr = Field(description="Type of outbound protocol")
+    server: StrictStr = Field(description="Server address")
+    server_port: StrictInt = Field(description="Server port number")
+    password: Optional[StrictStr] = Field(default=None, description="Authentication password")
+    security: Optional[StrictStr] = Field(default=None, description="Security protocol")
+    domain_resolver: Optional[StrictStr] = Field(default=None, description="Domain resolver configuration")
+    full_config: Dict[str, Any] = Field(description="Complete configuration in JSON format")
+    __properties: ClassVar[List[str]] = ["tag", "type", "server", "server_port", "password", "security", "domain_resolver", "full_config"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +54,7 @@ class Proxy(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Proxy from a JSON string"""
+        """Create an instance of SbOutboundCreate from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,14 +75,11 @@ class Proxy(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Proxy from a dict"""
+        """Create an instance of SbOutboundCreate from a dict"""
         if obj is None:
             return None
 
@@ -94,18 +89,17 @@ class Proxy(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Proxy) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SbOutboundCreate) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "name": obj.get("name"),
-            "description": obj.get("description"),
-            "url": obj.get("url"),
-            "loginUrl": obj.get("loginUrl"),
-            "properties": obj.get("properties"),
-            "tags": obj.get("tags"),
-            "enabled": obj.get("enabled"),
-            "provider": obj.get("provider")
+            "tag": obj.get("tag"),
+            "type": obj.get("type"),
+            "server": obj.get("server"),
+            "server_port": obj.get("server_port"),
+            "password": obj.get("password"),
+            "security": obj.get("security"),
+            "domain_resolver": obj.get("domain_resolver"),
+            "full_config": obj.get("full_config")
         })
         return _obj
 

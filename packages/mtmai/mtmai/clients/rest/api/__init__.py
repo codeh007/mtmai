@@ -17,8 +17,10 @@ from mtmai.clients.rest.api.frontend_api import FrontendApi
 from mtmai.clients.rest.api.mtworker_api import MtworkerApi
 from mtmai.clients.rest.api.p_account_api import PAccountApi
 from mtmai.clients.rest.api.photos_api import PhotosApi
+from mtmai.clients.rest.api.platform_api import PlatformApi
 from mtmai.clients.rest.api.post_api import PostApi
 from mtmai.clients.rest.api.posts_api import PostsApi
+from mtmai.clients.rest.api.proxy_api import ProxyApi
 from mtmai.clients.rest.api.script_api import ScriptApi
 from mtmai.clients.rest.api.sing_box_api import SingBoxApi
 from mtmai.clients.rest.api.site_api import SiteApi

@@ -17,26 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from mtmai.clients.rest.models.sb_outbound import SbOutbound
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Proxy(BaseModel):
+class SingboxGetOutbounds200Response(BaseModel):
     """
-    Proxy
+    SingboxGetOutbounds200Response
     """ # noqa: E501
-    metadata: APIResourceMeta
-    name: StrictStr
-    description: StrictStr
-    url: StrictStr
-    login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
-    properties: Optional[Dict[str, Any]] = None
-    tags: Optional[List[StrictStr]] = None
-    enabled: Optional[StrictBool] = None
-    provider: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["metadata", "name", "description", "url", "loginUrl", "properties", "tags", "enabled", "provider"]
+    outbounds: Optional[List[SbOutbound]] = None
+    __properties: ClassVar[List[str]] = ["outbounds"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -56,7 +48,7 @@ class Proxy(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Proxy from a JSON string"""
+        """Create an instance of SingboxGetOutbounds200Response from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,14 +69,18 @@ class Proxy(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in outbounds (list)
+        _items = []
+        if self.outbounds:
+            for _item_outbounds in self.outbounds:
+                if _item_outbounds:
+                    _items.append(_item_outbounds.to_dict())
+            _dict['outbounds'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Proxy from a dict"""
+        """Create an instance of SingboxGetOutbounds200Response from a dict"""
         if obj is None:
             return None
 
@@ -94,18 +90,10 @@ class Proxy(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Proxy) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in SingboxGetOutbounds200Response) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
-            "name": obj.get("name"),
-            "description": obj.get("description"),
-            "url": obj.get("url"),
-            "loginUrl": obj.get("loginUrl"),
-            "properties": obj.get("properties"),
-            "tags": obj.get("tags"),
-            "enabled": obj.get("enabled"),
-            "provider": obj.get("provider")
+            "outbounds": [SbOutbound.from_dict(_item) for _item in obj["outbounds"]] if obj.get("outbounds") is not None else None
         })
         return _obj
 
