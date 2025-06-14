@@ -115,7 +115,6 @@ from mtmai.clients.rest.models.mt_worker_properties import MtWorkerProperties
 from mtmai.clients.rest.models.mt_worker_task import MtWorkerTask
 from mtmai.clients.rest.models.p_account import PAccount
 from mtmai.clients.rest.models.p_account_create import PAccountCreate
-from mtmai.clients.rest.models.p_account_delete200_response import PAccountDelete200Response
 from mtmai.clients.rest.models.p_account_list import PAccountList
 from mtmai.clients.rest.models.p_account_properties import PAccountProperties
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
@@ -124,19 +123,16 @@ from mtmai.clients.rest.models.photo import Photo
 from mtmai.clients.rest.models.photo_list import PhotoList
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_account import PlatformAccount
-from mtmai.clients.rest.models.platform_account_create import PlatformAccountCreate
 from mtmai.clients.rest.models.platform_account_list import PlatformAccountList
 from mtmai.clients.rest.models.platform_account_properties import PlatformAccountProperties
 from mtmai.clients.rest.models.platform_account_upsert import PlatformAccountUpsert
 from mtmai.clients.rest.models.platform_create import PlatformCreate
+from mtmai.clients.rest.models.platform_delete200_response import PlatformDelete200Response
 from mtmai.clients.rest.models.platform_list import PlatformList
+from mtmai.clients.rest.models.platform_properties import PlatformProperties
 from mtmai.clients.rest.models.platform_update import PlatformUpdate
 from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
-from mtmai.clients.rest.models.proxy import Proxy
-from mtmai.clients.rest.models.proxy_list import ProxyList
-from mtmai.clients.rest.models.proxy_properties import ProxyProperties
-from mtmai.clients.rest.models.proxy_upsert import ProxyUpsert
 from mtmai.clients.rest.models.pull_request import PullRequest
 from mtmai.clients.rest.models.pull_request_state import PullRequestState
 from mtmai.clients.rest.models.push_event_response import PushEventResponse
@@ -154,8 +150,6 @@ from mtmai.clients.rest.models.sandbox import Sandbox
 from mtmai.clients.rest.models.save_artifact_request import SaveArtifactRequest
 from mtmai.clients.rest.models.sb_import_request import SbImportRequest
 from mtmai.clients.rest.models.sb_outbound import SbOutbound
-from mtmai.clients.rest.models.sb_outbound_create import SbOutboundCreate
-from mtmai.clients.rest.models.sb_outbound_list import SbOutboundList
 from mtmai.clients.rest.models.sb_worker_profile import SbWorkerProfile
 from mtmai.clients.rest.models.schedule_workflow_run_request import ScheduleWorkflowRunRequest
 from mtmai.clients.rest.models.scheduled_item import ScheduledItem
@@ -169,8 +163,6 @@ from mtmai.clients.rest.models.scripts_by_name404_response import ScriptsByName4
 from mtmai.clients.rest.models.semaphore_slots import SemaphoreSlots
 from mtmai.clients.rest.models.siderbar_config import SiderbarConfig
 from mtmai.clients.rest.models.siderbar_config_other import SiderbarConfigOther
-from mtmai.clients.rest.models.singbox_delete_outbound200_response import SingboxDeleteOutbound200Response
-from mtmai.clients.rest.models.singbox_get_outbounds200_response import SingboxGetOutbounds200Response
 from mtmai.clients.rest.models.site import Site
 from mtmai.clients.rest.models.site_host import SiteHost
 from mtmai.clients.rest.models.site_host_list import SiteHostList

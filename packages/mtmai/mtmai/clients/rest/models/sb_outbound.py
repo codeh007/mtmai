@@ -17,28 +17,24 @@ import pprint
 import re  # noqa: F401
 import json
 
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
 class SbOutbound(BaseModel):
     """
-    Sing-box outbound configuration
+    SbOutbound
     """ # noqa: E501
-    id: Optional[StrictStr] = Field(default=None, description="Unique identifier")
-    tag: Optional[StrictStr] = Field(default=None, description="Tag name for this outbound")
-    type: Optional[StrictStr] = Field(default=None, description="Type of outbound protocol")
-    server: Optional[StrictStr] = Field(default=None, description="Server address")
-    server_port: Optional[StrictInt] = Field(default=None, description="Server port number")
-    password: Optional[StrictStr] = Field(default=None, description="Authentication password")
-    security: Optional[StrictStr] = Field(default=None, description="Security protocol")
-    domain_resolver: Optional[StrictStr] = Field(default=None, description="Domain resolver configuration")
-    full_config: Optional[Dict[str, Any]] = Field(default=None, description="Complete configuration in JSON format")
-    created_at: Optional[datetime] = Field(default=None, description="Creation timestamp")
-    updated_at: Optional[datetime] = Field(default=None, description="Last update timestamp")
-    __properties: ClassVar[List[str]] = ["id", "tag", "type", "server", "server_port", "password", "security", "domain_resolver", "full_config", "created_at", "updated_at"]
+    id: Optional[StrictStr] = None
+    created_at: Optional[StrictStr] = None
+    updated_at: Optional[StrictStr] = None
+    tag: Optional[StrictStr] = None
+    type: Optional[StrictStr] = None
+    server: Optional[StrictStr] = None
+    server_port: Optional[StrictInt] = None
+    uuid: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["id", "created_at", "updated_at", "tag", "type", "server", "server_port", "uuid"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,16 +93,13 @@ class SbOutbound(BaseModel):
 
         _obj = cls.model_validate({
             "id": obj.get("id"),
+            "created_at": obj.get("created_at"),
+            "updated_at": obj.get("updated_at"),
             "tag": obj.get("tag"),
             "type": obj.get("type"),
             "server": obj.get("server"),
             "server_port": obj.get("server_port"),
-            "password": obj.get("password"),
-            "security": obj.get("security"),
-            "domain_resolver": obj.get("domain_resolver"),
-            "full_config": obj.get("full_config"),
-            "created_at": obj.get("created_at"),
-            "updated_at": obj.get("updated_at")
+            "uuid": obj.get("uuid")
         })
         return _obj
 

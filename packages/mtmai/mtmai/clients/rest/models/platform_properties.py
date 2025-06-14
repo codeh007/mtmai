@@ -22,9 +22,9 @@ from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PlatformCreate(BaseModel):
+class PlatformProperties(BaseModel):
     """
-    PlatformCreate
+    PlatformProperties
     """ # noqa: E501
     name: StrictStr = Field(description="Name of the platform")
     url: Optional[StrictStr] = Field(default=None, description="URL of the platform")
@@ -51,7 +51,7 @@ class PlatformCreate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PlatformCreate from a JSON string"""
+        """Create an instance of PlatformProperties from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,7 +76,7 @@ class PlatformCreate(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PlatformCreate from a dict"""
+        """Create an instance of PlatformProperties from a dict"""
         if obj is None:
             return None
 
@@ -86,7 +86,7 @@ class PlatformCreate(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in PlatformCreate) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in PlatformProperties) in the input: " + _key)
 
         _obj = cls.model_validate({
             "name": obj.get("name"),

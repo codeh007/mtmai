@@ -30,7 +30,7 @@ class PAccountProperties(BaseModel):
     password: StrictStr = Field(description="Password for the platform account")
     email: StrictStr = Field(description="Email for the platform account")
     enabled: StrictBool = Field(description="Whether the account is enabled")
-    platform_id: StrictStr = Field(description="Platform ID", alias="platformId")
+    platform_id: StrictStr = Field(description="UUID of the platform this account belongs to", alias="platformId")
     name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
     description: Optional[StrictStr] = Field(default=None, description="Description of the account")
     type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")

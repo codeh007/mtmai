@@ -29,17 +29,12 @@ class PAccountCreate(BaseModel):
     username: StrictStr = Field(description="Username for the platform account")
     password: StrictStr = Field(description="Password for the platform account")
     email: StrictStr = Field(description="Email for the platform account")
-    enabled: StrictBool = Field(description="Whether the account is enabled")
-    platform_id: StrictStr = Field(description="Platform ID", alias="platformId")
+    enabled: Optional[StrictBool] = Field(default=True, description="Whether the account is enabled")
+    platform_id: StrictStr = Field(description="UUID of the platform this account belongs to", alias="platformId")
     name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
-    description: Optional[StrictStr] = Field(default=None, description="Description of the account")
-    type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")
-    token: Optional[StrictStr] = Field(default=None, description="Authentication token if applicable")
-    otp_seed: Optional[StrictStr] = Field(default=None, description="OTP seed for two-factor authentication", alias="otpSeed")
-    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
     comment: Optional[StrictStr] = Field(default=None, description="Additional notes or comments about the account")
-    state: Optional[Dict[str, Any]] = Field(default=None, description="Additional state data for the account")
-    __properties: ClassVar[List[str]] = ["username", "password", "email", "enabled", "platformId", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state"]
+    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
+    __properties: ClassVar[List[str]] = ["username", "password", "email", "enabled", "platformId", "name", "comment", "tags"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -100,16 +95,11 @@ class PAccountCreate(BaseModel):
             "username": obj.get("username"),
             "password": obj.get("password"),
             "email": obj.get("email"),
-            "enabled": obj.get("enabled"),
+            "enabled": obj.get("enabled") if obj.get("enabled") is not None else True,
             "platformId": obj.get("platformId"),
             "name": obj.get("name"),
-            "description": obj.get("description"),
-            "type": obj.get("type"),
-            "token": obj.get("token"),
-            "otpSeed": obj.get("otpSeed"),
-            "tags": obj.get("tags"),
             "comment": obj.get("comment"),
-            "state": obj.get("state")
+            "tags": obj.get("tags")
         })
         return _obj
 

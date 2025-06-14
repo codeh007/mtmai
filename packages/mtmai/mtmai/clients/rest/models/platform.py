@@ -28,13 +28,12 @@ class Platform(BaseModel):
     Platform
     """ # noqa: E501
     metadata: APIResourceMeta
-    name: StrictStr
-    description: Optional[StrictStr] = None
-    url: StrictStr
-    login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
-    properties: Optional[Dict[str, Any]] = None
-    tags: Optional[List[StrictStr]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "name", "description", "url", "loginUrl", "properties", "tags"]
+    name: StrictStr = Field(description="Name of the platform")
+    url: Optional[StrictStr] = Field(default=None, description="URL of the platform")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the platform")
+    login_url: Optional[StrictStr] = Field(default=None, description="Login URL for the platform", alias="loginUrl")
+    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the platform")
+    __properties: ClassVar[List[str]] = ["metadata", "name", "url", "description", "loginUrl", "tags"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,10 +96,9 @@ class Platform(BaseModel):
         _obj = cls.model_validate({
             "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
             "name": obj.get("name"),
-            "description": obj.get("description"),
             "url": obj.get("url"),
+            "description": obj.get("description"),
             "loginUrl": obj.get("loginUrl"),
-            "properties": obj.get("properties"),
             "tags": obj.get("tags")
         })
         return _obj

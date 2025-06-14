@@ -17,9 +17,10 @@ import pprint
 import re  # noqa: F401
 import json
 
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,14 +28,15 @@ class PlatformUpdate(BaseModel):
     """
     PlatformUpdate
     """ # noqa: E501
-    metadata: APIResourceMeta
-    name: StrictStr
-    description: Optional[StrictStr] = None
-    url: StrictStr
-    login_url: Optional[StrictStr] = Field(default=None, alias="loginUrl")
-    properties: Optional[Dict[str, Any]] = None
-    tags: Optional[List[StrictStr]] = None
-    __properties: ClassVar[List[str]] = ["metadata", "name", "description", "url", "loginUrl", "properties", "tags"]
+    id: Annotated[str, Field(min_length=0, strict=True, max_length=36)] = Field(description="the id of this resource, in UUID format")
+    created_at: datetime = Field(description="the time that this resource was created", alias="createdAt")
+    updated_at: datetime = Field(description="the time that this resource was last updated", alias="updatedAt")
+    name: StrictStr = Field(description="Name of the platform")
+    url: Optional[StrictStr] = Field(default=None, description="URL of the platform")
+    description: Optional[StrictStr] = Field(default=None, description="Description of the platform")
+    login_url: Optional[StrictStr] = Field(default=None, description="Login URL for the platform", alias="loginUrl")
+    tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the platform")
+    __properties: ClassVar[List[str]] = ["id", "createdAt", "updatedAt", "name", "url", "description", "loginUrl", "tags"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,9 +77,6 @@ class PlatformUpdate(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of metadata
-        if self.metadata:
-            _dict['metadata'] = self.metadata.to_dict()
         return _dict
 
     @classmethod
@@ -95,12 +94,13 @@ class PlatformUpdate(BaseModel):
                 raise ValueError("Error due to additional fields (not defined in PlatformUpdate) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "metadata": APIResourceMeta.from_dict(obj["metadata"]) if obj.get("metadata") is not None else None,
+            "id": obj.get("id"),
+            "createdAt": obj.get("createdAt"),
+            "updatedAt": obj.get("updatedAt"),
             "name": obj.get("name"),
-            "description": obj.get("description"),
             "url": obj.get("url"),
+            "description": obj.get("description"),
             "loginUrl": obj.get("loginUrl"),
-            "properties": obj.get("properties"),
             "tags": obj.get("tags")
         })
         return _obj

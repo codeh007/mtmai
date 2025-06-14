@@ -19,9 +19,9 @@ from typing_extensions import Annotated
 from pydantic import Field
 from typing import Optional
 from typing_extensions import Annotated
-from mtmai.clients.rest.models.p_account_delete200_response import PAccountDelete200Response
 from mtmai.clients.rest.models.platform import Platform
 from mtmai.clients.rest.models.platform_create import PlatformCreate
+from mtmai.clients.rest.models.platform_delete200_response import PlatformDelete200Response
 from mtmai.clients.rest.models.platform_list import PlatformList
 from mtmai.clients.rest.models.platform_update import PlatformUpdate
 
@@ -317,6 +317,8 @@ class PlatformApi:
 
         # authentication setting
         _auth_settings: List[str] = [
+            'cookieAuth', 
+            'bearerAuth'
         ]
 
         return self.api_client.param_serialize(
@@ -341,7 +343,7 @@ class PlatformApi:
     async def platform_delete(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -354,15 +356,15 @@ class PlatformApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> PAccountDelete200Response:
+    ) -> PlatformDelete200Response:
         """Delete platform
 
         Delete platform
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -387,7 +389,7 @@ class PlatformApi:
 
         _param = self._platform_delete_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -395,7 +397,7 @@ class PlatformApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -415,7 +417,7 @@ class PlatformApi:
     async def platform_delete_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -428,15 +430,15 @@ class PlatformApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[PAccountDelete200Response]:
+    ) -> ApiResponse[PlatformDelete200Response]:
         """Delete platform
 
         Delete platform
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -461,7 +463,7 @@ class PlatformApi:
 
         _param = self._platform_delete_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -469,7 +471,7 @@ class PlatformApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -489,7 +491,7 @@ class PlatformApi:
     async def platform_delete_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -509,8 +511,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -535,7 +537,7 @@ class PlatformApi:
 
         _param = self._platform_delete_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -543,7 +545,7 @@ class PlatformApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -558,7 +560,7 @@ class PlatformApi:
     def _platform_delete_serialize(
         self,
         tenant,
-        platform,
+        platform_id,
         _request_auth,
         _content_type,
         _headers,
@@ -582,8 +584,8 @@ class PlatformApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if platform is not None:
-            _path_params['platform'] = platform
+        if platform_id is not None:
+            _path_params['platformId'] = platform_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -607,7 +609,7 @@ class PlatformApi:
 
         return self.api_client.param_serialize(
             method='DELETE',
-            resource_path='/api/v1/tenants/{tenant}/platforms/{platform}/delete',
+            resource_path='/api/v1/tenants/{tenant}/platforms/{platformId}/delete',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -627,7 +629,7 @@ class PlatformApi:
     async def platform_get(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -647,8 +649,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -673,7 +675,7 @@ class PlatformApi:
 
         _param = self._platform_get_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -701,7 +703,7 @@ class PlatformApi:
     async def platform_get_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -721,8 +723,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -747,7 +749,7 @@ class PlatformApi:
 
         _param = self._platform_get_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -775,7 +777,7 @@ class PlatformApi:
     async def platform_get_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -795,8 +797,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -821,7 +823,7 @@ class PlatformApi:
 
         _param = self._platform_get_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -844,7 +846,7 @@ class PlatformApi:
     def _platform_get_serialize(
         self,
         tenant,
-        platform,
+        platform_id,
         _request_auth,
         _content_type,
         _headers,
@@ -868,8 +870,8 @@ class PlatformApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if platform is not None:
-            _path_params['platform'] = platform
+        if platform_id is not None:
+            _path_params['platformId'] = platform_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -893,7 +895,7 @@ class PlatformApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/platforms/{platform}',
+            resource_path='/api/v1/tenants/{tenant}/platforms/{platformId}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1218,7 +1220,7 @@ class PlatformApi:
     async def platform_update(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         platform_update: Optional[PlatformUpdate] = None,
         _request_timeout: Union[
             None,
@@ -1239,8 +1241,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param platform_update:
         :type platform_update: PlatformUpdate
         :param _request_timeout: timeout setting for this request. If one
@@ -1267,7 +1269,7 @@ class PlatformApi:
 
         _param = self._platform_update_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             platform_update=platform_update,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1296,7 +1298,7 @@ class PlatformApi:
     async def platform_update_with_http_info(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         platform_update: Optional[PlatformUpdate] = None,
         _request_timeout: Union[
             None,
@@ -1317,8 +1319,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param platform_update:
         :type platform_update: PlatformUpdate
         :param _request_timeout: timeout setting for this request. If one
@@ -1345,7 +1347,7 @@ class PlatformApi:
 
         _param = self._platform_update_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             platform_update=platform_update,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1374,7 +1376,7 @@ class PlatformApi:
     async def platform_update_without_preload_content(
         self,
         tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
-        platform: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
+        platform_id: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The platform id")],
         platform_update: Optional[PlatformUpdate] = None,
         _request_timeout: Union[
             None,
@@ -1395,8 +1397,8 @@ class PlatformApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param platform: The platform id (required)
-        :type platform: str
+        :param platform_id: The platform id (required)
+        :type platform_id: str
         :param platform_update:
         :type platform_update: PlatformUpdate
         :param _request_timeout: timeout setting for this request. If one
@@ -1423,7 +1425,7 @@ class PlatformApi:
 
         _param = self._platform_update_serialize(
             tenant=tenant,
-            platform=platform,
+            platform_id=platform_id,
             platform_update=platform_update,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -1447,7 +1449,7 @@ class PlatformApi:
     def _platform_update_serialize(
         self,
         tenant,
-        platform,
+        platform_id,
         platform_update,
         _request_auth,
         _content_type,
@@ -1472,8 +1474,8 @@ class PlatformApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if platform is not None:
-            _path_params['platform'] = platform
+        if platform_id is not None:
+            _path_params['platformId'] = platform_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -1512,7 +1514,7 @@ class PlatformApi:
 
         return self.api_client.param_serialize(
             method='PUT',
-            resource_path='/api/v1/tenants/{tenant}/platforms/{platform}/update',
+            resource_path='/api/v1/tenants/{tenant}/platforms/{platformId}/update',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 from mtmai.clients.rest.models.pagination_response import PaginationResponse
 from mtmai.clients.rest.models.platform import Platform
 from typing import Optional, Set
@@ -28,8 +28,8 @@ class PlatformList(BaseModel):
     """
     PlatformList
     """ # noqa: E501
-    pagination: Optional[PaginationResponse] = None
-    rows: Optional[List[Platform]] = None
+    pagination: PaginationResponse
+    rows: List[Platform]
     __properties: ClassVar[List[str]] = ["pagination", "rows"]
 
     model_config = ConfigDict(

@@ -21,8 +21,8 @@ from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.p_account import PAccount
 from mtmai.clients.rest.models.p_account_create import PAccountCreate
-from mtmai.clients.rest.models.p_account_delete200_response import PAccountDelete200Response
 from mtmai.clients.rest.models.p_account_list import PAccountList
+from mtmai.clients.rest.models.platform_delete200_response import PlatformDelete200Response
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -353,7 +353,7 @@ class PAccountApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> PAccountDelete200Response:
+    ) -> PlatformDelete200Response:
         """Delete platform account
 
         Delete platform account
@@ -394,7 +394,7 @@ class PAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -427,7 +427,7 @@ class PAccountApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[PAccountDelete200Response]:
+    ) -> ApiResponse[PlatformDelete200Response]:
         """Delete platform account
 
         Delete platform account
@@ -468,7 +468,7 @@ class PAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",
@@ -542,7 +542,7 @@ class PAccountApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PAccountDelete200Response",
+            '200': "PlatformDelete200Response",
             '400': "APIErrors",
             '403': "APIError",
             '404': "APIErrors",

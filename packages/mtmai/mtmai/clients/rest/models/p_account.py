@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.platform import Platform
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -33,7 +32,7 @@ class PAccount(BaseModel):
     password: StrictStr = Field(description="Password for the platform account")
     email: StrictStr = Field(description="Email for the platform account")
     enabled: StrictBool = Field(description="Whether the account is enabled")
-    platform_id: StrictStr = Field(description="Platform ID", alias="platformId")
+    platform_id: StrictStr = Field(description="UUID of the platform this account belongs to", alias="platformId")
     name: Optional[StrictStr] = Field(default=None, description="Display name for the account")
     description: Optional[StrictStr] = Field(default=None, description="Description of the account")
     type: Optional[StrictStr] = Field(default=None, description="Type or category of the account")
@@ -42,8 +41,7 @@ class PAccount(BaseModel):
     tags: Optional[List[StrictStr]] = Field(default=None, description="Tags for categorizing the account")
     comment: Optional[StrictStr] = Field(default=None, description="Additional notes or comments about the account")
     state: Optional[Dict[str, Any]] = Field(default=None, description="Additional state data for the account")
-    platform: Optional[Platform] = None
-    __properties: ClassVar[List[str]] = ["metadata", "username", "password", "email", "enabled", "platformId", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state", "platform"]
+    __properties: ClassVar[List[str]] = ["metadata", "username", "password", "email", "enabled", "platformId", "name", "description", "type", "token", "otpSeed", "tags", "comment", "state"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,9 +85,6 @@ class PAccount(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of metadata
         if self.metadata:
             _dict['metadata'] = self.metadata.to_dict()
-        # override the default output from pydantic by calling `to_dict()` of platform
-        if self.platform:
-            _dict['platform'] = self.platform.to_dict()
         return _dict
 
     @classmethod
@@ -120,8 +115,7 @@ class PAccount(BaseModel):
             "otpSeed": obj.get("otpSeed"),
             "tags": obj.get("tags"),
             "comment": obj.get("comment"),
-            "state": obj.get("state"),
-            "platform": Platform.from_dict(obj["platform"]) if obj.get("platform") is not None else None
+            "state": obj.get("state")
         })
         return _obj
 
