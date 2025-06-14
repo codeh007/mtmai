@@ -133,6 +133,12 @@ from mtmai.clients.rest.models.platform_properties import PlatformProperties
 from mtmai.clients.rest.models.platform_update import PlatformUpdate
 from mtmai.clients.rest.models.post import Post
 from mtmai.clients.rest.models.post_list import PostList
+from mtmai.clients.rest.models.proxy import Proxy
+from mtmai.clients.rest.models.proxy_create import ProxyCreate
+from mtmai.clients.rest.models.proxy_delete200_response import ProxyDelete200Response
+from mtmai.clients.rest.models.proxy_list import ProxyList
+from mtmai.clients.rest.models.proxy_list200_response import ProxyList200Response
+from mtmai.clients.rest.models.proxy_update import ProxyUpdate
 from mtmai.clients.rest.models.pull_request import PullRequest
 from mtmai.clients.rest.models.pull_request_state import PullRequestState
 from mtmai.clients.rest.models.push_event_response import PushEventResponse

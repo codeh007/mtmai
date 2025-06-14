@@ -17,24 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
+from mtmai.clients.rest.models.proxy import Proxy
 from typing import Optional, Set
 from typing_extensions import Self
 
-class ProxyUpdate(BaseModel):
+class ProxyList200Response(BaseModel):
     """
-    Parameters for updating a proxy
+    ProxyList200Response
     """ # noqa: E501
-    name: Optional[StrictStr] = Field(default=None, description="The name of the proxy")
-    description: Optional[StrictStr] = Field(default=None, description="The description of the proxy")
-    url: Optional[StrictStr] = Field(default=None, description="The URL of the proxy")
-    type: Optional[StrictStr] = Field(default=None, description="The type of the proxy (e.g., HTTP, SOCKS5)")
-    provider: Optional[StrictStr] = Field(default=None, description="The provider of the proxy")
-    country_code: Optional[StrictStr] = Field(default=None, description="The country code where the proxy is located", alias="countryCode")
-    port: Optional[StrictInt] = Field(default=None, description="The port number of the proxy")
-    enabled: Optional[StrictBool] = Field(default=None, description="Whether the proxy is enabled")
-    __properties: ClassVar[List[str]] = ["name", "description", "url", "type", "provider", "countryCode", "port", "enabled"]
+    proxies: Optional[List[Proxy]] = None
+    __properties: ClassVar[List[str]] = ["proxies"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -54,7 +48,7 @@ class ProxyUpdate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ProxyUpdate from a JSON string"""
+        """Create an instance of ProxyList200Response from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -75,11 +69,18 @@ class ProxyUpdate(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in proxies (list)
+        _items = []
+        if self.proxies:
+            for _item_proxies in self.proxies:
+                if _item_proxies:
+                    _items.append(_item_proxies.to_dict())
+            _dict['proxies'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ProxyUpdate from a dict"""
+        """Create an instance of ProxyList200Response from a dict"""
         if obj is None:
             return None
 
@@ -89,17 +90,10 @@ class ProxyUpdate(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in ProxyUpdate) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ProxyList200Response) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "name": obj.get("name"),
-            "description": obj.get("description"),
-            "url": obj.get("url"),
-            "type": obj.get("type"),
-            "provider": obj.get("provider"),
-            "countryCode": obj.get("countryCode"),
-            "port": obj.get("port"),
-            "enabled": obj.get("enabled")
+            "proxies": [Proxy.from_dict(_item) for _item in obj["proxies"]] if obj.get("proxies") is not None else None
         })
         return _obj
 

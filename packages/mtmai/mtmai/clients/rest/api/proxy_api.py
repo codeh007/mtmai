@@ -16,12 +16,14 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictInt, StrictStr
+from pydantic import Field, StrictBool, StrictInt, StrictStr
 from typing import Optional
 from typing_extensions import Annotated
 from mtmai.clients.rest.models.proxy import Proxy
-from mtmai.clients.rest.models.proxy_list import ProxyList
-from mtmai.clients.rest.models.proxy_upsert import ProxyUpsert
+from mtmai.clients.rest.models.proxy_create import ProxyCreate
+from mtmai.clients.rest.models.proxy_delete200_response import ProxyDelete200Response
+from mtmai.clients.rest.models.proxy_list200_response import ProxyList200Response
+from mtmai.clients.rest.models.proxy_update import ProxyUpdate
 
 from mtmai.clients.rest.api_client import ApiClient, RequestSerialized
 from mtmai.clients.rest.api_response import ApiResponse
@@ -44,8 +46,8 @@ class ProxyApi:
     @validate_call
     async def proxy_create(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_create: ProxyCreate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -63,10 +65,10 @@ class ProxyApi:
 
         Create a new proxy
 
+        :param proxy_create: (required)
+        :type proxy_create: ProxyCreate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -90,8 +92,8 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_create_serialize(
+            proxy_create=proxy_create,
             tenant=tenant,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -99,9 +101,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '201': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "Proxy",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -117,8 +120,8 @@ class ProxyApi:
     @validate_call
     async def proxy_create_with_http_info(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_create: ProxyCreate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -136,10 +139,10 @@ class ProxyApi:
 
         Create a new proxy
 
+        :param proxy_create: (required)
+        :type proxy_create: ProxyCreate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -163,8 +166,8 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_create_serialize(
+            proxy_create=proxy_create,
             tenant=tenant,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -172,9 +175,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '201': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "Proxy",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -190,8 +194,8 @@ class ProxyApi:
     @validate_call
     async def proxy_create_without_preload_content(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_create: ProxyCreate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -209,10 +213,10 @@ class ProxyApi:
 
         Create a new proxy
 
+        :param proxy_create: (required)
+        :type proxy_create: ProxyCreate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -236,8 +240,8 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_create_serialize(
+            proxy_create=proxy_create,
             tenant=tenant,
-            proxy_upsert=proxy_upsert,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -245,9 +249,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '201': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "Proxy",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -258,8 +263,8 @@ class ProxyApi:
 
     def _proxy_create_serialize(
         self,
+        proxy_create,
         tenant,
-        proxy_upsert,
         _request_auth,
         _content_type,
         _headers,
@@ -287,8 +292,8 @@ class ProxyApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if proxy_upsert is not None:
-            _body_params = proxy_upsert
+        if proxy_create is not None:
+            _body_params = proxy_create
 
 
         # set the HTTP header `Accept`
@@ -340,8 +345,8 @@ class ProxyApi:
     @validate_call
     async def proxy_delete(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -354,15 +359,15 @@ class ProxyApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> None:
+    ) -> ProxyDelete200Response:
         """proxy_delete
 
         Delete a proxy
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -387,7 +392,7 @@ class ProxyApi:
 
         _param = self._proxy_delete_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -395,10 +400,11 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '204': None,
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '200': "ProxyDelete200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -414,8 +420,8 @@ class ProxyApi:
     @validate_call
     async def proxy_delete_with_http_info(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -428,15 +434,15 @@ class ProxyApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[None]:
+    ) -> ApiResponse[ProxyDelete200Response]:
         """proxy_delete
 
         Delete a proxy
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -461,7 +467,7 @@ class ProxyApi:
 
         _param = self._proxy_delete_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -469,10 +475,11 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '204': None,
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '200': "ProxyDelete200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -488,8 +495,8 @@ class ProxyApi:
     @validate_call
     async def proxy_delete_without_preload_content(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -509,8 +516,8 @@ class ProxyApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -535,7 +542,7 @@ class ProxyApi:
 
         _param = self._proxy_delete_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -543,10 +550,11 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '204': None,
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '200': "ProxyDelete200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -558,7 +566,7 @@ class ProxyApi:
     def _proxy_delete_serialize(
         self,
         tenant,
-        proxy,
+        proxy_id,
         _request_auth,
         _content_type,
         _headers,
@@ -582,8 +590,8 @@ class ProxyApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if proxy is not None:
-            _path_params['proxy'] = proxy
+        if proxy_id is not None:
+            _path_params['proxyId'] = proxy_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -606,8 +614,8 @@ class ProxyApi:
         ]
 
         return self.api_client.param_serialize(
-            method='DELETE',
-            resource_path='/api/v1/tenants/{tenant}/proxies/{proxy}/delete',
+            method='POST',
+            resource_path='/api/v1/tenants/{tenant}/proxies/{proxyId}/delete',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -626,8 +634,8 @@ class ProxyApi:
     @validate_call
     async def proxy_get(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -647,8 +655,8 @@ class ProxyApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -673,7 +681,7 @@ class ProxyApi:
 
         _param = self._proxy_get_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -682,9 +690,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -700,8 +709,8 @@ class ProxyApi:
     @validate_call
     async def proxy_get_with_http_info(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -721,8 +730,8 @@ class ProxyApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -747,7 +756,7 @@ class ProxyApi:
 
         _param = self._proxy_get_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -756,9 +765,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -774,8 +784,8 @@ class ProxyApi:
     @validate_call
     async def proxy_get_without_preload_content(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -795,8 +805,8 @@ class ProxyApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -821,7 +831,7 @@ class ProxyApi:
 
         _param = self._proxy_get_serialize(
             tenant=tenant,
-            proxy=proxy,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -830,9 +840,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -844,7 +855,7 @@ class ProxyApi:
     def _proxy_get_serialize(
         self,
         tenant,
-        proxy,
+        proxy_id,
         _request_auth,
         _content_type,
         _headers,
@@ -868,8 +879,8 @@ class ProxyApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if proxy is not None:
-            _path_params['proxy'] = proxy
+        if proxy_id is not None:
+            _path_params['proxyId'] = proxy_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -893,7 +904,7 @@ class ProxyApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/api/v1/tenants/{tenant}/proxies/{proxy}',
+            resource_path='/api/v1/tenants/{tenant}/proxies/{proxyId}',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -912,9 +923,14 @@ class ProxyApi:
     @validate_call
     async def proxy_list(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        page: Annotated[Optional[StrictInt], Field(description="Page number for pagination")] = None,
-        limit: Annotated[Optional[StrictInt], Field(description="Items per page for pagination")] = None,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Annotated[Optional[StrictInt], Field(description="Limit the number of results")] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="Offset the results")] = None,
+        enabled: Annotated[Optional[StrictBool], Field(description="Filter by enabled status")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="Filter by provider")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="Filter by type")] = None,
+        country_code: Annotated[Optional[StrictStr], Field(description="Filter by country code")] = None,
+        port: Annotated[Optional[StrictInt], Field(description="Filter by port number")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -927,17 +943,27 @@ class ProxyApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ProxyList:
+    ) -> ProxyList200Response:
         """proxy_list
 
         Get all proxies for the tenant
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param page: Page number for pagination
-        :type page: int
-        :param limit: Items per page for pagination
+        :param limit: Limit the number of results
         :type limit: int
+        :param offset: Offset the results
+        :type offset: int
+        :param enabled: Filter by enabled status
+        :type enabled: bool
+        :param provider: Filter by provider
+        :type provider: str
+        :param type: Filter by type
+        :type type: str
+        :param country_code: Filter by country code
+        :type country_code: str
+        :param port: Filter by port number
+        :type port: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -962,8 +988,13 @@ class ProxyApi:
 
         _param = self._proxy_list_serialize(
             tenant=tenant,
-            page=page,
             limit=limit,
+            offset=offset,
+            enabled=enabled,
+            provider=provider,
+            type=type,
+            country_code=country_code,
+            port=port,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -971,9 +1002,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProxyList",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "ProxyList200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -989,9 +1021,14 @@ class ProxyApi:
     @validate_call
     async def proxy_list_with_http_info(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        page: Annotated[Optional[StrictInt], Field(description="Page number for pagination")] = None,
-        limit: Annotated[Optional[StrictInt], Field(description="Items per page for pagination")] = None,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Annotated[Optional[StrictInt], Field(description="Limit the number of results")] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="Offset the results")] = None,
+        enabled: Annotated[Optional[StrictBool], Field(description="Filter by enabled status")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="Filter by provider")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="Filter by type")] = None,
+        country_code: Annotated[Optional[StrictStr], Field(description="Filter by country code")] = None,
+        port: Annotated[Optional[StrictInt], Field(description="Filter by port number")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1004,17 +1041,27 @@ class ProxyApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ProxyList]:
+    ) -> ApiResponse[ProxyList200Response]:
         """proxy_list
 
         Get all proxies for the tenant
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param page: Page number for pagination
-        :type page: int
-        :param limit: Items per page for pagination
+        :param limit: Limit the number of results
         :type limit: int
+        :param offset: Offset the results
+        :type offset: int
+        :param enabled: Filter by enabled status
+        :type enabled: bool
+        :param provider: Filter by provider
+        :type provider: str
+        :param type: Filter by type
+        :type type: str
+        :param country_code: Filter by country code
+        :type country_code: str
+        :param port: Filter by port number
+        :type port: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1039,8 +1086,13 @@ class ProxyApi:
 
         _param = self._proxy_list_serialize(
             tenant=tenant,
-            page=page,
             limit=limit,
+            offset=offset,
+            enabled=enabled,
+            provider=provider,
+            type=type,
+            country_code=country_code,
+            port=port,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1048,9 +1100,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProxyList",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "ProxyList200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1066,9 +1119,14 @@ class ProxyApi:
     @validate_call
     async def proxy_list_without_preload_content(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        page: Annotated[Optional[StrictInt], Field(description="Page number for pagination")] = None,
-        limit: Annotated[Optional[StrictInt], Field(description="Items per page for pagination")] = None,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        limit: Annotated[Optional[StrictInt], Field(description="Limit the number of results")] = None,
+        offset: Annotated[Optional[StrictInt], Field(description="Offset the results")] = None,
+        enabled: Annotated[Optional[StrictBool], Field(description="Filter by enabled status")] = None,
+        provider: Annotated[Optional[StrictStr], Field(description="Filter by provider")] = None,
+        type: Annotated[Optional[StrictStr], Field(description="Filter by type")] = None,
+        country_code: Annotated[Optional[StrictStr], Field(description="Filter by country code")] = None,
+        port: Annotated[Optional[StrictInt], Field(description="Filter by port number")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1088,10 +1146,20 @@ class ProxyApi:
 
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param page: Page number for pagination
-        :type page: int
-        :param limit: Items per page for pagination
+        :param limit: Limit the number of results
         :type limit: int
+        :param offset: Offset the results
+        :type offset: int
+        :param enabled: Filter by enabled status
+        :type enabled: bool
+        :param provider: Filter by provider
+        :type provider: str
+        :param type: Filter by type
+        :type type: str
+        :param country_code: Filter by country code
+        :type country_code: str
+        :param port: Filter by port number
+        :type port: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1116,8 +1184,13 @@ class ProxyApi:
 
         _param = self._proxy_list_serialize(
             tenant=tenant,
-            page=page,
             limit=limit,
+            offset=offset,
+            enabled=enabled,
+            provider=provider,
+            type=type,
+            country_code=country_code,
+            port=port,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1125,9 +1198,10 @@ class ProxyApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProxyList",
-            '400': "APIError",
-            '401': "APIError",
+            '200': "ProxyList200Response",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1139,8 +1213,13 @@ class ProxyApi:
     def _proxy_list_serialize(
         self,
         tenant,
-        page,
         limit,
+        offset,
+        enabled,
+        provider,
+        type,
+        country_code,
+        port,
         _request_auth,
         _content_type,
         _headers,
@@ -1165,13 +1244,33 @@ class ProxyApi:
         if tenant is not None:
             _path_params['tenant'] = tenant
         # process the query parameters
-        if page is not None:
-            
-            _query_params.append(('page', page))
-            
         if limit is not None:
             
             _query_params.append(('limit', limit))
+            
+        if offset is not None:
+            
+            _query_params.append(('offset', offset))
+            
+        if enabled is not None:
+            
+            _query_params.append(('enabled', enabled))
+            
+        if provider is not None:
+            
+            _query_params.append(('provider', provider))
+            
+        if type is not None:
+            
+            _query_params.append(('type', type))
+            
+        if country_code is not None:
+            
+            _query_params.append(('countryCode', country_code))
+            
+        if port is not None:
+            
+            _query_params.append(('port', port))
             
         # process the header parameters
         # process the form parameters
@@ -1214,9 +1313,9 @@ class ProxyApi:
     @validate_call
     async def proxy_update(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_update: ProxyUpdate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1234,12 +1333,12 @@ class ProxyApi:
 
         Update a proxy
 
+        :param proxy_update: (required)
+        :type proxy_update: ProxyUpdate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1263,9 +1362,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_update_serialize(
+            proxy_update=proxy_update,
             tenant=tenant,
-            proxy=proxy,
-            proxy_upsert=proxy_upsert,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1274,9 +1373,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1292,9 +1392,9 @@ class ProxyApi:
     @validate_call
     async def proxy_update_with_http_info(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_update: ProxyUpdate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1312,12 +1412,12 @@ class ProxyApi:
 
         Update a proxy
 
+        :param proxy_update: (required)
+        :type proxy_update: ProxyUpdate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1341,9 +1441,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_update_serialize(
+            proxy_update=proxy_update,
             tenant=tenant,
-            proxy=proxy,
-            proxy_upsert=proxy_upsert,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1352,9 +1452,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1370,9 +1471,9 @@ class ProxyApi:
     @validate_call
     async def proxy_update_without_preload_content(
         self,
-        tenant: Annotated[StrictStr, Field(description="The tenant id")],
-        proxy: Annotated[StrictStr, Field(description="The proxy id")],
-        proxy_upsert: Optional[ProxyUpsert] = None,
+        proxy_update: ProxyUpdate,
+        tenant: Annotated[str, Field(min_length=36, strict=True, max_length=36, description="The tenant id")],
+        proxy_id: Annotated[StrictStr, Field(description="The proxy id")],
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1390,12 +1491,12 @@ class ProxyApi:
 
         Update a proxy
 
+        :param proxy_update: (required)
+        :type proxy_update: ProxyUpdate
         :param tenant: The tenant id (required)
         :type tenant: str
-        :param proxy: The proxy id (required)
-        :type proxy: str
-        :param proxy_upsert:
-        :type proxy_upsert: ProxyUpsert
+        :param proxy_id: The proxy id (required)
+        :type proxy_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1419,9 +1520,9 @@ class ProxyApi:
         """ # noqa: E501
 
         _param = self._proxy_update_serialize(
+            proxy_update=proxy_update,
             tenant=tenant,
-            proxy=proxy,
-            proxy_upsert=proxy_upsert,
+            proxy_id=proxy_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1430,9 +1531,10 @@ class ProxyApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "Proxy",
-            '400': "APIError",
-            '401': "APIError",
-            '404': "APIError",
+            '400': "APIErrors",
+            '401': "APIErrors",
+            '404': "APIErrors",
+            '500': "APIErrors",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1443,9 +1545,9 @@ class ProxyApi:
 
     def _proxy_update_serialize(
         self,
+        proxy_update,
         tenant,
-        proxy,
-        proxy_upsert,
+        proxy_id,
         _request_auth,
         _content_type,
         _headers,
@@ -1469,14 +1571,14 @@ class ProxyApi:
         # process the path parameters
         if tenant is not None:
             _path_params['tenant'] = tenant
-        if proxy is not None:
-            _path_params['proxy'] = proxy
+        if proxy_id is not None:
+            _path_params['proxyId'] = proxy_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if proxy_upsert is not None:
-            _body_params = proxy_upsert
+        if proxy_update is not None:
+            _body_params = proxy_update
 
 
         # set the HTTP header `Accept`
@@ -1508,8 +1610,8 @@ class ProxyApi:
         ]
 
         return self.api_client.param_serialize(
-            method='PUT',
-            resource_path='/api/v1/tenants/{tenant}/proxies/{proxy}/update',
+            method='POST',
+            resource_path='/api/v1/tenants/{tenant}/proxies/{proxyId}/update',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

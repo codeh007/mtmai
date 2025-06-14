@@ -17,29 +17,24 @@ import pprint
 import re  # noqa: F401
 import json
 
-from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class Proxy(BaseModel):
+class ProxyCreate(BaseModel):
     """
-    A proxy server
+    Parameters for creating a proxy
     """ # noqa: E501
-    id: StrictStr = Field(description="The unique identifier of the proxy")
     name: StrictStr = Field(description="The name of the proxy")
     description: Optional[StrictStr] = Field(default=None, description="The description of the proxy")
     url: StrictStr = Field(description="The URL of the proxy")
     type: StrictStr = Field(description="The type of the proxy (e.g., HTTP, SOCKS5)")
-    provider: StrictStr = Field(description="The provider of the proxy")
+    provider: Optional[StrictStr] = Field(default=None, description="The provider of the proxy")
     country_code: Optional[StrictStr] = Field(default=None, description="The country code where the proxy is located", alias="countryCode")
     port: Optional[StrictInt] = Field(default=None, description="The port number of the proxy")
-    last_used_at: Optional[datetime] = Field(default=None, description="The last time the proxy was used", alias="lastUsedAt")
-    enabled: StrictBool = Field(description="Whether the proxy is enabled")
-    created_at: Optional[datetime] = Field(default=None, description="The time the proxy was created", alias="createdAt")
-    updated_at: Optional[datetime] = Field(default=None, description="The last time the proxy was updated", alias="updatedAt")
-    __properties: ClassVar[List[str]] = ["id", "name", "description", "url", "type", "provider", "countryCode", "port", "lastUsedAt", "enabled", "createdAt", "updatedAt"]
+    enabled: Optional[StrictBool] = Field(default=True, description="Whether the proxy is enabled")
+    __properties: ClassVar[List[str]] = ["name", "description", "url", "type", "provider", "countryCode", "port", "enabled"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -59,7 +54,7 @@ class Proxy(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of Proxy from a JSON string"""
+        """Create an instance of ProxyCreate from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -84,7 +79,7 @@ class Proxy(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of Proxy from a dict"""
+        """Create an instance of ProxyCreate from a dict"""
         if obj is None:
             return None
 
@@ -94,10 +89,9 @@ class Proxy(BaseModel):
         # raise errors for additional fields in the input
         for _key in obj.keys():
             if _key not in cls.__properties:
-                raise ValueError("Error due to additional fields (not defined in Proxy) in the input: " + _key)
+                raise ValueError("Error due to additional fields (not defined in ProxyCreate) in the input: " + _key)
 
         _obj = cls.model_validate({
-            "id": obj.get("id"),
             "name": obj.get("name"),
             "description": obj.get("description"),
             "url": obj.get("url"),
@@ -105,10 +99,7 @@ class Proxy(BaseModel):
             "provider": obj.get("provider"),
             "countryCode": obj.get("countryCode"),
             "port": obj.get("port"),
-            "lastUsedAt": obj.get("lastUsedAt"),
-            "enabled": obj.get("enabled"),
-            "createdAt": obj.get("createdAt"),
-            "updatedAt": obj.get("updatedAt")
+            "enabled": obj.get("enabled") if obj.get("enabled") is not None else True
         })
         return _obj
 
