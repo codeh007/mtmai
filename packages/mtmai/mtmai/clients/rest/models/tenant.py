@@ -20,7 +20,6 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from mtmai.clients.rest.models.api_resource_meta import APIResourceMeta
-from mtmai.clients.rest.models.tenant_version import TenantVersion
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -33,8 +32,7 @@ class Tenant(BaseModel):
     slug: StrictStr = Field(description="The slug of the tenant.")
     analytics_opt_out: Optional[StrictBool] = Field(default=None, description="Whether the tenant has opted out of analytics.", alias="analyticsOptOut")
     alert_member_emails: Optional[StrictBool] = Field(default=None, description="Whether to alert tenant members.", alias="alertMemberEmails")
-    version: TenantVersion = Field(description="The version of the tenant.")
-    __properties: ClassVar[List[str]] = ["metadata", "name", "slug", "analyticsOptOut", "alertMemberEmails", "version"]
+    __properties: ClassVar[List[str]] = ["metadata", "name", "slug", "analyticsOptOut", "alertMemberEmails"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,8 +97,7 @@ class Tenant(BaseModel):
             "name": obj.get("name"),
             "slug": obj.get("slug"),
             "analyticsOptOut": obj.get("analyticsOptOut"),
-            "alertMemberEmails": obj.get("alertMemberEmails"),
-            "version": obj.get("version")
+            "alertMemberEmails": obj.get("alertMemberEmails")
         })
         return _obj
 

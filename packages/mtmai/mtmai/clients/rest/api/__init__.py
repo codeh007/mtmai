@@ -6,7 +6,6 @@ from mtmai.clients.rest.api.bot_api import BotApi
 from mtmai.clients.rest.api.event_api import EventApi
 from mtmai.clients.rest.api.healthcheck_api import HealthcheckApi
 from mtmai.clients.rest.api.metadata_api import MetadataApi
-from mtmai.clients.rest.api.slack_api import SlackApi
 from mtmai.clients.rest.api.tenant_api import TenantApi
 from mtmai.clients.rest.api.user_api import UserApi
 from mtmai.clients.rest.api.albums_api import AlbumsApi
